@@ -106,18 +106,20 @@ export function getLinkUrl(
     }
 
     // Assicura che l'URL abbia il protocollo https://
-    return ensureProtocol(url)
+    // url non può essere undefined qui perché isEmpty() lo ha già verificato
+    return ensureProtocol(url!)
   }
 
   // Fallback: prova a usare cached_url o url se disponibili
   const fallbackUrl = link!.cached_url || link!.url
 
-  if (!isEmpty(fallbackUrl)) {
+  if (fallbackUrl && !isEmpty(fallbackUrl)) {
     // Se è un percorso relativo (inizia con /), restituisce così com'è
     if (fallbackUrl.startsWith("/")) {
       return fallbackUrl
     }
     // Se sembra un URL esterno ma non ha protocollo, aggiunge https://
+    // fallbackUrl non può essere undefined qui perché controllato sopra
     return ensureProtocol(fallbackUrl)
   }
 
