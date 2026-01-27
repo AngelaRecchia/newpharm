@@ -28,29 +28,15 @@ export default function Dropdown({
     className,
     openTo = 'bottom',
 }: DropdownProps) {
-
-
-
-    if (options.length <= 1) {
-        return <></>
-    }
-    if (options.length <= 2) {
-
-        const notSelectedOption = options.find((opt) => opt.value !== value)
-        return <button className={cn('trigger', 'singleTrigger')} onClick={() => onChange?.(notSelectedOption?.value || '')}>
-            {notSelectedOption?.label}
-        </button>
-    }
-
+    // Hooks devono essere chiamati sempre, non condizionalmente
     const [isOpen, setIsOpen] = useState(false)
     const [selectedValue, setSelectedValue] = useState(value)
     const dropdownRef = useRef<HTMLDivElement>(null)
 
-    // Find selected option
-    const selectedOption = options.find((opt) => opt.value === selectedValue)
-
-    // Close dropdown when clicking outside
+    // Close dropdown when clicking outside (solo se dropdown è attivo)
     useEffect(() => {
+        if (options.length <= 2) return // Skip se non è un dropdown completo
+
         const handleClickOutside = (event: MouseEvent) => {
             if (
                 dropdownRef.current &&
@@ -65,14 +51,27 @@ export default function Dropdown({
         }
 
         return () => {
-            documentNaNpxoveEventListener('mousedown', handleClickOutside)
+            document.removeEventListener('mousedown', handleClickOutside)
         }
-    }, [isOpen])
+    }, [isOpen, options.length])
 
     // Update selected value when value prop changes
     useEffect(() => {
         setSelectedValue(value)
     }, [value])
+
+    if (options.length <= 1) {
+        return <></>
+    }
+    if (options.length <= 2) {
+        const notSelectedOption = options.find((opt) => opt.value !== value)
+        return <button className={cn('trigger', 'singleTrigger')} onClick={() => onChange?.(notSelectedOption?.value || '')}>
+            {notSelectedOption?.label}
+        </button>
+    }
+
+    // Find selected option
+    const selectedOption = options.find((opt) => opt.value === selectedValue)
 
     const handleToggle = () => {
         setIsOpen(!isOpen)

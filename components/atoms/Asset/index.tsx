@@ -90,21 +90,23 @@ const Asset = ({
 
     const fileType = useMemo(() => getFileType(src), [src])
 
+    // Hooks devono essere chiamati sempre, non condizionalmente
+    const videoRef = useRef<HTMLVideoElement>(null)
+    const [isPlaying, setIsPlaying] = useState(true)
+
+    const handleTogglePlay = useCallback(() => {
+        if (videoRef.current) {
+            if (isPlaying) {
+                videoRef.current.pause()
+            } else {
+                videoRef.current.play()
+            }
+            setIsPlaying(!isPlaying)
+        }
+    }, [isPlaying])
+
     // Se è un video, renderizza il tag video con bottone play/pause
     if (fileType === 'video') {
-        const videoRef = useRef<HTMLVideoElement>(null)
-        const [isPlaying, setIsPlaying] = useState(true)
-
-        const handleTogglePlay = useCallback(() => {
-            if (videoRef.current) {
-                if (isPlaying) {
-                    videoRef.current.pause()
-                } else {
-                    videoRef.current.play()
-                }
-                setIsPlaying(!isPlaying)
-            }
-        }, [isPlaying])
 
         return (
             <div className={cn('asset-video-wrapper', className)}>

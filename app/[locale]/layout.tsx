@@ -17,8 +17,8 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: 'Storyblok + Next.js',
-  description: 'Progetto Next.js con Storyblok e componenti Pixso',
+  title: 'Newpharm',
+  description: 'Newpharm - Progetto Next.js con Storyblok',
 }
 
 export async function generateStaticParams() {

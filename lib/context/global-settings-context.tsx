@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, useContext, ReactNode } from 'react'
-import type { GlobalSettings } from '../api/global-settings-api'
+import type { GlobalSettings } from '../api/settings'
 
 const GlobalSettingsContext = createContext<GlobalSettings | null>(null)
 

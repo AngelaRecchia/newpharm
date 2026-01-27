@@ -106,7 +106,7 @@ export async function generateMetadata({ params }: PageProps) {
   const storySlug = slug && slug.length > 0 ? slug.join('/') : ''
 
   return {
-    title: 'Storyblok + Next.js',
-    description: 'Progetto Next.js con Storyblok e componenti Pixso',
+    title: 'Newpharm',
+    description: 'Newpharm - Progetto Next.js con Storyblok',
   }
 }

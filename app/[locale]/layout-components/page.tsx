@@ -65,7 +65,7 @@ export async function generateMetadata({ params }: PageProps) {
   const t = await getTranslations({ locale, namespace: 'Metadata' })
 
   return {
-    title: 'Layout Components - Storyblok + Next.js',
-    description: 'Progetto Next.js con Storyblok e componenti Pixso',
+    title: 'Layout Components - Newpharm',
+    description: 'Newpharm - Progetto Next.js con Storyblok',
   }
 }

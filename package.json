@@ -1,5 +1,5 @@
 {
-  "name": "storyblok-nextjs",
+  "name": "newpharm",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -18,16 +18,16 @@
     "motion": "^12.27.1",
     "next": "^15.0.0",
     "next-intl": "^4.7.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "storyblok-js-client": "^6.0.0",
     "storyblok-rich-text-react-renderer": "^3.0.1",
     "swiper": "^12.0.3"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
     "autoprefixer": "^10.4.0",
     "dotenv": "^16.3.1",
     "eslint": "^8.0.0",

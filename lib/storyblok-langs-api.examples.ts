@@ -1,4 +1,4 @@
-import { getLangs, getLangsWithContentCheck } from './storyblok-langs-api'
+import { getLangs } from './api/storyblok/languages'
 
 /**
  * Usage examples for getLangs with Global Settings
@@ -69,8 +69,9 @@ export async function exampleGenerateStaticParams() {
 
 // Example 4: With content verification
 export async function exampleVerifiedLocales() {
-  const locales = await getLangsWithContentCheck({
-    excludePaths: ['layout-components', 'drafts']
+  const locales = await getLangs({
+    excludePaths: ['layout-components', 'drafts'],
+    checkForContent: true
   })
   
   console.log('Locales with published content:', locales)
@@ -81,7 +82,7 @@ export async function exampleVerifiedLocales() {
 export async function exampleCustomExclude() {
   const locales = await getLangs({
     excludePaths: ['layout-components', 'test', 'archive'],
-    requirePublished: true
+    checkForContent: true
   })
   
   return locales
