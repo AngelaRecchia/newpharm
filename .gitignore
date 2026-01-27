@@ -43,4 +43,11 @@ next-env.d.ts
 scripts/*.js
 scripts/*.js.map
 
+# cursor agents and skills
+.agents
+.cursor
+
+# cursor rules (keep local, don't push)
+.cursorrules
+
 certificates
