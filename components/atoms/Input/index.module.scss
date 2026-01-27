@@ -1,0 +1,118 @@
+// ============================================
+// INPUT COMPONENT
+// ============================================
+
+@use "../../../styles" as *;
+
+.inputWrapper {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: $s-24;
+  width: 100%;
+  border-bottom: 1px solid;
+  transition: border-color $td-300 $ease-natural;
+
+  // Mobile: padding senza sinistra
+  padding: $s-16 $s-16 $s-16 0;
+
+  // Desktop: padding completo
+  @include md {
+    padding: $s-16;
+  }
+
+  // Default skin
+  &.inputWrapperDefault {
+    border-color: rgba(0, 0, 0, 0.3);
+    color: $c-black;
+
+    // Quando l'input è in focus
+    &:has(.input:focus-visible) {
+      border-color: rgba(0, 0, 0, 1);
+    }
+  }
+
+  // Light skin
+  &.inputWrapperLight {
+    border-color: rgba(255, 255, 255, 0.3);
+    color: $c-white;
+
+    // Quando l'input è in focus
+    &:has(.input:focus-visible) {
+      border-color: rgba(255, 255, 255, 1);
+    }
+  }
+}
+
+.input {
+  width: 100%;
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+
+  @include t-note; // 14px, line-height 120%
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  letter-spacing: -0.03em; // -2.9999999329447746%
+
+  // Default skin
+  .inputWrapperDefault & {
+    color: $c-black;
+
+    &::placeholder {
+      color: $c-black;
+      opacity: 0.4;
+    }
+
+    &:focus-visible {
+      opacity: 0.8;
+    }
+  }
+
+  // Light skin
+  .inputWrapperLight & {
+    color: $c-white;
+
+    &::placeholder {
+      color: $c-white;
+      opacity: 0.6;
+    }
+
+    &:focus-visible {
+      opacity: 0.9;
+    }
+  }
+
+  // Quando è in focus, nascondi il placeholder
+  &:focus-visible {
+    &::placeholder {
+      opacity: 0;
+    }
+  }
+}
+
+.inputIcon {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: opacity $td-300 $ease-natural;
+
+  &:hover {
+    opacity: 0.7;
+  }
+
+  &:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+}

@@ -1,0 +1,59 @@
+// ============================================
+// ANCHOR LINK COMPONENT
+// ============================================
+
+@use "../../../styles" as *;
+
+.anchorLink {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  color: $c-black;
+  transition:
+    background-color 400ms $ease-smooth,
+    color 200ms $ease-smooth,
+    outline 100ms $ease-natural;
+
+  @include t-h6;
+  padding: $s-16;
+  min-height: clamp(
+    8.75rem,
+    calc(8.75rem + (10.625rem - 8.75rem) * ((100vw - 48rem) / (90rem - 48rem))),
+    10.625rem
+  );
+
+  @include mobile {
+    background-color: $c-surface;
+  }
+  @include md {
+    background-color: $c-white;
+  }
+
+  &:hover,
+  &:focus-visible {
+    background-color: $c-primary;
+    color: $c-white;
+    outline: none;
+    .anchorLinkIcon {
+      button {
+        background-color: $c-white;
+        color: $c-black;
+      }
+    }
+  }
+}
+
+.anchorLinkLabel {
+  // Label principale (usa t-h6 dal .anchorLink)
+}
+
+.anchorLinkdescription {
+  @include t-note; // 14px
+  margin-top: $s-8; // 8px
+}
+
+.anchorLinkIcon {
+  align-self: flex-end;
+  transition: all 300ms $ease-natural;
+}

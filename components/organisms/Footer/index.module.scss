@@ -1,0 +1,206 @@
+// ============================================
+// FOOTER COMPONENT
+// ============================================
+
+@use "../../../styles" as *;
+
+.footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+
+  .newsletter {
+    background-color: $c-black;
+    color: $c-white;
+    padding: $s-40 $s-24;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    gap: $s-16;
+
+    @include t-h6;
+
+    @include lg {
+      flex-direction: row;
+      gap: $s-32;
+      padding: $s-24 $s-40;
+    }
+
+    .newsletterText {
+      padding: 0;
+      margin: 0;
+
+      @include lg {
+        flex-grow: 4;
+      }
+    }
+
+    .newsletterInput {
+      width: 100%;
+      max-width: 327px;
+      flex-grow: 1;
+    }
+  }
+
+  .content {
+    padding: $s-40 $s-24 $s-64;
+    background-color: $c-primary;
+    color: $c-white;
+
+    display: flex;
+    flex-direction: column;
+    gap: $s-40;
+
+    @include md {
+      padding: $s-64 $s-40 $s-40;
+    }
+
+    .top {
+      display: flex;
+      flex-direction: column;
+      gap: $s-40;
+
+      @include md {
+        display: grid;
+        grid-template-columns: minmax(0px, 1fr) minmax(380px, 1fr);
+        gap: $s-40;
+      }
+    }
+
+    address {
+      flex-basis: 50%;
+      @include t-h6;
+      font-style: normal;
+
+      p {
+        padding: 0;
+        margin: 0;
+      }
+    }
+
+    .linksContainer {
+      display: flex;
+      flex-direction: column;
+      gap: $s-24;
+
+      @include md {
+        flex-direction: row;
+        justify-content: space-between;
+      }
+    }
+
+    .links {
+      flex-basis: 100%;
+      max-width: 700px;
+      display: flex;
+      flex-direction: column;
+      gap: $s-24;
+
+      @include md {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(4, 1fr);
+        grid-auto-flow: column;
+        gap: $s-24;
+      }
+
+      .link {
+        display: flex;
+        align-items: center;
+        gap: $s-8;
+        white-space: nowrap;
+      }
+
+      .link::before {
+        content: "";
+        display: block;
+        width: 0px;
+        height: 0px;
+        background-color: $c-white;
+        border-radius: 50%;
+        transform: scale(0);
+        transition: all 400ms $ease-smooth;
+      }
+
+      .link:hover::before {
+        transform: scale(1);
+        width: 8px;
+        height: 8px;
+      }
+    }
+
+    .socials {
+      display: flex;
+      gap: $s-24;
+
+      @include mobile {
+        padding-top: $s-24;
+
+        svg {
+          width: 26px;
+          height: 26px;
+        }
+      }
+
+      @include md {
+        gap: $s-16;
+      }
+    }
+
+    .bottom {
+      @include t-note;
+      border-top: 1px solid rgba(255, 255, 255, 0.3);
+      padding-top: $s-40;
+
+      @include mobile {
+        display: flex;
+        flex-direction: column-reverse;
+        gap: $s-24;
+      }
+
+      @include md {
+        display: grid;
+        grid-template-columns: minmax(0px, 1fr) minmax(400px, 1fr);
+      }
+
+      .bottomLinksContainer {
+        display: flex;
+        flex-direction: column;
+        gap: $s-24;
+
+        @include md {
+          flex-direction: row;
+          justify-content: space-between;
+        }
+      }
+
+      .bottomLinks {
+        text-decoration: underline;
+        @include mobile {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: $s-24;
+        }
+
+        @include md {
+          flex-grow: 1;
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          max-width: 300px;
+        }
+      }
+
+      .langs {
+        @include mobile {
+          margin-inline-start: calc($s-8 * -1);
+        }
+      }
+
+      .copyright {
+        @include mobile {
+          padding-top: $s-24;
+        }
+      }
+    }
+  }
+}

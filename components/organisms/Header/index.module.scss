@@ -1,0 +1,163 @@
+// ============================================
+// HEADER COMPONENT
+// ============================================
+
+@use "../../../styles" as *;
+
+.header {
+  position: fixed;
+  top: 0;
+  z-index: 1000;
+  width: 100%;
+  transition: background-color 300ms ease;
+
+  &::after {
+    position: absolute;
+    bottom: 0;
+    inset-inline-start: 0;
+    content: "";
+    display: block;
+    opacity: 0;
+    transition: opacity 300ms ease;
+  }
+  &White {
+    background-color: $c-white;
+
+    &::after {
+      opacity: 1;
+      width: 100%;
+      height: 1px;
+      background-color: $c-border-light;
+    }
+  }
+
+  &Transparent {
+    background: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.3) 0%,
+      rgba(0, 0, 0, 0) 100%
+    );
+  }
+
+  &Content {
+    padding-block: 1.125rem;
+
+    @include mobile {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      padding-inline: 24px;
+    }
+
+    @include md {
+      padding-inline: 40px;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
+
+  &Logo {
+    position: relative;
+    z-index: 1;
+    flex: 1 1 50%;
+  }
+
+  &Nav {
+    position: relative;
+    z-index: 1;
+    @include flex-between;
+    gap: 32px;
+
+    @include md {
+      position: relative;
+      flex: 1 0 50%;
+    }
+  }
+
+  &NavItems {
+    display: none;
+
+    @include md {
+      display: flex;
+      max-width: 600px;
+      flex-basis: 60%;
+      justify-content: space-between;
+    }
+  }
+
+  &Actions {
+    @include flex-between;
+    gap: 0.875rem;
+  }
+
+  &MobileNavWrapper {
+    overflow: clip;
+    position: absolute;
+
+    top: 4.25rem; // header height 68px;
+
+    inset-inline-start: 0;
+
+    background-color: $c-white;
+    width: 100vw;
+
+    @include md {
+      display: none;
+    }
+  }
+
+  &MobileNav {
+    padding: $s-40 $s-16;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  &MobileNavItem {
+    width: 100%;
+    @include t-h3;
+    @include flex-between;
+
+    svg {
+      transition: transform 600ms $ease-natural;
+    }
+  }
+
+  &MobileNavItemExpanded {
+    svg {
+      transform: rotate(180deg);
+    }
+  }
+
+  &MobileDropdown {
+    overflow: clip;
+
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: $s-8;
+    &:before {
+      grid-column: span 2;
+      content: "";
+      display: block;
+      width: 100%;
+      height: 2.5rem;
+    }
+  }
+
+  &Overlay {
+    z-index: 999;
+    position: fixed;
+    top: 0;
+    inset-inline-start: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+
+    &.headerWhite {
+      background-color: rgba(0, 0, 0, 0.7);
+    }
+  }
+}

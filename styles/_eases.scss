@@ -1,0 +1,27 @@
+// ============================================
+// EASING FUNCTIONS (Cubic Bezier)
+// ============================================
+
+// Standard easing curves
+$ease-linear: cubic-bezier(0, 0, 1, 1);
+$ease-in: cubic-bezier(0.4, 0, 1, 1);
+$ease-out: cubic-bezier(0, 0, 0.2, 1);
+$ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+// Custom easing curves
+$ease-smooth: cubic-bezier(0.25, 0.1, 0.25, 1);
+$ease-back: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+$ease-back-in: cubic-bezier(0.6, -0.28, 0.735, 0.045);
+$ease-back-out: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+// Elastic easing
+$ease-elastic: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+// Bounce-like easing
+$ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+// Sharp/quick transitions
+$ease-sharp: cubic-bezier(0.4, 0, 0.6, 1);
+
+// Smooth and natural
+$ease-natural: cubic-bezier(0.16, 1, 0.3, 1);

@@ -1,0 +1,53 @@
+// ============================================
+// ICON COMPONENT - LOGO VARIANTS
+// ============================================
+
+@use "../../../styles" as *;
+
+.logoVariantWhiteRed {
+  color: $c-white;
+
+  :global(.logo-dot) {
+    fill: $c-alert;
+  }
+}
+
+.logoVariantWhiteWhite {
+  color: $c-white;
+
+  :global(.logo-dot) {
+    fill: $c-white;
+  }
+}
+
+.logoVariantPrimaryPrimary {
+  color: $c-primary;
+
+  :global(.logo-dot) {
+    fill: $c-primary;
+  }
+}
+
+.logoVariantBlackRed {
+  color: $c-black;
+
+  :global(.logo-dot) {
+    fill: $c-alert;
+  }
+}
+
+.logoVariantBlackBlack {
+  color: $c-black;
+
+  :global(.logo-dot) {
+    fill: $c-black;
+  }
+}
+
+.logoVariantPrimaryRed {
+  color: $c-primary;
+
+  :global(.logo-dot) {
+    fill: $c-alert;
+  }
+}

@@ -1,0 +1,45 @@
+// ============================================
+// VARIABILI CSS
+// ============================================
+
+// Spacing
+$spacing: 0.0625rem; // 1px
+
+// Breakpoints (must match lib/breakpoints.ts: BREAKPOINT_MD_PX, BREAKPOINT_LG_PX)
+$breakpoint-m: 768px; // md
+$breakpoint-l: 1024px; // lg
+$breakpoint-xxl: 1440px;
+
+// Colors
+$c-primary: rgb(0, 111, 178);
+$c-surface: rgb(248, 248, 248);
+$c-alert: rgb(226, 7, 28);
+$c-white: rgb(255, 255, 255);
+$c-black: rgb(0, 0, 0);
+$c-border-light: rgba(0, 0, 0, 0.15);
+$c-border-dark: rgba(0, 0, 0, 0.2);
+$c-gray-100: rgb(243, 244, 246);
+$c-gray-600: rgb(75, 85, 99);
+$c-gray-700: rgb(55, 65, 81);
+$c-gray-900: rgb(17, 24, 39);
+
+// Typography
+$fs-14: 0.875rem; // 14px
+$fs-base: 1rem; // 16px
+$font-weight-semibold: 600;
+$font-weight-medium: 500;
+
+// Transitions
+$td-200: 200ms;
+$td-300: 300ms;
+$td-400: 400ms;
+
+// Spacing utilities (in rem)
+$s-8: 0.5rem; // 8px
+$s-12: 0.75rem; // 12px
+$s-16: 1rem; // 16px
+$s-24: 1.5rem; // 24px
+$s-28: 1.75rem; // 28px
+$s-32: 2rem; // 32px
+$s-40: 2.5rem; // 40px
+$s-64: 4rem; // 64px

@@ -1,0 +1,267 @@
+// ============================================
+// UTILITIES
+// ============================================
+
+@use 'variables' as *;
+@use 'mixins' as *;
+
+// Display
+.flex {
+  display: flex;
+}
+
+.hidden {
+  display: none;
+}
+
+// Width/Height
+.w-full {
+  width: 100%;
+}
+
+.h-full {
+  height: 100%;
+}
+
+// Flexbox utilities
+.items-center {
+  align-items: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.gap-4 {
+  gap: 1rem;
+}
+
+.gap-8 {
+  gap: 2rem;
+}
+
+// Position
+.relative {
+  position: relative;
+}
+
+.absolute {
+  position: absolute;
+}
+
+
+// Colors
+.bg-white {
+  background-color: $c-white;
+}
+
+.bg-black {
+  background-color: $c-black;
+}
+
+.bg-primary {
+  background-color: $c-primary;
+}
+
+.bg-surface {
+  background-color: $c-surface !important;
+}
+
+.bg-alert {
+  background-color: $c-alert;
+}
+
+
+
+.text-white {
+  color: $c-white;
+}
+
+.text-black {
+  color: $c-black;
+}
+
+.text-primary {
+  color: $c-primary;
+}
+
+.text-gray-600 {
+  color: $c-gray-600;
+}
+
+.text-gray-700 {
+  color: $c-gray-700;
+}
+
+.text-gray-900 {
+  color: $c-gray-900;
+}
+
+// Spacing utilities
+.s-8 { gap: $s-8; }
+.s-12 { gap: $s-12; }
+.s-16 { gap: $s-16; }
+.s-24 { gap: $s-24; }
+.s-28 { gap: $s-28; }
+.s-32 { gap: $s-32; }
+.s-40 { gap: $s-40; }
+
+// Typography
+.text-sm {
+  font-size: 0.875rem; // 14px
+}
+
+.text-base {
+  font-size: $fs-base;
+}
+
+.text-14 {
+  font-size: $fs-14;
+}
+
+.font-medium {
+  font-weight: $font-weight-medium;
+}
+
+.font-semibold {
+  font-weight: $font-weight-semibold;
+}
+
+// Border
+.border-t {
+  border-top: 1px solid;
+}
+
+.border-gray-200 {
+  border-color: rgb(229, 231, 235);
+}
+
+.rounded-full {
+  border-radius: 9999px;
+}
+
+.rounded-md {
+  border-radius: 0.375rem;
+}
+
+// Shadow
+.shadow-lg {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+}
+
+// Z-index
+.z-50 {
+  z-index: 50;
+}
+
+// Opacity & Visibility
+.opacity-0 {
+  opacity: 0;
+}
+
+.opacity-100 {
+  opacity: 1;
+}
+
+.invisible {
+  visibility: hidden;
+}
+
+.visible {
+  visibility: visible;
+}
+
+// Transitions
+.transition-all {
+  @include transition(all);
+}
+
+.transition-colors {
+  @include transition(color, $td-200);
+}
+
+.transition-transform {
+  @include transition(transform);
+}
+
+.duration-200 {
+  transition-duration: $td-200;
+}
+
+.duration-300 {
+  transition-duration: $td-300;
+}
+
+.duration-400 {
+  transition-duration: $td-400;
+}
+
+// Transform
+.rotate-180 {
+  transform: rotate(180deg);
+}
+
+// Hover states
+.hover\:bg-white:hover {
+  background-color: $c-white;
+}
+
+.hover\:bg-black:hover {
+  background-color: $c-black;
+}
+
+.hover\:bg-surface:hover {
+  background-color: $c-surface;
+}
+
+.hover\:bg-gray-100:hover {
+  background-color: $c-gray-100;
+}
+
+.hover\:text-black:hover {
+  color: $c-black;
+}
+
+.hover\:text-primary:hover {
+  color: $c-primary;
+}
+
+// Group hover (per dropdown)
+.group:hover .group-hover\:opacity-100 {
+  opacity: 1;
+}
+
+.group:hover .group-hover\:visible {
+  visibility: visible;
+}
+
+.group:hover .group-hover\:rotate-180 {
+  transform: rotate(180deg);
+}
+
+// Space
+.space-y-2 {
+  > * + * {
+    margin-top: 0.5rem;
+  }
+}
+
+// Flex shrink/grow
+.flex-shrink-0 {
+  flex-shrink: 0;
+}
+
+// Responsive utilities (usando @media per compatibilità con classi utility)
+@media (min-width: $breakpoint-m) {
+  .md\:flex {
+    display: flex;
+  }
+
+  .md\:hidden {
+    display: none;
+  }
+
+  .md\:flex-grow-1 {
+    flex-grow: 1;
+  }
+}

@@ -1,0 +1,90 @@
+@use "@/styles/index" as *;
+
+.dropdown {
+  position: relative;
+}
+
+.trigger {
+  @include t-note;
+  padding: 6px 12px;
+  background: transparent;
+  border-radius: 200px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  &:hover,
+  &.open {
+    background-color: $c-white;
+    color: $c-black;
+    text-decoration: underline;
+  }
+}
+
+.icon {
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+
+  &.rotated {
+    transform: rotate(180deg);
+  }
+}
+
+.menu {
+  min-width: 10.5rem;
+  padding: $s-16 $s-8;
+  position: absolute;
+  top: calc(100% + $s-24);
+  inset-inline-end: 0;
+  z-index: 100;
+  background: $c-surface;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.top {
+  top: $s-24;
+}
+
+.menu-inner {
+  display: flex;
+  flex-direction: column;
+  gap: $s-8;
+}
+
+.option {
+  position: relative;
+  display: block;
+  width: 100%;
+  cursor: pointer;
+  @include t-note;
+  color: $c-black;
+  text-align: start;
+  padding: $s-8;
+  transition: all 0.15s ease;
+
+  &:hover:not(.selected) {
+    background-color: $c-primary;
+    color: $c-white;
+  }
+
+  &.selected {
+    text-decoration: underline;
+    cursor: default;
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset-inline-end: 0;
+      top: 0;
+
+      height: 100%;
+      width: 2px;
+
+      background-color: $c-primary;
+    }
+  }
+}

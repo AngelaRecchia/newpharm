@@ -1,0 +1,169 @@
+'use client'
+
+import React, { useCallback, useMemo, useRef, useState } from 'react'
+import NextImage, { ImageProps as NextImageProps } from 'next/image'
+import classNames from 'classnames/bind'
+import { useViewport } from '@/lib/context/viewport-context'
+import Icon from '@/components/atoms/Icon'
+import styles from './index.module.scss'
+import Button from '../Button'
+import { useTranslations } from 'next-intl'
+
+const cn = classNames.bind(styles)
+
+type AssetSize = 's' | 'm' | 'l'
+
+/**
+ * Mappa delle dimensioni per il servizio immagini Storyblok.
+ * Ogni size ha due valori: [fromLg, untilLg]
+ */
+const sizeMap: Record<AssetSize, { fromLg: number; untilLg: number }> = {
+    s: { fromLg: 640, untilLg: 320 },
+    m: { fromLg: 1280, untilLg: 640 },
+    l: { fromLg: 1920, untilLg: 968 },
+}
+
+/**
+ * Estensioni video supportate
+ */
+const VIDEO_EXTENSIONS = ['mp4', 'webm', 'mov', 'ogg', 'avi', 'mkv']
+
+/**
+ * Estensioni immagini supportate
+ */
+const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'avif']
+
+/**
+ * Determina se l'URL è un video o un'immagine basandosi sull'estensione
+ */
+function getFileType(src: string): 'video' | 'image' | 'unknown' {
+    const extension = src.split('.').pop()?.toLowerCase() || ''
+
+    if (VIDEO_EXTENSIONS.includes(extension)) {
+        return 'video'
+    }
+
+    if (IMAGE_EXTENSIONS.includes(extension)) {
+        return 'image'
+    }
+
+    return 'unknown'
+}
+
+interface AssetComponentProps extends Omit<NextImageProps, 'src'> {
+    /** URL sorgente dell'asset (immagine o video) */
+    src: string
+    /** Dimensione dell'immagine: 's' | 'm' | 'l' (solo per immagini) */
+    size?: AssetSize
+    /** Classe CSS aggiuntiva */
+    className?: string
+    /** Props aggiuntive per il tag video */
+    videoProps?: React.VideoHTMLAttributes<HTMLVideoElement>
+}
+
+/**
+ * Componente Asset che renderizza automaticamente immagini o video
+ * basandosi sull'estensione del file.
+ * 
+ * Per le immagini: applica le trasformazioni Storyblok in base al viewport.
+ * Per i video: renderizza un tag video standard.
+ *
+ * @example
+ * ```tsx
+ * // Immagine
+ * <Asset src="https://a.storyblok.com/f/.../asset.jpg" size="l" alt="Hero" fill />
+ * 
+ * // Video
+ * <Asset src="https://a.storyblok.com/f/.../video.mp4" className="hero-video" />
+ * ```
+ */
+const Asset = ({
+    src,
+    size = 'l',
+    className,
+    alt,
+    videoProps,
+    ...rest
+}: AssetComponentProps) => {
+    const { isDesktop } = useViewport()
+    const t = useTranslations()
+
+    const fileType = useMemo(() => getFileType(src), [src])
+
+    // Se è un video, renderizza il tag video con bottone play/pause
+    if (fileType === 'video') {
+        const videoRef = useRef<HTMLVideoElement>(null)
+        const [isPlaying, setIsPlaying] = useState(true)
+
+        const handleTogglePlay = useCallback(() => {
+            if (videoRef.current) {
+                if (isPlaying) {
+                    videoRef.current.pause()
+                } else {
+                    videoRef.current.play()
+                }
+                setIsPlaying(!isPlaying)
+            }
+        }, [isPlaying])
+
+        return (
+            <div className={cn('asset-video-wrapper', className)}>
+                <video
+                    ref={videoRef}
+                    src={src}
+                    className={cn('asset', 'asset-video')}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    onPlay={() => setIsPlaying(true)}
+                    onPause={() => setIsPlaying(false)}
+                    {...videoProps}
+                />
+                <Button
+
+                    onClick={handleTogglePlay}
+                    className={cn('asset-video-control')}
+                    aria-label={isPlaying ? t('pause') : t('play')}
+                    icon={isPlaying ? 'pause' : 'play'}
+                    variant='tertiary'
+
+                />
+            </div>
+        )
+    }
+
+    // Se è un'immagine, applica la logica del suffix
+    if (fileType === 'image') {
+        const dimensions = sizeMap[size]
+        const suffix = isDesktop ? dimensions.fromLg : dimensions.untilLg
+        const transformedSrc = `${src}/m/${suffix}x0`
+
+        return (
+            <NextImage
+                src={transformedSrc}
+                alt={alt || ''}
+                className={cn('asset', 'asset-image', className)}
+                fill
+                objectFit='cover'
+                quality={100}
+                {...rest}
+            />
+        )
+    }
+
+    // Fallback per tipo sconosciuto (renderizza come immagine senza trasformazioni)
+    return (
+        <NextImage
+            src={src}
+            alt={alt || ''}
+            className={cn('asset', 'asset-image', className)}
+            fill
+            objectFit='cover'
+            quality={100}
+            {...rest}
+        />
+    )
+}
+
+export default Asset

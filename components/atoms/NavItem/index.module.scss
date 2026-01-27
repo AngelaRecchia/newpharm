@@ -1,0 +1,70 @@
+// ============================================
+// NAV ITEM COMPONENT
+// ============================================
+
+@use '../../../styles' as *;
+
+.navItem {
+
+
+  &.expanded {
+    // Stili per quando il dropdown è espanso
+    .navIcon {
+      transform: rotate(180deg);
+    }
+  }
+}
+
+.navLink {
+  @include flex-center;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: 624.9375rem;
+  font-weight: $font-weight-semibold;
+  font-size: $fs-14;
+  @include transition(all, $td-400);
+}
+
+.navLinkWhite {
+  color: $c-black;
+
+  &:hover {
+    background-color: $c-surface;
+    color: $c-black;
+  }
+}
+
+.navLinkTransparent {
+  color: $c-white;
+}
+
+.navIcon {
+  height: 1.5rem;
+  transition: transform 600ms $ease-natural;
+  
+
+}
+
+.navItemExpanded .navIcon {
+  transform: rotate(180deg);
+}
+
+.dropdown {
+  position: absolute;
+  inset-inline-start: 0;
+  top: calc(100% + .5rem);
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $s-8;
+  
+  @include md {
+    width: 100%;
+    padding-top: $s-16;
+    padding-inline-end: 40px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: $s-12;
+
+  }
+}
+
+
