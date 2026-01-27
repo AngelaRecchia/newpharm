@@ -6,9 +6,9 @@ import Footer from '@/components/storyblok/Footer'
 
 interface LocaleLayoutProps {
   children: ReactNode
-  params: {
+  params: Promise<{
     locale: string
-  }
+  }>
 }
 
 export default async function LocaleLayout({
