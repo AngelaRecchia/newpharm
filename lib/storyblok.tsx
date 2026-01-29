@@ -6,7 +6,6 @@ import { shouldEnableBridge } from './api/storyblok/config'
 
 // Import components
 import Page from '@/components/storyblok/Page'
-import Settings from '@/components/storyblok/Settings'
 import Header from '@/components/organisms/Header'
 import Footer from '@/components/organisms/Footer'
 import HeroComponent from '@/components/organisms/Hero'

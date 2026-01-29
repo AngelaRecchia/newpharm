@@ -33,10 +33,6 @@ interface FooterProps {
 export default function Footer({
     blok,
 }: FooterProps) {
-    if (!blok) return null;
-
-    const { newsletter_text, address, items, socials, bottom_links } = blok;
-
     const locale = useLocale()
     const { locales } = useGlobalSettings()
     const params = useParams()
@@ -97,8 +93,11 @@ export default function Footer({
         };
     }, []);
 
-    return (
+    if (!blok) return null;
 
+    const { newsletter_text, address, items, socials, bottom_links } = blok;
+
+    return (
         <footer
             ref={footerRef}
             className={cn('footer')}
