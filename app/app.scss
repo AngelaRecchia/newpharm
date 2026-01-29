@@ -26,11 +26,11 @@ body {
   font-size: 1rem; // 16px
   line-height: 140%;
 
-  > .wrapper {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 100%;
+  .wrapper .main {
+    background-color: $c-white;
+    min-height: 100dvh;
+    position: relative;
+    z-index: 1;
   }
 }
 
@@ -64,4 +64,25 @@ p {
   margin: 0;
   padding: 0;
   font-weight: 400;
+}
+
+// ============================================
+// SMOOTH SCROLLBAR STYLES
+// ============================================
+.scroller {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.scroller .scrollbar-track {
+  background: transparent;
+}
+
+.scroller .scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+.scroller .scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.5);
 }

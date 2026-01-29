@@ -5,7 +5,8 @@ import { useState, useEffect } from 'react'
 import { useViewport } from '@/lib/context/viewport-context'
 
 import { getLinkUrl } from '@/lib/api/utils/links'
-import { Nav_itemStoryblok } from '@/types/storyblok'
+import { HeaderStoryblok, Nav_itemStoryblok } from '@/types/storyblok'
+import { storyblokEditable } from '@storyblok/react'
 
 import { AnimatePresence, motion } from 'motion/react'
 
@@ -15,21 +16,22 @@ import styles from './index.module.scss'
 const cn = classNames.bind(styles)
 
 import AnchorLink from '../../atoms/AnchorLink'
-import Link from 'next/link'
+import SmartLink from '../../atoms/SmartLink'
 import Icon from '../../atoms/Icon'
 import Button from '../../atoms/Button'
 import NavItem from '../../atoms/NavItem'
 
 
 interface HeaderProps {
-  navItems?: Nav_itemStoryblok[],
+  blok?: HeaderStoryblok
   variant?: 'transparent' | 'white'
 }
 
 export default function Header({
-  navItems = [],
+  blok,
   variant = 'transparent',
 }: HeaderProps) {
+  const navItems = (blok?.nav_items as Nav_itemStoryblok[]) || []
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [openDropdownIndex, setOpenDropdownIndex] = useState<number | null>(null)
 
@@ -72,19 +74,23 @@ export default function Header({
     setMobileMenuOpen(false)
   }
 
+
+
+  if (!blok) return null
+
   return (
     <>
-      <header className={headerClasses} data-transparent={variant === 'transparent'}>
+      <header className={headerClasses} data-transparent={variant === 'transparent'} {...storyblokEditable(blok as any)}>
 
         <div className={cn('headerContent')}>
           {/* Logo */}
           <div className={cn('headerLogo')}>
-            <Link href="/" className={cn({
+            <SmartLink href="/" className={cn({
               "text-primary": variant === 'white',
               "text-white": variant === 'transparent',
             })}>
               <Icon type="logo" variant={headerVariant === 'white' ? 'primary-red' : 'white-red'} />
-            </Link>
+            </SmartLink>
           </div>
 
 
@@ -130,15 +136,15 @@ export default function Header({
                   {navItems.map((item, index) => {
                     const hasItems = item.items && item.items.length > 0
                     const isOpen = openDropdownIndex === index
-                    const hasLink = getLinkUrl(item.link)
+                    const hasLink = item.link
                     return <li key={item._uid}>
                       {hasLink ? (
-                        <Link
-                          href={hasLink || '#'}
+                        <SmartLink
+                          link={hasLink}
                           className={cn('headerMobileNavLink', 'headerMobileNavItem')}
                         >
                           {item.label}
-                        </Link>)
+                        </SmartLink>)
                         : hasItems ? (
                           <button
                             onClick={() => toggleDropdown(index)}

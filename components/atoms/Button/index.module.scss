@@ -10,7 +10,7 @@
   cursor: pointer;
   @include transition(all, $td-300);
   @include t-note;
-
+  width: fit-content;
   --button-background-color: #{$c-primary};
   --button-color: #{$c-white};
 

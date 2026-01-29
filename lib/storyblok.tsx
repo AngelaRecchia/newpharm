@@ -7,18 +7,20 @@ import { shouldEnableBridge } from './api/storyblok/config'
 // Import components
 import Page from '@/components/storyblok/Page'
 import Settings from '@/components/storyblok/Settings'
-import Header from '@/components/storyblok/Header'
-import Footer from '@/components/storyblok/Footer'
+import Header from '@/components/organisms/Header'
+import Footer from '@/components/organisms/Footer'
 import HeroComponent from '@/components/organisms/Hero'
+import DivisionBox from '@/components/organisms/DivisionBox'
 
 const components = {
 
   // Organisms
   hero: HeroComponent,
+  division_box: DivisionBox,
 
   //
   page: Page,
-  settings: Settings,
+  settings: Page,
   header: Header,
   footer: Footer,
 }

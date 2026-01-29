@@ -34,6 +34,20 @@ const VIDEO_EXTENSIONS = ['mp4', 'webm', 'mov', 'ogg', 'avi', 'mkv']
 const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'avif']
 
 /**
+ * Tipo per l'asset Storyblok
+ */
+export interface StoryblokAsset {
+    id?: number
+    alt?: string
+    name?: string
+    focus?: string
+    title?: string
+    filename: string
+    copyright?: string
+    fieldtype?: string
+}
+
+/**
  * Determina se l'URL è un video o un'immagine basandosi sull'estensione
  */
 function getFileType(src: string): 'video' | 'image' | 'unknown' {
@@ -50,9 +64,13 @@ function getFileType(src: string): 'video' | 'image' | 'unknown' {
     return 'unknown'
 }
 
-interface AssetComponentProps extends Omit<NextImageProps, 'src'> {
-    /** URL sorgente dell'asset (immagine o video) */
-    src: string
+interface AssetComponentProps extends Omit<NextImageProps, 'src' | 'alt'> {
+    /** URL sorgente dell'asset (immagine o video) - retrocompatibilità */
+    src?: string
+    /** Testo alternativo - retrocompatibilità */
+    alt?: string
+    /** Asset Storyblok completo (ha priorità su src/alt) */
+    asset?: StoryblokAsset | null
     /** Dimensione dell'immagine: 's' | 'm' | 'l' (solo per immagini) */
     size?: AssetSize
     /** Classe CSS aggiuntiva */
@@ -70,25 +88,33 @@ interface AssetComponentProps extends Omit<NextImageProps, 'src'> {
  *
  * @example
  * ```tsx
- * // Immagine
+ * // Con asset Storyblok (consigliato)
+ * <Asset asset={background} size="l" fill />
+ * 
+ * // Con src/alt (retrocompatibilità)
  * <Asset src="https://a.storyblok.com/f/.../asset.jpg" size="l" alt="Hero" fill />
  * 
  * // Video
- * <Asset src="https://a.storyblok.com/f/.../video.mp4" className="hero-video" />
+ * <Asset asset={videoAsset} className="hero-video" />
  * ```
  */
 const Asset = ({
     src,
+    alt,
+    asset,
     size = 'l',
     className,
-    alt,
     videoProps,
     ...rest
 }: AssetComponentProps) => {
     const { isDesktop } = useViewport()
     const t = useTranslations()
 
-    const fileType = useMemo(() => getFileType(src), [src])
+    // Se c'è un asset Storyblok, usa quello, altrimenti usa src/alt
+    const assetSrc = asset?.filename || src || ''
+    const assetAlt = asset?.alt || alt || ''
+
+    const fileType = useMemo(() => getFileType(assetSrc), [assetSrc])
 
     // Hooks devono essere chiamati sempre, non condizionalmente
     const videoRef = useRef<HTMLVideoElement>(null)
@@ -112,7 +138,7 @@ const Asset = ({
             <div className={cn('asset-video-wrapper', className)}>
                 <video
                     ref={videoRef}
-                    src={src}
+                    src={assetSrc}
                     className={cn('asset', 'asset-video')}
                     autoPlay
                     loop
@@ -139,12 +165,12 @@ const Asset = ({
     if (fileType === 'image') {
         const dimensions = sizeMap[size]
         const suffix = isDesktop ? dimensions.fromLg : dimensions.untilLg
-        const transformedSrc = `${src}/m/${suffix}x0`
+        const transformedSrc = `${assetSrc}/m/${suffix}x0`
 
         return (
             <NextImage
                 src={transformedSrc}
-                alt={alt || ''}
+                alt={assetAlt}
                 className={cn('asset', 'asset-image', className)}
                 fill
                 objectFit='cover'
@@ -157,8 +183,8 @@ const Asset = ({
     // Fallback per tipo sconosciuto (renderizza come immagine senza trasformazioni)
     return (
         <NextImage
-            src={src}
-            alt={alt || ''}
+            src={assetSrc}
+            alt={assetAlt}
             className={cn('asset', 'asset-image', className)}
             fill
             objectFit='cover'

@@ -1,13 +1,13 @@
 'use client'
 
-import Link from 'next/link'
+import SmartLink from '../SmartLink'
 import Icon from '../Icon'
 import { Nav_itemStoryblok } from '@/types/storyblok'
 import classNames from 'classnames/bind'
 import { AnimatePresence, motion } from 'motion/react'
 import styles from './index.module.scss'
-import { getLinkUrl } from '@/lib/api/utils/links'
 import AnchorLink from '../AnchorLink'
+import { getLinkUrl } from '@/lib/api/utils/links'
 
 const cn = classNames.bind(styles)
 
@@ -35,6 +35,8 @@ export default function NavItem({
     const hasItems = hasDropdown(item)
     const hasLink = getLinkUrl(item.link)
 
+
+
     const linkClassName = cn('navLink', {
         navLinkWhite: variant === 'white',
         navLinkTransparent: variant === 'transparent',
@@ -51,8 +53,8 @@ export default function NavItem({
 
         >
             {hasLink ? (
-                <Link
-                    href={hasLink}
+                <SmartLink
+                    link={item.link}
                     className={linkClassName}
                     onClick={() => hasItems && onToggle(index)}
                 >
@@ -62,7 +64,7 @@ export default function NavItem({
                             <Icon type="chevron-down" />
                         </div>
                     )}
-                </Link>
+                </SmartLink>
             ) : (
                 <button
                     className={linkClassName}
@@ -84,8 +86,6 @@ export default function NavItem({
                     <motion.ul
                         className={cn('dropdown')}
 
-
-
                     >
                         {item.items.map((subItem, subIndex) => (
                             <motion.li
@@ -98,6 +98,7 @@ export default function NavItem({
                             >
                                 <AnchorLink
                                     link={subItem.link}
+
                                     label={subItem.label}
                                     description={subItem.description}
                                 />

@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import '@/app/app.scss'
 import { StoryblokProvider } from '@/lib/storyblok'
 import { ViewportProvider } from '@/lib/context/viewport-context'
+import { SmoothScrollProvider } from '@/lib/context/smooth-scroll-context'
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages, setRequestLocale } from 'next-intl/server'
 import { notFound } from 'next/navigation'
@@ -56,7 +57,9 @@ export default async function RootLayout({ children, params }: Props) {
 
         <StoryblokProvider>
           <NextIntlClientProvider messages={messages}>
-            <ViewportProvider>{children}</ViewportProvider>
+            <ViewportProvider>
+              <SmoothScrollProvider>{children}</SmoothScrollProvider>
+            </ViewportProvider>
           </NextIntlClientProvider>
         </StoryblokProvider>
 

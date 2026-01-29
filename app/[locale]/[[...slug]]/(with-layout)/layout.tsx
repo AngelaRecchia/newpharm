@@ -1,8 +1,8 @@
 import { ReactNode } from 'react'
 import { getGlobalSettings } from '@/lib/api/settings'
 import { GlobalSettingsProvider } from '@/lib/context/global-settings-context'
-import Header from '@/components/storyblok/Header'
-import Footer from '@/components/storyblok/Footer'
+import Header from '@/components/organisms/Header'
+import Footer from '@/components/organisms/Footer'
 
 interface LocaleLayoutProps {
   children: ReactNode
@@ -23,17 +23,19 @@ export default async function LocaleLayout({
 
   return (
     <GlobalSettingsProvider settings={settings}>
-      <div className='wrapper'>
+      <div className='wrapper scroller'>
         {settings?.header.length > 0 && (
           <Header blok={settings?.header[0]} />
         )}
 
-        <main className="flex-grow">
+        <main className='main'>
           {children}
         </main>
 
         {settings?.footer.length > 0 && (
+
           <Footer blok={settings?.footer[0]} />
+
         )}
       </div>
 
