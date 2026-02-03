@@ -13,28 +13,22 @@ import { getStoryblokApi } from "./client";
 /**
  * Determina se siamo in produzione o in draft mode
  *
- * Priorità:
- * 1. VERCEL_ENV (impostata automaticamente da Vercel)
- * 2. NODE_ENV (impostata automaticamente da Next.js/Vercel)
+ * Usa solo VERCEL_ENV (impostata automaticamente da Vercel):
+ * - 'production' → produzione vera
+ * - 'preview' → preview deployments
+ * - 'development' → development deployments
+ * - undefined → sviluppo locale (usa draft)
  *
- * NOTA: Non è necessario impostare manualmente queste variabili:
- * - Vercel imposta automaticamente VERCEL_ENV e NODE_ENV
- * - Next.js imposta automaticamente NODE_ENV durante build/dev
- * - Per sviluppo locale: npm run dev → NODE_ENV=development (automatico)
- * - Per build: npm run build → NODE_ENV=production (automatico)
+ * NOTA: VERCEL_ENV è impostata automaticamente da Vercel.
+ * In sviluppo locale non è definita, quindi usa sempre draft mode.
  */
 export function isProduction(): boolean {
   // VERCEL_ENV è impostata automaticamente da Vercel
   // Valori possibili: 'production', 'preview', 'development'
   const vercelEnv = process.env.VERCEL_ENV;
 
-  if (vercelEnv === "production") {
-    return true;
-  }
-
-  // Fallback: NODE_ENV è impostata automaticamente da Next.js/Vercel
-  // Non serve impostarla manualmente
-  return process.env.NODE_ENV === "production";
+  // Solo se siamo in produzione vera su Vercel
+  return vercelEnv === "production";
 }
 
 /**
@@ -64,20 +58,19 @@ const CV_CACHE_TTL = 60000; // 1 minute cache for cv in production
 /**
  * Get cache version for Storyblok CDN requests
  *
- * Development: Returns undefined to omit cv parameter, encouraging CDN caching
+ * Development/Preview: Returns undefined to omit cv parameter, encouraging CDN caching
  * Production: Fetches current cv from /spaces/me and caches it for 1 minute
  *
  * @returns Cache version number or undefined to omit cv parameter
  */
 export async function getCacheVersion(): Promise<number | undefined> {
-  // NODE_ENV è impostata automaticamente:
-  // - 'development' durante npm run dev (Next.js)
-  // - 'production' durante npm run build (Next.js/Vercel)
-  // Non serve impostarla manualmente
-  const isDev = process.env.NODE_ENV === "development";
+  // VERCEL_ENV è impostata automaticamente da Vercel
+  // Se non siamo in produzione, ometti cv per permettere caching
+  const vercelEnv = process.env.VERCEL_ENV;
+  const isProduction = vercelEnv === "production";
 
-  // In development: omit cv parameter to encourage caching
-  if (isDev) {
+  // In development/preview/local: omit cv parameter to encourage caching
+  if (!isProduction) {
     // Return undefined to omit cv parameter, allowing Storyblok CDN to cache
     return undefined;
   }
