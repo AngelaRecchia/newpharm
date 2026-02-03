@@ -1,12 +1,5 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
 import '@/app/app.scss'
-
-// Load Inter font
-const inter = Inter({
-  subsets: ['latin'],
-  display: 'swap',
-})
 
 export const metadata: Metadata = {
   title: 'Newpharm',
@@ -18,11 +11,7 @@ type Props = {
 }
 
 export default function RootLayout({ children }: Props) {
-  return (
-    <html lang="it">
-      <body className={inter.className}>
-        {children}
-      </body>
-    </html>
-  )
+  // Il layout root non deve avere <html> e <body>
+  // perché il layout locale ([locale]/layout.tsx) li gestisce
+  return <>{children}</>
 }

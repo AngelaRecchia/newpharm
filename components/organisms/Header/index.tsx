@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 
 import { useViewport } from '@/lib/context/viewport-context'
 
@@ -34,8 +35,13 @@ export default function Header({
   const navItems = (blok?.nav_items as Nav_itemStoryblok[]) || []
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [openDropdownIndex, setOpenDropdownIndex] = useState<number | null>(null)
+  const [mounted, setMounted] = useState(false)
 
   const { isMobile } = useViewport()
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const toggleDropdown = (index: number) => {
     setOpenDropdownIndex(openDropdownIndex === index ? null : index)
@@ -190,26 +196,27 @@ export default function Header({
 
             )}</AnimatePresence>
         </div>
-
-
-
       </header>
 
-      <AnimatePresence>
-        {((openDropdownIndex !== null && !isMobile) || (isMobile && mobileMenuOpen)) && (
-          <motion.div
-            onClick={() => closeMenu()}
-            className={cn('headerOverlay', { headerWhite: variant === 'white' })}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            role="dialog"
-            aria-modal="true"
-            aria-label="Dismiss menu"
-          />
-        )}
-      </AnimatePresence>
+      {mounted && createPortal(
+        <AnimatePresence mode="wait">
+          {((openDropdownIndex !== null && !isMobile) || (isMobile && mobileMenuOpen)) && (
+            <motion.div
+              key="header-overlay"
+              onClick={() => closeMenu()}
+              className={cn('headerOverlay', { headerWhite: variant === 'white' })}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              role="dialog"
+              aria-modal="true"
+              aria-label="Dismiss menu"
+            />
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </>
   )
 }

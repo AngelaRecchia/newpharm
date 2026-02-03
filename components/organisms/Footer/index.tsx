@@ -18,6 +18,7 @@ import SocialItem from "../../atoms/SocialItem";
 import classNames from 'classnames/bind';
 import SmartLink from "@/components/atoms/SmartLink";
 import { useGlobalSettings } from "@/lib/context/global-settings-context";
+import { useViewport } from "@/lib/context/viewport-context";
 import Dropdown from "@/components/atoms/Dropdown";
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -41,47 +42,51 @@ export default function Footer({
 
     const router = useRouter()
     const footerRef = useRef<HTMLElement>(null)
+    const { height: viewportHeight } = useViewport()
 
     useEffect(() => {
         if (typeof window === 'undefined' || !footerRef.current) return;
 
-        // Wait for smooth-scrollbar to be initialized
-        const scroller = document.querySelector('.scroller') as HTMLElement;
         const mainElement = document.querySelector('main.main') as HTMLElement;
-
-        if (!scroller || !mainElement) return;
+        if (!mainElement) return;
 
         let scrollTrigger: ScrollTrigger | null = null;
 
-        // Wait for smooth-scrollbar and ScrollTrigger to be ready
         const initAnimation = () => {
             if (!footerRef.current || !mainElement) return;
 
-            // Set initial position
-            gsap.set(footerRef.current, { yPercent: -50 });
+            const footerHeight = footerRef.current.offsetHeight;
+            const shouldAnimate = footerHeight <= viewportHeight;
 
-            // Create uncover animation
-            const uncover = gsap.timeline({ paused: true });
-            uncover.to(footerRef.current, { yPercent: 0, ease: 'none' });
+            if (shouldAnimate) {
+                // Set initial position solo se l'animazione è abilitata
+                gsap.set(footerRef.current, { yPercent: -50 });
 
-            // Create ScrollTrigger
-            scrollTrigger = ScrollTrigger.create({
-                trigger: mainElement,
-                start: 'bottom bottom',
-                end: () => `+=${footerRef.current?.offsetHeight || 0}px`,
-                animation: uncover,
-                scrub: true,
-            });
+                // Create uncover animation
+                const uncover = gsap.timeline({ paused: true });
+                uncover.to(footerRef.current, { yPercent: 0, ease: 'none' });
+
+                // Create ScrollTrigger
+                scrollTrigger = ScrollTrigger.create({
+                    trigger: mainElement,
+                    start: 'bottom bottom',
+                    end: () => `+=${footerHeight}px`,
+                    animation: uncover,
+                    scrub: true,
+                });
+            } else {
+                // Se il footer è più alto della viewport, non applicare animazione
+                // e mantieni la posizione normale
+                gsap.set(footerRef.current, { yPercent: 0 });
+            }
         };
 
-        // Start initialization after smooth-scrollbar is ready
-        // Use requestAnimationFrame to ensure DOM and smooth-scrollbar are ready
+
         let timeoutId: NodeJS.Timeout | null = null;
         const rafId = requestAnimationFrame(() => {
             timeoutId = setTimeout(initAnimation, 100);
         });
 
-        // Cleanup
         return () => {
             cancelAnimationFrame(rafId);
             if (timeoutId) {
@@ -91,7 +96,7 @@ export default function Footer({
                 scrollTrigger.kill();
             }
         };
-    }, []);
+    }, [viewportHeight]);
 
     if (!blok) return null;
 

@@ -19,7 +19,7 @@ interface ButtonProps {
     variant?: 'primary' | 'secondary' | 'tertiary'
     size?: 'small' | 'medium'
 }
-const Button = ({ icon = 'right-small', label, onClick, className, href, target, link, variant = 'primary', size = 'medium' }: ButtonProps) => {
+const Button = ({ icon = 'right-small', label, onClick, className, href, target, link, variant = 'primary', size = 'medium', ...props }: ButtonProps) => {
 
     const hasLabel = label && label.length > 0
     const hasIcon = icon && icon.length > 0 && icons[icon]
@@ -49,14 +49,14 @@ const Button = ({ icon = 'right-small', label, onClick, className, href, target,
     // Renderizza come SmartLink se c'è un link o href, altrimenti come button
     if (link || href) {
         return (
-            <SmartLink link={link} href={href} target={linkTarget} className={buttonClasses}>
+            <SmartLink link={link} href={href} target={linkTarget} className={buttonClasses} {...props}>
                 {children}
             </SmartLink>
         )
     }
 
     return (
-        <button onClick={onClick} className={buttonClasses}>
+        <button onClick={onClick} className={buttonClasses} {...props}>
             {children}
         </button>
     )

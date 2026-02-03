@@ -1,6 +1,6 @@
 'use client';
 
-import SmartLink from '../SmartLink';
+import SmartLink from '@/components/atoms/SmartLink';
 import classNames from 'classnames/bind';
 import styles from './index.module.scss';
 import Asset from '@/components/atoms/Asset';

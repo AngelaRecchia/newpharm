@@ -13,13 +13,10 @@
   width: fit-content;
   --button-background-color: #{$c-primary};
   --button-color: #{$c-white};
+  --button-hover: 0;
 
   background-color: var(--button-background-color);
   color: var(--button-color);
-
-  // Variants
-  &Primary {
-  }
 
   &Secondary {
     --button-background-color: #{$c-black};
@@ -71,26 +68,22 @@
       transition: all 300ms $ease-smooth;
 
       @include md {
-        transform: scale(0.3333);
+        transform: scale(max(0.3333, var(--button-hover)));
 
         svg {
           transition: all 200ms $ease-smooth 0.1s;
-          opacity: 0;
+          opacity: var(--button-hover);
         }
       }
     }
 
-    &:hover {
-      @include md {
-        .buttonIcon {
-          transform: scale(1);
-        }
+    @include mobile {
+      --button-hover: 1;
+    }
 
-        svg {
-          opacity: 1;
-          transition: all 200ms $ease-smooth;
-        }
-      }
+    &:hover,
+    &:focus-visible {
+      --button-hover: 1;
     }
   }
 }

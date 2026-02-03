@@ -50,7 +50,7 @@ export interface StoryblokAsset {
 /**
  * Determina se l'URL è un video o un'immagine basandosi sull'estensione
  */
-function getFileType(src: string): 'video' | 'image' | 'unknown' {
+export function getFileType(src: string): 'video' | 'image' | 'unknown' {
     const extension = src.split('.').pop()?.toLowerCase() || ''
 
     if (VIDEO_EXTENSIONS.includes(extension)) {
@@ -77,6 +77,10 @@ interface AssetComponentProps extends Omit<NextImageProps, 'src' | 'alt'> {
     className?: string
     /** Props aggiuntive per il tag video */
     videoProps?: React.VideoHTMLAttributes<HTMLVideoElement>
+    /** Mostra un overlay con opacità 0.4 */
+    overlay?: boolean
+    /** Nasconde i controlli del video */
+    hideControls?: boolean
 }
 
 /**
@@ -105,6 +109,8 @@ const Asset = ({
     size = 'l',
     className,
     videoProps,
+    overlay = false,
+    hideControls = false,
     ...rest
 }: AssetComponentProps) => {
     const { isDesktop } = useViewport()
@@ -135,8 +141,9 @@ const Asset = ({
     if (fileType === 'video') {
 
         return (
-            <div className={cn('asset-video-wrapper', className)}>
+            <div className={cn('asset-video-wrapper', { assetHasOverlay: overlay }, className)}>
                 <video
+                    data-asset
                     ref={videoRef}
                     src={assetSrc}
                     className={cn('asset', 'asset-video')}
@@ -148,15 +155,16 @@ const Asset = ({
                     onPause={() => setIsPlaying(false)}
                     {...videoProps}
                 />
-                <Button
-
-                    onClick={handleTogglePlay}
-                    className={cn('asset-video-control')}
-                    aria-label={isPlaying ? t('pause') : t('play')}
-                    icon={isPlaying ? 'pause' : 'play'}
-                    variant='tertiary'
-
-                />
+                {!hideControls && (
+                    <Button
+                        data-video-controls
+                        onClick={handleTogglePlay}
+                        className={cn('asset-video-control')}
+                        aria-label={isPlaying ? t('pause') : t('play')}
+                        icon={isPlaying ? 'pause' : 'play'}
+                        variant='tertiary'
+                    />
+                )}
             </div>
         )
     }
@@ -168,29 +176,33 @@ const Asset = ({
         const transformedSrc = `${assetSrc}/m/${suffix}x0`
 
         return (
-            <NextImage
-                src={transformedSrc}
-                alt={assetAlt}
-                className={cn('asset', 'asset-image', className)}
-                fill
-                objectFit='cover'
-                quality={100}
-                {...rest}
-            />
+            <div className={cn('asset-image-wrapper', { assetHasOverlay: overlay }, className)} data-asset>
+                <NextImage
+                    src={transformedSrc}
+                    alt={assetAlt}
+                    className={cn('asset', 'asset-image')}
+                    fill
+                    objectFit='cover'
+                    quality={100}
+                    {...rest}
+                />
+            </div>
         )
     }
 
     // Fallback per tipo sconosciuto (renderizza come immagine senza trasformazioni)
     return (
-        <NextImage
-            src={assetSrc}
-            alt={assetAlt}
-            className={cn('asset', 'asset-image', className)}
-            fill
-            objectFit='cover'
-            quality={100}
-            {...rest}
-        />
+        <div className={cn('asset-image-wrapper', { assetHasOverlay: overlay }, className)} data-asset>
+            <NextImage
+                src={assetSrc}
+                alt={assetAlt}
+                className={cn('asset', 'asset-image')}
+                fill
+                objectFit='cover'
+                quality={100}
+                {...rest}
+            />
+        </div>
     )
 }
 

@@ -1,67 +1,86 @@
 'use client'
 
-'use client'
-
 import React, { ReactNode, useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import Scrollbar from 'smooth-scrollbar'
+import Lenis from 'lenis'
 
 gsap.registerPlugin(ScrollTrigger)
 
 interface SmoothScrollContextType {
-  scrollbar: Scrollbar | null
+  lenis: Lenis | null
 }
 
 export const SmoothScrollContext = React.createContext<SmoothScrollContextType>({
-  scrollbar: null,
+  lenis: null,
 })
 
 export function SmoothScrollProvider({ children }: { children: ReactNode }) {
-  const scrollbarRef = useRef<Scrollbar | null>(null)
+  const lenisRef = useRef<Lenis | null>(null)
   const initializedRef = useRef(false)
 
   useEffect(() => {
     if (typeof window === 'undefined' || initializedRef.current) return
 
-    const scroller = document.querySelector('.scroller') as HTMLElement
-    if (!scroller) return
-
-    // Initialize smooth scrollbar
-    const bodyScrollBar = Scrollbar.init(scroller, {
-      damping: 0.1,
-      delegateTo: document,
-      alwaysShowTracks: true,
+    // Initialize Lenis
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: 'vertical',
+      gestureOrientation: 'vertical',
+      smoothWheel: true,
+      wheelMultiplier: 1,
+      smoothTouch: false,
+      touchMultiplier: 2,
+      infinite: false,
     })
 
-    scrollbarRef.current = bodyScrollBar
+    lenisRef.current = lenis
     initializedRef.current = true
 
-    // Setup ScrollTrigger scroller proxy
-    ScrollTrigger.scrollerProxy('.scroller', {
+    // Setup ScrollTrigger scroller proxy for Lenis
+    ScrollTrigger.scrollerProxy(document.body, {
       scrollTop(value?: number) {
         if (arguments.length && value !== undefined) {
-          bodyScrollBar.scrollTop = value
+          lenis.scrollTo(value, { immediate: true })
         }
-        return bodyScrollBar.scrollTop
+        return lenis.scroll
+      },
+      getBoundingClientRect() {
+        return {
+          top: 0,
+          left: 0,
+          width: window.innerWidth,
+          height: window.innerHeight,
+        }
       },
     })
 
-    bodyScrollBar.addListener(ScrollTrigger.update)
+    // Update ScrollTrigger on Lenis scroll
+    lenis.on('scroll', ScrollTrigger.update)
 
-    ScrollTrigger.defaults({ scroller: scroller })
+    // Set ScrollTrigger default scroller
+    ScrollTrigger.defaults({ scroller: document.body })
+
+    // Lenis animation frame
+    function raf(time: number) {
+      lenis.raf(time)
+      requestAnimationFrame(raf)
+    }
+
+    requestAnimationFrame(raf)
 
     // Cleanup
     return () => {
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill())
-      bodyScrollBar.destroy()
-      scrollbarRef.current = null
+      lenis.destroy()
+      lenisRef.current = null
       initializedRef.current = false
     }
   }, [])
 
   return (
-    <SmoothScrollContext.Provider value={{ scrollbar: scrollbarRef.current }}>
+    <SmoothScrollContext.Provider value={{ lenis: lenisRef.current }}>
       {children}
     </SmoothScrollContext.Provider>
   )

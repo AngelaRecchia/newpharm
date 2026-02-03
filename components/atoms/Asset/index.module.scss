@@ -4,21 +4,50 @@
 
 @use "../../../styles" as *;
 
-.asset {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.asset-image-wrapper {
+  position: absolute;
+  inset: 0;
+
+  &.assetHasOverlay {
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-color: $c-black;
+      opacity: 0.25;
+      z-index: 1;
+      pointer-events: none;
+    }
+  }
 }
 
-.asset-image {
-  // Stili specifici per immagini
+.asset-image-wrapper,
+.asset-video-wrapper {
+  img,
+  video {
+    display: block;
+  }
 }
 
 .asset-video-wrapper {
-  position: relative;
+  position: absolute;
+  z-index: 1;
+  inset: 0;
   width: 100%;
   height: 100%;
+  overflow: clip;
+
+  &.assetHasOverlay {
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-color: $c-black;
+      opacity: 0.25;
+      z-index: 1;
+      pointer-events: none;
+    }
+  }
 }
 
 .asset-video {

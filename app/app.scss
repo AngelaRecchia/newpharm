@@ -67,22 +67,11 @@ p {
 }
 
 // ============================================
-// SMOOTH SCROLLBAR STYLES
+// LENIS SMOOTH SCROLL STYLES
 // ============================================
+// Lenis doesn't require specific CSS classes
+// The .scroller class is kept for layout purposes only
 .scroller {
-  height: 100vh;
-  overflow: hidden;
-}
-
-.scroller .scrollbar-track {
-  background: transparent;
-}
-
-.scroller .scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 4px;
-}
-
-.scroller .scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.5);
+  // Layout wrapper - no overflow needed with Lenis
+  // Lenis handles smooth scrolling on the document body
 }
