@@ -13,7 +13,7 @@
   .content {
     display: flex;
     flex-direction: column;
-    gap: $s-24;
+    gap: $s-16;
   }
 
   .title {
@@ -26,7 +26,7 @@
 
   .links {
     display: flex;
-    margin-top: $s-24;
+    margin-top: 1.25rem;
     gap: $s-16;
   }
 

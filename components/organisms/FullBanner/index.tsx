@@ -22,7 +22,7 @@ const FullBanner = ({ blok }: { blok?: Full_bannerStoryblok }) => {
     const wrapperRef = useRef<HTMLElement>(null);
     const assetRef = useRef<HTMLDivElement>(null);
 
-    const [isPlaying, setIsPlaying] = useState(false);
+    const [isPlaying, setIsPlaying] = useState(true);
     const handleTogglePlay = useCallback(() => {
         const video = assetRef.current?.querySelector('video') as HTMLVideoElement;
         if (!video) return;

@@ -1,5 +1,6 @@
 import { getAllStories, getStory } from '@/lib/api/storyblok/stories'
 import { getLangs } from '@/lib/api/storyblok/languages'
+import { isProduction } from '@/lib/api/storyblok/config'
 import StoryblokRenderer from '@/components/StoryblokRenderer'
 import { setRequestLocale } from 'next-intl/server'
 import { getTranslations } from 'next-intl/server'
@@ -14,9 +15,16 @@ interface PageProps {
 
 /**
  * Generate static params for all locale + slug combinations
- * This runs at build time to pre-render all pages
+ * Solo in produzione per performance, in draft mode usa dynamic rendering
  */
 export async function generateStaticParams() {
+  // In draft mode, non generare static params (usa dynamic rendering)
+  // Questo permette di vedere le modifiche immediatamente
+  if (!isProduction()) {
+    console.log('📝 Draft mode: using dynamic rendering (no static params)')
+    return []
+  }
+
   try {
     // Get all available locales
     const locales = await getLangs()
@@ -64,6 +72,14 @@ export async function generateStaticParams() {
     return []
   }
 }
+
+/**
+ * Configurazione rendering:
+ * - Draft mode: dynamic (vedi modifiche immediate)
+ * - Production: static (performance)
+ */
+export const dynamic = isProduction() ? 'auto' : 'force-dynamic'
+export const revalidate = isProduction() ? 3600 : 0 // 1h in prod, no cache in draft
 
 /**
  * Page per route con header/footer (route normali)

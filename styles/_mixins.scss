@@ -65,18 +65,21 @@
   // 11px fisso, cresce leggermente dopo 1440px
   font-size: clamp(0.6875rem, 0.6875rem + 0.1vw, 0.8125rem); // 11px to ~13px
   line-height: 120%;
+  letter-spacing: -0.03em;
 }
 
 @mixin t-note {
   // 14px fisso, cresce leggermente dopo 1440px
   font-size: clamp(0.875rem, 0.875rem + 0.12vw, 1rem); // 14px to ~16px
   line-height: 120%;
+  letter-spacing: -0.03em;
 }
 
 @mixin t-body {
   // 16px fisso, cresce leggermente dopo 1440px
   font-size: clamp(1rem, 1rem + 0.15vw, 1.1875rem); // 16px to ~19px
   line-height: 140%;
+  letter-spacing: -0.03em;
 }
 
 @mixin t-h6 {
@@ -93,6 +96,11 @@
     calc(140% + (130% - 140%) * ((100vw - 320px) / (1440px - 320px))),
     130%
   );
+  letter-spacing: -0.02em;
+
+  @include xxl {
+    letter-spacing: -0.03em;
+  }
 }
 
 @mixin t-h3 {
@@ -105,6 +113,11 @@
     2.25rem
   ); // 22px to 36px
   line-height: 100%;
+  letter-spacing: -0.03em;
+
+  @include xxl {
+    letter-spacing: -0.04em;
+  }
 }
 
 @mixin t-h2 {
@@ -115,6 +128,11 @@
     3.5rem
   ); // 26px to 56px
   line-height: 120%;
+  letter-spacing: -0.04em;
+
+  @include xxl {
+    letter-spacing: -0.06em;
+  }
 }
 
 @mixin t-h1 {
@@ -127,6 +145,11 @@
     5rem
   ); // 38px to 80px
   line-height: 110%;
+  letter-spacing: -0.04em;
+
+  @include xxl {
+    letter-spacing: -0.05em;
+  }
 }
 
 @mixin t-huge {
@@ -138,6 +161,7 @@
   ); // 72px to 168px
   line-height: 100%;
   font-weight: 200;
+  letter-spacing: -0.04em;
 }
 
 // Container mixins

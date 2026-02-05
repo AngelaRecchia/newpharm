@@ -35,7 +35,7 @@ export default function NavItem({
     const hasItems = hasDropdown(item)
     const hasLink = getLinkUrl(item.link)
 
-
+    console.log(hasLink)
 
     const linkClassName = cn('navLink', {
         navLinkWhite: variant === 'white',
@@ -45,6 +45,7 @@ export default function NavItem({
     const navItemClasses = cn('navItem', {
         navItemExpanded: expanded,
     })
+
 
 
     return (
@@ -61,7 +62,7 @@ export default function NavItem({
                     <span>{item.label}</span>
                     {hasItems && (
                         <div className={cn('navIcon')} aria-hidden="true">
-                            <Icon type="chevron-down" />
+                            <Icon type="chevron-down" size="s" />
                         </div>
                     )}
                 </SmartLink>
@@ -74,9 +75,9 @@ export default function NavItem({
                 >
                     <span>{item.label}</span>
                     {hasItems && (
-                        <div className={cn('navIcon')} aria-hidden="true">
-                            <Icon type="chevron-down" />
-                        </div>
+
+                        <Icon aria-hidden="true" type="chevron-down" size="s" className={cn('navIcon')} />
+
                     )}
                 </button>
             )}

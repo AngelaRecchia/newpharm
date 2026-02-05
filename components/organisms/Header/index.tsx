@@ -44,22 +44,77 @@ export default function Header({
   }, [])
 
   const toggleDropdown = (index: number) => {
+
     setOpenDropdownIndex(openDropdownIndex === index ? null : index)
   }
 
   const [headerVariant, setHeaderVariant] = useState<'white' | 'transparent'>(variant)
+  const [scrolled, setScrolled] = useState(false)
+  const [isHeaderVisible, setIsHeaderVisible] = useState(true)
+
+  // Gestisce lo scroll per cambiare variante e visibilità
+  useEffect(() => {
+    let lastScrollY = window.scrollY || window.pageYOffset
+    let ticking = false
+
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrollY = window.scrollY || window.pageYOffset
+          const viewportHeight = window.innerHeight
+          const threshold = viewportHeight * 0.5 // 50vh
+
+          // Determina la direzione dello scroll
+          const isScrollingDown = scrollY > lastScrollY
+          const scrollDelta = Math.abs(scrollY - lastScrollY)
+          lastScrollY = scrollY
+
+          // Se siamo all'inizio della pagina, mostra sempre l'header
+          if (scrollY <= 10) {
+            setIsHeaderVisible(true)
+          } else if (scrollDelta > 5) {
+            // Nascondi/mostra header in base alla direzione (solo se scroll significativo)
+            setIsHeaderVisible(!isScrollingDown)
+          }
+
+          // Cambia variante a 50vh in entrambe le direzioni
+          setScrolled(scrollY > threshold)
+
+          ticking = false
+        })
+        ticking = true
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    handleScroll() // Controlla lo stato iniziale
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+    }
+  }, [])
 
   useEffect(() => {
+    // Menu mobile ha priorità: se è aperto, forza bianco e mantieni visibile
     if (isMobile && mobileMenuOpen) {
       setHeaderVariant('white')
+      setIsHeaderVisible(true)
+    } else if (scrolled) {
+      // Se scrollato oltre 50vh, usa bianco
+      setHeaderVariant('white')
     } else {
+      // Altrimenti usa la variante originale
       setHeaderVariant(variant)
     }
-  }, [isMobile, mobileMenuOpen, variant])
+  }, [isMobile, mobileMenuOpen, variant, scrolled])
+
+
+
 
   const headerClasses = cn('header', {
     headerWhite: headerVariant === 'white',
     headerTransparent: headerVariant === 'transparent',
+    headerHidden: !isHeaderVisible,
   })
 
   useEffect(() => {
@@ -82,7 +137,7 @@ export default function Header({
 
 
 
-  if (!blok) return null
+  if (!blok) return <></>
 
   return (
     <>
@@ -142,11 +197,11 @@ export default function Header({
                   {navItems.map((item, index) => {
                     const hasItems = item.items && item.items.length > 0
                     const isOpen = openDropdownIndex === index
-                    const hasLink = item.link
+                    const hasLink = getLinkUrl(item.link)
                     return <li key={item._uid}>
                       {hasLink ? (
                         <SmartLink
-                          link={hasLink}
+                          link={item.link}
                           className={cn('headerMobileNavLink', 'headerMobileNavItem')}
                         >
                           {item.label}
@@ -159,7 +214,7 @@ export default function Header({
                             })}
                           >
                             {item.label}
-                            <Icon type='chevron-down' />
+                            <Icon type='chevron-down' size='ml' />
                           </button>
                         ) : <></>}
 
