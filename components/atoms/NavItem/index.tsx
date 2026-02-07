@@ -1,5 +1,6 @@
 'use client'
 
+import { useMemo } from 'react'
 import SmartLink from '../SmartLink'
 import Icon from '../Icon'
 import { Nav_itemStoryblok } from '@/types/storyblok'
@@ -32,10 +33,9 @@ export default function NavItem({
     variant = 'transparent',
     onToggle,
 }: NavItemProps) {
-    const hasItems = hasDropdown(item)
-    const hasLink = getLinkUrl(item.link)
-
-    console.log(hasLink)
+    // Memoizza i calcoli per evitare ri-calcoli ad ogni render
+    const hasItems = useMemo(() => hasDropdown(item), [item])
+    const hasLink = useMemo(() => getLinkUrl(item.link), [item.link])
 
     const linkClassName = cn('navLink', {
         navLinkWhite: variant === 'white',

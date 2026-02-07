@@ -8,6 +8,11 @@
   position: absolute;
   inset: 0;
 
+  &.assetModeFit {
+    position: relative;
+    inset: unset;
+  }
+
   &.assetHasOverlay {
     &::after {
       content: "";
@@ -19,6 +24,23 @@
       pointer-events: none;
     }
   }
+
+  // Mostra/nascondi immagini mobile/desktop in base al breakpoint
+  .asset-image-mobile {
+    display: block;
+
+    @include lg {
+      display: none;
+    }
+  }
+
+  .asset-image-desktop {
+    display: none;
+
+    @include lg {
+      display: block;
+    }
+  }
 }
 
 .asset-image-wrapper,
@@ -26,6 +48,15 @@
   img,
   video {
     display: block;
+  }
+
+  &.assetModeFit {
+    position: relative;
+    img,
+    video {
+      position: relative !important;
+      height: auto !important;
+    }
   }
 }
 

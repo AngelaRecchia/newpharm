@@ -48,6 +48,14 @@ export interface StoryblokAsset {
 }
 
 /**
+ * Tipo per asset con mobile/desktop (componente Storyblok)
+ */
+export interface StoryblokAssetWithBreakpoints {
+    mobile?: StoryblokAsset | null
+    desktop?: StoryblokAsset | null
+}
+
+/**
  * Determina se l'URL è un video o un'immagine basandosi sull'estensione
  */
 export function getFileType(src: string): 'video' | 'image' | 'unknown' {
@@ -69,8 +77,12 @@ interface AssetComponentProps extends Omit<NextImageProps, 'src' | 'alt'> {
     src?: string
     /** Testo alternativo - retrocompatibilità */
     alt?: string
-    /** Asset Storyblok completo (ha priorità su src/alt) */
-    asset?: StoryblokAsset | null
+    /** 
+     * Asset Storyblok: può essere un asset diretto o un oggetto con mobile/desktop
+     * - Asset diretto: { filename: "...", alt: "..." }
+     * - Asset con breakpoints: { mobile: {...}, desktop: {...} }
+     */
+    asset?: StoryblokAsset | StoryblokAssetWithBreakpoints | null
     /** Dimensione dell'immagine: 's' | 'm' | 'l' (solo per immagini) */
     size?: AssetSize
     /** Classe CSS aggiuntiva */
@@ -81,6 +93,8 @@ interface AssetComponentProps extends Omit<NextImageProps, 'src' | 'alt'> {
     overlay?: boolean
     /** Nasconde i controlli del video */
     hideControls?: boolean
+    /** Modalità di rendering: 'bg' = background (absolute), 'fit' = fit content (no absolute) */
+    mode?: 'bg' | 'fit'
 }
 
 /**
@@ -111,16 +125,68 @@ const Asset = ({
     videoProps,
     overlay = false,
     hideControls = false,
+    mode = 'bg',
     ...rest
 }: AssetComponentProps) => {
     const { isDesktop } = useViewport()
     const t = useTranslations()
 
-    // Se c'è un asset Storyblok, usa quello, altrimenti usa src/alt
-    const assetSrc = asset?.filename || src || ''
-    const assetAlt = asset?.alt || alt || ''
+    // Logica per determinare quale asset usare
+    // Priorità: asset > src/alt
+    let mobileSrc = ''
+    let desktopSrc = ''
+    let assetAlt = ''
 
-    const fileType = useMemo(() => getFileType(assetSrc), [assetSrc])
+    if (asset) {
+        // Verifica se asset ha mobile/desktop (componente Storyblok)
+        const hasBreakpoints = 'mobile' in asset || 'desktop' in asset
+
+        if (hasBreakpoints) {
+            // Asset con breakpoints mobile/desktop
+            const assetWithBreakpoints = asset as StoryblokAssetWithBreakpoints
+            const mobile = assetWithBreakpoints.mobile?.filename
+            const desktop = assetWithBreakpoints.desktop?.filename
+
+            if (mobile && desktop) {
+                // Entrambi compilati: usa immagini diverse per breakpoint
+                mobileSrc = mobile
+                desktopSrc = desktop
+            } else if (mobile) {
+                // Solo mobile: usa lo stesso per entrambi
+                mobileSrc = mobile
+                desktopSrc = mobile
+            } else if (desktop) {
+                // Solo desktop: usa lo stesso per entrambi
+                mobileSrc = desktop
+                desktopSrc = desktop
+            }
+
+            assetAlt = assetWithBreakpoints.mobile?.alt || assetWithBreakpoints.desktop?.alt || ''
+        } else {
+            // Asset diretto (retrocompatibilità)
+            const directAsset = asset as StoryblokAsset
+            const assetSrc = directAsset.filename || ''
+            mobileSrc = assetSrc
+            desktopSrc = assetSrc
+            assetAlt = directAsset.alt || ''
+        }
+    } else {
+        // Modalità retrocompatibilità con src/alt
+        const assetSrc = src || ''
+        mobileSrc = assetSrc
+        desktopSrc = assetSrc
+        assetAlt = alt || ''
+    }
+
+    // Determina quale src usare in base al viewport
+    const currentSrc = isDesktop ? desktopSrc : mobileSrc
+
+    // Se non c'è un src valido, non renderizzare nulla
+    if (!currentSrc || currentSrc.trim() === '') {
+        return null
+    }
+
+    const fileType = useMemo(() => getFileType(currentSrc), [currentSrc])
 
     // Hooks devono essere chiamati sempre, non condizionalmente
     const videoRef = useRef<HTMLVideoElement>(null)
@@ -139,13 +205,15 @@ const Asset = ({
 
     // Se è un video, renderizza il tag video con bottone play/pause
     if (fileType === 'video') {
-
         return (
-            <div className={cn('asset-video-wrapper', { assetHasOverlay: overlay }, className)}>
+            <div className={cn('asset-video-wrapper', {
+                assetHasOverlay: overlay,
+                assetModeFit: mode === 'fit'
+            }, className)}>
                 <video
                     data-asset
                     ref={videoRef}
-                    src={assetSrc}
+                    src={currentSrc}
                     className={cn('asset', 'asset-video')}
                     autoPlay
                     loop
@@ -169,32 +237,85 @@ const Asset = ({
         )
     }
 
-    // Se è un'immagine, applica la logica del suffix
+    // Se è un'immagine, applica la logica del suffix e gestisci mobile/desktop
     if (fileType === 'image') {
         const dimensions = sizeMap[size]
-        const suffix = isDesktop ? dimensions.fromLg : dimensions.untilLg
-        const transformedSrc = `${assetSrc}/m/${suffix}x0`
+        const mobileSuffix = dimensions.untilLg
+        const desktopSuffix = dimensions.fromLg
 
-        return (
-            <div className={cn('asset-image-wrapper', { assetHasOverlay: overlay }, className)} data-asset>
-                <NextImage
-                    src={transformedSrc}
-                    alt={assetAlt}
-                    className={cn('asset', 'asset-image')}
-                    fill
-                    objectFit='cover'
-                    quality={100}
-                    {...rest}
-                />
-            </div>
-        )
+        // Se abbiamo mobile e desktop diversi, renderizza entrambe le immagini
+        // Verifica se asset ha mobile e desktop diversi
+        const hasBreakpoints = asset && ('mobile' in asset || 'desktop' in asset)
+        const assetWithBreakpoints = hasBreakpoints ? asset as StoryblokAssetWithBreakpoints : null
+        const hasDifferentAssets = assetWithBreakpoints?.mobile && assetWithBreakpoints?.desktop && mobileSrc !== desktopSrc
+
+        if (hasDifferentAssets) {
+            // Renderizza entrambe le immagini, CSS le mostrerà/nasconderà in base al breakpoint
+            // Verifica che entrambi gli src siano validi
+            if (!mobileSrc || !desktopSrc || mobileSrc.trim() === '' || desktopSrc.trim() === '') {
+                return null
+            }
+
+            const mobileTransformed = `${mobileSrc}/m/${mobileSuffix}x0`
+            const desktopTransformed = `${desktopSrc}/m/${desktopSuffix}x0`
+
+            return (
+                <div className={cn('asset-image-wrapper', {
+                    assetHasOverlay: overlay,
+                    assetModeFit: mode === 'fit'
+                }, className)} data-asset>
+                    <NextImage
+                        src={mobileTransformed}
+                        alt={assetAlt}
+                        className={cn('asset', 'asset-image', 'asset-image-mobile')}
+                        fill
+                        objectFit='cover'
+                        quality={100}
+                        {...rest}
+                    />
+                    <NextImage
+                        src={desktopTransformed}
+                        alt={assetAlt}
+                        className={cn('asset', 'asset-image', 'asset-image-desktop')}
+                        fill
+                        objectFit='cover'
+                        quality={100}
+                        {...rest}
+                    />
+                </div>
+            )
+        } else {
+            // Usa la stessa immagine per entrambi i breakpoint
+            const suffix = isDesktop ? desktopSuffix : mobileSuffix
+            const transformedSrc = `${currentSrc}/m/${suffix}x0`
+
+            return (
+                <div className={cn('asset-image-wrapper', {
+                    assetHasOverlay: overlay,
+                    assetModeFit: mode === 'fit'
+                }, className)} data-asset>
+                    <NextImage
+                        src={transformedSrc}
+                        alt={assetAlt}
+                        className={cn('asset', 'asset-image')}
+                        fill
+                        objectFit='cover'
+                        quality={100}
+                        {...rest}
+                    />
+                </div>
+            )
+        }
     }
 
     // Fallback per tipo sconosciuto (renderizza come immagine senza trasformazioni)
     return (
-        <div className={cn('asset-image-wrapper', { assetHasOverlay: overlay }, className)} data-asset>
+        <div className={cn('asset-image-wrapper', {
+            assetHasOverlay: overlay,
+            assetModeFit: mode === 'fit'
+        }, className)} data-asset>
             <NextImage
-                src={assetSrc}
+                src={currentSrc}
                 alt={assetAlt}
                 className={cn('asset', 'asset-image')}
                 fill

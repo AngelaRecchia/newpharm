@@ -1,0 +1,24 @@
+@use "../../../styles" as *;
+
+.wrapper {
+  .item {
+    position: relative;
+    overflow: hidden;
+  }
+
+  &.has-multiple {
+    @include mobile {
+      .item {
+        aspect-ratio: 1;
+        max-height: 40rem;
+        min-width: 100%;
+      }
+    }
+
+    @include md {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      height: 40rem;
+    }
+  }
+}

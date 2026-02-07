@@ -6,7 +6,7 @@
  * 
  * Per rigenerare: npm run generate:types
  * 
- * Generato il: 2026-01-31T16:05:16.762Z
+ * Generato il: 2026-02-07T14:20:26.898Z
  */
 
 
@@ -14,6 +14,15 @@ export interface Anchor_linkStoryblok {
   title?: string | null // Optional
   text?: string | null // Optional
   target?: { id: string; url: string; linktype: string; fieldtype: string; cached_url?: string; } | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface AssetStoryblok {
+  mobile?: { id: number; alt: string; name: string; focus: string; title: string; filename: string; copyright: string; fieldtype: string; } | null // Optional
+  desktop?: { id: number; alt: string; name: string; focus: string; title: string; filename: string; copyright: string; fieldtype: string; } | null // Optional
   _uid: string
   component: string
   _editable?: string
@@ -148,10 +157,18 @@ export interface Social_itemStoryblok {
   _editable?: string
 }
 
+
+export interface Split_bannerStoryblok {
+  items?: any[] | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
 /**
  * Union type di tutti i componenti Storyblok
  */
-export type StoryblokComponent = Anchor_linkStoryblok | Card_cta_boxStoryblok | Card_divisionStoryblok | Cta_boxStoryblok | Division_boxStoryblok | FooterStoryblok | Full_bannerStoryblok | HeaderStoryblok | HeroStoryblok | LinkStoryblok | Nav_itemStoryblok | PageStoryblok | SettingsStoryblok | Social_itemStoryblok
+export type StoryblokComponent = Anchor_linkStoryblok | AssetStoryblok | Card_cta_boxStoryblok | Card_divisionStoryblok | Cta_boxStoryblok | Division_boxStoryblok | FooterStoryblok | Full_bannerStoryblok | HeaderStoryblok | HeroStoryblok | LinkStoryblok | Nav_itemStoryblok | PageStoryblok | SettingsStoryblok | Social_itemStoryblok | Split_bannerStoryblok
 
 /**
  * Helper type per il prop 'blok' nei componenti Storyblok
