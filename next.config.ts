@@ -5,9 +5,6 @@ const nextConfig: NextConfig = {
   images: {
     domains: ["a.storyblok.com"],
   },
-  experimental: {
-    serverComponentsHmrCache: true,
-  },
 };
 
 const withNextIntl = createNextIntlPlugin("./i18n/request.ts");

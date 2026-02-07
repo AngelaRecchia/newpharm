@@ -22,7 +22,7 @@ export default function SocialItem({ item }: SocialItemProps) {
       rel={'noopener noreferrer'}
       aria-label={`Social link ${item.type}`}
     >
-      <Icon type={item.type} size="m" />
+      <Icon type={item.type} size='ml' />
     </SmartLink>
   )
 }

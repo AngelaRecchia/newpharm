@@ -13,7 +13,6 @@
   width: fit-content;
   --button-background-color: #{$c-primary};
   --button-color: #{$c-white};
-  --button-hover: 0;
 
   background-color: var(--button-background-color);
   color: var(--button-color);
@@ -68,11 +67,11 @@
       transition: all 300ms $ease-smooth;
 
       @include md {
-        transform: scale(max(0.3333, var(--button-hover)));
+        transform: scale(max(0.3333, var(--button-hover, 0)));
 
         svg {
           transition: all 200ms $ease-smooth 0.1s;
-          opacity: var(--button-hover);
+          opacity: var(--button-hover, 0);
         }
       }
     }

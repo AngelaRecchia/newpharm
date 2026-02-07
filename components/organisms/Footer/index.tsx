@@ -127,8 +127,8 @@ export default function Footer({
                     <div className={cn('linksContainer')}>
                         <ul className={cn('links')}>
                             {items?.map((item) => (
-                                <li key={item._uid} className={cn('link')}>
-                                    <SmartLink link={item.link}>{item.label}</SmartLink>
+                                <li key={item._uid} className={cn('linkItem')}>
+                                    <SmartLink className={cn('link')} link={item.link}>{item.label}</SmartLink>
                                 </li>
                             ))}
                         </ul>

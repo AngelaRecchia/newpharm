@@ -108,7 +108,7 @@ const Icon = ({ type, size = 'l', variant, className = '', weight = 'bold' }: Ic
       ...icon.props,
       width: sizeValue,
       height: sizeValue,
-      'data-size': size,
+
       className: classNames(icon.props?.className, className),
     }
   )

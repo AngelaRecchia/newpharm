@@ -50,18 +50,33 @@ const FullBanner = ({ blok }: { blok?: Full_bannerStoryblok }) => {
             const parallaxDistance = wrapperHeight * parallaxSpeed;
 
             // Crea l'animazione parallax
-            // L'asset si muove verso l'alto (y negativo) quando scrolli verso il basso
+            // top bottom: y = -parallaxDistance
+            // top top: y = 0 (progress = 0.5 perché modulo = 100vh)
+            // bottom top: y = +parallaxDistance
             const target = assetRef.current
-            const parallaxAnimation = gsap.fromTo(target, { y: 0 }, { y: parallaxDistance });
 
-            // Crea ScrollTrigger per l'effetto parallax
-            scrollTrigger = ScrollTrigger.create({
-                trigger: wrapperRef.current,
-                start: 'top top',
-                end: 'bottom top',
-                animation: parallaxAnimation,
-                scrub: true,
+            // Timeline con keyframes: progress 0 = -n, 0.5 = 0, 1 = +n
+            const tl = gsap.timeline({
+                scrollTrigger: {
+                    trigger: wrapperRef.current,
+                    start: 'top bottom',
+                    end: 'bottom top',
+                    scrub: true,
+                }
             });
+
+            // Primo tween: da -n a 0 (progress 0 → 0.5)
+            tl.fromTo(target,
+                { y: -parallaxDistance },
+                { y: 0, duration: 0.5, ease: 'none' }
+            );
+
+            // Secondo tween: da 0 a +n (progress 0.5 → 1)
+            tl.to(target,
+                { y: parallaxDistance, duration: 0.5, ease: 'none' }
+            );
+
+            scrollTrigger = tl.scrollTrigger || null;
 
             // Refresh ScrollTrigger per assicurarsi che funzioni correttamente
             ScrollTrigger.refresh();

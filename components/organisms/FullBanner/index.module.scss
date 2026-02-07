@@ -28,7 +28,7 @@
   }
 
   &.full {
-    height: 110dvh;
+    height: 100dvh;
 
     .container {
       position: absolute;
@@ -49,6 +49,7 @@
     .asset-wrapper {
       position: absolute;
       inset: 0;
+
       will-change: transform;
       z-index: 0;
     }
@@ -64,12 +65,13 @@
     @include container-lg;
     @include mobile {
       padding-block: var(--padding-block);
-      height: calc(100dvh + var(--padding-block) * 2);
     }
+
+    height: 100dvh;
 
     .container {
       position: relative;
-      height: 100dvh;
+      height: 100%;
       padding: 0;
       overflow: clip;
     }
@@ -80,8 +82,13 @@
 
     .asset-video-control-wrapper {
       position: absolute;
-      bottom: calc($s-64 + $s-16);
-      inset-inline-end: calc($s-40 + $s-16);
+      bottom: $s-64;
+      inset-inline-end: $s-48;
+
+      @include lg {
+        bottom: calc($s-64 + $s-24);
+        inset-inline-end: calc($s-40 + $s-24);
+      }
     }
   }
 }
