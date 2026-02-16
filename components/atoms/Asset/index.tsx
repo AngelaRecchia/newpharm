@@ -72,7 +72,7 @@ export function getFileType(src: string): 'video' | 'image' | 'unknown' {
     return 'unknown'
 }
 
-interface AssetComponentProps extends Omit<NextImageProps, 'src' | 'alt'> {
+export interface AssetComponentProps extends Omit<NextImageProps, 'src' | 'alt'> {
     /** URL sorgente dell'asset (immagine o video) - retrocompatibilità */
     src?: string
     /** Testo alternativo - retrocompatibilità */

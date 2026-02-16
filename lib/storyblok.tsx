@@ -8,6 +8,7 @@ import { shouldEnableBridge } from './api/storyblok/config'
 import Page from '@/components/storyblok/Page'
 import Settings from '@/components/storyblok/Settings'
 import Asset from '@/components/storyblok/Asset'
+import Link from '@/components/storyblok/Link'
 import Header from '@/components/organisms/Header'
 import Footer from '@/components/organisms/Footer'
 import HeroComponent from '@/components/organisms/Hero'
@@ -15,6 +16,7 @@ import DivisionBox from '@/components/organisms/DivisionBox'
 import CtaBox from '@/components/organisms/CtaBox'
 import FullBanner from '@/components/organisms/FullBanner'
 import SplitBanner from '@/components/organisms/SplitBanner'
+import Story from '@/components/storyblok/Story'
 
 const components = {
 
@@ -27,10 +29,12 @@ const components = {
 
   // Atoms
   asset: Asset,
+  link: Link,
 
   //
   page: Page,
   settings: Settings,
+  story: Story,
   header: Header,
   footer: Footer,
 }

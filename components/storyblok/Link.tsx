@@ -1,0 +1,37 @@
+'use client'
+
+import { storyblokEditable } from '@storyblok/react'
+import { LinkStoryblok } from '@/types/storyblok'
+import Button from '@/components/atoms/Button'
+
+/**
+ * Componente Link di Storyblok che renderizza un Button
+ * Mappa le varianti: black -> secondary, blue -> primary
+ */
+export default function Link({ blok }: { blok?: LinkStoryblok }) {
+    if (!blok) {
+        return null
+    }
+
+    console.log(blok)
+
+    const { label, link } = blok
+    // variant potrebbe non essere nel tipo generato, quindi accediamo tramite any
+    const variant = (blok as any).variant
+
+    // Mappa le varianti: black -> secondary, blue -> primary
+    // Default: primary se non specificato o se variant non è black/blue
+    const buttonVariant: 'primary' | 'secondary' | 'tertiary' =
+        variant === 'black' ? 'secondary' :
+            variant === 'blue' ? 'primary' :
+                'primary'
+
+    return (
+        <Button
+            {...storyblokEditable(blok as any)}
+            label={label || undefined}
+            link={link || undefined}
+            variant={buttonVariant}
+        />
+    )
+}

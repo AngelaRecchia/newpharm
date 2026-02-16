@@ -6,7 +6,7 @@
  * 
  * Per rigenerare: npm run generate:types
  * 
- * Generato il: 2026-02-07T14:20:26.898Z
+ * Generato il: 2026-02-16T22:19:53.370Z
  */
 
 
@@ -46,6 +46,16 @@ export interface Card_divisionStoryblok {
   number?: string | null // Optional
   title?: string | null // Optional
   link?: { id: string; url: string; linktype: string; fieldtype: string; cached_url?: string; } | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface CarouselStoryblok {
+  title?: string | null // Optional
+  subtitle?: string | null // Optional
+  link?: any[] | null // Optional
   _uid: string
   component: string
   _editable?: string
@@ -165,10 +175,25 @@ export interface Split_bannerStoryblok {
   _editable?: string
 }
 
+
+export interface StoryStoryblok {
+  title?: string | null // Optional
+  author?: string | null // Optional
+  reading_time?: string | null // Optional
+  date?: string | null // Optional
+  tag?: 'company' | 'r&d' | 'events' | 'people' | 'academy' | 'professional_pest_control' | 'cereals_storage' | 'zootech' | 'home&garden' | null // Optional
+  asset: any[]
+  article?: string | null // Optional
+  body?: any[] | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
 /**
  * Union type di tutti i componenti Storyblok
  */
-export type StoryblokComponent = Anchor_linkStoryblok | AssetStoryblok | Card_cta_boxStoryblok | Card_divisionStoryblok | Cta_boxStoryblok | Division_boxStoryblok | FooterStoryblok | Full_bannerStoryblok | HeaderStoryblok | HeroStoryblok | LinkStoryblok | Nav_itemStoryblok | PageStoryblok | SettingsStoryblok | Social_itemStoryblok | Split_bannerStoryblok
+export type StoryblokComponent = Anchor_linkStoryblok | AssetStoryblok | Card_cta_boxStoryblok | Card_divisionStoryblok | CarouselStoryblok | Cta_boxStoryblok | Division_boxStoryblok | FooterStoryblok | Full_bannerStoryblok | HeaderStoryblok | HeroStoryblok | LinkStoryblok | Nav_itemStoryblok | PageStoryblok | SettingsStoryblok | Social_itemStoryblok | Split_bannerStoryblok | StoryStoryblok
 
 /**
  * Helper type per il prop 'blok' nei componenti Storyblok

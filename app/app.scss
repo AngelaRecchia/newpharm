@@ -31,6 +31,10 @@ body {
     min-height: 100dvh;
     position: relative;
     z-index: 1;
+
+    &.main-with-header {
+      padding-top: 4.25rem; // Header height (68px)
+    }
   }
 }
 

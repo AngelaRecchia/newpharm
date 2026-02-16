@@ -1,16 +1,14 @@
 'use client'
 
 import { Full_bannerStoryblok } from '@/types/storyblok';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 import styles from './index.module.scss'
 import classNames from 'classnames/bind'
 import { storyblokEditable } from '@storyblok/react';
-import Asset, { getFileType } from '@/components/atoms/Asset';
-import Button from '@/components/atoms/Button';
-import { useTranslations } from 'next-intl';
+import Asset from '@/components/atoms/Asset';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -18,31 +16,19 @@ const cn = classNames.bind(styles);
 
 const FullBanner = ({ blok }: { blok?: Full_bannerStoryblok }) => {
 
-    const t = useTranslations();
     const wrapperRef = useRef<HTMLElement>(null);
     const assetRef = useRef<HTMLDivElement>(null);
-
-    const [isPlaying, setIsPlaying] = useState(true);
-    const handleTogglePlay = useCallback(() => {
-        const video = assetRef.current?.querySelector('video') as HTMLVideoElement;
-        if (!video) return;
-        if (isPlaying) {
-            video.pause()
-        } else {
-            video.play()
-        }
-        setIsPlaying(!isPlaying)
-    }, [isPlaying, assetRef]);
 
     useEffect(() => {
         if (typeof window === 'undefined' || !wrapperRef.current || !assetRef.current) return;
 
         let scrollTrigger: ScrollTrigger | null = null;
-        let timeoutId: NodeJS.Timeout | null = null;
 
         // Wait for Lenis and ScrollTrigger to be ready
         const initAnimation = () => {
             if (!wrapperRef.current || !assetRef.current) return;
+
+            const { variant } = blok || {};
 
             // Fattore di velocità parallax (.5 = si muove a metà velocità dello scroll)
             const parallaxSpeed = 0.3;
@@ -86,16 +72,16 @@ const FullBanner = ({ blok }: { blok?: Full_bannerStoryblok }) => {
 
         // Cleanup
         return () => {
-
             if (scrollTrigger) {
                 scrollTrigger.kill();
             }
         };
-    }, []);
+    }, [blok]);
 
     if (!blok) return <></>;
 
     const { title, asset, variant } = blok;
+
     return (
         <section
             ref={wrapperRef}
@@ -112,24 +98,15 @@ const FullBanner = ({ blok }: { blok?: Full_bannerStoryblok }) => {
                         ref={assetRef}
                         className={cn('asset-wrapper')}
                     >
-                        <Asset asset={asset} size="l" overlay hideControls />
-
-
+                        <Asset
+                            asset={asset}
+                            size="l"
+                            overlay
+                            hideControls={false}
+                        />
                     </div>
                 )}
             </div>
-
-            {asset && asset.filename.length > 0 && getFileType(asset.filename) === 'video' && (
-                <div className={cn('asset-video-control-wrapper')}>  <Button
-
-                    onClick={handleTogglePlay}
-                    className={cn('asset-video-control')}
-                    aria-label={isPlaying ? t('pause') : t('play')}
-                    icon={isPlaying ? 'pause' : 'play'}
-                    variant='tertiary'
-                />
-                </div>
-            )}
         </section>
     )
 }

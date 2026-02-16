@@ -2,9 +2,9 @@
 
 import { storyblokEditable } from '@storyblok/react'
 import { AssetStoryblok } from '@/types/storyblok'
-import AssetComponent from '@/components/atoms/Asset'
+import AssetComponent, { type AssetComponentProps } from '@/components/atoms/Asset'
 
-export default function Asset({ blok }: { blok?: AssetStoryblok }) {
+export default function Asset({ blok, ...props }: { blok?: AssetStoryblok } & AssetComponentProps) {
     if (!blok) {
         return null
     }
@@ -19,6 +19,7 @@ export default function Asset({ blok }: { blok?: AssetStoryblok }) {
         <AssetComponent
             {...storyblokEditable(blok as any)}
             asset={asset}
+            {...props}
         />
     )
 }
