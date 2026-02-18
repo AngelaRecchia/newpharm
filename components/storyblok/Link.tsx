@@ -13,7 +13,7 @@ export default function Link({ blok }: { blok?: LinkStoryblok }) {
         return null
     }
 
-    console.log(blok)
+
 
     const { label, link } = blok
     // variant potrebbe non essere nel tipo generato, quindi accediamo tramite any

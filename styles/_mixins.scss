@@ -178,3 +178,67 @@
     padding-block: $s-64;
   }
 }
+
+// Hover circle dot effect mixin
+// Crea un cerchio che appare in hover davanti al contenuto
+// Usa questo mixin sull'elemento cerchio, poi aggiungi lo stato hover sul parent
+// Esempio:
+//   .dot { @include hover-circle-dot; }
+//   .parent:hover .dot { opacity: 1; transform: scale(1); }
+// @param $size - Dimensione del cerchio (default: $s-8)
+// @param $color - Colore del cerchio (default: $c-black)
+// @param $duration - Durata della transizione (default: 300ms)
+// @param $mobile-visible - Se il cerchio è sempre visibile su mobile (default: true)
+@mixin hover-circle-dot(
+  $size: $s-8,
+  $color: $c-black,
+  $duration: 300ms,
+  $mobile-visible: true
+) {
+  width: $size;
+  height: $size;
+  border-radius: 50%;
+  background-color: $color;
+  flex-shrink: 0;
+  opacity: 0;
+  transform: scale(0);
+  transition:
+    opacity $duration $ease-smooth,
+    transform $duration $ease-smooth;
+
+  @if $mobile-visible {
+    @include mobile {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+}
+
+// Hover text shift mixin
+// Sposta il testo quando c'è hover sul parent
+// Usa questo mixin sull'elemento testo, poi aggiungi lo stato hover sul parent
+// Esempio:
+//   .text { @include hover-text-shift; }
+//   .parent:hover .text { transform: translateX($s-16); }
+// @param $offset - Offset di spostamento (default: $s-16)
+// @param $duration - Durata della transizione (default: 400ms)
+// @param $mobile-shifted - Se il testo è sempre spostato su mobile (default: false)
+@mixin hover-text-shift(
+  $offset: $s-16,
+  $duration: 400ms,
+  $mobile-shifted: false
+) {
+  transition: transform $duration $ease-smooth;
+
+  @if $mobile-shifted {
+    @include mobile {
+      transform: translateX($offset);
+    }
+  }
+
+  transform: translateX($offset);
+
+  @include md {
+    transform: translateX(0);
+  }
+}

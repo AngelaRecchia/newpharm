@@ -1,12 +1,12 @@
-import { getAllStories, getStory } from '@/lib/api/storyblok/stories'
+import { getAllStories, getStory, getRelatedStoriesByTags } from '@/lib/api/storyblok/stories'
 import { getLangs } from '@/lib/api/storyblok/languages'
 import { isProduction } from '@/lib/api/storyblok/config'
 import StoryblokRenderer from '@/components/StoryblokRenderer'
 import { setRequestLocale } from 'next-intl/server'
 import { getTranslations } from 'next-intl/server'
 import { notFound } from 'next/navigation'
-import { HeaderVariantProvider } from '@/lib/context/header-variant-context'
-import { PageStoryblok, HeroStoryblok } from '@/types/storyblok'
+import HeaderVariantSync from '@/components/client/HeaderVariantSync'
+import { PageStoryblok, HeroStoryblok, StoryStoryblok } from '@/types/storyblok'
 
 interface PageProps {
   params: Promise<{
@@ -130,10 +130,10 @@ export default async function WithLayoutPage({ params }: PageProps) {
 
   // Determina la variante dell'header in base al primo blocco del body
   let headerVariant: 'transparent' | 'white' = 'white'
-  
+
   if (story.content) {
     const pageContent = story.content as PageStoryblok
-    
+
     // Controlla il primo blocco nel body
     if (pageContent.body && pageContent.body.length > 0) {
       const firstBlock = pageContent.body[0]
@@ -141,12 +141,34 @@ export default async function WithLayoutPage({ params }: PageProps) {
     }
   }
 
+  // Se il content è una Story, fetcha le story correlate
+  if (story.content?.component === 'story') {
+
+    const storyContent = story.content as StoryStoryblok
+    const relatedStories = await getRelatedStoriesByTags(
+      storyContent.tag,
+      storySlug,
+      locale
+    )
+
+    // Inietta le story correlate nel blok
+    if (relatedStories.length > 0) {
+      story.content = {
+        ...storyContent,
+        related_stories: relatedStories
+      }
+    }
+  }
+
+
+
   return (
-    <HeaderVariantProvider variant={headerVariant}>
+    <>
+      <HeaderVariantSync variant={headerVariant} />
       {story.content && (
         <StoryblokRenderer blok={story.content} />
       )}
-    </HeaderVariantProvider>
+    </>
   )
 }
 

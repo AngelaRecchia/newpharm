@@ -73,29 +73,14 @@
 }
 
 .card-dot {
-  width: $s-8;
-  height: $s-8;
-  border-radius: 50%;
+  @include hover-circle-dot;
   padding-inline-end: $s-8;
-  background-color: $c-black;
-  flex-shrink: 0;
-  opacity: 0;
-  transform: scale(0);
-  transition:
-    opacity 300ms $ease-smooth,
-    transform 300ms $ease-smooth;
 
   @include md {
     .card:hover & {
       opacity: 1;
       transform: scale(1);
     }
-  }
-
-  // Su mobile il dot è sempre visibile
-  @include mobile {
-    opacity: 1;
-    transform: scale(1);
   }
 }
 

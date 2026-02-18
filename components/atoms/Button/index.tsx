@@ -17,9 +17,10 @@ interface ButtonProps {
     target?: string
     link?: StoryblokLink & { anchor?: string } | null
     variant?: 'primary' | 'secondary' | 'tertiary'
-    size?: 'small' | 'medium'
+    size?: 'small' | 'medium',
+    weight?: 'normal' | 'bold'
 }
-const Button = ({ icon = 'right-small', label, onClick, className, href, target, link, variant = 'primary', size = 'medium', ...props }: ButtonProps) => {
+const Button = ({ icon = 'right-small', label, onClick, className, href, target, link, variant = 'primary', size = 'medium', weight = 'bold', ...props }: ButtonProps) => {
 
     const hasLabel = label && label.length > 0
     const hasIcon = icon && icon.length > 0 && icons[icon]
@@ -41,8 +42,8 @@ const Button = ({ icon = 'right-small', label, onClick, className, href, target,
     const children = (
         <>
             {hasLabel && <span>{label}</span>}
-            {onlyIcon && <Icon type={icon} size='m' />}
-            {hasLabel && hasIcon && <div className={cn('buttonIcon')}><Icon type={icon} size='s' /></div>}
+            {onlyIcon && <Icon type={icon} size='m' weight={weight} />}
+            {hasLabel && hasIcon && <div className={cn('buttonIcon')}><Icon type={icon} size='s' weight={weight} /></div>}
         </>
     )
 

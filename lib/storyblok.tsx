@@ -16,6 +16,7 @@ import DivisionBox from '@/components/organisms/DivisionBox'
 import CtaBox from '@/components/organisms/CtaBox'
 import FullBanner from '@/components/organisms/FullBanner'
 import SplitBanner from '@/components/organisms/SplitBanner'
+import Carousel from '@/components/organisms/Carousel'
 import Story from '@/components/storyblok/Story'
 
 const components = {
@@ -26,6 +27,7 @@ const components = {
   cta_box: CtaBox,
   full_banner: FullBanner,
   split_banner: SplitBanner,
+  carousel: Carousel,
 
   // Atoms
   asset: Asset,

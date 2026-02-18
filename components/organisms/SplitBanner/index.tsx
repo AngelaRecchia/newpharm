@@ -10,7 +10,6 @@ const SplitBanner = ({ blok }: { blok: Split_bannerStoryblok }) => {
     const { items } = blok;
     const hasMultiple = items && items.length > 1;
 
-    console.log(items);
     return (
         <section className={cn('wrapper', hasMultiple && 'has-multiple')} {...storyblokEditable(blok as any)}>
             {items?.map((item) => (

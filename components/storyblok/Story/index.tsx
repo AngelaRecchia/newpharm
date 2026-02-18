@@ -9,20 +9,28 @@ import { useMemo } from 'react';
 import { useFormatter, useTranslations } from 'next-intl';
 import FullBanner from '@/components/organisms/FullBanner';
 import RichText from '@/components/organisms/RichText';
+import { RelatedStory } from '@/lib/api/storyblok/stories';
+
+import Carousel from '@/components/organisms/Carousel';
 const cn = classNames.bind(styles);
 
+interface StoryProps {
+    blok: StoryStoryblok & {
+        related_stories?: RelatedStory[]
+    },
+    relatedStories: RelatedStory[]
+}
 
-const Story = ({ blok }: { blok: StoryStoryblok }) => {
+const Story = ({ blok, relatedStories }: StoryProps) => {
 
     const t = useTranslations('');
-    const { title, author, reading_time, date, tag, asset, article, body } = blok;
+    const { title, author, reading_time, date, tag, asset, article, body, related_stories } = blok;
     const format = useFormatter();
     const dateTime = date ? new Date(date) : null;
     const formattedDate = dateTime ? format.dateTime(dateTime, { dateStyle: 'medium' }) : null;
 
     const tags = useMemo(() => typeof tag === 'string' ? [tag] : tag || [], [tag]);
 
-    console.log(article)
     return (
         <div  {...storyblokEditable(blok as any)}>
             <div className={cn('hero-text')}>
@@ -50,9 +58,18 @@ const Story = ({ blok }: { blok: StoryStoryblok }) => {
 
             <div className={cn('article')}>
                 <RichText content={article} />
-
-
             </div>
+
+            {/* Renderizza le story correlate se presenti */}
+            {related_stories && related_stories.length > 0 && (
+                <div className={cn('related-stories')}>
+
+                    <Carousel items={related_stories} variant='news' />
+
+
+
+                </div>
+            )}
         </div>
     )
 }

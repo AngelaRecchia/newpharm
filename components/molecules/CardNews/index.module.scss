@@ -1,0 +1,87 @@
+@use "../../../styles" as *;
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: $s-8;
+  width: 100%;
+}
+
+.image {
+  aspect-ratio: 3/4;
+  position: relative;
+  overflow: hidden;
+
+  &:hover,
+  &:focus-visible {
+    > * {
+      transform: scale(1.02);
+    }
+  }
+
+  // Easing for the image good for products
+  //   > * {
+  //     transition: transform 500ms cubic-bezier(0.16, 1, 0.3, 1);
+  //   }
+
+  > * {
+    transition: transform 500ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+.content-wrapper {
+  position: relative;
+
+  padding-block: $s-16;
+
+  &::before {
+    content: "";
+    display: block;
+    @include hover-circle-dot;
+    position: absolute;
+    inset-inline-start: 0;
+    top: $s-24;
+  }
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: $s-8;
+  padding-inline-end: $s-24;
+  @include hover-text-shift;
+
+  .title {
+    @include t-body;
+  }
+
+  .subtitle {
+    @include t-note;
+  }
+}
+
+.wrapper {
+  @include md {
+    &:hover,
+    &:focus-visible {
+      .content-wrapper::before {
+        transform: scale(1);
+        opacity: 1;
+      }
+
+      .content {
+        transform: translateX($s-16);
+      }
+    }
+  }
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $s-8;
+  position: absolute;
+  z-index: 1;
+  top: $s-16;
+  inset-inline-start: $s-16;
+}
