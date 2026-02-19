@@ -18,6 +18,7 @@ import FullBanner from '@/components/organisms/FullBanner'
 import SplitBanner from '@/components/organisms/SplitBanner'
 import Carousel from '@/components/organisms/Carousel'
 import Story from '@/components/storyblok/Story'
+import Banneraccordion from '@/components/organisms/BannerAccordion'
 
 const components = {
 
@@ -28,6 +29,7 @@ const components = {
   full_banner: FullBanner,
   split_banner: SplitBanner,
   carousel: Carousel,
+  banner_accordion: Banneraccordion,
 
   // Atoms
   asset: Asset,

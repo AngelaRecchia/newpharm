@@ -43,17 +43,38 @@ export default function SmartLink({ href, link, ...props }: SmartLinkProps) {
         linkUrl = '/'
     }
 
+    // Se è un anchor link (inizia con #), passa direttamente
+    if (linkUrl.startsWith('#')) {
+        return <Link href={linkUrl} {...props} />
+    }
+
+    // Se è un URL esterno (http/https), passa direttamente
+    if (linkUrl.match(/^https?:\/\//i)) {
+        return <a href={linkUrl} {...props} target="_blank" rel="noopener noreferrer" />
+    }
+
+    // Se l'URL inizia con www., trattalo come URL esterno
+    if (linkUrl.match(/^www\./i)) {
+        return <a href={`https://${linkUrl}`} {...props} target="_blank" rel="noopener noreferrer" />
+    }
+
     // Check if URL starts with locale (with or without leading slash)
-    // Examples: '/it/page', '/it', 'it/', 'it'
+    // Examples: '/it/page', '/it', 'it/', 'it', 'it/test'
     const match = linkUrl.match(/^\/?([a-z]{2})(\/|$)/)
 
     if (match) {
         const detectedLocale = match[1]
         if (locales.includes(detectedLocale as any)) {
-            // Remove locale from href (handle both '/it/page' and 'it/page')
-            const pathWithoutLocale = linkUrl
+            // Remove locale from href (handle both '/it/page' and 'it/page' and 'it/test')
+            let pathWithoutLocale = linkUrl
                 .replace(/^\/?/, '') // Remove optional leading slash
                 .replace(new RegExp(`^${detectedLocale}(/|$)`), '') || '/'
+
+            // Assicura che il percorso inizi con / se non è vuoto
+            // Questo previene percorsi relativi che causano navigazioni errate
+            if (pathWithoutLocale && pathWithoutLocale !== '/' && !pathWithoutLocale.startsWith('/')) {
+                pathWithoutLocale = '/' + pathWithoutLocale
+            }
 
             return <Link href={pathWithoutLocale} locale={detectedLocale} {...props} />
         }
@@ -65,7 +86,8 @@ export default function SmartLink({ href, link, ...props }: SmartLinkProps) {
         return <Link href={linkUrl} {...props} />
     }
 
-    // No locale detected or URL doesn't start with /, regular link
-    // next-intl Link will handle it normally
-    return <Link href={linkUrl} {...props} />
+    // Se l'URL non inizia con / e non ha locale, potrebbe essere un percorso relativo
+    // Normalizzalo aggiungendo / all'inizio per renderlo assoluto
+    const normalizedUrl = linkUrl.startsWith('/') ? linkUrl : '/' + linkUrl
+    return <Link href={normalizedUrl} {...props} />
 }

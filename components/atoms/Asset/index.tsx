@@ -78,11 +78,12 @@ export interface AssetComponentProps extends Omit<NextImageProps, 'src' | 'alt'>
     /** Testo alternativo - retrocompatibilità */
     alt?: string
     /** 
-     * Asset Storyblok: può essere un asset diretto o un oggetto con mobile/desktop
+     * Asset Storyblok: può essere un asset diretto, un array di assets, o un oggetto con mobile/desktop
      * - Asset diretto: { filename: "...", alt: "..." }
+     * - Array di assets: [{ filename: "..." }, ...] - renderizza il primo elemento
      * - Asset con breakpoints: { mobile: {...}, desktop: {...} }
      */
-    asset?: StoryblokAsset | StoryblokAssetWithBreakpoints | null
+    asset?: StoryblokAsset | StoryblokAsset[] | StoryblokAssetWithBreakpoints | null
     /** Dimensione dell'immagine: 's' | 'm' | 'l' (solo per immagini) */
     size?: AssetSize
     /** Classe CSS aggiuntiva */
@@ -138,37 +139,55 @@ const Asset = ({
     let assetAlt = ''
 
     if (asset) {
-        // Verifica se asset ha mobile/desktop (componente Storyblok)
-        const hasBreakpoints = 'mobile' in asset || 'desktop' in asset
+        // Se asset è un array, prendi il primo elemento
+        let normalizedAsset: StoryblokAsset | StoryblokAssetWithBreakpoints | null = null
 
-        if (hasBreakpoints) {
-            // Asset con breakpoints mobile/desktop
-            const assetWithBreakpoints = asset as StoryblokAssetWithBreakpoints
-            const mobile = assetWithBreakpoints.mobile?.filename
-            const desktop = assetWithBreakpoints.desktop?.filename
-
-            if (mobile && desktop) {
-                // Entrambi compilati: usa immagini diverse per breakpoint
-                mobileSrc = mobile
-                desktopSrc = desktop
-            } else if (mobile) {
-                // Solo mobile: usa lo stesso per entrambi
-                mobileSrc = mobile
-                desktopSrc = mobile
-            } else if (desktop) {
-                // Solo desktop: usa lo stesso per entrambi
-                mobileSrc = desktop
-                desktopSrc = desktop
-            }
-
-            assetAlt = assetWithBreakpoints.mobile?.alt || assetWithBreakpoints.desktop?.alt || ''
+        if (Array.isArray(asset)) {
+            // Array di assets: usa il primo elemento
+            normalizedAsset = asset.length > 0 ? asset[0] : null
         } else {
-            // Asset diretto (retrocompatibilità)
-            const directAsset = asset as StoryblokAsset
-            const assetSrc = directAsset.filename || ''
+            normalizedAsset = asset
+        }
+
+        if (!normalizedAsset) {
+            // Array vuoto o null
+            const assetSrc = src || ''
             mobileSrc = assetSrc
             desktopSrc = assetSrc
-            assetAlt = directAsset.alt || ''
+            assetAlt = alt || ''
+        } else {
+            // Verifica se asset ha mobile/desktop (componente Storyblok)
+            const hasBreakpoints = 'mobile' in normalizedAsset || 'desktop' in normalizedAsset
+
+            if (hasBreakpoints) {
+                // Asset con breakpoints mobile/desktop
+                const assetWithBreakpoints = normalizedAsset as StoryblokAssetWithBreakpoints
+                const mobile = assetWithBreakpoints.mobile?.filename
+                const desktop = assetWithBreakpoints.desktop?.filename
+
+                if (mobile && desktop) {
+                    // Entrambi compilati: usa immagini diverse per breakpoint
+                    mobileSrc = mobile
+                    desktopSrc = desktop
+                } else if (mobile) {
+                    // Solo mobile: usa lo stesso per entrambi
+                    mobileSrc = mobile
+                    desktopSrc = mobile
+                } else if (desktop) {
+                    // Solo desktop: usa lo stesso per entrambi
+                    mobileSrc = desktop
+                    desktopSrc = desktop
+                }
+
+                assetAlt = assetWithBreakpoints.mobile?.alt || assetWithBreakpoints.desktop?.alt || ''
+            } else {
+                // Asset diretto (retrocompatibilità)
+                const directAsset = normalizedAsset as StoryblokAsset
+                const assetSrc = directAsset.filename || ''
+                mobileSrc = assetSrc
+                desktopSrc = assetSrc
+                assetAlt = directAsset.alt || ''
+            }
         }
     } else {
         // Modalità retrocompatibilità con src/alt
@@ -245,8 +264,12 @@ const Asset = ({
 
         // Se abbiamo mobile e desktop diversi, renderizza entrambe le immagini
         // Verifica se asset ha mobile e desktop diversi
-        const hasBreakpoints = asset && ('mobile' in asset || 'desktop' in asset)
-        const assetWithBreakpoints = hasBreakpoints ? asset as StoryblokAssetWithBreakpoints : null
+        // Normalizza asset (gestisce array)
+        const normalizedAssetForBreakpoints = Array.isArray(asset)
+            ? (asset.length > 0 ? asset[0] : null)
+            : asset
+        const hasBreakpoints = normalizedAssetForBreakpoints && !Array.isArray(normalizedAssetForBreakpoints) && ('mobile' in normalizedAssetForBreakpoints || 'desktop' in normalizedAssetForBreakpoints)
+        const assetWithBreakpoints = hasBreakpoints ? normalizedAssetForBreakpoints as StoryblokAssetWithBreakpoints : null
         const hasDifferentAssets = assetWithBreakpoints?.mobile && assetWithBreakpoints?.desktop && mobileSrc !== desktopSrc
 
         if (hasDifferentAssets) {

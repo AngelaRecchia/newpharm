@@ -1,0 +1,34 @@
+// ============================================
+// BANNERACCORDION COMPONENT
+// ============================================
+
+@use "../../../styles" as *;
+
+.wrapper {
+  position: relative;
+  min-height: 100dvh;
+  overflow: clip;
+
+  .image {
+    position: absolute;
+    inset: 0;
+  }
+
+  .content {
+    @include container-lg;
+    max-width: none;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(50% - 208px / 2); // 208px is the height of the card box
+    z-index: 1;
+    display: flex;
+    align-items: baseline;
+    gap: $s-16;
+    will-change: transform;
+    width: fit-content;
+    backface-visibility: hidden;
+    -webkit-font-smoothing: antialiased;
+    transform: translateZ(0); // Forza accelerazione hardware
+  }
+}

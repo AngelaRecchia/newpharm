@@ -25,6 +25,7 @@ body {
   font-family: var(--font-sans);
   font-size: 1rem; // 16px
   line-height: 140%;
+  -webkit-font-smoothing: antialiased;
 
   .wrapper .main {
     background-color: $c-white;
