@@ -58,15 +58,16 @@ const Banneraccordion = ({ blok }: { blok?: Banner_accordionStoryblok }) => {
       const totalContentWidth = totalWidth + (gap * (cards.length - 1))
       const viewportWidth = window.innerWidth
 
-      // Calcola il padding: 1.5rem mobile, 2.5rem desktop
+      // Calcola il padding effettivo dal container-lg: $s-24 (24px) mobile, $s-40 (40px) desktop
       const isMobile = viewportWidth < BREAKPOINT_MD_PX
-      const paddingRem = isMobile ? 1.5 : 2.5
-      const paddingPx = paddingRem * 16 // 1rem = 16px
+      const paddingPx = isMobile ? 24 : 40 // $s-24 = 24px, $s-40 = 40px
       const totalPadding = paddingPx * 2 // padding su entrambi i lati
 
-      const scrollDistance = totalContentWidth - (viewportWidth - totalPadding)
+      // Lo spazio disponibile è la viewport meno il padding
+      const availableWidth = viewportWidth - totalPadding
+      const scrollDistance = totalContentWidth - availableWidth
 
-      return { totalContentWidth, scrollDistance, viewportWidth }
+      return { totalContentWidth, scrollDistance, viewportWidth, availableWidth }
     }
 
     // Calcola se tutte le card sono già in viewport
@@ -105,9 +106,11 @@ const Banneraccordion = ({ blok }: { blok?: Banner_accordionStoryblok }) => {
           start: 'top top',
           end: () => `+=${scrollDistance}px`,
           pin: true,
-          scrub: 0.5, // Valore più basso = più smooth, più alto = più responsive
-          anticipatePin: 1,
+          pinSpacing: true,
+          // anticipatePin: 1,
+          scrub: 1, // Valore più basso = più smooth, più alto = più responsive
           invalidateOnRefresh: false,
+          markers: true,
         }
       })
 

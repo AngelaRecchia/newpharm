@@ -1,0 +1,128 @@
+{
+  "datasource": {
+    "name": "Infestanti",
+    "slug": "infestanti"
+  },
+  "entries": [
+    {
+      "name": "Acari",
+      "value": "acari"
+    },
+    {
+      "name": "Blatte e scarafaggi",
+      "value": "blatte-e-scarafaggi"
+    },
+    {
+      "name": "Cimici dei letti",
+      "value": "cimici-dei-letti"
+    },
+    {
+      "name": "Cimici dei campi",
+      "value": "cimici-dei-campi"
+    },
+    {
+      "name": "Coleottero giapponese",
+      "value": "coleottero-giapponese"
+    },
+    {
+      "name": "Formiche",
+      "value": "formiche"
+    },
+    {
+      "name": "Gechi e lucertole",
+      "value": "gechi-e-lucertole"
+    },
+    {
+      "name": "Insetti delle derrate alimentari",
+      "value": "insetti-delle-derrate-alimentari"
+    },
+    {
+      "name": "Limacce e Lumache",
+      "value": "limacce-e-lumache"
+    },
+    {
+      "name": "Mosche e mosconi",
+      "value": "mosche-e-mosconi"
+    },
+    {
+      "name": "Mosca dei bagni",
+      "value": "mosca-dei-bagni"
+    },
+    {
+      "name": "Parassiti delle piante",
+      "value": "parassiti-delle-piante"
+    },
+    {
+      "name": "Piccioni e Volatili",
+      "value": "piccioni-e-volatili"
+    },
+    {
+      "name": "Pidocchi",
+      "value": "pidocchi"
+    },
+    {
+      "name": "Pulci",
+      "value": "pulci"
+    },
+    {
+      "name": "Punteruolo rosso della palma",
+      "value": "punteruolo-rosso-della-palma"
+    },
+    {
+      "name": "Ragni",
+      "value": "ragni"
+    },
+    {
+      "name": "Rettili",
+      "value": "rettili"
+    },
+    {
+      "name": "Roditori",
+      "value": "roditori"
+    },
+    {
+      "name": "Talpe",
+      "value": "talpe"
+    },
+    {
+      "name": "Tarli",
+      "value": "tarli"
+    },
+    {
+      "name": "Tarme dei tessuti",
+      "value": "tarme-dei-tessuti"
+    },
+    {
+      "name": "Termiti",
+      "value": "termiti"
+    },
+    {
+      "name": "Tignole delle derrate",
+      "value": "tignole-delle-derrate"
+    },
+    {
+      "name": "Vespe e Calabroni",
+      "value": "vespe-e-calabroni"
+    },
+    {
+      "name": "Zanzare",
+      "value": "zanzare"
+    },
+    {
+      "name": "gatti",
+      "value": "gatti"
+    },
+    {
+      "name": "pesciolini d argento",
+      "value": "pesciolini-d-argento"
+    },
+    {
+      "name": "stink bugs",
+      "value": "stink-bugs"
+    },
+    {
+      "name": "Insetti striscianti e topi",
+      "value": "insetti-striscianti-e-topi"
+    }
+  ]
+}

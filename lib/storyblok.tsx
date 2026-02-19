@@ -19,6 +19,7 @@ import SplitBanner from '@/components/organisms/SplitBanner'
 import Carousel from '@/components/organisms/Carousel'
 import Story from '@/components/storyblok/Story'
 import Banneraccordion from '@/components/organisms/BannerAccordion'
+import Product from '@/components/storyblok/Product'
 
 const components = {
 
@@ -35,7 +36,8 @@ const components = {
   asset: Asset,
   link: Link,
 
-  //
+  // Templates
+  product: Product,
   page: Page,
   settings: Settings,
   story: Story,

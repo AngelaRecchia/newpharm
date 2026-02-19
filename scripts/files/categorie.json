@@ -1,0 +1,72 @@
+{
+  "datasource": {
+    "name": "Categoria Prodotto",
+    "slug": "categoria-prodotto"
+  },
+  "entries": [
+    {
+      "name": "Insettici e acaricidi",
+      "value": "insettici-e-acaricidi"
+    },
+    {
+      "name": "Rodenticidi",
+      "value": "rodenticidi"
+    },
+    {
+      "name": "Disinfettanti e Solventi",
+      "value": "disinfettanti-e-solventi"
+    },
+    {
+      "name": "Repellenti",
+      "value": "repellenti"
+    },
+    {
+      "name": "Solventi e Veicolanti",
+      "value": "solventi-e-veicolanti"
+    },
+    {
+      "name": "Attrezzature",
+      "value": "attrezzature"
+    },
+    {
+      "name": "Monitoraggio e prevenzione insetti",
+      "value": "monitoraggio-e-prevenzione-insetti"
+    },
+    {
+      "name": "Allontanamento volatili",
+      "value": "allontanamento-volatili"
+    },
+    {
+      "name": "Accessori roditori",
+      "value": "accessori-roditori"
+    },
+    {
+      "name": "Endoinfusione",
+      "value": "endoinfusione"
+    },
+    {
+      "name": "Difesa delle piante",
+      "value": "difesa-delle-piante"
+    },
+    {
+      "name": "Insetti e acari ausiliari",
+      "value": "insetti-e-acari-ausiliari"
+    },
+    {
+      "name": "Tarli e Termiti",
+      "value": "tarli-e-termiti"
+    },
+    {
+      "name": "Trappole luminose",
+      "value": "trappole-luminose"
+    },
+    {
+      "name": "Natural",
+      "value": "natural"
+    },
+    {
+      "name": "Carvex",
+      "value": "carvex"
+    }
+  ]
+}

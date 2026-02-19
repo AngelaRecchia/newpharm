@@ -1,0 +1,172 @@
+{
+  "datasource": {
+    "name": "Formulazione",
+    "slug": "formulazione"
+  },
+  "entries": [
+    {
+      "name": "Aerosol",
+      "value": "aerosol"
+    },
+    {
+      "name": "Acari predatori",
+      "value": "acari-predatori"
+    },
+    {
+      "name": "Accessorio",
+      "value": "accessorio"
+    },
+    {
+      "name": "Bastoncini",
+      "value": "bastoncini"
+    },
+    {
+      "name": "Blocchi paraffinati",
+      "value": "blocchi-paraffinati"
+    },
+    {
+      "name": "Compresse attrattive",
+      "value": "compresse-attrattive"
+    },
+    {
+      "name": "Concentrato emulsionabile",
+      "value": "concentrato-emulsionabile"
+    },
+    {
+      "name": "Dispenser feromoni",
+      "value": "dispenser-feromoni"
+    },
+    {
+      "name": "Dispositivo per applicazioni di gel",
+      "value": "dispositivo-per-applicazioni-di-gel"
+    },
+    {
+      "name": "Emulsione concentrata",
+      "value": "emulsione-concentrata"
+    },
+    {
+      "name": "Erogatore automatico",
+      "value": "erogatore-automatico"
+    },
+    {
+      "name": "Esca in crema",
+      "value": "esca-in-crema"
+    },
+    {
+      "name": "Esca in grano",
+      "value": "esca-in-grano"
+    },
+    {
+      "name": "Fumiganti",
+      "value": "fumiganti"
+    },
+    {
+      "name": "Gel",
+      "value": "gel"
+    },
+    {
+      "name": "Granuli",
+      "value": "granuli"
+    },
+    {
+      "name": "Granuli attrattivi",
+      "value": "granuli-attrattivi"
+    },
+    {
+      "name": "Granuli idrosolubili",
+      "value": "granuli-idrosolubili"
+    },
+    {
+      "name": "Granuli pronti all uso",
+      "value": "granuli-pronti-all-uso"
+    },
+    {
+      "name": "Impianto di nebulizzazione automatizzato",
+      "value": "impianto-di-nebulizzazione-automatizzato"
+    },
+    {
+      "name": "Insetti utili",
+      "value": "insetti-utili"
+    },
+    {
+      "name": "Lampada UV",
+      "value": "lampada-uv"
+    },
+    {
+      "name": "Liquido concentrato",
+      "value": "liquido-concentrato"
+    },
+    {
+      "name": "Liquido concentrato attrattivo",
+      "value": "liquido-concentrato-attrattivo"
+    },
+    {
+      "name": "Liquido concentrato microincapsulato",
+      "value": "liquido-concentrato-microincapsulato"
+    },
+    {
+      "name": "Liquido pronto all uso",
+      "value": "liquido-pronto-all-uso"
+    },
+    {
+      "name": "Microemulsione acquosa",
+      "value": "microemulsione-acquosa"
+    },
+    {
+      "name": "Microgranuli bagnabili",
+      "value": "microgranuli-bagnabili"
+    },
+    {
+      "name": "Pasta fresca",
+      "value": "pasta-fresca"
+    },
+    {
+      "name": "Polvere pronta all uso",
+      "value": "polvere-pronta-all-uso"
+    },
+    {
+      "name": "Polveri granuli e microgranuli",
+      "value": "polveri-granuli-e-microgranuli"
+    },
+    {
+      "name": "RTU - Pronto all uso",
+      "value": "rtu-pronto-all-uso"
+    },
+    {
+      "name": "Ricambi",
+      "value": "ricambi"
+    },
+    {
+      "name": "Sistema dissuasore",
+      "value": "sistema-dissuasore"
+    },
+    {
+      "name": "Sospensione concentrata",
+      "value": "sospensione-concentrata"
+    },
+    {
+      "name": "Spray e aerosol",
+      "value": "spray-e-aerosol"
+    },
+    {
+      "name": "Stazione di avvelenamento",
+      "value": "stazione-di-avvelenamento"
+    },
+    {
+      "name": "Tablet e compresse",
+      "value": "tablet-e-compresse"
+    },
+    {
+      "name": "Trappola adesiva",
+      "value": "trappola-adesiva"
+    },
+    {
+      "name": "Trappola di aggregazione",
+      "value": "trappola-di-aggregazione"
+    },
+    {
+      "name": "Trappola meccanica",
+      "value": "trappola-meccanica"
+    }
+  ]
+}

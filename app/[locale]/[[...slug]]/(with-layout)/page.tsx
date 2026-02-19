@@ -5,8 +5,7 @@ import StoryblokRenderer from '@/components/StoryblokRenderer'
 import { setRequestLocale } from 'next-intl/server'
 import { getTranslations } from 'next-intl/server'
 import { notFound } from 'next/navigation'
-import HeaderVariantSync from '@/components/client/HeaderVariantSync'
-import { PageStoryblok, HeroStoryblok, StoryStoryblok } from '@/types/storyblok'
+import { PageStoryblok, StoryStoryblok } from '@/types/storyblok'
 
 interface PageProps {
   params: Promise<{
@@ -84,32 +83,6 @@ export const dynamic = isProduction() ? 'auto' : 'force-dynamic'
 export const revalidate = isProduction() ? 3600 : 0 // 1h in prod, no cache in draft
 
 /**
- * Determina la variante dell'header in base al primo blocco nel body della page
- * Se il primo blocco è hero primary, hero secondary, o division_box, 
- * l'header è transparent, altrimenti è white
- */
-function getHeaderVariant(firstBlock: any): 'transparent' | 'white' {
-  if (!firstBlock) {
-    return 'white'
-  }
-
-  // Controlla se è un hero con variant primary o secondary
-  if (firstBlock.component === 'hero') {
-    const heroBlock = firstBlock as HeroStoryblok
-    if (heroBlock.variant === 'primary' || heroBlock.variant === 'secondary') {
-      return 'transparent'
-    }
-  }
-
-  // Controlla se è un division_box
-  if (firstBlock.component === 'division_box') {
-    return 'transparent'
-  }
-
-  return 'white'
-}
-
-/**
  * Page per route con header/footer (route normali)
  */
 export default async function WithLayoutPage({ params }: PageProps) {
@@ -126,19 +99,6 @@ export default async function WithLayoutPage({ params }: PageProps) {
 
   if (!story) {
     notFound()
-  }
-
-  // Determina la variante dell'header in base al primo blocco del body
-  let headerVariant: 'transparent' | 'white' = 'white'
-
-  if (story.content) {
-    const pageContent = story.content as PageStoryblok
-
-    // Controlla il primo blocco nel body
-    if (pageContent.body && pageContent.body.length > 0) {
-      const firstBlock = pageContent.body[0]
-      headerVariant = getHeaderVariant(firstBlock)
-    }
   }
 
   // Se il content è una Story, fetcha le story correlate
@@ -164,7 +124,6 @@ export default async function WithLayoutPage({ params }: PageProps) {
 
   return (
     <>
-      <HeaderVariantSync variant={headerVariant} />
       {story.content && (
         <StoryblokRenderer blok={story.content} />
       )}

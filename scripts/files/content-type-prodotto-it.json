@@ -1,0 +1,175 @@
+{
+  "component": {
+    "name": "prodotto",
+    "display_name": "Prodotto",
+    "is_root": true,
+    "is_nestable": false,
+    "schema": {
+      "title": {
+        "type": "text",
+        "pos": 0,
+        "display_name": "Titolo",
+        "required": true
+      },
+      "secondary_title": {
+        "type": "text",
+        "pos": 1,
+        "display_name": "Titolo secondario"
+      },
+      "image": {
+        "type": "multilink",
+        "pos": 2,
+        "display_name": "Immagine",
+        "asset_link_type": true,
+        "show_anchor": false,
+        "restrict_content_types": false
+      },
+      "category": {
+        "type": "option",
+        "pos": 3,
+        "display_name": "Categoria",
+        "source": "internal",
+        "datasource_slug": "categoria-prodotto",
+        "required": true
+      },
+      "product_type": {
+        "type": "option",
+        "pos": 4,
+        "display_name": "Tipo prodotto",
+        "source": "internal",
+        "datasource_slug": "product-type"
+      },
+      "formulazione": {
+        "type": "option",
+        "pos": 5,
+        "display_name": "Formulazione",
+        "source": "internal",
+        "datasource_slug": "formulazione"
+      },
+      "short_description": {
+        "type": "textarea",
+        "pos": 6,
+        "display_name": "Descrizione breve"
+      },
+      "features": {
+        "type": "richtext",
+        "pos": 7,
+        "display_name": "Caratteristiche"
+      },
+      "tab_filtri": {
+        "type": "tab",
+        "display_name": "Filtri",
+        "pos": 8,
+        "keys": [
+          "application_areas",
+          "application_areas_sub",
+          "target_pests",
+          "target_pests_sub"
+        ]
+      },
+      "application_areas": {
+        "type": "options",
+        "pos": 9,
+        "display_name": "Aree di impiego",
+        "source": "internal",
+        "datasource_slug": "application-area"
+      },
+      "application_areas_sub": {
+        "type": "options",
+        "pos": 10,
+        "display_name": "Aree di impiego - Sottocategorie",
+        "source": "internal",
+        "datasource_slug": "application-area-sub"
+      },
+      "target_pests": {
+        "type": "options",
+        "pos": 11,
+        "display_name": "Infestanti target",
+        "source": "internal",
+        "datasource_slug": "infestanti"
+      },
+      "target_pests_sub": {
+        "type": "options",
+        "pos": 12,
+        "display_name": "Infestanti target - Sottocategorie",
+        "source": "internal",
+        "datasource_slug": "infestanti-sub"
+      },
+      "tab_dettaglio": {
+        "type": "tab",
+        "display_name": "Dettaglio tecnico",
+        "pos": 13,
+        "keys": [
+          "application_areas_text",
+          "composition",
+          "dosage_and_application",
+          "units_per_carton",
+          "registration",
+          "safety_data_sheet"
+        ]
+      },
+      "application_areas_text": {
+        "type": "richtext",
+        "pos": 14,
+        "display_name": "Aree di impiego - Testo"
+      },
+      "composition": {
+        "type": "textarea",
+        "pos": 15,
+        "display_name": "Composizione"
+      },
+      "dosage_and_application": {
+        "type": "richtext",
+        "pos": 16,
+        "display_name": "Dosi e modalità d'uso"
+      },
+      "units_per_carton": {
+        "type": "richtext",
+        "pos": 17,
+        "display_name": "Pezzi per cartone"
+      },
+      "registration": {
+        "type": "text",
+        "pos": 18,
+        "display_name": "Registrazione"
+      },
+      "safety_data_sheet": {
+        "type": "asset",
+        "pos": 19,
+        "display_name": "Scheda di sicurezza",
+        "filetypes": [
+          "images",
+          "videos",
+          "audios",
+          "texts"
+        ]
+      },
+      "tab_media": {
+        "type": "tab",
+        "display_name": "Media e correlati",
+        "pos": 20,
+        "keys": [
+          "video",
+          "related_products"
+        ]
+      },
+      "video": {
+        "type": "multilink",
+        "pos": 21,
+        "display_name": "Video",
+        "show_anchor": false,
+        "asset_link_type": false,
+        "restrict_content_types": false
+      },
+      "related_products": {
+        "type": "options",
+        "pos": 22,
+        "display_name": "Prodotti correlati",
+        "source": "internal_stories",
+        "filter_content_type": [
+          "prodotto"
+        ]
+      }
+    }
+  }
+}

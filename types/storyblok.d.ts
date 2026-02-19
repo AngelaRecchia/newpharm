@@ -6,7 +6,7 @@
  * 
  * Per rigenerare: npm run generate:types
  * 
- * Generato il: 2026-02-18T22:48:25.527Z
+ * Generato il: 2026-02-19T23:17:05.286Z
  */
 
 
@@ -170,6 +170,36 @@ export interface PageStoryblok {
 }
 
 
+export interface ProductStoryblok {
+  formulazione?: any | null // Optional
+  title: string
+  secondary_title?: string | null // Optional
+  image?: any[] | null // Optional
+  short_description?: string | null // Optional
+  features?: string | null // Optional
+  product_type?: any | null // Optional
+  category: any
+  tab_filtri?: any | null // Optional
+  application_areas?: string | null // Optional
+  application_areas_sub?: string | null // Optional
+  target_pests?: string | null // Optional
+  target_pests_sub?: string | null // Optional
+  tab_dettaglio?: any | null // Optional
+  application_areas_text?: string | null // Optional
+  composition?: string | null // Optional
+  dosage_and_application?: string | null // Optional
+  units_per_carton?: string | null // Optional
+  registration?: string | null // Optional
+  safety_data_sheet?: { id: number; alt: string; name: string; focus: string; title: string; filename: string; copyright: string; fieldtype: string; } | null // Optional
+  tab_media?: any | null // Optional
+  video?: string | null // Optional
+  related_products?: string | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
 export interface SettingsStoryblok {
   header?: any[] | null // Optional
   footer?: any[] | null // Optional
@@ -213,7 +243,7 @@ export interface StoryStoryblok {
 /**
  * Union type di tutti i componenti Storyblok
  */
-export type StoryblokComponent = Anchor_linkStoryblok | AssetStoryblok | Banner_accordionStoryblok | Card_boxStoryblok | Card_cta_boxStoryblok | Card_divisionStoryblok | CarouselStoryblok | Cta_boxStoryblok | Division_boxStoryblok | FooterStoryblok | Full_bannerStoryblok | HeaderStoryblok | HeroStoryblok | LinkStoryblok | Nav_itemStoryblok | PageStoryblok | SettingsStoryblok | Social_itemStoryblok | Split_bannerStoryblok | StoryStoryblok
+export type StoryblokComponent = Anchor_linkStoryblok | AssetStoryblok | Banner_accordionStoryblok | Card_boxStoryblok | Card_cta_boxStoryblok | Card_divisionStoryblok | CarouselStoryblok | Cta_boxStoryblok | Division_boxStoryblok | FooterStoryblok | Full_bannerStoryblok | HeaderStoryblok | HeroStoryblok | LinkStoryblok | Nav_itemStoryblok | PageStoryblok | ProductStoryblok | SettingsStoryblok | Social_itemStoryblok | Split_bannerStoryblok | StoryStoryblok
 
 /**
  * Helper type per il prop 'blok' nei componenti Storyblok
