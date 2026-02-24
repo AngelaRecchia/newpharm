@@ -20,6 +20,7 @@ import Carousel from '@/components/organisms/Carousel'
 import Story from '@/components/storyblok/Story'
 import Banneraccordion from '@/components/organisms/BannerAccordion'
 import Product from '@/components/storyblok/Product'
+import StickyImage from '@/components/organisms/StickyImage'
 
 const components = {
 
@@ -31,6 +32,7 @@ const components = {
   split_banner: SplitBanner,
   carousel: Carousel,
   banner_accordion: Banneraccordion,
+  sticky_image: StickyImage,
 
   // Atoms
   asset: Asset,

@@ -1,6 +1,6 @@
 @use "../../../styles/" as *;
 
-.richtext {
+.richtext:not(.raw) {
   @include container-lg;
   .nested-blok {
     margin-block: $s-16;

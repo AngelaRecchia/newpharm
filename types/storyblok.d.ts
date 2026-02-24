@@ -6,7 +6,7 @@
  * 
  * Per rigenerare: npm run generate:types
  * 
- * Generato il: 2026-02-19T23:17:05.286Z
+ * Generato il: 2026-02-23T21:55:06.524Z
  */
 
 
@@ -226,6 +226,16 @@ export interface Split_bannerStoryblok {
 }
 
 
+export interface Sticky_imageStoryblok {
+  title?: string | null // Optional
+  image?: any[] | null // Optional
+  content?: string | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
 export interface StoryStoryblok {
   title?: string | null // Optional
   author?: string | null // Optional
@@ -243,7 +253,7 @@ export interface StoryStoryblok {
 /**
  * Union type di tutti i componenti Storyblok
  */
-export type StoryblokComponent = Anchor_linkStoryblok | AssetStoryblok | Banner_accordionStoryblok | Card_boxStoryblok | Card_cta_boxStoryblok | Card_divisionStoryblok | CarouselStoryblok | Cta_boxStoryblok | Division_boxStoryblok | FooterStoryblok | Full_bannerStoryblok | HeaderStoryblok | HeroStoryblok | LinkStoryblok | Nav_itemStoryblok | PageStoryblok | ProductStoryblok | SettingsStoryblok | Social_itemStoryblok | Split_bannerStoryblok | StoryStoryblok
+export type StoryblokComponent = Anchor_linkStoryblok | AssetStoryblok | Banner_accordionStoryblok | Card_boxStoryblok | Card_cta_boxStoryblok | Card_divisionStoryblok | CarouselStoryblok | Cta_boxStoryblok | Division_boxStoryblok | FooterStoryblok | Full_bannerStoryblok | HeaderStoryblok | HeroStoryblok | LinkStoryblok | Nav_itemStoryblok | PageStoryblok | ProductStoryblok | SettingsStoryblok | Social_itemStoryblok | Split_bannerStoryblok | Sticky_imageStoryblok | StoryStoryblok
 
 /**
  * Helper type per il prop 'blok' nei componenti Storyblok

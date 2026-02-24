@@ -228,9 +228,9 @@ const Asset = ({
             <div className={cn('asset-video-wrapper', {
                 assetHasOverlay: overlay,
                 assetModeFit: mode === 'fit'
-            }, className)}>
+            }, className)} data-asset>
                 <video
-                    data-asset
+
                     ref={videoRef}
                     src={currentSrc}
                     className={cn('asset', 'asset-video')}
@@ -348,6 +348,46 @@ const Asset = ({
             />
         </div>
     )
+}
+
+/**
+ * Estrae l'URL del filename da un asset Storyblok flessibile.
+ *
+ * Gestisce:
+ * - Asset diretto: `{ filename: "..." }`
+ * - Array di assets: `[{ filename: "..." }, ...]` – usa il primo elemento
+ * - Asset con breakpoints: `{ mobile: {...}, desktop: {...} }` – con priorità configurabile
+ *
+ * @param asset  L'asset Storyblok (qualsiasi formato accettato dal componente Asset)
+ * @param preferDesktop  Se `true` (default), preferisce la variante desktop; altrimenti mobile
+ * @returns L'URL del filename o `null` se non trovato
+ */
+export function getAssetSrc(
+    asset: StoryblokAsset | StoryblokAsset[] | StoryblokAssetWithBreakpoints | null | undefined,
+    preferDesktop = true,
+): string | null {
+    if (!asset) return null
+
+    // Se è un array, usa il primo elemento
+    const normalized: StoryblokAsset | StoryblokAssetWithBreakpoints | null = Array.isArray(asset)
+        ? (asset.length > 0 ? asset[0] : null)
+        : asset
+
+    if (!normalized) return null
+
+    // Verifica se ha breakpoints mobile/desktop
+    const hasBreakpoints = 'mobile' in normalized || 'desktop' in normalized
+
+    if (hasBreakpoints) {
+        const bp = normalized as StoryblokAssetWithBreakpoints
+        const primary = preferDesktop ? bp.desktop : bp.mobile
+        const fallback = preferDesktop ? bp.mobile : bp.desktop
+
+        return primary?.filename || fallback?.filename || null
+    }
+
+    // Asset diretto
+    return (normalized as StoryblokAsset).filename || null
 }
 
 export default Asset

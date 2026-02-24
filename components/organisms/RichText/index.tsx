@@ -10,8 +10,7 @@ import {
 import React from 'react'
 import classNames from 'classnames/bind'
 import styles from './index.module.scss'
-import AssetComponent, { getFileType } from '@/components/atoms/Asset'
-import { AssetStoryblok } from '@/types/storyblok'
+
 
 const cn = classNames.bind(styles)
 
@@ -19,10 +18,11 @@ interface RichTextProps {
     content?: ISbRichtext | string | null
     className?: string
     blok?: any
+    raw?: boolean
 }
 
 
-export default function RichText({ content, className, blok }: RichTextProps) {
+export default function RichText({ content, className, blok, raw = false }: RichTextProps) {
     if (!content || typeof content !== 'object') {
         return <></>
     }
@@ -43,15 +43,16 @@ export default function RichText({ content, className, blok }: RichTextProps) {
 
             // Se il blok ha un body con altri nested bloks, renderizzali
             if (nestedBlok.body && Array.isArray(nestedBlok.body)) {
+                const parentKey = nestedBlok._uid || nestedBlok.id || `nested-${Math.random()}`
                 return React.createElement(
                     'div',
                     {
-                        key: nestedBlok._uid || nestedBlok.id,
+                        key: `nested-wrapper-${parentKey}`,
                         className: cn('nested-blok')
                     },
-                    nestedBlok.body.map((childBlok: any) =>
+                    nestedBlok.body.map((childBlok: any, index: number) =>
                         React.createElement(StoryblokComponent, {
-                            key: childBlok._uid,
+                            key: childBlok._uid ? `child-${childBlok._uid}-${index}` : `child-${parentKey}-${index}`,
                             blok: childBlok,
                             ...(childBlok.component === 'asset' ? { mode: 'fit', size: 'm' } : {})
                         })
@@ -61,13 +62,20 @@ export default function RichText({ content, className, blok }: RichTextProps) {
 
 
             // Renderizza il blok direttamente usando StoryblokComponent
+            const uniqueKey = nestedBlok._uid
+                ? `nested-${nestedBlok._uid}`
+                : nestedBlok.id
+                    ? `nested-${nestedBlok.id}`
+                    : `nested-${Math.random()}`
+
             return React.createElement(
                 'div',
                 {
-                    key: nestedBlok._uid || nestedBlok.id,
+                    key: uniqueKey,
                     className: cn('nested-blok')
                 },
                 React.createElement(StoryblokComponent, {
+                    key: `${uniqueKey}-component`,
                     blok: nestedBlok,
                     ...(nestedBlok.component === 'asset' ? { mode: 'fit', size: 'm' } : {})
                 })
@@ -77,7 +85,7 @@ export default function RichText({ content, className, blok }: RichTextProps) {
 
     return (
         <div
-            className={cn('richtext', className)}
+            className={cn('richtext', className, { raw })}
             {...(blok ? storyblokEditable(blok) : {})}
         >
             <StoryblokRichText
