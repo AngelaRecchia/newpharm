@@ -107,10 +107,9 @@ const Banneraccordion = ({ blok }: { blok?: Banner_accordionStoryblok }) => {
           end: () => `+=${scrollDistance}px`,
           pin: true,
           pinSpacing: true,
-          // anticipatePin: 1,
           scrub: 1, // Valore più basso = più smooth, più alto = più responsive
           invalidateOnRefresh: false,
-          markers: true,
+
         }
       })
 
