@@ -39,7 +39,7 @@ const FullBanner = ({ blok }: { blok?: Full_bannerStoryblok }) => {
             // top bottom: y = -parallaxDistance
             // top top: y = 0 (progress = 0.5 perché modulo = 100vh)
             // bottom top: y = +parallaxDistance
-            const target = assetRef.current
+            const target = assetRef.current.querySelector('video') || assetRef.current.querySelector('img');
 
             // Timeline con keyframes: progress 0 = -n, 0.5 = 0, 1 = +n
             const tl = gsap.timeline({

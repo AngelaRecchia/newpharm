@@ -9,17 +9,30 @@ interface StoryblokRendererProps {
 }
 
 /**
- * StoryblokRenderer - Componente Client per renderizzare bloks Storyblok
- * Usa StoryblokComponent per il rendering lato client
- * Usa useStoryblok per abilitare il live editing nel visual editor
+ * Detect if we're inside the Storyblok Visual Editor (iframe or _storyblok param)
  */
-export default function StoryblokRenderer({ blok, story }: StoryblokRendererProps) {
+function isInsideStoryblokEditor(): boolean {
+  if (typeof window === 'undefined') return false
+  try {
+    return (
+      window.location !== window.parent.location ||
+      window.location.search.includes('_storyblok')
+    )
+  } catch {
+    // Cross-origin iframe access throws — assume we're in the editor
+    return true
+  }
+}
+
+/**
+ * Inner component mounted ONLY inside the visual editor.
+ * Subscribes to live-editing via useStoryblok (triggers API calls).
+ */
+function LiveEditor({ blok, story }: StoryblokRendererProps) {
   const [content, setContent] = useState(blok)
 
-  // Use useStoryblok to subscribe to live editing changes from the visual editor
-  // The hook returns the updated story when changes are made in Storyblok editor
   const liveStory = useStoryblok(
-    story?.full_slug || '', 
+    story?.full_slug || '',
     { version: 'draft' },
     {
       resolveRelations: '*',
@@ -27,16 +40,35 @@ export default function StoryblokRenderer({ blok, story }: StoryblokRendererProp
     }
   )
 
-  // Update content when live story changes (visual editor updates)
   useEffect(() => {
     if (liveStory?.content) {
       setContent(liveStory.content)
     }
   }, [liveStory])
 
-  if (!content || !content.component) {
-    return <></>
-  }
+  if (!content || !content.component) return null
 
   return <StoryblokComponent blok={content} />
+}
+
+/**
+ * StoryblokRenderer
+ *
+ * During normal development/production: renders statically with zero client-side API calls.
+ * Inside the Storyblok visual editor: mounts LiveEditor for real-time updates.
+ */
+export default function StoryblokRenderer({ blok, story }: StoryblokRendererProps) {
+  const [isEditor, setIsEditor] = useState(false)
+
+  useEffect(() => {
+    setIsEditor(isInsideStoryblokEditor())
+  }, [])
+
+  if (!blok || !blok.component) return null
+
+  if (isEditor) {
+    return <LiveEditor blok={blok} story={story} />
+  }
+
+  return <StoryblokComponent blok={blok} />
 }

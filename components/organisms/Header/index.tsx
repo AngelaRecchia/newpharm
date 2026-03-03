@@ -108,6 +108,18 @@ export default function Header({
     }
   }, [isMobile, mobileMenuOpen, variant, scrolled])
 
+  // Aggiorna la variabile CSS --sticky-top in base alla visibilità dell'header
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      const root = document.documentElement
+      if (isHeaderVisible) {
+        root.style.setProperty('--sticky-top', 'var(--header-height)')
+      } else {
+        root.style.setProperty('--sticky-top', '0')
+      }
+    }
+  }, [isHeaderVisible])
+
 
 
 

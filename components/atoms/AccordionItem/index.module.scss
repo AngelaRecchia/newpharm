@@ -1,0 +1,67 @@
+@use "../../../styles" as *;
+
+.wrapper {
+  background-color: $c-surface;
+}
+
+.header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $s-16;
+  cursor: pointer;
+  border: none;
+  background: none;
+  text-align: start;
+
+  @include lg {
+    padding: $s-16 $s-24;
+  }
+}
+
+.label {
+  @include t-body;
+}
+
+.toggle {
+  @include flex-center;
+  width: $s-32;
+  height: $s-32;
+  border-radius: 50%;
+  background-color: $c-white;
+  flex-shrink: 0;
+  @include transition(transform, $td-300);
+
+  .open & {
+    transform: rotate(-45deg);
+  }
+
+  &.secondary {
+    background-color: $c-black;
+    color: $c-white;
+  }
+}
+
+.body {
+  height: 0;
+  opacity: 0;
+  overflow: hidden;
+}
+
+.body-inner {
+  padding: 0 $s-16 $s-24;
+  @include t-body;
+
+  @include lg {
+    padding: 0 $s-24 $s-24;
+  }
+
+  p + p {
+    margin-block-start: $s-8;
+  }
+
+  a {
+    text-decoration: underline;
+  }
+}

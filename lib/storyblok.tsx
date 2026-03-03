@@ -21,7 +21,10 @@ import Story from '@/components/storyblok/Story'
 import Banneraccordion from '@/components/organisms/BannerAccordion'
 import Product from '@/components/storyblok/Product'
 import StickyImage from '@/components/organisms/StickyImage'
-
+import VideoYt from '@/components/organisms/VideoYt'
+import SpecTable from '@/components/organisms/SpecTable'
+import IconTextHighlight from '@/components/organisms/IconTextHighlight'
+import Tabs from '@/components/organisms/Tabs'
 const components = {
 
   // Organisms
@@ -33,6 +36,10 @@ const components = {
   carousel: Carousel,
   banner_accordion: Banneraccordion,
   sticky_image: StickyImage,
+  video_yt: VideoYt,
+  spec_table: SpecTable,
+  icon_text_highlight: IconTextHighlight,
+  tabs: Tabs,
 
   // Atoms
   asset: Asset,
@@ -58,15 +65,72 @@ storyblokInit({
 
 /**
  * StoryblokProvider - Provider client-side per Storyblok
- * Carica il bridge per il visual editor
+ * Carica il bridge per il visual editor e ascolta eventi per invalidare la cache
  */
 export function StoryblokProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     // Carica il bridge di Storyblok solo in draft mode (non in produzione)
-    if (shouldEnableBridge() && typeof window !== 'undefined') {
-      loadStoryblokBridge().catch((error) => {
+    if (!shouldEnableBridge() || typeof window === 'undefined') {
+      return
+    }
+
+    // Funzione per invalidare la cache
+    const invalidateCache = async () => {
+      try {
+        const response = await fetch('/api/cache/invalidate', {
+          method: 'POST',
+        })
+        if (response.ok) {
+          console.log('✅ Cache invalidated after Storyblok edit')
+        }
+      } catch (error) {
+        console.error('Failed to invalidate cache:', error)
+      }
+    }
+
+    // Il bridge di Storyblok espone eventi tramite window.storyblok
+    // Ascolta quando il contenuto cambia
+    const handleInput = () => {
+      // Debounce per evitare troppe chiamate
+      clearTimeout((window as any).__storyblokCacheInvalidationTimeout)
+        ; (window as any).__storyblokCacheInvalidationTimeout = setTimeout(
+          invalidateCache,
+          1000
+        )
+    }
+
+    let bridgeLoaded = false
+
+    loadStoryblokBridge()
+      .then(() => {
+        bridgeLoaded = true
+
+        // Ascolta eventi del bridge
+        // Il bridge emette eventi quando il contenuto cambia
+        if ((window as any).storyblok) {
+          ; (window as any).storyblok.on(['input', 'change', 'published'], handleInput)
+        }
+
+        // Fallback: ascolta anche eventi custom del bridge
+        window.addEventListener('storyblok:input', handleInput)
+        window.addEventListener('storyblok:change', handleInput)
+        window.addEventListener('storyblok:published', handleInput)
+      })
+      .catch((error) => {
         console.error('Error loading Storyblok bridge:', error)
       })
+
+    // Cleanup function
+    return () => {
+      if (bridgeLoaded) {
+        if ((window as any).storyblok) {
+          ; (window as any).storyblok.off(['input', 'change', 'published'], handleInput)
+        }
+        window.removeEventListener('storyblok:input', handleInput)
+        window.removeEventListener('storyblok:change', handleInput)
+        window.removeEventListener('storyblok:published', handleInput)
+      }
+      clearTimeout((window as any).__storyblokCacheInvalidationTimeout)
     }
   }, [])
 

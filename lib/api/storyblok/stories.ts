@@ -388,3 +388,68 @@ export async function getRelatedStoriesByTags(
     return [];
   }
 }
+
+/**
+ * Interface per progetti correlati a un prodotto
+ */
+export interface RelatedProject {
+  full_slug: string;
+  title: string;
+  asset: AssetStoryblok[];
+}
+
+/**
+ * Query inversa: trova tutti i progetti che referenziano un prodotto
+ * Cerca nel campo related_products dei content type "project"
+ *
+ * @param productUuid - UUID del prodotto corrente
+ * @param locale - Locale per filtrare le stories
+ * @param options - Opzioni aggiuntive
+ * @returns Array di progetti correlati
+ */
+export async function getRelatedProjectsByProduct(
+  productUuid: string,
+  locale?: string,
+  options: GetStoryOptions = {}
+): Promise<RelatedProject[]> {
+  try {
+    if (!productUuid) return [];
+
+    const storyblokApi = getStoryblokApi();
+    const version = options.version || getStoryblokVersion();
+    const cv = await getCacheVersion();
+
+    const params: Record<string, any> = {
+      version,
+      per_page: 100,
+      excluding_fields: "body,article",
+      ...options,
+    };
+
+    if (locale) {
+      params.starts_with = `${locale}/`;
+    }
+
+    params["filter_query[component][in]"] = "project";
+    params["filter_query[related_products][in]"] = productUuid;
+
+    if (cv !== undefined) {
+      params.cv = cv;
+    }
+
+    const { data } = await storyblokApi.get("cdn/stories", params);
+
+    if (!data?.stories || data.stories.length === 0) {
+      return [];
+    }
+
+    return data.stories.map((story: Story) => ({
+      full_slug: story.full_slug,
+      title: story.content?.title || story.name,
+      asset: story.content?.asset || [],
+    }));
+  } catch (error) {
+    console.error("[Storyblok] Error fetching related projects by product:", error);
+    return [];
+  }
+}

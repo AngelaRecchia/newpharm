@@ -1,4 +1,4 @@
-import { getAllStories, getStory, getRelatedStoriesByTags } from '@/lib/api/storyblok/stories'
+import { getAllStories, getStory, getRelatedStoriesByTags, getRelatedProjectsByProduct } from '@/lib/api/storyblok/stories'
 import { getLangs } from '@/lib/api/storyblok/languages'
 import { isProduction } from '@/lib/api/storyblok/config'
 import StoryblokRenderer from '@/components/StoryblokRenderer'
@@ -116,6 +116,21 @@ export default async function WithLayoutPage({ params }: PageProps) {
       story.content = {
         ...storyContent,
         related_stories: relatedStories
+      }
+    }
+  }
+
+  // Se il content è un Product, fetcha i progetti correlati (query inversa)
+  if (story.content?.component === 'product') {
+    const relatedProjects = await getRelatedProjectsByProduct(
+      story.uuid,
+      locale
+    )
+
+    if (relatedProjects.length > 0) {
+      story.content = {
+        ...story.content,
+        related_projects: relatedProjects
       }
     }
   }

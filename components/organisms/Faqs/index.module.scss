@@ -1,0 +1,42 @@
+@use "../../../styles" as *;
+
+.wrapper {
+  @include container-md;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: $s-40;
+
+  @include lg {
+    gap: $s-80;
+  }
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: $s-16;
+
+  @include lg {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.title {
+  @include t-h3;
+  margin: 0;
+}
+
+.description {
+  @include t-note;
+  margin: 0;
+}
+
+.items {
+  display: flex;
+  flex-direction: column;
+  gap: $s-8;
+}

@@ -1,0 +1,123 @@
+@use "../../../styles" as *;
+
+.container {
+  @include container-md;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: $s-8;
+  margin-bottom: $s-40;
+
+  @include lg {
+    flex-direction: row;
+
+    gap: $s-40;
+
+    > * {
+      flex: 1;
+    }
+  }
+}
+
+.title {
+  @include t-h3;
+  margin: 0;
+}
+
+.description {
+  @include t-note;
+  margin: 0;
+
+  @include lg {
+    max-width: 50%;
+  }
+}
+
+// Wrapper esterno: tiene il gradiente fisso (non scrolla con la tabella)
+.table-scroll-wrap {
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 40px;
+    background: linear-gradient(to left, $c-white, transparent);
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0;
+    @include transition(opacity, $td-200);
+  }
+
+  &--overflow::after {
+    opacity: 1;
+    transition: none;
+  }
+}
+
+// Scroll orizzontale con scrollbar nascosta
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+// Stili unificati per tutte le tabelle
+.table-code table,
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 $s-24;
+  border: none;
+  @include t-note;
+}
+
+// Bordo sotto thead
+.table-code thead,
+.table thead {
+  tr:last-child th {
+    padding-bottom: $s-24;
+    border-bottom: 1px solid $c-border-light;
+  }
+}
+
+// Header e celle unificati (stesso stile)
+.table-code th,
+.table-code td,
+.th,
+.td {
+  text-align: left;
+  padding: $s-8 $s-16;
+  border: none;
+  white-space: nowrap;
+  vertical-align: top;
+  @include t-body;
+  font-weight: 400;
+}
+
+// Dot — prima cella header vuota
+.dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: $c-black;
+}
+
+// Riga hover unificato
+.table-code tbody tr,
+.table tbody tr {
+  @include transition(background-color, $td-200);
+
+  &:hover {
+    background-color: $c-surface;
+  }
+}

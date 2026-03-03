@@ -62,22 +62,37 @@
 
 // Typography mixins
 @mixin t-help {
-  // 11px fisso, cresce leggermente dopo 1440px
-  font-size: clamp(0.6875rem, 0.6875rem + 0.1vw, 0.8125rem); // 11px to ~13px
+  // 11px fisso fino a 1440px, cresce fino a 13px a 2560px
+  font-size: clamp(
+    0.6875rem,
+    calc(
+      0.6875rem + (0.8125rem - 0.6875rem) *
+        ((100vw - 1440px) / (2560px - 1440px))
+    ),
+    0.8125rem
+  ); // 11px → 13px
   line-height: 1.2;
   letter-spacing: -0.03em;
 }
 
 @mixin t-note {
-  // 14px fisso, cresce leggermente dopo 1440px
-  font-size: clamp(0.875rem, 0.875rem + 0.12vw, 1rem); // 14px to ~16px
+  // 14px fisso fino a 1440px, cresce fino a 16px a 2560px
+  font-size: clamp(
+    0.875rem,
+    calc(0.875rem + (1rem - 0.875rem) * ((100vw - 1440px) / (2560px - 1440px))),
+    1rem
+  ); // 14px → 16px
   line-height: 1.2;
   letter-spacing: -0.03em;
 }
 
 @mixin t-body {
-  // 16px fisso, cresce leggermente dopo 1440px
-  font-size: clamp(1rem, 1rem + 0.15vw, 1.1875rem); // 16px to ~19px
+  // 16px fisso fino a 1440px, cresce fino a 19px a 2560px
+  font-size: clamp(
+    1rem,
+    calc(1rem + (1.1875rem - 1rem) * ((100vw - 1440px) / (2560px - 1440px))),
+    1.1875rem
+  ); // 16px → 19px
   line-height: 1.4;
   letter-spacing: -0.03em;
 }
@@ -165,9 +180,28 @@
 }
 
 // Container mixins
+@mixin container-md {
+  margin-inline: auto;
+  padding-inline: $s-24;
+  padding-block: $s-40;
+
+  width: clamp(
+    80%,
+    calc(
+      100% -
+        (
+          20% * (100vw - $breakpoint-m - ($s-24 * 2)) /
+            ($breakpoint-xxl - $breakpoint-m)
+        )
+    ),
+    100%
+  );
+  @include md {
+    padding-block: $s-80;
+  }
+}
+
 @mixin container-lg {
-  // Max-width cresce da 1440px fino a ~1920px a 2560px viewport
-  // Formula: 1440px + (1920 - 1440) * ((100vw - 1440px) / (2560px - 1440px))
   max-width: 1920px;
   margin-inline: auto;
   padding-inline: $s-24; // 24px mobile

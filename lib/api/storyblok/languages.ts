@@ -1,12 +1,16 @@
 /**
  * Storyblok Languages API
- * 
+ *
  * Functions for fetching available locales/languages from Storyblok.
+ * In development the result is cached on the filesystem (.cache/storyblok/_langs.json)
+ * to avoid burning Management API quota on every reload.
  */
 
 import { getStoryblokApi } from './client'
 import { getStoryblokVersion, getCacheVersion } from './config'
 import StoryblokClient from "storyblok-js-client"
+
+const isDev = process.env.NODE_ENV === 'development'
 
 /**
  * Interface for Storyblok folder/story from Management API
@@ -58,6 +62,38 @@ function getSpaceId(): string {
 }
 
 /**
+ * Read/write a JSON cache file in .cache/storyblok/
+ * Only active when NODE_ENV === 'development'
+ */
+function readFsCache<T>(fileName: string): T | null {
+  if (!isDev) return null
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const fs = require('fs') as typeof import('fs')
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const path = require('path') as typeof import('path')
+    const filePath = path.join(process.cwd(), '.cache', 'storyblok', fileName)
+    if (fs.existsSync(filePath)) {
+      return JSON.parse(fs.readFileSync(filePath, 'utf-8'))
+    }
+  } catch { /* cache miss */ }
+  return null
+}
+
+function writeFsCache(fileName: string, data: unknown): void {
+  if (!isDev) return
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const fs = require('fs') as typeof import('fs')
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const path = require('path') as typeof import('path')
+    const dir = path.join(process.cwd(), '.cache', 'storyblok')
+    fs.mkdirSync(dir, { recursive: true })
+    fs.writeFileSync(path.join(dir, fileName), JSON.stringify(data))
+  } catch { /* ignore write errors */ }
+}
+
+/**
  * Retrieves available locales from Storyblok using Management API.
  *
  * How it works:
@@ -65,6 +101,9 @@ function getSpaceId(): string {
  * 2. Filters folders based on published status and exclude list
  * 3. Optionally verifies each folder has at least one published story
  * 4. Returns unique locale codes
+ *
+ * In development the result is cached to .cache/storyblok/_langs.json.
+ * Delete the file (or the whole .cache folder) to force a refresh.
  *
  * @param options - Optional configuration
  * @param options.excludePaths - Folder names to exclude (default: ['layout-components'])
@@ -85,6 +124,10 @@ export async function getLangs(
     checkForContent?: boolean
   } = {}
 ): Promise<string[]> {
+  // Check filesystem cache first (dev only)
+  const cached = readFsCache<string[]>('_langs.json')
+  if (cached) return cached
+
   const { excludePaths = ["layout-components"], checkForContent = true } =
     options
 
@@ -135,6 +178,9 @@ export async function getLangs(
         console.warn("No valid locale folders found")
       }
 
+      // Cache before returning
+      if (locales.length > 0) writeFsCache('_langs.json', locales)
+
       return locales
     }
 
@@ -174,6 +220,9 @@ export async function getLangs(
     }
 
     const locales = Array.from(localesSet).sort()
+
+    // Cache before returning
+    if (locales.length > 0) writeFsCache('_langs.json', locales)
 
     return locales
   } catch (error) {

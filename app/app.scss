@@ -3,6 +3,10 @@
 // ============================================
 // BASE STYLES
 // ============================================
+:root {
+  --header-height: 4.25rem; // 68px - altezza header
+}
+
 html,
 body {
   margin: 0;

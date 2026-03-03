@@ -5,6 +5,17 @@ const nextConfig: NextConfig = {
   images: {
     domains: ["a.storyblok.com"],
   },
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        path: false,
+        crypto: false,
+      }
+    }
+    return config
+  },
 };
 
 const withNextIntl = createNextIntlPlugin("./i18n/request.ts");

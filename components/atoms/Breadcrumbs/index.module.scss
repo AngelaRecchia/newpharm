@@ -1,0 +1,37 @@
+@use "../../../styles" as *;
+
+.nav {
+  width: 100%;
+}
+
+.list {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: $s-4;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: $s-4;
+  @include t-help;
+}
+
+.link {
+  color: $c-black;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  @include transition(border-color, $td-300);
+
+  &:hover {
+    border-color: $c-black;
+  }
+}
+
+.current {
+  color: $c-black;
+}
