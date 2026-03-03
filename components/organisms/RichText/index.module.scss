@@ -1,0 +1,107 @@
+@use "../../../styles/" as *;
+
+.richtext:not(.raw) {
+  @include container-lg;
+  .nested-blok {
+    margin-block: $s-16;
+
+    @include lg {
+      margin-block: $s-24;
+    }
+  }
+
+  // Stili per i paragrafi
+  p {
+    margin-block: $s-24;
+  }
+
+  // Stili per gli heading
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin-block: $s-24;
+    font-weight: 600;
+
+    @include lg {
+      margin-block: $s-32;
+    }
+
+    &:first-child {
+      margin-block-start: 0;
+    }
+  }
+
+  // body font size
+  @include t-h6;
+
+  h1 {
+    @include t-h2;
+  }
+
+  h2 {
+    @include t-h3;
+  }
+
+  // Stili per le liste
+  ul,
+  ol {
+    margin-block: $s-16;
+    padding-inline-start: $s-24;
+
+    @include lg {
+      margin-block: $s-24;
+      padding-inline-start: $s-32;
+    }
+
+    p {
+      margin-block: 0;
+    }
+
+    li {
+      margin-block: $s-8;
+    }
+  }
+
+  ul {
+    list-style: disc;
+  }
+
+  ol {
+    list-style: decimal;
+  }
+
+  // Stili per i link (esclusi quelli nei nested bloks che sono componenti Button)
+  // I link normali nel testo del richtext
+  a {
+    text-decoration: underline;
+  }
+
+  // Escludi i link dentro i nested bloks (componenti come Button)
+  .nested-blok a {
+    text-decoration: none;
+  }
+
+  // Stili per le immagini
+  img,
+  video {
+    max-width: 100%;
+    height: auto;
+    margin-block: $s-64;
+
+    @include lg {
+      margin-block: $s-80;
+    }
+  }
+
+  // Stili per il testo in grassetto e corsivo
+  strong {
+    font-weight: 600;
+  }
+
+  em {
+    font-style: italic;
+  }
+}

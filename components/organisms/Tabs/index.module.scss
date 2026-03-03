@@ -1,0 +1,56 @@
+@use "../../../styles" as *;
+
+.wrapper {
+}
+
+.title {
+  @include t-h3;
+  margin: 0;
+}
+
+.container {
+  @include container-lg;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: $s-40;
+
+  @include lg {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+
+    gap: $s-64;
+    align-items: start;
+  }
+}
+
+.content-wrapper {
+  @include lg {
+    width: calc(80% - $s-40 * 2);
+    margin-inline: auto;
+  }
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: $s-40;
+
+  @include lg {
+    gap: $s-80;
+    grid-column: 2 / span 4;
+  }
+}
+
+.asset {
+  @include lg {
+    position: sticky;
+    top: var(--sticky-top, var(--header-height, 4.25rem));
+    width: 100%;
+  }
+}
+
+.items {
+  display: flex;
+  flex-direction: column;
+  gap: $s-8;
+}

@@ -1,0 +1,219 @@
+@use "../../../styles" as *;
+
+// ============================================
+// PRODUCT HERO — layout a due colonne
+// ============================================
+
+.wrapper {
+  background-color: $c-white;
+}
+
+.sticky-section {
+  display: grid;
+  grid-template-columns: 1fr;
+  min-height: 100vh;
+
+  @include lg {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+// ── Colonna sinistra — immagine prodotto ──
+
+.image-col {
+  background-color: $c-surface;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $s-80 $s-40;
+  min-height: 60vh;
+
+  @include lg {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    padding: $s-40;
+  }
+}
+
+.tag {
+  position: absolute;
+  top: $s-32;
+  inset-inline-start: $s-40;
+  z-index: 1;
+}
+
+.product-image {
+  width: 65%;
+  max-width: 26rem; // ~426px
+  mix-blend-mode: multiply;
+
+  img {
+    mix-blend-mode: multiply;
+  }
+}
+
+// ── Colonna destra — contenuto ──
+
+.content-col {
+  padding: $s-24;
+  display: flex;
+  flex-direction: column;
+  gap: $s-64;
+
+  @include lg {
+    padding: $s-32 $s-40;
+    gap: $s-80;
+  }
+}
+
+// Blocco titoli
+
+.title-block {
+  display: flex;
+  flex-direction: column;
+  gap: $s-24;
+
+  @include lg {
+    padding-bottom: $s-128;
+  }
+}
+
+.secondary-title {
+  @include t-h3;
+  opacity: 0.4;
+}
+
+.title {
+  @include t-h1;
+  letter-spacing: -0.05em;
+}
+
+.description {
+  @include t-h6;
+  max-width: 26rem;
+}
+
+// Immagini secondarie
+
+.secondary-images {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $s-24;
+  order: 1; // mobile: dopo tutti gli altri elementi (order: 0 di default)
+
+  @include lg {
+    order: 0; // desktop: torna all'ordine DOM
+  }
+}
+
+.secondary-image {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+}
+
+// Caratteristiche
+
+.features-section {
+  display: flex;
+  flex-direction: column;
+  gap: $s-24;
+}
+
+.features-heading {
+  @include t-h6;
+  font-weight: 400;
+}
+
+.features-text {
+  @include t-body;
+
+  // Due colonne a desktop — il testo fluisce naturalmente bilanciandosi
+  @include lg {
+    columns: 2;
+    column-gap: $s-24;
+  }
+
+  p {
+    margin-block: 0;
+  }
+
+  p + p {
+    margin-block-start: $s-16;
+  }
+}
+
+// Accordion
+
+.accordions {
+  display: flex;
+  flex-direction: column;
+  gap: $s-24;
+}
+
+// Download link nell'accordion
+
+.download-link {
+  display: inline-flex;
+  align-items: center;
+  gap: $s-8;
+  color: $c-black;
+  text-decoration: none;
+  @include transition(opacity, $td-200);
+
+  &:hover {
+    opacity: 0.6;
+  }
+}
+
+// Note (registrazione + tipo prodotto)
+
+.note {
+  display: flex;
+  flex-direction: column;
+  @include t-note;
+}
+
+// Progetti correlati
+
+.related-projects {
+  @include container-lg;
+  display: flex;
+  flex-direction: column;
+  gap: $s-24;
+}
+
+.related-projects-title {
+  @include t-h3;
+  margin: 0;
+}
+
+.related-projects-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $s-16;
+
+  @include md {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.project-card {
+  display: flex;
+  flex-direction: column;
+  gap: $s-8;
+  text-decoration: none;
+  color: $c-black;
+}
+
+.project-card-image {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+}
+
+.project-card-title {
+  @include t-body;
+}

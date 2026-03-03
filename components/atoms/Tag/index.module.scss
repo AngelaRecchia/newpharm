@@ -1,0 +1,15 @@
+@use "../../../styles" as *;
+
+.wrapper {
+  background-color: $c-white;
+  color: $c-black;
+  padding: $s-4 $s-8;
+  border-radius: 624.9375rem;
+  @include t-note;
+  font-size: 0.75rem; // 12px
+
+  &.secondary {
+    background-color: $c-surface;
+    color: $c-black;
+  }
+}

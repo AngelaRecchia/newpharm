@@ -1,0 +1,102 @@
+// ============================================
+// DIVISION CARD COMPONENT
+// ============================================
+
+@use "../../../styles" as *;
+
+.card {
+  &.cardLink {
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+  }
+}
+
+.card-cover {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 345 / 435;
+  padding: $s-16;
+
+  color: $c-white;
+
+  @include md {
+    aspect-ratio: 672 / 435;
+  }
+
+  img {
+    transition: transform 500ms $ease-out;
+  }
+
+  .card:hover & img {
+    transform: scale(1.05);
+  }
+
+  .card-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.4) 100%
+    );
+    pointer-events: none;
+  }
+
+  .card-info {
+    height: 100%;
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: $s-16;
+
+    .card-number {
+      @include t-huge;
+      font-weight: 200; // Extra Light
+      line-height: 110%;
+      letter-spacing: -3%;
+      margin-bottom: calc($s-16 * -1);
+    }
+  }
+
+  .card-label {
+  }
+}
+
+.card-footer {
+  display: flex;
+  align-items: center;
+  padding: $s-16;
+  padding-inline-start: 0;
+}
+
+.card-dot {
+  @include hover-circle-dot;
+  padding-inline-end: $s-8;
+
+  @include md {
+    .card:hover & {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+}
+
+.card-title {
+  @include t-h6;
+  color: $c-black;
+
+  transition: transform 300ms $ease-smooth;
+
+  @include mobile {
+    transform: translateX($s-8);
+  }
+
+  @include md {
+    .card:hover & {
+      transform: translateX($s-8); // Il titolo si sposta leggermente all'hover
+    }
+  }
+}

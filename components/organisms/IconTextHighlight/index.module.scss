@@ -1,0 +1,62 @@
+@use "../../../styles" as *;
+
+.wrapper {
+  background-color: $c-white;
+  color: $c-black;
+  .container {
+    @include container-md;
+    display: flex;
+    flex-direction: column;
+    gap: $s-40;
+
+    @include lg {
+      gap: $s-80;
+    }
+  }
+
+  .head {
+    display: flex;
+    flex-direction: column;
+    gap: $s-16;
+
+    @include lg {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .title {
+    @include t-h3;
+  }
+
+  .items {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: $s-24;
+    @include md {
+      grid-template-columns: repeat(4, 1fr);
+      column-gap: $s-64;
+    }
+
+    .item {
+      display: flex;
+      flex-direction: column;
+      gap: $s-8;
+
+      .item-image {
+        width: 6.25rem;
+        height: 6.25rem;
+        margin-bottom: $s-8;
+        position: relative;
+      }
+
+      .item-title {
+        @include t-h6;
+      }
+
+      .item-description {
+        @include t-note;
+      }
+    }
+  }
+}

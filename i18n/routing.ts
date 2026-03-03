@@ -1,21 +1,17 @@
 import { defineRouting } from "next-intl/routing";
+import localeConfig from "./locales.json";
 
 /**
  * Routing configuration for next-intl
  *
- * Note: While locales are dynamically fetched from Storyblok at runtime,
- * we specify the known locales here for TypeScript type safety.
- * The middleware will validate against actual Storyblok locales.
+ * IMPORTANT: This file is imported by middleware.ts which runs in Edge Runtime.
+ * Do NOT import any module that uses Node.js APIs (fs, path, process.cwd, etc.)
+ *
+ * Locales are read from i18n/locales.json, generated at build time by:
+ *   node scripts/fetch-locales.mjs
  */
 export const routing = defineRouting({
-  // Known locales (must include all locales used in Storyblok)
-  // These are the example locales: it (default), en, ar (RTL)
-  locales: ["it", "en"],
-
-  // Default locale (used when no locale can be detected)
-  defaultLocale: "it",
-
-  // Locale prefix strategy
-  // 'always' = always show locale in URL (e.g., /en/about, /it/about)
+  locales: localeConfig.locales as readonly string[],
+  defaultLocale: localeConfig.defaultLocale,
   localePrefix: "always",
 });

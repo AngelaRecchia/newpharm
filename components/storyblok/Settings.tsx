@@ -1,34 +1,23 @@
 'use client'
 
-import { StoryblokComponent, storyblokEditable } from '@storyblok/react'
+import { storyblokEditable } from '@storyblok/react'
 import { SettingsStoryblok } from '@/types/storyblok'
+import Header from '@/components/organisms/Header'
+import Footer from '@/components/organisms/Footer'
 
-/**
- * Settings Component (Global Settings)
- * Wrapper Storyblok per il componente Settings
- * Questo componente contiene Header, Footer e altri elementi globali
- */
-export default function Settings({ blok }: { blok: SettingsStoryblok }) {
+export default function Settings({ blok }: { blok?: SettingsStoryblok }) {
+  if (!blok) {
+    return null
+  }
 
   return (
-    <div {...storyblokEditable(blok as any)} data-settings="global" >
-      {/* Renderizza tutti i componenti nested (header, footer, ecc.) */}
-      {blok.header && Array.isArray(blok.header) && blok.header.length > 0 && (
-        <div data-slot="header">
-          {blok.header.map((nestedBlok: any) => (
-            <StoryblokComponent blok={nestedBlok} key={nestedBlok._uid} />
-          ))}
-        </div>
+    <div {...storyblokEditable(blok as any)} style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+      {blok.header && blok.header.length > 0 && (
+        <Header blok={blok.header[0]} />
       )}
-
-      <div style={{ minHeight: '100vh' }}></div>
-
-      {blok.footer && Array.isArray(blok.footer) && blok.footer.length > 0 && (
-        <div data-slot="footer">
-          {blok.footer.map((nestedBlok: any) => (
-            <StoryblokComponent blok={nestedBlok} key={nestedBlok._uid} />
-          ))}
-        </div>
+      <main style={{ flexBasis: '100%' }}></main>
+      {blok.footer && blok.footer.length > 0 && (
+        <Footer blok={blok.footer[0]} />
       )}
     </div>
   )

@@ -50,4 +50,7 @@ scripts/*.js.map
 # cursor rules (keep local, don't push)
 .cursorrules
 
+# dev api cache
+.cache/
+
 certificates

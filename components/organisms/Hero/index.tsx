@@ -8,7 +8,6 @@ import { useMemo } from 'react';
 import AnchorLink from '@/components/atoms/AnchorLink';
 import Button from '@/components/atoms/Button';
 
-import { getLinkUrl } from '@/lib/api/utils/links';
 import { storyblokEditable } from '@storyblok/react';
 
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -26,7 +25,7 @@ export default function HeroComponent({ blok }: { blok?: HeroStoryblok }) {
         const { links, variant } = blok;
         if (variant === 'primary') {
             return links?.map((link) => (
-                <Button key={link._uid} href={getLinkUrl(link.link) || ''} label={link.label} variant='secondary' />
+                <Button key={link._uid} link={link.link} label={link.label} variant='secondary' />
             ))
         } else if (variant === 'secondary') {
 
@@ -50,9 +49,9 @@ export default function HeroComponent({ blok }: { blok?: HeroStoryblok }) {
         <section className={cn('wrapper', variant)} {...storyblokEditable(blok as any)}>
 
 
-            {variant !== 'tertiary' && background?.filename ?
+            {variant !== 'tertiary' && background ?
                 <div className={cn('background')}>
-                    <Asset src={background?.filename} alt={background?.alt} />
+                    <Asset asset={background} />
                 </div>
                 : null}
 

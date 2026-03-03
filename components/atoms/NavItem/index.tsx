@@ -1,13 +1,14 @@
 'use client'
 
-import Link from 'next/link'
+import { useMemo } from 'react'
+import SmartLink from '../SmartLink'
 import Icon from '../Icon'
 import { Nav_itemStoryblok } from '@/types/storyblok'
 import classNames from 'classnames/bind'
 import { AnimatePresence, motion } from 'motion/react'
 import styles from './index.module.scss'
-import { getLinkUrl } from '@/lib/api/utils/links'
 import AnchorLink from '../AnchorLink'
+import { getLinkUrl } from '@/lib/api/utils/links'
 
 const cn = classNames.bind(styles)
 
@@ -32,8 +33,9 @@ export default function NavItem({
     variant = 'transparent',
     onToggle,
 }: NavItemProps) {
-    const hasItems = hasDropdown(item)
-    const hasLink = getLinkUrl(item.link)
+    // Memoizza i calcoli per evitare ri-calcoli ad ogni render
+    const hasItems = useMemo(() => hasDropdown(item), [item])
+    const hasLink = useMemo(() => getLinkUrl(item.link), [item.link])
 
     const linkClassName = cn('navLink', {
         navLinkWhite: variant === 'white',
@@ -45,24 +47,25 @@ export default function NavItem({
     })
 
 
+
     return (
         <li
             className={navItemClasses}
 
         >
             {hasLink ? (
-                <Link
-                    href={hasLink}
+                <SmartLink
+                    link={item.link}
                     className={linkClassName}
                     onClick={() => hasItems && onToggle(index)}
                 >
                     <span>{item.label}</span>
                     {hasItems && (
                         <div className={cn('navIcon')} aria-hidden="true">
-                            <Icon type="chevron-down" />
+                            <Icon type="chevron-down" size="s" />
                         </div>
                     )}
-                </Link>
+                </SmartLink>
             ) : (
                 <button
                     className={linkClassName}
@@ -72,9 +75,9 @@ export default function NavItem({
                 >
                     <span>{item.label}</span>
                     {hasItems && (
-                        <div className={cn('navIcon')} aria-hidden="true">
-                            <Icon type="chevron-down" />
-                        </div>
+
+                        <Icon aria-hidden="true" type="chevron-down" size="s" className={cn('navIcon')} />
+
                     )}
                 </button>
             )}
@@ -83,8 +86,6 @@ export default function NavItem({
                 {hasItems && expanded && item.items && (
                     <motion.ul
                         className={cn('dropdown')}
-
-
 
                     >
                         {item.items.map((subItem, subIndex) => (
@@ -98,6 +99,7 @@ export default function NavItem({
                             >
                                 <AnchorLink
                                     link={subItem.link}
+
                                     label={subItem.label}
                                     description={subItem.description}
                                 />

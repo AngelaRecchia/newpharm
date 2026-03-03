@@ -1,0 +1,82 @@
+@use "../../../styles" as *;
+
+.wrapper {
+  background-color: $c-white;
+  overflow: clip;
+}
+
+.container {
+  @include container-lg;
+  display: flex;
+  flex-direction: column;
+  gap: $s-64;
+}
+
+.header-wrapper {
+  display: flex;
+  justify-content: space-between;
+  gap: $s-24;
+
+  .header {
+    display: flex;
+    flex-direction: column;
+    gap: $s-24;
+
+    .title {
+      @include t-h2;
+    }
+
+    .subtitle {
+      @include t-h3;
+    }
+  }
+
+  .buttons-wrapper {
+    display: flex;
+    gap: $s-8;
+    height: fit-content;
+
+    @include md {
+      justify-self: flex-end;
+    }
+
+    button {
+      background-color: $c-surface;
+
+      &[disabled] {
+        opacity: 0.5;
+        cursor: default;
+        pointer-events: none;
+      }
+
+      &:hover svg {
+        transform: translateX(2px);
+      }
+
+      &:global(.button-prev):hover svg {
+        transform: translateX(-2px);
+      }
+    }
+    svg {
+      width: $s-24;
+      height: $s-24;
+      @include transition(transform, $td-200);
+    }
+  }
+}
+
+.carousel-wrapper {
+  position: relative;
+
+  width: 100%;
+}
+
+.swiper {
+  width: 100%;
+  overflow: visible;
+}
+
+.swiper-slide {
+  height: auto;
+  display: flex;
+}

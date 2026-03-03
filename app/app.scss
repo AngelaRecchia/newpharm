@@ -3,6 +3,10 @@
 // ============================================
 // BASE STYLES
 // ============================================
+:root {
+  --header-height: 4.25rem; // 68px - altezza header
+}
+
 html,
 body {
   margin: 0;
@@ -25,12 +29,17 @@ body {
   font-family: var(--font-sans);
   font-size: 1rem; // 16px
   line-height: 140%;
+  -webkit-font-smoothing: antialiased;
 
-  > .wrapper {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 100%;
+  .wrapper .main {
+    background-color: $c-white;
+    min-height: 100dvh;
+    position: relative;
+    z-index: 1;
+  }
+
+  header[data-transparent="false"] + .main {
+    padding-top: 4.25rem;
   }
 }
 
@@ -64,4 +73,14 @@ p {
   margin: 0;
   padding: 0;
   font-weight: 400;
+}
+
+// ============================================
+// LENIS SMOOTH SCROLL STYLES
+// ============================================
+// Lenis doesn't require specific CSS classes
+// The .scroller class is kept for layout purposes only
+.scroller {
+  // Layout wrapper - no overflow needed with Lenis
+  // Lenis handles smooth scrolling on the document body
 }

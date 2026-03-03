@@ -31,7 +31,8 @@ function getViewportFromMedia(mdMatches: boolean, lgMatches: boolean, width = 0,
 
 export function ViewportProvider({ children }: { children: ReactNode }) {
   const [viewport, setViewport] = useState<ViewportContextType>(() =>
-    getViewportFromMedia(false, false, 0, 0)
+    // Default viewport is desktop
+    getViewportFromMedia(true, true, 1024, 768)
   )
 
   useLayoutEffect(() => {

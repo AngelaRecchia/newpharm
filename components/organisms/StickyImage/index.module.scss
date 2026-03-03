@@ -1,0 +1,107 @@
+@use "../../../styles" as *;
+
+.wrapper {
+  position: relative;
+
+  .title {
+    h2 {
+      @include t-h2;
+    }
+    padding: $s-40 $s-24;
+    @include lg {
+      padding: $s-80 $s-40;
+    }
+  }
+
+  .left {
+    .image-wrapper {
+      position: relative;
+      @include lg {
+        opacity: 0;
+      }
+    }
+  }
+
+  &.no-webgl {
+    .left .image-wrapper {
+      @include lg {
+        opacity: 1;
+      }
+    }
+  }
+
+  .right {
+    padding: $s-64 $s-24;
+
+    @include lg {
+      padding-bottom: $s-128;
+    }
+  }
+
+  .rt-wrapper {
+    & > div {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: $s-40;
+
+      [data-asset] {
+        max-width: 37.5rem;
+        margin: 0 auto;
+      }
+
+      p,
+      div:has(> a) {
+        max-width: 25rem;
+        margin: 0 auto;
+      }
+
+      @include lg {
+        padding-block: $s-64;
+        p,
+        div:has(> a) {
+          width: 60%;
+        }
+
+        [data-asset] {
+          width: 80% !important;
+        }
+      }
+    }
+
+    div:has(> [data-asset]) {
+      width: 100%;
+    }
+
+    [data-asset] + [data-asset] {
+      padding-top: $s-16;
+    }
+  }
+}
+@include lg {
+  .content,
+  .title {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .left {
+    position: sticky;
+    top: 0;
+    align-self: start;
+  }
+}
+
+.halftone-overlay-wrapper {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+
+  .halftone-overlay {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+}

@@ -3,7 +3,7 @@ import classNames from 'classnames'
 import { icons } from './icons'
 import styles from './index.module.scss'
 
-type IconSize = 'xs' | 's' | 'm' | 'l'
+type IconSize = 'xs' | 's' | 'm' | 'ml' | 'l'
 type LogoVariant = 'white-red' | 'white-white' | 'primary-primary' | 'black-red' | 'black-black' | 'primary-red'
 
 /** Props we pass when cloning icon elements (SVG). Keeps cloneElement type-safe. */
@@ -11,13 +11,16 @@ type IconCloneProps = {
   width?: number
   height?: number
   className?: string
+  strokeWidth?: number | string
 }
 
 const sizeMap: Record<IconSize, number> = {
   xs: 8,
   s: 12,
   m: 16,
+  ml: 20,
   l: 24,
+
 }
 
 const logoVariantClasses: Record<LogoVariant, string> = {
@@ -34,9 +37,41 @@ interface IconProps {
   size?: IconSize
   variant?: LogoVariant
   className?: string
+  weight?: number | 'normal' | 'bold'
 }
 
-const Icon = ({ type, size = 'l', variant, className = '' }: IconProps) => {
+// Helper per clonare ricorsivamente i children e applicare strokeWidth
+const cloneChildrenWithStrokeWidth = (
+  children: React.ReactNode,
+  strokeWidth: number | string
+): React.ReactNode => {
+  return React.Children.map(children, (child) => {
+    if (!React.isValidElement(child)) return child
+
+    // Elementi SVG che possono avere stroke
+    const strokeElements = ['path', 'line', 'circle', 'rect', 'polyline', 'polygon', 'ellipse']
+    const elementType = (child.type as string)?.toLowerCase()
+
+    if (strokeElements.includes(elementType)) {
+      return React.cloneElement(child as React.ReactElement<any>, {
+        ...child.props,
+        strokeWidth,
+      })
+    }
+
+    // Se ha children, clona ricorsivamente
+    if (child.props?.children) {
+      return React.cloneElement(child as React.ReactElement<any>, {
+        ...child.props,
+        children: cloneChildrenWithStrokeWidth(child.props.children, strokeWidth),
+      })
+    }
+
+    return child
+  })
+}
+
+const Icon = ({ type, size = 'l', variant, className = '', weight = 'bold' }: IconProps) => {
   const icon = icons[type]
 
   if (!icon) return <></>
@@ -54,10 +89,38 @@ const Icon = ({ type, size = 'l', variant, className = '' }: IconProps) => {
 
   const sizeValue = sizeMap[size]
 
-  return React.cloneElement(
-    icon as React.ReactElement<IconCloneProps>,
-    { width: sizeValue, height: sizeValue, className }
+  // Calcola strokeWidth basato su weight
+  let strokeWidth: number | string | undefined
+  if (weight !== undefined) {
+    if (typeof weight === 'number') {
+      strokeWidth = weight
+    } else if (weight === 'normal') {
+      strokeWidth = 1
+    } else if (weight === 'bold') {
+      strokeWidth = 1.5
+    }
+  }
+
+  // Clona l'icona e applica strokeWidth ai children
+  const clonedIcon = React.cloneElement(
+    icon as React.ReactElement<any>,
+    {
+      ...icon.props,
+      width: sizeValue,
+      height: sizeValue,
+
+      className: classNames(icon.props?.className, className),
+    }
   )
+
+  // Se strokeWidth è definito, applicalo ai children
+  if (strokeWidth !== undefined && clonedIcon.props.children) {
+    return React.cloneElement(clonedIcon as React.ReactElement<any>, {
+      children: cloneChildrenWithStrokeWidth(clonedIcon.props.children, strokeWidth),
+    })
+  }
+
+  return clonedIcon
 }
 
 export default Icon

@@ -1,5 +1,5 @@
 import { getRequestConfig } from "next-intl/server";
-import { hasLocale } from "next-intl";
+import { hasLocale, IntlErrorCode } from "next-intl";
 import { routing } from "./routing";
 import { getMessagesFromDatasource } from "../lib/api/storyblok/datasource";
 
@@ -28,15 +28,24 @@ export default getRequestConfig(async ({ requestLocale }) => {
   const messages = await getMessagesFromDatasource("labels", locale);
 
   // Determine text direction based on locale
-  const isRTL = locale === 'ar'
-  const dir = isRTL ? 'rtl' : 'ltr'
+  const isRTL = locale === "ar";
+  const dir = isRTL ? "rtl" : "ltr";
 
   return {
     locale,
     messages,
     timeZone: "Europe/Rome",
     now: new Date(),
+    onError: (error) => {
+      if (error.code === IntlErrorCode.MISSING_MESSAGE) {
+        console.log("missing message", error);
+        console.warn(error);
+      } else {
+        // Other errors indicate a bug in the app and should be reported
+        console.error(error);
+      }
+    },
     // Add direction for RTL support
-    ...(isRTL && { direction: 'rtl' }),
+    ...(isRTL && { direction: "rtl" }),
   };
 });

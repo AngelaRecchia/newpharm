@@ -2,14 +2,14 @@
 // SOCIAL ITEM COMPONENT
 // ============================================
 
-@use '../../../styles' as *;
+@use "../../../styles" as *;
 
 .socialItem {
   display: flex;
   align-items: center;
   justify-content: center;
   color: inherit;
-  transition: opacity $td-300 $ease-natural;
+  transition: opacity $td-400 $ease-natural;
 
   &:hover {
     opacity: 0.7;

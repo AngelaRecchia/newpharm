@@ -1,6 +1,6 @@
 'use client'
 
-import Link from 'next/link'
+import SmartLink from '../SmartLink'
 import Button from '../Button'
 import styles from './index.module.scss'
 import { getLinkUrl, StoryblokLink } from '@/lib/api/utils/links'
@@ -19,16 +19,14 @@ export default function AnchorLink({
     label,
     description,
 }: AnchorLinkProps) {
-    const linkUrl = href || getLinkUrl(link) || '#'
     const linkType = useMemo(() => link?.linktype, [link])
     const icon = useMemo(() => linkType !== 'story' ? 'external' : link?.anchor ? 'down' : 'right-small', [link?.anchor, linkType])
 
     const { anchorLink, anchorLinkLabel, anchorLinkdescription, anchorLinkIcon, anchorLinkContent } = styles
 
-
     return (
-        <Link
-            href={linkUrl}
+        <SmartLink
+            link={link}
             className={anchorLink}
         >
             <div className={anchorLinkContent}>
@@ -44,6 +42,6 @@ export default function AnchorLink({
                     size='small'
                 />
             </div>
-        </Link>
+        </SmartLink>
     )
 }

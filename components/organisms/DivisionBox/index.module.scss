@@ -1,0 +1,48 @@
+// ============================================
+// DIVISION BOX COMPONENT
+// ============================================
+
+@use "../../../styles" as *;
+
+.wrapper {
+  background-color: $c-white;
+}
+
+.container {
+  @include container-lg;
+
+  padding-block: $s-80;
+}
+
+.head {
+  margin-inline-start: auto;
+  margin-bottom: $s-64;
+  display: flex;
+  flex-direction: column;
+  gap: $s-16;
+
+  @include md {
+    width: 50%;
+    gap: $s-24;
+    padding-inline-start: $s-8;
+  }
+
+  .title {
+    @include t-h2;
+  }
+
+  .link {
+    margin-top: $s-32;
+  }
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $s-24;
+
+  @include md {
+    grid-template-columns: repeat(2, 1fr);
+    gap: $s-16;
+  }
+}

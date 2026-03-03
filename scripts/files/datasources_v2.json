@@ -1,0 +1,784 @@
+{
+  "categorie": {
+    "datasource": {
+      "name": "Categoria Prodotto",
+      "slug": "categoria-prodotto"
+    },
+    "entries": [
+      {
+        "name": "insettici-e-acaricidi",
+        "value_it": "Insettici e acaricidi",
+        "value_en": "Insecticides & Acaricides",
+        "value_ar": "مبيدات الحشرات والعث"
+      },
+      {
+        "name": "rodenticidi",
+        "value_it": "Rodenticidi",
+        "value_en": "Rodenticides",
+        "value_ar": "مبيدات القوارض"
+      },
+      {
+        "name": "disinfettanti-e-solventi",
+        "value_it": "Disinfettanti e Solventi",
+        "value_en": "Disinfectants & Solvents",
+        "value_ar": "المطهرات والمذيبات"
+      },
+      {
+        "name": "repellenti",
+        "value_it": "Repellenti",
+        "value_en": "Repellents",
+        "value_ar": "طارد الحشرات"
+      },
+      {
+        "name": "solventi-e-veicolanti",
+        "value_it": "Solventi e Veicolanti",
+        "value_en": "Solvents & Carriers",
+        "value_ar": "المذيبات والحوامل"
+      },
+      {
+        "name": "attrezzature",
+        "value_it": "Attrezzature",
+        "value_en": "Equipment",
+        "value_ar": "معدات"
+      },
+      {
+        "name": "monitoraggio-e-prevenzione-insetti",
+        "value_it": "Monitoraggio e prevenzione insetti",
+        "value_en": "Insect Monitoring & Prevention",
+        "value_ar": "مراقبة الحشرات والوقاية منها"
+      },
+      {
+        "name": "allontanamento-volatili",
+        "value_it": "Allontanamento volatili",
+        "value_en": "Bird Deterrents",
+        "value_ar": "طرد الطيور"
+      },
+      {
+        "name": "accessori-roditori",
+        "value_it": "Accessori roditori",
+        "value_en": "Rodent Control Accessories",
+        "value_ar": "ملحقات مكافحة القوارض"
+      },
+      {
+        "name": "endoinfusione",
+        "value_it": "Endoinfusione",
+        "value_en": "Endoinfusion",
+        "value_ar": "الحقن الداخلي"
+      },
+      {
+        "name": "difesa-delle-piante",
+        "value_it": "Difesa delle piante",
+        "value_en": "Plant Protection",
+        "value_ar": "حماية النباتات"
+      },
+      {
+        "name": "insetti-e-acari-ausiliari",
+        "value_it": "Insetti e acari ausiliari",
+        "value_en": "Beneficial Insects & Mites",
+        "value_ar": "الحشرات والعث المفيدة"
+      },
+      {
+        "name": "tarli-e-termiti",
+        "value_it": "Tarli e Termiti",
+        "value_en": "Woodworms & Termites",
+        "value_ar": "سوس الخشب والنمل الأبيض"
+      },
+      {
+        "name": "trappole-luminose",
+        "value_it": "Trappole luminose",
+        "value_en": "Light Traps",
+        "value_ar": "مصائد ضوئية"
+      },
+      {
+        "name": "natural",
+        "value_it": "Natural",
+        "value_en": "Natural",
+        "value_ar": "طبيعي"
+      },
+      {
+        "name": "carvex",
+        "value_it": "Carvex",
+        "value_en": "Carvex",
+        "value_ar": "كارفيكس"
+      }
+    ]
+  },
+  "application_areas": {
+    "datasource": {
+      "name": "Application Area",
+      "slug": "application-area"
+    },
+    "entries": [
+      {
+        "name": "ambienti-civili",
+        "value_it": "Ambienti Civili",
+        "value_en": "Civil Environments",
+        "value_ar": "البيئات المدنية"
+      },
+      {
+        "name": "ambienti-domestici",
+        "value_it": "Ambienti domestici",
+        "value_en": "Domestic Environments",
+        "value_ar": "البيئات المنزلية"
+      },
+      {
+        "name": "aree-verdi",
+        "value_it": "Aree Verdi",
+        "value_en": "Green Areas",
+        "value_ar": "المساحات الخضراء"
+      },
+      {
+        "name": "ho-re-ca",
+        "value_it": "Ho.re.ca.",
+        "value_en": "Ho.Re.Ca.",
+        "value_ar": "الفنادق والمطاعم والمقاهي"
+      },
+      {
+        "name": "industria",
+        "value_it": "Industria",
+        "value_en": "Industry",
+        "value_ar": "الصناعة"
+      },
+      {
+        "name": "industria-alimentare",
+        "value_it": "Industria Alimentare",
+        "value_en": "Food Industry",
+        "value_ar": "صناعة الأغذية"
+      },
+      {
+        "name": "mezzi-di-trasporto",
+        "value_it": "Mezzi di trasporto",
+        "value_en": "Means of Transport",
+        "value_ar": "وسائل النقل"
+      },
+      {
+        "name": "ospedali",
+        "value_it": "Ospedali",
+        "value_en": "Hospitals",
+        "value_ar": "المستشفيات"
+      },
+      {
+        "name": "stoccaggio-cereali",
+        "value_it": "Stoccaggio Cereali",
+        "value_en": "Cereal Storage",
+        "value_ar": "تخزين الحبوب"
+      },
+      {
+        "name": "zootecnia",
+        "value_it": "Zootecnia",
+        "value_en": "Livestock Farming",
+        "value_ar": "تربية الماشية"
+      }
+    ]
+  },
+  "application_areas_sub": {
+    "datasource": {
+      "name": "Application Area - Sottocategorie",
+      "slug": "application-area-sub"
+    },
+    "entries": [
+      {
+        "name": "avena",
+        "value_it": "Avena",
+        "value_en": "Oat",
+        "value_ar": "الشوفان",
+        "dimension_value": "stoccaggio-cereali"
+      },
+      {
+        "name": "farro",
+        "value_it": "Farro",
+        "value_en": "Spelt",
+        "value_ar": "القمح الكامل",
+        "dimension_value": "stoccaggio-cereali"
+      },
+      {
+        "name": "frumento",
+        "value_it": "Frumento",
+        "value_en": "Wheat",
+        "value_ar": "القمح",
+        "dimension_value": "stoccaggio-cereali"
+      },
+      {
+        "name": "grano-saraceno",
+        "value_it": "Grano saraceno",
+        "value_en": "Buckwheat",
+        "value_ar": "الحنطة السوداء",
+        "dimension_value": "stoccaggio-cereali"
+      },
+      {
+        "name": "mais",
+        "value_it": "Mais",
+        "value_en": "Corn",
+        "value_ar": "الذرة",
+        "dimension_value": "stoccaggio-cereali"
+      },
+      {
+        "name": "miglio",
+        "value_it": "Miglio",
+        "value_en": "Millet",
+        "value_ar": "الدخن",
+        "dimension_value": "stoccaggio-cereali"
+      },
+      {
+        "name": "orzo",
+        "value_it": "Orzo",
+        "value_en": "Barley",
+        "value_ar": "الشعير",
+        "dimension_value": "stoccaggio-cereali"
+      },
+      {
+        "name": "risone",
+        "value_it": "Risone",
+        "value_en": "Rice",
+        "value_ar": "الأرز",
+        "dimension_value": "stoccaggio-cereali"
+      },
+      {
+        "name": "segale",
+        "value_it": "Segale",
+        "value_en": "Rye",
+        "value_ar": "الجاودار",
+        "dimension_value": "stoccaggio-cereali"
+      },
+      {
+        "name": "triticale",
+        "value_it": "Triticale",
+        "value_en": "Triticale",
+        "value_ar": "التريتيكالي",
+        "dimension_value": "stoccaggio-cereali"
+      }
+    ]
+  },
+  "infestanti": {
+    "datasource": {
+      "name": "Infestanti",
+      "slug": "infestanti"
+    },
+    "entries": [
+      {
+        "name": "acari",
+        "value_it": "Acari",
+        "value_en": "Mites",
+        "value_ar": "العث"
+      },
+      {
+        "name": "blatte-e-scarafaggi",
+        "value_it": "Blatte e scarafaggi",
+        "value_en": "Cockroaches",
+        "value_ar": "الصراصير"
+      },
+      {
+        "name": "cimici-dei-letti",
+        "value_it": "Cimici dei letti",
+        "value_en": "Bed Bugs",
+        "value_ar": "بق الفراش"
+      },
+      {
+        "name": "cimici-dei-campi",
+        "value_it": "Cimici dei campi",
+        "value_en": "Stink Bugs",
+        "value_ar": "بق الحقول"
+      },
+      {
+        "name": "coleottero-giapponese",
+        "value_it": "Coleottero giapponese",
+        "value_en": "Japanese Beetle",
+        "value_ar": "الخنفساء اليابانية"
+      },
+      {
+        "name": "formiche",
+        "value_it": "Formiche",
+        "value_en": "Ants",
+        "value_ar": "النمل"
+      },
+      {
+        "name": "gechi-e-lucertole",
+        "value_it": "Gechi e lucertole",
+        "value_en": "Geckos & Lizards",
+        "value_ar": "الحرابيش والسحالي"
+      },
+      {
+        "name": "insetti-delle-derrate-alimentari",
+        "value_it": "Insetti delle derrate alimentari",
+        "value_en": "Foodstuff Insects",
+        "value_ar": "حشرات المواد الغذائية"
+      },
+      {
+        "name": "limacce-e-lumache",
+        "value_it": "Limacce e Lumache",
+        "value_en": "Slugs & Snails",
+        "value_ar": "البزاق والقواقع"
+      },
+      {
+        "name": "mosche-e-mosconi",
+        "value_it": "Mosche e mosconi",
+        "value_en": "Flies & Blowflies",
+        "value_ar": "الذباب"
+      },
+      {
+        "name": "mosca-dei-bagni",
+        "value_it": "Mosca dei bagni",
+        "value_en": "Drain Fly",
+        "value_ar": "ذبابة الصرف"
+      },
+      {
+        "name": "parassiti-delle-piante",
+        "value_it": "Parassiti delle piante",
+        "value_en": "Plant Parasites",
+        "value_ar": "طفيليات النباتات"
+      },
+      {
+        "name": "piccioni-e-volatili",
+        "value_it": "Piccioni e Volatili",
+        "value_en": "Pigeons & Birds",
+        "value_ar": "الحمام والطيور"
+      },
+      {
+        "name": "pidocchi",
+        "value_it": "Pidocchi",
+        "value_en": "Lice",
+        "value_ar": "القمل"
+      },
+      {
+        "name": "pulci",
+        "value_it": "Pulci",
+        "value_en": "Fleas",
+        "value_ar": "البراغيث"
+      },
+      {
+        "name": "punteruolo-rosso-della-palma",
+        "value_it": "Punteruolo rosso della palma",
+        "value_en": "Red Palm Weevil",
+        "value_ar": "سوسة النخيل الحمراء"
+      },
+      {
+        "name": "ragni",
+        "value_it": "Ragni",
+        "value_en": "Spiders",
+        "value_ar": "العناكب"
+      },
+      {
+        "name": "rettili",
+        "value_it": "Rettili",
+        "value_en": "Reptiles",
+        "value_ar": "الزواحف"
+      },
+      {
+        "name": "roditori",
+        "value_it": "Roditori",
+        "value_en": "Rodents",
+        "value_ar": "القوارض"
+      },
+      {
+        "name": "talpe",
+        "value_it": "Talpe",
+        "value_en": "Moles",
+        "value_ar": "الخلد"
+      },
+      {
+        "name": "tarli",
+        "value_it": "Tarli",
+        "value_en": "Woodworms",
+        "value_ar": "سوس الخشب"
+      },
+      {
+        "name": "tarme-dei-tessuti",
+        "value_it": "Tarme dei tessuti",
+        "value_en": "Clothes Moths",
+        "value_ar": "عث الملابس"
+      },
+      {
+        "name": "termiti",
+        "value_it": "Termiti",
+        "value_en": "Termites",
+        "value_ar": "النمل الأبيض"
+      },
+      {
+        "name": "tignole-delle-derrate",
+        "value_it": "Tignole delle derrate",
+        "value_en": "Grain Moths",
+        "value_ar": "عث الحبوب"
+      },
+      {
+        "name": "vespe-e-calabroni",
+        "value_it": "Vespe e Calabroni",
+        "value_en": "Wasps & Hornets",
+        "value_ar": "الدبابير والزنابير"
+      },
+      {
+        "name": "zanzare",
+        "value_it": "Zanzare",
+        "value_en": "Mosquitoes",
+        "value_ar": "البعوض"
+      },
+      {
+        "name": "gatti",
+        "value_it": "gatti",
+        "value_en": "Cats",
+        "value_ar": "القطط"
+      },
+      {
+        "name": "pesciolini-d-argento",
+        "value_it": "pesciolini d argento",
+        "value_en": "Silverfish",
+        "value_ar": "أسماك الفضة"
+      },
+      {
+        "name": "stink-bugs",
+        "value_it": "stink bugs",
+        "value_en": "Stink Bugs",
+        "value_ar": "بق الرائحة"
+      },
+      {
+        "name": "insetti-striscianti-e-topi",
+        "value_it": "Insetti striscianti e topi",
+        "value_en": "Crawling Insects & Mice",
+        "value_ar": "الحشرات الزاحفة والفئران"
+      }
+    ]
+  },
+  "infestanti_sub": {
+    "datasource": {
+      "name": "Infestanti - Sottocategorie",
+      "slug": "infestanti-sub"
+    },
+    "entries": [
+      {
+        "name": "acari-generici",
+        "value_it": "Acari generici",
+        "value_en": "Mites (general)",
+        "value_ar": "عث عام",
+        "dimension_value": "acari"
+      },
+      {
+        "name": "acaro-rosso-del-pollo",
+        "value_it": "Acaro rosso del pollo",
+        "value_en": "Red Poultry Mite",
+        "value_ar": "عث الدواجن الأحمر",
+        "dimension_value": "acari"
+      },
+      {
+        "name": "zecche",
+        "value_it": "Zecche",
+        "value_en": "Ticks",
+        "value_ar": "القراد",
+        "dimension_value": "acari"
+      },
+      {
+        "name": "striscianti",
+        "value_it": "Striscianti",
+        "value_en": "Crawling Insects",
+        "value_ar": "الحشرات الزاحفة",
+        "dimension_value": "insetti-delle-derrate-alimentari"
+      },
+      {
+        "name": "volanti",
+        "value_it": "Volanti",
+        "value_en": "Flying Insects",
+        "value_ar": "الحشرات الطائرة",
+        "dimension_value": "insetti-delle-derrate-alimentari"
+      },
+      {
+        "name": "nidi-di-vespa",
+        "value_it": "Nidi di vespa",
+        "value_en": "Wasp Nests",
+        "value_ar": "أعشاش الدبابير",
+        "dimension_value": "vespe-e-calabroni"
+      },
+      {
+        "name": "ratto",
+        "value_it": "Ratto",
+        "value_en": "Rat",
+        "value_ar": "جرذ",
+        "dimension_value": "roditori"
+      },
+      {
+        "name": "topo",
+        "value_it": "Topo",
+        "value_en": "Mouse",
+        "value_ar": "فأر",
+        "dimension_value": "roditori"
+      }
+    ]
+  },
+  "formulazioni": {
+    "datasource": {
+      "name": "Formulazione",
+      "slug": "formulazione"
+    },
+    "entries": [
+      {
+        "name": "aerosol",
+        "value_it": "Aerosol",
+        "value_en": "Aerosol",
+        "value_ar": "رذاذ"
+      },
+      {
+        "name": "acari-predatori",
+        "value_it": "Acari predatori",
+        "value_en": "Predatory Mites",
+        "value_ar": "عث مفترس"
+      },
+      {
+        "name": "accessorio",
+        "value_it": "Accessorio",
+        "value_en": "Accessory",
+        "value_ar": "ملحق"
+      },
+      {
+        "name": "bastoncini",
+        "value_it": "Bastoncini",
+        "value_en": "Sticks",
+        "value_ar": "عصي"
+      },
+      {
+        "name": "blocchi-paraffinati",
+        "value_it": "Blocchi paraffinati",
+        "value_en": "Paraffin Wax Blocks",
+        "value_ar": "كتل شمع البارافين"
+      },
+      {
+        "name": "compresse-attrattive",
+        "value_it": "Compresse attrattive",
+        "value_en": "Attractive Tablets",
+        "value_ar": "أقراص جاذبة"
+      },
+      {
+        "name": "concentrato-emulsionabile",
+        "value_it": "Concentrato emulsionabile",
+        "value_en": "Emulsifiable Concentrate",
+        "value_ar": "مركز قابل للاستحلاب"
+      },
+      {
+        "name": "dispenser-feromoni",
+        "value_it": "Dispenser feromoni",
+        "value_en": "Pheromone Dispenser",
+        "value_ar": "موزع الفيرومون"
+      },
+      {
+        "name": "dispositivo-per-applicazioni-di-gel",
+        "value_it": "Dispositivo per applicazioni di gel",
+        "value_en": "Gel Application Device",
+        "value_ar": "جهاز تطبيق الجل"
+      },
+      {
+        "name": "emulsione-concentrata",
+        "value_it": "Emulsione concentrata",
+        "value_en": "Concentrated Emulsion",
+        "value_ar": "مستحلب مركز"
+      },
+      {
+        "name": "erogatore-automatico",
+        "value_it": "Erogatore automatico",
+        "value_en": "Automatic Dispenser",
+        "value_ar": "موزع أوتوماتيكي"
+      },
+      {
+        "name": "esca-in-crema",
+        "value_it": "Esca in crema",
+        "value_en": "Cream Bait",
+        "value_ar": "طعم كريمي"
+      },
+      {
+        "name": "esca-in-grano",
+        "value_it": "Esca in grano",
+        "value_en": "Granular Bait",
+        "value_ar": "طعم حبيبي"
+      },
+      {
+        "name": "fumiganti",
+        "value_it": "Fumiganti",
+        "value_en": "Fumigants",
+        "value_ar": "مواد تدخين"
+      },
+      {
+        "name": "gel",
+        "value_it": "Gel",
+        "value_en": "Gel",
+        "value_ar": "جل"
+      },
+      {
+        "name": "granuli",
+        "value_it": "Granuli",
+        "value_en": "Granules",
+        "value_ar": "حبيبات"
+      },
+      {
+        "name": "granuli-attrattivi",
+        "value_it": "Granuli attrattivi",
+        "value_en": "Attractive Granules",
+        "value_ar": "حبيبات جاذبة"
+      },
+      {
+        "name": "granuli-idrosolubili",
+        "value_it": "Granuli idrosolubili",
+        "value_en": "Water-Soluble Granules",
+        "value_ar": "حبيبات قابلة للذوبان في الماء"
+      },
+      {
+        "name": "granuli-pronti-all-uso",
+        "value_it": "Granuli pronti all uso",
+        "value_en": "Ready-to-Use Granules",
+        "value_ar": "حبيبات جاهزة للاستخدام"
+      },
+      {
+        "name": "impianto-di-nebulizzazione-automatizzato",
+        "value_it": "Impianto di nebulizzazione automatizzato",
+        "value_en": "Automated Misting System",
+        "value_ar": "نظام رذاذ آلي"
+      },
+      {
+        "name": "insetti-utili",
+        "value_it": "Insetti utili",
+        "value_en": "Beneficial Insects",
+        "value_ar": "حشرات مفيدة"
+      },
+      {
+        "name": "lampada-uv",
+        "value_it": "Lampada UV",
+        "value_en": "UV Lamp",
+        "value_ar": "مصباح الأشعة فوق البنفسجية"
+      },
+      {
+        "name": "liquido-concentrato",
+        "value_it": "Liquido concentrato",
+        "value_en": "Concentrated Liquid",
+        "value_ar": "سائل مركز"
+      },
+      {
+        "name": "liquido-concentrato-attrattivo",
+        "value_it": "Liquido concentrato attrattivo",
+        "value_en": "Attractive Concentrated Liquid",
+        "value_ar": "سائل مركز جاذب"
+      },
+      {
+        "name": "liquido-concentrato-microincapsulato",
+        "value_it": "Liquido concentrato microincapsulato",
+        "value_en": "Microencapsulated Concentrate",
+        "value_ar": "مركز مجهري المغلف"
+      },
+      {
+        "name": "liquido-pronto-all-uso",
+        "value_it": "Liquido pronto all uso",
+        "value_en": "Ready-to-Use Liquid",
+        "value_ar": "سائل جاهز للاستخدام"
+      },
+      {
+        "name": "microemulsione-acquosa",
+        "value_it": "Microemulsione acquosa",
+        "value_en": "Aqueous Microemulsion",
+        "value_ar": "مستحلب مائي دقيق"
+      },
+      {
+        "name": "microgranuli-bagnabili",
+        "value_it": "Microgranuli bagnabili",
+        "value_en": "Wettable Microgranules",
+        "value_ar": "حبيبات دقيقة قابلة للبلل"
+      },
+      {
+        "name": "pasta-fresca",
+        "value_it": "Pasta fresca",
+        "value_en": "Fresh Paste",
+        "value_ar": "معجون طازج"
+      },
+      {
+        "name": "polvere-pronta-all-uso",
+        "value_it": "Polvere pronta all uso",
+        "value_en": "Ready-to-Use Powder",
+        "value_ar": "مسحوق جاهز للاستخدام"
+      },
+      {
+        "name": "polveri-granuli-e-microgranuli",
+        "value_it": "Polveri granuli e microgranuli",
+        "value_en": "Powders, Granules & Microgranules",
+        "value_ar": "مساحيق وحبيبات"
+      },
+      {
+        "name": "rtu-pronto-all-uso",
+        "value_it": "RTU - Pronto all uso",
+        "value_en": "RTU - Ready to Use",
+        "value_ar": "جاهز للاستخدام"
+      },
+      {
+        "name": "ricambi",
+        "value_it": "Ricambi",
+        "value_en": "Spare Parts",
+        "value_ar": "قطع الغيار"
+      },
+      {
+        "name": "sistema-dissuasore",
+        "value_it": "Sistema dissuasore",
+        "value_en": "Deterrent System",
+        "value_ar": "نظام رادع"
+      },
+      {
+        "name": "sospensione-concentrata",
+        "value_it": "Sospensione concentrata",
+        "value_en": "Concentrated Suspension",
+        "value_ar": "معلق مركز"
+      },
+      {
+        "name": "spray-e-aerosol",
+        "value_it": "Spray e aerosol",
+        "value_en": "Spray & Aerosol",
+        "value_ar": "بخاخ ورذاذ"
+      },
+      {
+        "name": "stazione-di-avvelenamento",
+        "value_it": "Stazione di avvelenamento",
+        "value_en": "Bait Station",
+        "value_ar": "محطة الإيقاع"
+      },
+      {
+        "name": "tablet-e-compresse",
+        "value_it": "Tablet e compresse",
+        "value_en": "Tablets",
+        "value_ar": "أقراص"
+      },
+      {
+        "name": "trappola-adesiva",
+        "value_it": "Trappola adesiva",
+        "value_en": "Sticky Trap",
+        "value_ar": "مصيدة لاصقة"
+      },
+      {
+        "name": "trappola-di-aggregazione",
+        "value_it": "Trappola di aggregazione",
+        "value_en": "Aggregation Trap",
+        "value_ar": "مصيدة تجميع"
+      },
+      {
+        "name": "trappola-meccanica",
+        "value_it": "Trappola meccanica",
+        "value_en": "Mechanical Trap",
+        "value_ar": "مصيدة ميكانيكية"
+      }
+    ]
+  },
+  "product_type": {
+    "datasource": {
+      "name": "Product Type",
+      "slug": "product-type"
+    },
+    "entries": [
+      {
+        "name": "bio",
+        "value_it": "bio",
+        "value_en": "Bio",
+        "value_ar": "بيولوجي"
+      },
+      {
+        "name": "eco",
+        "value_it": "eco",
+        "value_en": "Eco",
+        "value_ar": "إيكو"
+      },
+      {
+        "name": "normal",
+        "value_it": "normal",
+        "value_en": "Standard",
+        "value_ar": "قياسي"
+      }
+    ]
+  }
+}

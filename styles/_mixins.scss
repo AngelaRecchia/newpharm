@@ -54,23 +54,47 @@
   }
 }
 
+@mixin xxl {
+  @media (min-width: $breakpoint-xxl) {
+    @content;
+  }
+}
+
 // Typography mixins
 @mixin t-help {
-  // 11px fisso, cresce leggermente dopo 1440px
-  font-size: clamp(0.6875rem, 0.6875rem + 0.1vw, 0.8125rem); // 11px to ~13px
-  line-height: 120%;
+  // 11px fisso fino a 1440px, cresce fino a 13px a 2560px
+  font-size: clamp(
+    0.6875rem,
+    calc(
+      0.6875rem + (0.8125rem - 0.6875rem) *
+        ((100vw - 1440px) / (2560px - 1440px))
+    ),
+    0.8125rem
+  ); // 11px → 13px
+  line-height: 1.2;
+  letter-spacing: -0.03em;
 }
 
 @mixin t-note {
-  // 14px fisso, cresce leggermente dopo 1440px
-  font-size: clamp(0.875rem, 0.875rem + 0.12vw, 1rem); // 14px to ~16px
-  line-height: 120%;
+  // 14px fisso fino a 1440px, cresce fino a 16px a 2560px
+  font-size: clamp(
+    0.875rem,
+    calc(0.875rem + (1rem - 0.875rem) * ((100vw - 1440px) / (2560px - 1440px))),
+    1rem
+  ); // 14px → 16px
+  line-height: 1.2;
+  letter-spacing: -0.03em;
 }
 
 @mixin t-body {
-  // 16px fisso, cresce leggermente dopo 1440px
-  font-size: clamp(1rem, 1rem + 0.15vw, 1.1875rem); // 16px to ~19px
-  line-height: 140%;
+  // 16px fisso fino a 1440px, cresce fino a 19px a 2560px
+  font-size: clamp(
+    1rem,
+    calc(1rem + (1.1875rem - 1rem) * ((100vw - 1440px) / (2560px - 1440px))),
+    1.1875rem
+  ); // 16px → 19px
+  line-height: 1.4;
+  letter-spacing: -0.03em;
 }
 
 @mixin t-h6 {
@@ -83,10 +107,15 @@
     1.5rem
   ); // 18px to 24px
   line-height: clamp(
-    140%,
-    calc(140% + (130% - 140%) * ((100vw - 320px) / (1440px - 320px))),
-    130%
+    1.4,
+    calc(1.4 + (1.3 - 1.4) * ((100vw - 320px) / (1440px - 320px))),
+    1.3
   );
+  letter-spacing: -0.02em;
+
+  @include xxl {
+    letter-spacing: -0.03em;
+  }
 }
 
 @mixin t-h3 {
@@ -98,7 +127,12 @@
     ),
     2.25rem
   ); // 22px to 36px
-  line-height: 100%;
+  line-height: 1;
+  letter-spacing: -0.03em;
+
+  @include xxl {
+    letter-spacing: -0.04em;
+  }
 }
 
 @mixin t-h2 {
@@ -108,7 +142,12 @@
     calc(1.625rem + (2.5rem - 1.625rem) * ((100vw - 320px) / (1440px - 320px))),
     3.5rem
   ); // 26px to 56px
-  line-height: 120%;
+  line-height: 1.2;
+  letter-spacing: -0.04em;
+
+  @include xxl {
+    letter-spacing: -0.06em;
+  }
 }
 
 @mixin t-h1 {
@@ -120,7 +159,12 @@
     ),
     5rem
   ); // 38px to 80px
-  line-height: 110%;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+
+  @include xxl {
+    letter-spacing: -0.05em;
+  }
 }
 
 @mixin t-huge {
@@ -130,22 +174,39 @@
     calc(4.5rem + (7.75rem - 4.5rem) * ((100vw - 320px) / (1440px - 320px))),
     10.5rem
   ); // 72px to 168px
-  line-height: 100%;
+  line-height: 1;
   font-weight: 200;
+  letter-spacing: -0.04em;
 }
 
 // Container mixins
-@mixin container-lg {
-  // Max-width cresce da 1440px fino a ~1920px a 2560px viewport
-  // Formula: 1440px + (1920 - 1440) * ((100vw - 1440px) / (2560px - 1440px))
-  max-width: clamp(
-    $breakpoint-xxl,
+@mixin container-md {
+  margin-inline: auto;
+  padding-inline: $s-24;
+  padding-block: $s-40;
+
+  width: clamp(
+    80%,
     calc(
-      $breakpoint-xxl + (1920px - $breakpoint-xxl) *
-        ((100vw - $breakpoint-xxl) / (2560px - $breakpoint-xxl))
+      100% -
+        (
+          20% * (100vw - $breakpoint-m - ($s-40 * 2)) /
+            ($breakpoint-xxl - $breakpoint-m)
+        )
     ),
-    1920px
+    100%
   );
+  @include md {
+    padding-block: $s-80;
+  }
+
+  @include lg {
+    padding-inline: 0;
+  }
+}
+
+@mixin container-lg {
+  max-width: 1920px;
   margin-inline: auto;
   padding-inline: $s-24; // 24px mobile
   padding-block: $s-40;
@@ -153,5 +214,69 @@
   @include lg {
     padding-inline: $s-40; // 40px desktop
     padding-block: $s-64;
+  }
+}
+
+// Hover circle dot effect mixin
+// Crea un cerchio che appare in hover davanti al contenuto
+// Usa questo mixin sull'elemento cerchio, poi aggiungi lo stato hover sul parent
+// Esempio:
+//   .dot { @include hover-circle-dot; }
+//   .parent:hover .dot { opacity: 1; transform: scale(1); }
+// @param $size - Dimensione del cerchio (default: $s-8)
+// @param $color - Colore del cerchio (default: $c-black)
+// @param $duration - Durata della transizione (default: 300ms)
+// @param $mobile-visible - Se il cerchio è sempre visibile su mobile (default: true)
+@mixin hover-circle-dot(
+  $size: $s-8,
+  $color: $c-black,
+  $duration: 300ms,
+  $mobile-visible: true
+) {
+  width: $size;
+  height: $size;
+  border-radius: 50%;
+  background-color: $color;
+  flex-shrink: 0;
+  opacity: 0;
+  transform: scale(0);
+  transition:
+    opacity $duration $ease-smooth,
+    transform $duration $ease-smooth;
+
+  @if $mobile-visible {
+    @include mobile {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+}
+
+// Hover text shift mixin
+// Sposta il testo quando c'è hover sul parent
+// Usa questo mixin sull'elemento testo, poi aggiungi lo stato hover sul parent
+// Esempio:
+//   .text { @include hover-text-shift; }
+//   .parent:hover .text { transform: translateX($s-16); }
+// @param $offset - Offset di spostamento (default: $s-16)
+// @param $duration - Durata della transizione (default: 400ms)
+// @param $mobile-shifted - Se il testo è sempre spostato su mobile (default: false)
+@mixin hover-text-shift(
+  $offset: $s-16,
+  $duration: 400ms,
+  $mobile-shifted: false
+) {
+  transition: transform $duration $ease-smooth;
+
+  @if $mobile-shifted {
+    @include mobile {
+      transform: translateX($offset);
+    }
+  }
+
+  transform: translateX($offset);
+
+  @include md {
+    transform: translateX(0);
   }
 }

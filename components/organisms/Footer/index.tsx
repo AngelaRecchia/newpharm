@@ -1,8 +1,12 @@
-import { LinkStoryblok, Social_itemStoryblok } from "@/types/storyblok";
+'use client'
+
+import { LinkStoryblok, Social_itemStoryblok, FooterStoryblok } from "@/types/storyblok";
 import { ISbRichtext } from "@storyblok/react";
+import { storyblokEditable } from '@storyblok/react';
 import { useRouter, usePathname } from '@/i18n/navigation'
 import { useParams } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl'
+import { useRef, useEffect } from 'react'
 import styles from './index.module.scss';
 
 import { render } from 'storyblok-rich-text-react-renderer';
@@ -12,28 +16,24 @@ import SocialItem from "../../atoms/SocialItem";
 
 
 import classNames from 'classnames/bind';
-import Link from "next/link";
-import { getLinkUrl } from "@/lib/api/utils/links";
+import SmartLink from "@/components/atoms/SmartLink";
 import { useGlobalSettings } from "@/lib/context/global-settings-context";
+import { useViewport } from "@/lib/context/viewport-context";
 import Dropdown from "@/components/atoms/Dropdown";
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
+
 const cn = classNames.bind(styles);
 
 interface FooterProps {
-    newsletter_text?: string;
-    address?: ISbRichtext;
-    items?: LinkStoryblok[];
-    socials?: Social_itemStoryblok[];
-    bottom_links?: LinkStoryblok[];
+    blok?: FooterStoryblok;
 }
 
 export default function Footer({
-    newsletter_text,
-    address,
-    items,
-    socials,
-    bottom_links,
+    blok,
 }: FooterProps) {
-
     const locale = useLocale()
     const { locales } = useGlobalSettings()
     const params = useParams()
@@ -41,8 +41,73 @@ export default function Footer({
     const t = useTranslations()
 
     const router = useRouter()
+    const footerRef = useRef<HTMLElement>(null)
+    const { height: viewportHeight } = useViewport()
+
+    useEffect(() => {
+        if (typeof window === 'undefined' || !footerRef.current) return;
+
+        const mainElement = document.querySelector('main.main') as HTMLElement;
+        if (!mainElement) return;
+
+        let scrollTrigger: ScrollTrigger | null = null;
+
+        const initAnimation = () => {
+            if (!footerRef.current || !mainElement) return;
+
+            const footerHeight = footerRef.current.offsetHeight;
+            const shouldAnimate = footerHeight <= viewportHeight;
+
+            if (shouldAnimate) {
+                // Set initial position solo se l'animazione è abilitata
+                gsap.set(footerRef.current, { yPercent: -50 });
+
+                // Create uncover animation
+                const uncover = gsap.timeline({ paused: true });
+                uncover.to(footerRef.current, { yPercent: 0, ease: 'none' });
+
+                // Create ScrollTrigger
+                scrollTrigger = ScrollTrigger.create({
+                    trigger: mainElement,
+                    start: 'bottom bottom',
+                    end: () => `+=${footerHeight}px`,
+                    animation: uncover,
+                    scrub: true,
+                });
+            } else {
+                // Se il footer è più alto della viewport, non applicare animazione
+                // e mantieni la posizione normale
+                gsap.set(footerRef.current, { yPercent: 0 });
+            }
+        };
+
+
+        let timeoutId: NodeJS.Timeout | null = null;
+        const rafId = requestAnimationFrame(() => {
+            timeoutId = setTimeout(initAnimation, 100);
+        });
+
+        return () => {
+            cancelAnimationFrame(rafId);
+            if (timeoutId) {
+                clearTimeout(timeoutId);
+            }
+            if (scrollTrigger) {
+                scrollTrigger.kill();
+            }
+        };
+    }, [viewportHeight]);
+
+    if (!blok) return null;
+
+    const { newsletter_text, address, items, socials, bottom_links } = blok;
+
     return (
-        <footer className={cn('footer')}>
+        <footer
+            ref={footerRef}
+            className={cn('footer')}
+            {...storyblokEditable(blok as any)}
+        >
             <div className={cn('newsletter')}>
                 <p className={cn('newsletterText')}>{newsletter_text}</p>
 
@@ -62,8 +127,8 @@ export default function Footer({
                     <div className={cn('linksContainer')}>
                         <ul className={cn('links')}>
                             {items?.map((item) => (
-                                <li key={item._uid} className={cn('link')}>
-                                    <Link href={getLinkUrl(item.link) || '#'}>{item.label}</Link>
+                                <li key={item._uid} className={cn('linkItem')}>
+                                    <SmartLink className={cn('link')} link={item.link}>{item.label}</SmartLink>
                                 </li>
                             ))}
                         </ul>
@@ -89,7 +154,7 @@ export default function Footer({
                         <ul className={cn('bottomLinks')}>
                             {bottom_links?.map((link) => (
                                 <li key={link._uid} >
-                                    <Link href={getLinkUrl(link.link) || '#'}>{link.label}</Link>
+                                    <SmartLink link={link.link}>{link.label}</SmartLink>
                                 </li>
                             ))}
                         </ul>
@@ -114,5 +179,6 @@ export default function Footer({
                 </div>
             </div>
         </footer>
+
     )
 }

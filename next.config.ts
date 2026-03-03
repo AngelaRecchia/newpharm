@@ -5,8 +5,16 @@ const nextConfig: NextConfig = {
   images: {
     domains: ["a.storyblok.com"],
   },
-  experimental: {
-    serverComponentsHmrCache: true,
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        path: false,
+        crypto: false,
+      }
+    }
+    return config
   },
 };
 

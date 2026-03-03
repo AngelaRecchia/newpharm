@@ -1,0 +1,58 @@
+{
+  "datasource": {
+    "name": "Application Area - Sottocategorie",
+    "slug": "application-area-sub"
+  },
+  "entries": [
+    {
+      "name": "Avena",
+      "value": "avena",
+      "dimension_value": "stoccaggio-cereali"
+    },
+    {
+      "name": "Farro",
+      "value": "farro",
+      "dimension_value": "stoccaggio-cereali"
+    },
+    {
+      "name": "Frumento",
+      "value": "frumento",
+      "dimension_value": "stoccaggio-cereali"
+    },
+    {
+      "name": "Grano saraceno",
+      "value": "grano-saraceno",
+      "dimension_value": "stoccaggio-cereali"
+    },
+    {
+      "name": "Mais",
+      "value": "mais",
+      "dimension_value": "stoccaggio-cereali"
+    },
+    {
+      "name": "Miglio",
+      "value": "miglio",
+      "dimension_value": "stoccaggio-cereali"
+    },
+    {
+      "name": "Orzo",
+      "value": "orzo",
+      "dimension_value": "stoccaggio-cereali"
+    },
+    {
+      "name": "Risone",
+      "value": "risone",
+      "dimension_value": "stoccaggio-cereali"
+    },
+    {
+      "name": "Segale",
+      "value": "segale",
+      "dimension_value": "stoccaggio-cereali"
+    },
+    {
+      "name": "Triticale",
+      "value": "triticale",
+      "dimension_value": "stoccaggio-cereali"
+    }
+  ]
+}

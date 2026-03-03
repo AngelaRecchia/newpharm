@@ -5,11 +5,10 @@
 @use "../../../styles" as *;
 
 .header {
-  position: fixed;
-  top: 0;
-  z-index: 1000;
   width: 100%;
-  transition: background-color 300ms ease;
+  transition:
+    background-color 300ms ease,
+    transform 300ms ease;
 
   &::after {
     position: absolute;
@@ -21,6 +20,9 @@
     transition: opacity 300ms ease;
   }
   &White {
+    position: fixed;
+    top: 0;
+    z-index: 1000;
     background-color: $c-white;
 
     &::after {
@@ -32,11 +34,18 @@
   }
 
   &Transparent {
+    position: fixed;
+    top: 0;
+    z-index: 1000;
     background: linear-gradient(
       180deg,
       rgba(0, 0, 0, 0.3) 0%,
       rgba(0, 0, 0, 0) 100%
     );
+  }
+
+  &Hidden {
+    transform: translateY(-100%);
   }
 
   &Content {
@@ -102,7 +111,7 @@
     inset-inline-start: 0;
 
     background-color: $c-white;
-    width: 100vw;
+    width: 100%;
 
     @include md {
       display: none;

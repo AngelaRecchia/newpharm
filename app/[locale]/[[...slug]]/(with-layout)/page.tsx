@@ -1,9 +1,10 @@
-import { getAllStories, getStory } from '@/lib/api/storyblok/stories'
-import { getLangs } from '@/lib/api/storyblok/languages'
+import { getAllStories, getStory, getRelatedStoriesByTags, getRelatedProjectsByProduct } from '@/lib/api/storyblok/stories'
 import StoryblokRenderer from '@/components/StoryblokRenderer'
 import { setRequestLocale } from 'next-intl/server'
 import { getTranslations } from 'next-intl/server'
 import { notFound } from 'next/navigation'
+import { PageStoryblok, StoryStoryblok } from '@/types/storyblok'
+import localeConfig from '@/i18n/locales.json'
 
 interface PageProps {
   params: Promise<{
@@ -13,21 +14,18 @@ interface PageProps {
 }
 
 /**
- * Generate static params for all locale + slug combinations
- * This runs at build time to pre-render all pages
+ * Generate static params for all locale + slug combinations.
+ * Locales come from i18n/locales.json (generated at build time).
+ * Stories are fetched from Storyblok CDN API.
  */
 export async function generateStaticParams() {
   try {
-    // Get all available locales
-    const locales = await getLangs()
-
-    // Get all stories (published in production, draft in development)
+    const locales = localeConfig.locales
     const stories = await getAllStories()
 
     const params: Array<{ locale: string; slug?: string[] }> = []
 
     for (const locale of locales) {
-      // Get stories for this locale
       const localeStories = stories.filter((story) => {
         const fullSlug = story.full_slug || ''
         return fullSlug.startsWith(`${locale}/`)
@@ -35,35 +33,30 @@ export async function generateStaticParams() {
 
       for (const story of localeStories) {
         const fullSlug = story.full_slug || ''
-
-        // Remove locale prefix from slug
         const slugWithoutLocale = fullSlug.replace(`${locale}/`, '')
 
-        // Skip empty slugs (homepage is handled separately)
         if (!slugWithoutLocale) {
-          // Homepage
           params.push({ locale, slug: undefined })
           continue
         }
 
-        // Split slug into segments for catch-all route
-        const slugSegments = slugWithoutLocale.split('/')
-
         params.push({
           locale,
-          slug: slugSegments,
+          slug: slugWithoutLocale.split('/'),
         })
       }
     }
 
     console.log(`✅ Generated ${params.length} static params for ${locales.length} locales`)
-
     return params
   } catch (error) {
     console.error('Error generating static params:', error)
     return []
   }
 }
+
+export const dynamicParams = true
+export const revalidate = 3600
 
 /**
  * Page per route con header/footer (route normali)
@@ -83,6 +76,43 @@ export default async function WithLayoutPage({ params }: PageProps) {
   if (!story) {
     notFound()
   }
+
+  // Se il content è una Story, fetcha le story correlate
+  if (story.content?.component === 'story') {
+
+    const storyContent = story.content as StoryStoryblok
+    const relatedStories = await getRelatedStoriesByTags(
+      storyContent.tag,
+      storySlug,
+      locale
+    )
+
+    // Inietta le story correlate nel blok
+    if (relatedStories.length > 0) {
+      story.content = {
+        ...storyContent,
+        related_stories: relatedStories
+      }
+    }
+  }
+
+  // Se il content è un Product, fetcha i progetti correlati (query inversa)
+  if (story.content?.component === 'product') {
+    const relatedProjects = await getRelatedProjectsByProduct(
+      story.uuid,
+      locale
+    )
+
+    if (relatedProjects.length > 0) {
+      story.content = {
+        ...story.content,
+        related_projects: relatedProjects
+      }
+    }
+  }
+
+
+
   return (
     <>
       {story.content && (
@@ -90,8 +120,6 @@ export default async function WithLayoutPage({ params }: PageProps) {
       )}
     </>
   )
-
-
 }
 
 /**

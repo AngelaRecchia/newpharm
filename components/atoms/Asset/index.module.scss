@@ -4,21 +4,81 @@
 
 @use "../../../styles" as *;
 
-.asset {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.asset-image-wrapper {
+  position: absolute;
+  inset: 0;
+
+  &.assetModeFit {
+    position: relative;
+    inset: unset;
+  }
+
+  &.assetHasOverlay {
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-color: $c-black;
+      opacity: 0.25;
+      z-index: 1;
+      pointer-events: none;
+    }
+  }
+
+  // Mostra/nascondi immagini mobile/desktop in base al breakpoint
+  .asset-image-mobile {
+    display: block;
+
+    @include lg {
+      display: none;
+    }
+  }
+
+  .asset-image-desktop {
+    display: none;
+
+    @include lg {
+      display: block;
+    }
+  }
 }
 
-.asset-image {
-  // Stili specifici per immagini
+.asset-image-wrapper,
+.asset-video-wrapper {
+  img,
+  video {
+    display: block;
+  }
+
+  &.assetModeFit {
+    position: relative;
+    img,
+    video {
+      position: relative !important;
+      height: auto !important;
+    }
+  }
 }
 
 .asset-video-wrapper {
-  position: relative;
+  position: absolute;
+  z-index: 1;
+  inset: 0;
   width: 100%;
   height: 100%;
+  overflow: clip;
+
+  &.assetHasOverlay {
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-color: $c-black;
+      opacity: 0.25;
+      z-index: 1;
+      pointer-events: none;
+    }
+  }
 }
 
 .asset-video {

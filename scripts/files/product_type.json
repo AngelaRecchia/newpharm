@@ -1,0 +1,20 @@
+{
+  "datasource": {
+    "name": "Product Type",
+    "slug": "product-type"
+  },
+  "entries": [
+    {
+      "name": "bio",
+      "value": "bio"
+    },
+    {
+      "name": "eco",
+      "value": "eco"
+    },
+    {
+      "name": "normal",
+      "value": "normal"
+    }
+  ]
+}

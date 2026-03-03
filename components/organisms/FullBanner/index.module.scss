@@ -1,0 +1,94 @@
+@use "../../../styles/" as *;
+
+.wrapper {
+  position: relative;
+  color: $c-white;
+
+  --padding-block: #{$s-24};
+
+  @include lg {
+    --padding-block: #{$s-64};
+  }
+
+  .title {
+    @include t-h1;
+    position: absolute;
+    bottom: $s-64;
+    width: 100%;
+    inset-inline-start: 0;
+    inset-inline-end: $s-64;
+    padding-inline: $s-24 $s-64;
+
+    @include lg {
+      padding-inline-start: $s-40;
+    }
+
+    z-index: 2;
+    max-width: 56.25rem;
+  }
+
+  &.full {
+    height: 100dvh;
+
+    .container {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+
+    .asset-video-control-wrapper {
+      position: sticky;
+
+      top: calc(100dvh - $s-32 - $s-40);
+      padding: $s-24;
+      display: flex;
+      justify-content: flex-end;
+      z-index: 10;
+    }
+
+    .asset-wrapper {
+      position: absolute;
+      inset: 0;
+
+      will-change: transform;
+      z-index: 0;
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
+      height: 100dvh;
+    }
+  }
+
+  &.padding {
+    @include container-lg;
+    @include mobile {
+      padding-block: var(--padding-block);
+    }
+
+    height: 100dvh;
+
+    .container {
+      position: relative;
+      height: 100%;
+      padding: 0;
+      overflow: clip;
+    }
+    .asset-wrapper {
+      inset: 0;
+      position: absolute;
+    }
+
+    .asset-video-control-wrapper {
+      position: absolute;
+      bottom: $s-64;
+      inset-inline-end: $s-48;
+
+      @include lg {
+        bottom: calc($s-64 + $s-24);
+        inset-inline-end: calc($s-40 + $s-24);
+      }
+    }
+  }
+}

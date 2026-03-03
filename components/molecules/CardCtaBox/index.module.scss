@@ -1,0 +1,54 @@
+@use "../../../styles" as *;
+
+.wrapper {
+  color: $c-white;
+  overflow: clip;
+  position: relative;
+
+  // Variabile semantica per lo stato hover del bottone
+  --button-hover: 0;
+
+  .content {
+    padding: $s-24;
+    height: 100%;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  @include mobile {
+    aspect-ratio: 1;
+  }
+
+  @include md {
+    height: calc((100vw / var(--cards-count)) - $s-24 * 2);
+  }
+
+  @include lg {
+    height: calc((100vw / var(--cards-count)) - $s-40 * 2);
+  }
+
+  &.black {
+    background-color: $c-black;
+  }
+
+  &.blue {
+    background-color: $c-primary;
+  }
+
+  .title {
+    @include t-h2;
+  }
+
+  .hasImage {
+    color: $c-black;
+  }
+
+  // Quando il wrapper è in hover, imposta la variabile a 1
+  &:hover,
+  &:focus-visible {
+    --button-hover: 1;
+  }
+}
