@@ -6,7 +6,7 @@ import { storyblokEditable } from '@storyblok/react';
 import { useRouter, usePathname } from '@/i18n/navigation'
 import { useParams } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl'
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useState } from 'react'
 import styles from './index.module.scss';
 
 import { render } from 'storyblok-rich-text-react-renderer';
@@ -44,56 +44,55 @@ export default function Footer({
     const footerRef = useRef<HTMLElement>(null)
     const { height: viewportHeight } = useViewport()
 
+    const [pageReady, setPageReady] = useState(false)
+
     useEffect(() => {
-        if (typeof window === 'undefined' || !footerRef.current) return;
+        if (document.readyState === 'complete') {
+            setPageReady(true)
+        } else {
+            const onLoad = () => setPageReady(true)
+            window.addEventListener('load', onLoad, { once: true })
+            return () => window.removeEventListener('load', onLoad)
+        }
+    }, [])
+
+    useEffect(() => {
+
+        console.log('in use effect');
+        if (!pageReady || !footerRef.current) return;
 
         const mainElement = document.querySelector('main.main') as HTMLElement;
         if (!mainElement) return;
 
-        let scrollTrigger: ScrollTrigger | null = null;
+        const footer = footerRef.current;
+        const footerHeight = footer.offsetHeight;
+        const shouldAnimate = footerHeight <= viewportHeight;
 
-        const initAnimation = () => {
-            if (!footerRef.current || !mainElement) return;
-
-            const footerHeight = footerRef.current.offsetHeight;
-            const shouldAnimate = footerHeight <= viewportHeight;
-
-            if (shouldAnimate) {
-                gsap.set(footerRef.current, { yPercent: -50 });
-
-                const uncover = gsap.timeline({ paused: true });
-                uncover.to(footerRef.current, { yPercent: 0, ease: 'none' });
-
-                scrollTrigger = ScrollTrigger.create({
-                    trigger: mainElement,
-                    start: 'bottom bottom',
-                    // Ricalcola dinamicamente ad ogni refresh
-                    end: () => `+=${footerRef.current?.offsetHeight ?? 0}px`,
-                    animation: uncover,
-                    scrub: true,
-                    invalidateOnRefresh: true,
-                });
-            } else {
-                gsap.set(footerRef.current, { yPercent: 0 });
-            }
-        };
-
-        // window.load fires after eager resources (CSS, fonts, priority images)
-        // but doesn't wait for lazy-loaded images
-        const onReady = () => requestAnimationFrame(initAnimation);
-
-        if (document.readyState === 'complete') {
-            onReady();
-        } else {
-            window.addEventListener('load', onReady, { once: true });
+        if (!shouldAnimate) {
+            gsap.set(footer, { clearProps: 'yPercent' });
+            return;
         }
 
+        gsap.set(footer, { yPercent: -100 });
+
+        const uncover = gsap.timeline({ paused: true });
+        uncover.to(footer, { yPercent: 0, ease: 'none' });
+
+        const scrollTrigger = ScrollTrigger.create({
+            trigger: mainElement,
+            start: 'bottom bottom',
+            end: () => `+=${footer.offsetHeight}px`,
+            animation: uncover,
+            scrub: true,
+            invalidateOnRefresh: true,
+        });
+
         return () => {
-            if (scrollTrigger) {
-                scrollTrigger.kill();
-            }
+            scrollTrigger.kill();
+            uncover.kill();
+            gsap.set(footer, { clearProps: 'yPercent' });
         };
-    }, [viewportHeight]);
+    }, [pageReady, viewportHeight, pathname]);
 
     if (!blok) return null;
 
