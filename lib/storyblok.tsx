@@ -2,30 +2,40 @@
 
 import { storyblokInit, apiPlugin, loadStoryblokBridge } from '@storyblok/react'
 import { ReactNode, useEffect } from 'react'
+import dynamic from 'next/dynamic'
 import { shouldEnableBridge } from './api/storyblok/config'
 
-// Import components
+// Lightweight components — static imports
 import Page from '@/components/storyblok/Page'
 import Settings from '@/components/storyblok/Settings'
-import Asset from '@/components/storyblok/Asset'
+import AssetComponent from '@/components/atoms/Asset'
+import { AssetStoryblok } from '@/types/storyblok'
 import Link from '@/components/storyblok/Link'
-import Header from '@/components/organisms/Header'
-import Footer from '@/components/organisms/Footer'
-import HeroComponent from '@/components/organisms/Hero'
+import Story from '@/components/storyblok/Story'
+import Product from '@/components/storyblok/Product'
+
+// Wrapper inline per Asset - passa il blok direttamente all'atom
+const Asset = ({ blok, ...props }: { blok?: AssetStoryblok } & any) => {
+  if (!blok) return null
+  return <AssetComponent blok={blok} {...props} />
+}
 import DivisionBox from '@/components/organisms/DivisionBox'
 import CtaBox from '@/components/organisms/CtaBox'
-import FullBanner from '@/components/organisms/FullBanner'
 import SplitBanner from '@/components/organisms/SplitBanner'
-import Carousel from '@/components/organisms/Carousel'
-import Story from '@/components/storyblok/Story'
-import Banneraccordion from '@/components/organisms/BannerAccordion'
-import Product from '@/components/storyblok/Product'
-import StickyImage from '@/components/organisms/StickyImage'
-import VideoYt from '@/components/organisms/VideoYt'
 import SpecTable from '@/components/organisms/SpecTable'
 import IconTextHighlight from '@/components/organisms/IconTextHighlight'
 import Tabs from '@/components/organisms/Tabs'
 import Faqs from '@/components/organisms/Faqs'
+
+// Heavy components (GSAP / Swiper / WebGL) — dynamic imports for bundle splitting
+const Header = dynamic(() => import('@/components/organisms/Header'))
+const Footer = dynamic(() => import('@/components/organisms/Footer'))
+const HeroComponent = dynamic(() => import('@/components/organisms/Hero'))
+const FullBanner = dynamic(() => import('@/components/organisms/FullBanner'))
+const Carousel = dynamic(() => import('@/components/organisms/Carousel'))
+const Banneraccordion = dynamic(() => import('@/components/organisms/BannerAccordion'))
+const StickyImage = dynamic(() => import('@/components/organisms/StickyImage'))
+const VideoYt = dynamic(() => import('@/components/organisms/VideoYt'))
 const components = {
 
   // Organisms

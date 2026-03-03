@@ -48,6 +48,7 @@
   img,
   video {
     display: block;
+    object-fit: cover;
   }
 
   &.assetModeFit {
@@ -56,6 +57,7 @@
     video {
       position: relative !important;
       height: auto !important;
+      object-fit: contain !important;
     }
   }
 }

@@ -3,11 +3,13 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react'
 import NextImage, { ImageProps as NextImageProps } from 'next/image'
 import classNames from 'classnames/bind'
+import { storyblokEditable } from '@storyblok/react'
 import { useViewport } from '@/lib/context/viewport-context'
 import Icon from '@/components/atoms/Icon'
 import styles from './index.module.scss'
 import Button from '../Button'
 import { useTranslations } from 'next-intl'
+import { AssetStoryblok } from '@/types/storyblok'
 
 const cn = classNames.bind(styles)
 
@@ -84,6 +86,8 @@ export interface AssetComponentProps extends Omit<NextImageProps, 'src' | 'alt'>
      * - Asset con breakpoints: { mobile: {...}, desktop: {...} }
      */
     asset?: StoryblokAsset | StoryblokAsset[] | StoryblokAssetWithBreakpoints | null
+    /** Blok Storyblok completo (opzionale, per storyblokEditable) */
+    blok?: AssetStoryblok
     /** Dimensione dell'immagine: 's' | 'm' | 'l' (solo per immagini) */
     size?: AssetSize
     /** Classe CSS aggiuntiva */
@@ -121,6 +125,7 @@ const Asset = ({
     src,
     alt,
     asset,
+    blok,
     size = 'l',
     className,
     videoProps,
@@ -132,21 +137,34 @@ const Asset = ({
     const { isDesktop } = useViewport()
     const t = useTranslations()
 
+    // Se blok è presente, estrai asset da blok e applica storyblokEditable
+    let finalAsset: StoryblokAsset | StoryblokAsset[] | StoryblokAssetWithBreakpoints | null | undefined = asset
+    let editableProps = {}
+
+    if (blok) {
+        editableProps = storyblokEditable(blok as any)
+        // Se ha mobile o desktop, passa come oggetto con breakpoints
+        // Altrimenti, se ha un asset diretto
+        finalAsset = (blok.mobile || blok.desktop)
+            ? { mobile: blok.mobile || null, desktop: blok.desktop || null }
+            : null
+    }
+
     // Logica per determinare quale asset usare
-    // Priorità: asset > src/alt
+    // Priorità: finalAsset (da blok o prop) > src/alt
     let mobileSrc = ''
     let desktopSrc = ''
     let assetAlt = ''
 
-    if (asset) {
-        // Se asset è un array, prendi il primo elemento
+    if (finalAsset) {
+        // Se finalAsset è un array, prendi il primo elemento
         let normalizedAsset: StoryblokAsset | StoryblokAssetWithBreakpoints | null = null
 
-        if (Array.isArray(asset)) {
+        if (Array.isArray(finalAsset)) {
             // Array di assets: usa il primo elemento
-            normalizedAsset = asset.length > 0 ? asset[0] : null
+            normalizedAsset = finalAsset.length > 0 ? finalAsset[0] : null
         } else {
-            normalizedAsset = asset
+            normalizedAsset = finalAsset
         }
 
         if (!normalizedAsset) {
@@ -231,7 +249,7 @@ const Asset = ({
             <div className={cn('asset-video-wrapper', {
                 assetHasOverlay: overlay,
                 assetModeFit: mode === 'fit'
-            }, className)} data-asset>
+            }, className)} data-asset {...editableProps}>
                 <video
 
                     ref={videoRef}
@@ -268,9 +286,9 @@ const Asset = ({
         // Se abbiamo mobile e desktop diversi, renderizza entrambe le immagini
         // Verifica se asset ha mobile e desktop diversi
         // Normalizza asset (gestisce array)
-        const normalizedAssetForBreakpoints = Array.isArray(asset)
-            ? (asset.length > 0 ? asset[0] : null)
-            : asset
+        const normalizedAssetForBreakpoints = Array.isArray(finalAsset)
+            ? (finalAsset.length > 0 ? finalAsset[0] : null)
+            : finalAsset
         const hasBreakpoints = normalizedAssetForBreakpoints && !Array.isArray(normalizedAssetForBreakpoints) && ('mobile' in normalizedAssetForBreakpoints || 'desktop' in normalizedAssetForBreakpoints)
         const assetWithBreakpoints = hasBreakpoints ? normalizedAssetForBreakpoints as StoryblokAssetWithBreakpoints : null
         const hasDifferentAssets = assetWithBreakpoints?.mobile && assetWithBreakpoints?.desktop && mobileSrc !== desktopSrc
@@ -289,14 +307,14 @@ const Asset = ({
                 <div className={cn('asset-image-wrapper', {
                     assetHasOverlay: overlay,
                     assetModeFit: mode === 'fit'
-                }, className)} data-asset>
+                }, className)} data-asset {...editableProps}>
                     <NextImage
                         src={mobileTransformed}
                         alt={assetAlt}
                         className={cn('asset', 'asset-image', 'asset-image-mobile')}
                         fill
-                        objectFit='cover'
-                        quality={100}
+
+                        quality={80}
                         {...rest}
                     />
                     <NextImage
@@ -304,8 +322,8 @@ const Asset = ({
                         alt={assetAlt}
                         className={cn('asset', 'asset-image', 'asset-image-desktop')}
                         fill
-                        objectFit='cover'
-                        quality={100}
+
+                        quality={80}
                         {...rest}
                     />
                 </div>
@@ -319,14 +337,14 @@ const Asset = ({
                 <div className={cn('asset-image-wrapper', {
                     assetHasOverlay: overlay,
                     assetModeFit: mode === 'fit'
-                }, className)} data-asset>
+                }, className)} data-asset {...editableProps}>
                     <NextImage
                         src={transformedSrc}
                         alt={assetAlt}
                         className={cn('asset', 'asset-image')}
                         fill
-                        objectFit='cover'
-                        quality={100}
+                        sizes={`(min-width: 1024px) ${desktopSuffix}px, ${mobileSuffix}px`}
+                        quality={80}
                         {...rest}
                     />
                 </div>
@@ -345,8 +363,8 @@ const Asset = ({
                 alt={assetAlt}
                 className={cn('asset', 'asset-image')}
                 fill
-                objectFit='cover'
-                quality={100}
+                sizes="100vw"
+                quality={80}
                 {...rest}
             />
         </div>

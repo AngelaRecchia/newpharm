@@ -11,6 +11,7 @@ import { storyblokEditable } from '@storyblok/react'
 
 import { AnimatePresence, motion } from 'motion/react'
 
+import { useTranslations } from 'next-intl'
 import classNames from 'classnames/bind'
 import styles from './index.module.scss'
 
@@ -32,6 +33,7 @@ export default function Header({
   blok,
   variant = 'transparent',
 }: HeaderProps) {
+  const t = useTranslations()
   const navItems = (blok?.nav_items as Nav_itemStoryblok[]) || []
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [openDropdownIndex, setOpenDropdownIndex] = useState<number | null>(null)
@@ -158,7 +160,7 @@ export default function Header({
         <div className={cn('headerContent')}>
           {/* Logo */}
           <div className={cn('headerLogo')}>
-            <SmartLink href="/" className={cn({
+            <SmartLink href="/" aria-label={t('home')} className={cn({
               "text-primary": headerVariant === 'white',
               "text-white": headerVariant === 'transparent',
             })}>
@@ -185,11 +187,12 @@ export default function Header({
 
             {/* Actions */}
             <div className={cn('headerActions')}>
-              <Button icon="download" variant={isMobile ? 'tertiary' : 'primary'} className={isMobile ? 'bg-surface' : ''} />
-              <Button icon='search' variant={isMobile ? 'tertiary' : 'primary'} className={isMobile ? 'bg-surface' : ''} />
+              <Button icon="download" aria-label={t('download')} variant={isMobile ? 'tertiary' : 'primary'} className={isMobile ? 'bg-surface' : ''} />
+              <Button icon='search' aria-label={t('search')} variant={isMobile ? 'tertiary' : 'primary'} className={isMobile ? 'bg-surface' : ''} />
               {isMobile && (
                 <Button
                   icon={mobileMenuOpen ? 'close' : 'hamburger'}
+                  aria-label={t('menu')}
                   onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 />
               )}

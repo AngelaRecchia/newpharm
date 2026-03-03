@@ -15,6 +15,7 @@ import localeConfig from '@/i18n/locales.json'
 const inter = Inter({
   subsets: ['latin'],
   display: 'swap',
+  variable: '--font-sans',
 })
 
 export const metadata: Metadata = {

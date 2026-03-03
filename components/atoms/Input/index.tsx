@@ -40,6 +40,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
                     ref={ref}
                     className={inputClasses}
                     placeholder={placeholder}
+                    aria-label={props['aria-label'] || placeholder}
                     {...props}
                 />
                 <Button

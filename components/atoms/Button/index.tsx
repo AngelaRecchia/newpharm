@@ -1,5 +1,7 @@
 import classNames from 'classnames/bind';
 import styles from './index.module.scss';
+import { storyblokEditable } from '@storyblok/react'
+import { LinkStoryblok } from '@/types/storyblok'
 
 const cn = classNames.bind(styles);
 
@@ -19,8 +21,13 @@ interface ButtonProps {
     variant?: 'primary' | 'secondary' | 'tertiary'
     size?: 'small' | 'medium',
     weight?: 'normal' | 'bold'
+    'aria-label'?: string
+    /** Blok Storyblok completo (opzionale, per storyblokEditable) */
+    blok?: LinkStoryblok
 }
-const Button = ({ icon = 'right-small', label, onClick, className, href, target, link, variant = 'primary', size = 'medium', weight = 'bold', ...props }: ButtonProps) => {
+const Button = ({ icon = 'right-small', label, onClick, className, href, target, link, variant = 'primary', size = 'medium', weight = 'bold', 'aria-label': ariaLabel, blok, ...props }: ButtonProps) => {
+    // Se blok è presente, applica storyblokEditable
+    const editableProps = blok ? storyblokEditable(blok as any) : {}
 
     const hasLabel = label && label.length > 0
     const hasIcon = icon && icon.length > 0 && icons[icon]
@@ -50,14 +57,14 @@ const Button = ({ icon = 'right-small', label, onClick, className, href, target,
     // Renderizza come SmartLink se c'è un link o href, altrimenti come button
     if (link || href) {
         return (
-            <SmartLink link={link} href={href} target={linkTarget} className={buttonClasses} {...props}>
+            <SmartLink link={link} href={href} target={linkTarget} className={buttonClasses} aria-label={ariaLabel} {...editableProps} {...props}>
                 {children}
             </SmartLink>
         )
     }
 
     return (
-        <button onClick={onClick} className={buttonClasses} {...props}>
+        <button onClick={onClick} className={buttonClasses} aria-label={ariaLabel} {...editableProps} {...props}>
             {children}
         </button>
     )

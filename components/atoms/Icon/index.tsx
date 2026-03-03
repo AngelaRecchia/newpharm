@@ -12,6 +12,7 @@ type IconCloneProps = {
   height?: number
   className?: string
   strokeWidth?: number | string
+  'aria-hidden'?: boolean
 }
 
 const sizeMap: Record<IconSize, number> = {
@@ -83,7 +84,7 @@ const Icon = ({ type, size = 'l', variant, className = '', weight = 'bold' }: Ic
 
     return React.cloneElement(
       icon as React.ReactElement<IconCloneProps>,
-      { className: combinedClassName }
+      { className: combinedClassName, 'aria-hidden': true }
     )
   }
 
@@ -108,7 +109,7 @@ const Icon = ({ type, size = 'l', variant, className = '', weight = 'bold' }: Ic
       ...icon.props,
       width: sizeValue,
       height: sizeValue,
-
+      'aria-hidden': true,
       className: classNames(icon.props?.className, className),
     }
   )

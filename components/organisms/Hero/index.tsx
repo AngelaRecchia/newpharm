@@ -43,15 +43,13 @@ export default function HeroComponent({ blok }: { blok?: HeroStoryblok }) {
     if (!blok) return <></>;
 
     const { title, subtitle, background, links, variant } = blok;
-    console.log(links?.[0]?.link?.anchor);
-
     return (
         <section className={cn('wrapper', variant)} {...storyblokEditable(blok as any)}>
 
 
             {variant !== 'tertiary' && background ?
                 <div className={cn('background')}>
-                    <Asset asset={background} />
+                    <Asset asset={background} priority={true} />
                 </div>
                 : null}
 

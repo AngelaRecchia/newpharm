@@ -58,7 +58,6 @@ export default function Footer({
 
     useEffect(() => {
 
-        console.log('in use effect');
         if (!pageReady || !footerRef.current) return;
 
         const mainElement = document.querySelector('main.main') as HTMLElement;

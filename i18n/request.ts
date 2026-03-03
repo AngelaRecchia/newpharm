@@ -38,7 +38,6 @@ export default getRequestConfig(async ({ requestLocale }) => {
     now: new Date(),
     onError: (error) => {
       if (error.code === IntlErrorCode.MISSING_MESSAGE) {
-        console.log("missing message", error);
         console.warn(error);
       } else {
         // Other errors indicate a bug in the app and should be reported

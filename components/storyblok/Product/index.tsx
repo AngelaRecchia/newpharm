@@ -101,7 +101,7 @@ const Product = ({ blok }: { blok: ProductStoryblok }) => {
             <Tag tag={t(category)} variant="primary" />
           </div>
           <div className={cn('product-image')}>
-            <Asset asset={mainImage} mode="fit" />
+            <Asset asset={mainImage} mode="fit" priority={true} />
           </div>
         </div>
 
@@ -126,7 +126,7 @@ const Product = ({ blok }: { blok: ProductStoryblok }) => {
             <div className={cn('secondary-images')}>
               {secondaryImages.map((img: any, i: number) => (
                 <div key={i} className={cn('secondary-image')}>
-                  <Asset asset={[img]} size="m" />
+                  <Asset asset={[img]} size="m" priority={true} />
                 </div>
               ))}
             </div>
