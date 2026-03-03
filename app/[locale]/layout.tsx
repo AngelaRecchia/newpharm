@@ -9,7 +9,7 @@ import { getMessages, setRequestLocale } from 'next-intl/server'
 import { notFound } from 'next/navigation'
 import { hasLocale } from 'next-intl'
 import { routing } from '@/i18n/routing'
-import { getLangs } from '@/lib/api/storyblok/languages'
+import localeConfig from '@/i18n/locales.json'
 
 // Load Inter font with support for Latin and Arabic
 const inter = Inter({
@@ -22,9 +22,8 @@ export const metadata: Metadata = {
   description: 'Newpharm - Progetto Next.js con Storyblok',
 }
 
-export async function generateStaticParams() {
-  const locales = await getLangs()
-  return locales.map((locale) => ({ locale }))
+export function generateStaticParams() {
+  return localeConfig.locales.map((locale) => ({ locale }))
 }
 
 type Props = {
@@ -35,9 +34,8 @@ type Props = {
 export default async function RootLayout({ children, params }: Props) {
   const { locale } = await params
 
-  // Validate locale against Storyblok locales
-  const locales = await getLangs()
-  if (!locales.includes(locale)) {
+  // Validate locale against known locales
+  if (!localeConfig.locales.includes(locale)) {
     notFound()
   }
 

@@ -1,11 +1,10 @@
 import { getAllStories, getStory, getRelatedStoriesByTags, getRelatedProjectsByProduct } from '@/lib/api/storyblok/stories'
-import { getLangs } from '@/lib/api/storyblok/languages'
-import { isProduction } from '@/lib/api/storyblok/config'
 import StoryblokRenderer from '@/components/StoryblokRenderer'
 import { setRequestLocale } from 'next-intl/server'
 import { getTranslations } from 'next-intl/server'
 import { notFound } from 'next/navigation'
 import { PageStoryblok, StoryStoryblok } from '@/types/storyblok'
+import localeConfig from '@/i18n/locales.json'
 
 interface PageProps {
   params: Promise<{
@@ -15,28 +14,18 @@ interface PageProps {
 }
 
 /**
- * Generate static params for all locale + slug combinations
- * Solo in produzione per performance, in draft mode usa dynamic rendering
+ * Generate static params for all locale + slug combinations.
+ * Locales come from i18n/locales.json (generated at build time).
+ * Stories are fetched from Storyblok CDN API.
  */
 export async function generateStaticParams() {
-  // In draft mode, non generare static params (usa dynamic rendering)
-  // Questo permette di vedere le modifiche immediatamente
-  if (!isProduction()) {
-    console.log('📝 Draft mode: using dynamic rendering (no static params)')
-    return []
-  }
-
   try {
-    // Get all available locales
-    const locales = await getLangs()
-
-    // Get all stories (published in production, draft in development)
+    const locales = localeConfig.locales
     const stories = await getAllStories()
 
     const params: Array<{ locale: string; slug?: string[] }> = []
 
     for (const locale of locales) {
-      // Get stories for this locale
       const localeStories = stories.filter((story) => {
         const fullSlug = story.full_slug || ''
         return fullSlug.startsWith(`${locale}/`)
@@ -44,29 +33,21 @@ export async function generateStaticParams() {
 
       for (const story of localeStories) {
         const fullSlug = story.full_slug || ''
-
-        // Remove locale prefix from slug
         const slugWithoutLocale = fullSlug.replace(`${locale}/`, '')
 
-        // Skip empty slugs (homepage is handled separately)
         if (!slugWithoutLocale) {
-          // Homepage
           params.push({ locale, slug: undefined })
           continue
         }
 
-        // Split slug into segments for catch-all route
-        const slugSegments = slugWithoutLocale.split('/')
-
         params.push({
           locale,
-          slug: slugSegments,
+          slug: slugWithoutLocale.split('/'),
         })
       }
     }
 
     console.log(`✅ Generated ${params.length} static params for ${locales.length} locales`)
-
     return params
   } catch (error) {
     console.error('Error generating static params:', error)
@@ -74,18 +55,8 @@ export async function generateStaticParams() {
   }
 }
 
-/**
- * Configurazione rendering:
- * - Draft mode: dynamic (vedi modifiche immediate) - gestito da generateStaticParams che ritorna []
- * - Production: static (performance) - gestito da generateStaticParams che genera tutti i params
- * 
- * Nota: Non possiamo usare espressioni condizionali per dynamic/revalidate.
- * La logica è gestita in generateStaticParams:
- * - Se ritorna [] → Next.js usa dynamic rendering
- * - Se ritorna params → Next.js usa static generation
- */
-export const dynamic = 'auto' // Auto: Next.js decide in base a generateStaticParams
-export const revalidate = 3600 // 1h revalidation in production (ignorato in draft mode)
+export const dynamicParams = true
+export const revalidate = 3600
 
 /**
  * Page per route con header/footer (route normali)
