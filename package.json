@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "fetch:locales": "node --env-file=.env.local scripts/fetch-locales.mjs",
+    "fetch:locales": "node scripts/fetch-locales.mjs",
     "dev": "npm run fetch:locales && next dev --experimental-https",
     "build": "npm run fetch:locales && next build",
     "start": "next start",

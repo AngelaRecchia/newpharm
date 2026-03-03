@@ -12,11 +12,23 @@
  *   NEXT_PUBLIC_STORYBLOK_SPACE_ID
  */
 
-import { writeFileSync } from 'fs'
+import { readFileSync, writeFileSync, existsSync } from 'fs'
 import { join, dirname } from 'path'
 import { fileURLToPath } from 'url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
+const ROOT = join(__dirname, '..')
+
+// Load .env.local if it exists (local dev). On Vercel env vars are injected.
+const envPath = join(ROOT, '.env.local')
+if (existsSync(envPath)) {
+  for (const line of readFileSync(envPath, 'utf-8').split('\n')) {
+    const match = line.match(/^\s*([^#=]+?)\s*=\s*(.*)$/)
+    if (match && !process.env[match[1]]) {
+      process.env[match[1]] = match[2].replace(/^["']|["']$/g, '')
+    }
+  }
+}
 
 const TOKEN = process.env.STORYBLOK_MANAGEMENT_TOKEN || ''
 const SPACE_ID = process.env.NEXT_PUBLIC_STORYBLOK_SPACE_ID || ''
