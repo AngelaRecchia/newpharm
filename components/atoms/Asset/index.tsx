@@ -200,14 +200,12 @@ const Asset = ({
     // Determina quale src usare in base al viewport
     const currentSrc = isDesktop ? desktopSrc : mobileSrc
 
-    // Se non c'è un src valido, non renderizzare nulla
-    if (!currentSrc || currentSrc.trim() === '') {
-        return null
-    }
+    // Hooks devono essere chiamati sempre, non condizionalmente (prima di qualsiasi early return)
+    const fileType = useMemo(() => {
+        if (!currentSrc || currentSrc.trim() === '') return null
+        return getFileType(currentSrc)
+    }, [currentSrc])
 
-    const fileType = useMemo(() => getFileType(currentSrc), [currentSrc])
-
-    // Hooks devono essere chiamati sempre, non condizionalmente
     const videoRef = useRef<HTMLVideoElement>(null)
     const [isPlaying, setIsPlaying] = useState(true)
 
@@ -221,6 +219,11 @@ const Asset = ({
             setIsPlaying(!isPlaying)
         }
     }, [isPlaying])
+
+    // Se non c'è un src valido, non renderizzare nulla
+    if (!currentSrc || currentSrc.trim() === '') {
+        return null
+    }
 
     // Se è un video, renderizza il tag video con bottone play/pause
     if (fileType === 'video') {

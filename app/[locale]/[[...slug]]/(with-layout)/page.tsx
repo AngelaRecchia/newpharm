@@ -76,11 +76,16 @@ export async function generateStaticParams() {
 
 /**
  * Configurazione rendering:
- * - Draft mode: dynamic (vedi modifiche immediate)
- * - Production: static (performance)
+ * - Draft mode: dynamic (vedi modifiche immediate) - gestito da generateStaticParams che ritorna []
+ * - Production: static (performance) - gestito da generateStaticParams che genera tutti i params
+ * 
+ * Nota: Non possiamo usare espressioni condizionali per dynamic/revalidate.
+ * La logica è gestita in generateStaticParams:
+ * - Se ritorna [] → Next.js usa dynamic rendering
+ * - Se ritorna params → Next.js usa static generation
  */
-export const dynamic = isProduction() ? 'auto' : 'force-dynamic'
-export const revalidate = isProduction() ? 3600 : 0 // 1h in prod, no cache in draft
+export const dynamic = 'auto' // Auto: Next.js decide in base a generateStaticParams
+export const revalidate = 3600 // 1h revalidation in production (ignorato in draft mode)
 
 /**
  * Page per route con header/footer (route normali)

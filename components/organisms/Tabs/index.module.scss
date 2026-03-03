@@ -1,22 +1,33 @@
 @use "../../../styles" as *;
 
 .wrapper {
-  @include container-md;
-}
-
-.container {
-  display: flex;
-  flex-direction: column;
-  gap: $s-40;
-
-  @include lg {
-    gap: $s-80;
-  }
 }
 
 .title {
   @include t-h3;
   margin: 0;
+}
+
+.container {
+  @include container-lg;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: $s-40;
+
+  @include lg {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+
+    gap: $s-64;
+    align-items: start;
+  }
+}
+
+.content-wrapper {
+  @include lg {
+    width: calc(80% - $s-40 * 2);
+    margin-inline: auto;
+  }
 }
 
 .content {
@@ -25,10 +36,8 @@
   gap: $s-40;
 
   @include lg {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: $s-64;
-    align-items: start;
+    gap: $s-80;
+    grid-column: 2 / span 4;
   }
 }
 

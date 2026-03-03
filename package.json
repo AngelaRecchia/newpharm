@@ -3,8 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --experimental-https",
-    "build": "next build",
+    "fetch:locales": "node --env-file=.env.local scripts/fetch-locales.mjs",
+    "dev": "npm run fetch:locales && next dev --experimental-https",
+    "build": "npm run fetch:locales && next build",
     "start": "next start",
     "lint": "next lint",
     "generate:types": "tsx scripts/generate-storyblok-types.ts",

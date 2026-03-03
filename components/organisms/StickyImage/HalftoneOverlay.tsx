@@ -149,7 +149,8 @@ const HalftoneOverlay: React.FC<HalftoneOverlayProps> = (props) => {
         gl.uniform1i(gl.getUniformLocation(program, 'u_image'), 0)
 
         gl.drawArrays(gl.TRIANGLES, 0, 6)
-    }, [columns])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [columns]) // progressRef è un ref, non deve essere nelle dipendenze
 
     useEffect(() => {
         const canvas = canvasRef.current
@@ -267,7 +268,8 @@ const HalftoneOverlay: React.FC<HalftoneOverlayProps> = (props) => {
             ro.disconnect()
             if (rafRef.current) cancelAnimationFrame(rafRef.current)
         }
-    }, [imageSrc, columns, compileShader, linkProgram, renderFrame])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [imageSrc, columns, compileShader, linkProgram, renderFrame]) // progressRef è un ref, non deve essere nelle dipendenze
 
     // Transizione automatica – solo in mode 'auto'
     const overlayVisible = mode === 'auto' ? props.overlayVisible : false
@@ -281,7 +283,8 @@ const HalftoneOverlay: React.FC<HalftoneOverlayProps> = (props) => {
             duration: overlayVisible ? 5 : 1,
             ease: overlayVisible ? 'ease-in-out' : 'ease-in-out',
         })
-    }, [mode, overlayVisible])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [mode, overlayVisible]) // progressRef è un ref, non deve essere nelle dipendenze
 
     return (
         <div ref={containerRef} className={cn('halftone-overlay')} style={{ opacity: 1 }}>

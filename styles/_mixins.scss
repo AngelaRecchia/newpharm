@@ -190,7 +190,7 @@
     calc(
       100% -
         (
-          20% * (100vw - $breakpoint-m - ($s-24 * 2)) /
+          20% * (100vw - $breakpoint-m - ($s-40 * 2)) /
             ($breakpoint-xxl - $breakpoint-m)
         )
     ),
@@ -198,6 +198,10 @@
   );
   @include md {
     padding-block: $s-80;
+  }
+
+  @include lg {
+    padding-inline: 0;
   }
 }
 

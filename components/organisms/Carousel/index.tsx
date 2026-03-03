@@ -29,10 +29,7 @@ const Carousel = ({ title, subtitle, link, items, variant }: CarouselProps) => {
     const format = useFormatter();
     const t = useTranslations('');
 
-    if (items.length === 0) {
-        return <></>;
-    }
-
+    // Hooks devono essere chiamati sempre, non condizionalmente (prima di qualsiasi early return)
     // Calcola title e link basati su variant
     const computedTitle = useMemo(() => {
         if (variant === 'news') {
@@ -53,6 +50,10 @@ const Carousel = ({ title, subtitle, link, items, variant }: CarouselProps) => {
         }
         return link
     }, [variant, items, link]);
+
+    if (items.length === 0) {
+        return <></>;
+    }
 
     return (
         <section className={cn('wrapper')}>

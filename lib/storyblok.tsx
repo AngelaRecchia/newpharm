@@ -25,6 +25,7 @@ import VideoYt from '@/components/organisms/VideoYt'
 import SpecTable from '@/components/organisms/SpecTable'
 import IconTextHighlight from '@/components/organisms/IconTextHighlight'
 import Tabs from '@/components/organisms/Tabs'
+import Faqs from '@/components/organisms/Faqs'
 const components = {
 
   // Organisms
@@ -40,6 +41,7 @@ const components = {
   spec_table: SpecTable,
   icon_text_highlight: IconTextHighlight,
   tabs: Tabs,
+  faqs: Faqs,
 
   // Atoms
   asset: Asset,

@@ -9,7 +9,7 @@
 const isDev = process.env.NODE_ENV === 'development'
 
 export function getStoryblokApi() {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  // eslint-disable-next-line
   const StoryblokClient = require('storyblok-js-client')
   const client = new StoryblokClient({
     accessToken: process.env.NEXT_PUBLIC_STORYBLOK_ACCESS_TOKEN || '',
@@ -18,11 +18,11 @@ export function getStoryblokApi() {
 
   if (!isDev) return client
 
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  // eslint-disable-next-line
   const fs = require('fs') as typeof import('fs')
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  // eslint-disable-next-line
   const path = require('path') as typeof import('path')
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  // eslint-disable-next-line
   const crypto = require('crypto') as typeof import('crypto')
 
   const CACHE_DIR = path.join(process.cwd(), '.cache', 'storyblok')

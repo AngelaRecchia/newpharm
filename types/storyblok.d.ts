@@ -211,7 +211,7 @@ export interface PageStoryblok {
 
 export interface ProductStoryblok {
   title: string
-  tab-cd7f2c9c-47a9-4630-a228-1739262250da?: any | null // Optional
+  'tab-cd7f2c9c-47a9-4630-a228-1739262250da'?: any | null // Optional
   secondary_title?: string | null // Optional
   images?: any[] | null // Optional
   short_description?: string | null // Optional
@@ -288,6 +288,22 @@ export interface Sticky_imageStoryblok {
 }
 
 
+export interface Video_ytStoryblok {
+  video_id?: string | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+export interface TabsStoryblok {
+  title?: string | null // Optional
+  asset?: any[] | null // Optional
+  items?: Accordion_itemStoryblok[] | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
 export interface StoryStoryblok {
   title?: string | null // Optional
   author?: string | null // Optional
@@ -305,7 +321,7 @@ export interface StoryStoryblok {
 /**
  * Union type di tutti i componenti Storyblok
  */
-export type StoryblokComponent = Accordion_itemStoryblok | Anchor_linkStoryblok | AssetStoryblok | Banner_accordionStoryblok | Card_boxStoryblok | Card_cta_boxStoryblok | Card_divisionStoryblok | Card_icon_textStoryblok | CarouselStoryblok | Cta_boxStoryblok | Division_boxStoryblok | FaqsStoryblok | FooterStoryblok | Full_bannerStoryblok | HeaderStoryblok | HeroStoryblok | Icon_text_highlightStoryblok | LinkStoryblok | Nav_itemStoryblok | PageStoryblok | ProductStoryblok | SettingsStoryblok | Social_itemStoryblok | Spec_tableStoryblok | Split_bannerStoryblok | Sticky_imageStoryblok | StoryStoryblok
+export type StoryblokComponent = Accordion_itemStoryblok | Anchor_linkStoryblok | AssetStoryblok | Banner_accordionStoryblok | Card_boxStoryblok | Card_cta_boxStoryblok | Card_divisionStoryblok | Card_icon_textStoryblok | CarouselStoryblok | Cta_boxStoryblok | Division_boxStoryblok | FaqsStoryblok | FooterStoryblok | Full_bannerStoryblok | HeaderStoryblok | HeroStoryblok | Icon_text_highlightStoryblok | LinkStoryblok | Nav_itemStoryblok | PageStoryblok | ProductStoryblok | SettingsStoryblok | Social_itemStoryblok | Spec_tableStoryblok | Split_bannerStoryblok | Sticky_imageStoryblok | TabsStoryblok | Video_ytStoryblok | StoryStoryblok
 
 /**
  * Helper type per il prop 'blok' nei componenti Storyblok

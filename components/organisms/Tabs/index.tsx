@@ -21,30 +21,38 @@ const Tabs = ({ blok }: { blok: TabsStoryblok }) => {
 
   return (
     <section className={cn('wrapper')} {...storyblokEditable(blok as any)}>
-      {title && <h2 className={cn('title')}>{title}</h2>}
 
-      <div className={cn('content')}>
+
+      <div className={cn('container')}>
+
+
+        <div className={cn('content-wrapper')}>
+          <div className={cn('content')}>
+            {title && <h2 className={cn('title')}>{title}</h2>}
+
+            {items && items.length > 0 && (
+              <div className={cn('items')}>
+                {items.map((item: any, index: number) => (
+                  <AccordionItem
+                    key={item._uid}
+                    label={item.title || ''}
+                    variant="secondary"
+                  >
+                    <RichText content={item.text} raw />
+                  </AccordionItem>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
         {asset && asset.length > 0 && (
           <div className={cn('asset')}>
             <Asset asset={asset} size="m" mode="fit" />
           </div>
         )}
-
-        {items && items.length > 0 && (
-          <div className={cn('items')}>
-            {items.map((item: any, index: number) => (
-              <AccordionItem
-                key={item._uid}
-                label={item.title || ''}
-                variant="secondary"
-                defaultOpen={index === 0}
-              >
-                <RichText content={item.text} raw />
-              </AccordionItem>
-            ))}
-          </div>
-        )}
       </div>
+
     </section>
   )
 }

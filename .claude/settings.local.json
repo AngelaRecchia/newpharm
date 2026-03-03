@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "WebFetch(domain:pixso.net)"
+      "WebFetch(domain:pixso.net)",
+      "Bash(npm run build)"
     ]
   }
 }
