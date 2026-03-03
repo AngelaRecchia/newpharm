@@ -59,39 +59,36 @@ export default function Footer({
             const shouldAnimate = footerHeight <= viewportHeight;
 
             if (shouldAnimate) {
-                // Set initial position solo se l'animazione è abilitata
                 gsap.set(footerRef.current, { yPercent: -50 });
 
-                // Create uncover animation
                 const uncover = gsap.timeline({ paused: true });
                 uncover.to(footerRef.current, { yPercent: 0, ease: 'none' });
 
-                // Create ScrollTrigger
                 scrollTrigger = ScrollTrigger.create({
                     trigger: mainElement,
                     start: 'bottom bottom',
-                    end: () => `+=${footerHeight}px`,
+                    // Ricalcola dinamicamente ad ogni refresh
+                    end: () => `+=${footerRef.current?.offsetHeight ?? 0}px`,
                     animation: uncover,
                     scrub: true,
+                    invalidateOnRefresh: true,
                 });
             } else {
-                // Se il footer è più alto della viewport, non applicare animazione
-                // e mantieni la posizione normale
                 gsap.set(footerRef.current, { yPercent: 0 });
             }
         };
 
+        // window.load fires after eager resources (CSS, fonts, priority images)
+        // but doesn't wait for lazy-loaded images
+        const onReady = () => requestAnimationFrame(initAnimation);
 
-        let timeoutId: NodeJS.Timeout | null = null;
-        const rafId = requestAnimationFrame(() => {
-            timeoutId = setTimeout(initAnimation, 100);
-        });
+        if (document.readyState === 'complete') {
+            onReady();
+        } else {
+            window.addEventListener('load', onReady, { once: true });
+        }
 
         return () => {
-            cancelAnimationFrame(rafId);
-            if (timeoutId) {
-                clearTimeout(timeoutId);
-            }
             if (scrollTrigger) {
                 scrollTrigger.kill();
             }

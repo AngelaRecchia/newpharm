@@ -159,8 +159,8 @@ export default function Header({
           {/* Logo */}
           <div className={cn('headerLogo')}>
             <SmartLink href="/" className={cn({
-              "text-primary": variant === 'white',
-              "text-white": variant === 'transparent',
+              "text-primary": headerVariant === 'white',
+              "text-white": headerVariant === 'transparent',
             })}>
               <Icon type="logo" variant={headerVariant === 'white' ? 'primary-red' : 'white-red'} />
             </SmartLink>
@@ -177,7 +177,7 @@ export default function Header({
                   item={item}
                   index={index}
                   expanded={openDropdownIndex === index}
-                  variant={variant}
+                  variant={headerVariant}
                   onToggle={toggleDropdown}
                 />
               ))}
