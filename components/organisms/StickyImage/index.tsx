@@ -55,8 +55,25 @@ const StickyImage = ({ blok }: { blok: Sticky_imageStoryblok }) => {
       start: 'top top',
       end: 'bottom center',
       scrub: true,
+      invalidateOnRefresh: true,
       onUpdate: (self) => { halftoneProgressRef.current = self.progress },
     })
+
+    // Refresh after images/fonts settle the layout
+    const images = right.querySelectorAll('img')
+    let loaded = 0
+    const total = images.length
+    const onImageReady = () => {
+      loaded++
+      if (loaded >= total) ScrollTrigger.refresh()
+    }
+    images.forEach((img) => {
+      if (img.complete) { loaded++ } else { img.addEventListener('load', onImageReady, { once: true }) }
+    })
+    if (loaded >= total && total > 0) ScrollTrigger.refresh()
+
+    // Also refresh after fonts are ready
+    document.fonts.ready.then(() => ScrollTrigger.refresh())
 
     const handleResize = () => ScrollTrigger.refresh()
     window.addEventListener('resize', handleResize)
@@ -64,6 +81,7 @@ const StickyImage = ({ blok }: { blok: Sticky_imageStoryblok }) => {
     return () => {
       scrollTrigger.kill()
       window.removeEventListener('resize', handleResize)
+      images.forEach((img) => img.removeEventListener('load', onImageReady))
     }
   }, [isDesktop])
 
@@ -76,7 +94,7 @@ const StickyImage = ({ blok }: { blok: Sticky_imageStoryblok }) => {
       <div className={cn('content')}>
         <div ref={leftRef} className={cn('left')}>
           <div className={cn('image-wrapper')}>
-            <Asset asset={image} mode='fit' />
+            <Asset asset={image} mode='fit' priority={true} />
           </div>
 
           {isDesktop && imageSrc && webglSupported && (

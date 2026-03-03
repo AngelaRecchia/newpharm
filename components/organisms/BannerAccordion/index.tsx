@@ -108,7 +108,7 @@ const Banneraccordion = ({ blok }: { blok?: Banner_accordionStoryblok }) => {
           pin: true,
           pinSpacing: true,
           scrub: 1, // Valore più basso = più smooth, più alto = più responsive
-          invalidateOnRefresh: false,
+          invalidateOnRefresh: true,
 
         }
       })

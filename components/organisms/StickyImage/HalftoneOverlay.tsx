@@ -219,6 +219,7 @@ const HalftoneOverlay: React.FC<HalftoneOverlayProps> = (props) => {
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
             textureRef.current = tex
+            renderFrame()
         }
         img.onerror = () => console.warn('Halftone: impossibile caricare immagine', imageSrc)
 
