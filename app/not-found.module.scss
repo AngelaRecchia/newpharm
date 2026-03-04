@@ -1,0 +1,15 @@
+@use "../styles" as *;
+
+.container {
+  min-height: 100vh;
+  background-color: $c-primary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.title {
+  @include t-huge;
+  color: $c-white;
+  margin: 0;
+}

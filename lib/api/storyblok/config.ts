@@ -11,40 +11,33 @@ import { getStoryblokApi } from "./client";
 // ============================================
 
 /**
- * Determina se siamo in produzione o in draft mode
+ * Modalità Storyblok controllata da NEXT_PUBLIC_STORYBLOK_MODE.
  *
- * Usa solo VERCEL_ENV (impostata automaticamente da Vercel):
- * - 'production' → produzione vera
- * - 'preview' → preview deployments
- * - 'development' → development deployments
- * - undefined → sviluppo locale (usa draft)
+ * Valori:
+ * - 'draft'     → contenuti draft + bridge attivo (live preview)
+ * - 'published' → contenuti pubblicati, bridge disattivato
  *
- * NOTA: VERCEL_ENV è impostata automaticamente da Vercel.
- * In sviluppo locale non è definita, quindi usa sempre draft mode.
+ * Default: 'draft' (sviluppo locale e preview)
+ *
+ * Imposta in .env.local o nelle env vars di Vercel:
+ *   NEXT_PUBLIC_STORYBLOK_VERSION=draft      # per live preview
+ *   NEXT_PUBLIC_STORYBLOK_VERSION=published   # per produzione
  */
+function getStoryblokMode(): "draft" | "published" {
+  const mode = process.env.NEXT_PUBLIC_STORYBLOK_VERSION;
+  return mode === "published" ? "published" : "draft";
+}
+
 export function isProduction(): boolean {
-  // VERCEL_ENV è impostata automaticamente da Vercel
-  // Valori possibili: 'production', 'preview', 'development'
-  const vercelEnv = process.env.VERCEL_ENV;
-
-  // Solo se siamo in produzione vera su Vercel
-  return vercelEnv === "production";
+  return getStoryblokMode() === "published";
 }
 
-/**
- * Determina la versione di Storyblok da usare
- * 'draft' per sviluppo/preview, 'published' per produzione
- */
 export function getStoryblokVersion(): "draft" | "published" {
-  return isProduction() ? "published" : "draft";
+  return getStoryblokMode();
 }
 
-/**
- * Determina se il bridge di Storyblok deve essere abilitato
- * Il bridge funziona solo in draft mode (non in produzione)
- */
 export function shouldEnableBridge(): boolean {
-  return !isProduction();
+  return getStoryblokMode() === "draft";
 }
 
 // ============================================
@@ -64,13 +57,8 @@ const CV_CACHE_TTL = 60000; // 1 minute cache for cv in production
  * @returns Cache version number or undefined to omit cv parameter
  */
 export async function getCacheVersion(): Promise<number | undefined> {
-  // VERCEL_ENV è impostata automaticamente da Vercel
-  // Se non siamo in produzione, ometti cv per permettere caching
-  const vercelEnv = process.env.VERCEL_ENV;
-  const isProduction = vercelEnv === "production";
-
-  // In development/preview/local: omit cv parameter to encourage caching
-  if (!isProduction) {
+  // In draft mode: omit cv parameter to encourage caching
+  if (!isProduction()) {
     // Return undefined to omit cv parameter, allowing Storyblok CDN to cache
     return undefined;
   }

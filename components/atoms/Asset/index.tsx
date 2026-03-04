@@ -296,6 +296,7 @@ const Asset = ({
                         className={cn('asset', 'asset-image', 'asset-image-mobile')}
                         fill
                         objectFit='cover'
+                        sizes={`(min-width: 1024px) ${desktopSuffix}px, ${mobileSuffix}px`}
                         quality={100}
                         {...rest}
                     />
@@ -306,6 +307,7 @@ const Asset = ({
                         fill
                         objectFit='cover'
                         quality={100}
+                        sizes={`(min-width: 1024px) ${desktopSuffix}px, ${mobileSuffix}px`}
                         {...rest}
                     />
                 </div>
@@ -326,6 +328,7 @@ const Asset = ({
                         className={cn('asset', 'asset-image')}
                         fill
                         objectFit='cover'
+                        sizes={`(min-width: 1024px) ${desktopSuffix}px, ${mobileSuffix}px`}
                         quality={100}
                         {...rest}
                     />
@@ -346,6 +349,7 @@ const Asset = ({
                 className={cn('asset', 'asset-image')}
                 fill
                 objectFit='cover'
+                sizes={'(min-width: 1024px) ${desktopSuffix}px, (min-width: 640px) ${mobileSuffix}px, 320px'}
                 quality={100}
                 {...rest}
             />

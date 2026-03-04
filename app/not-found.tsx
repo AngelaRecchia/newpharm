@@ -1,3 +1,8 @@
+import classNames from 'classnames/bind'
+import styles from './not-found.module.scss'
+
+const cn = classNames.bind(styles)
+
 /**
  * Global not-found page (fallback)
  * 
@@ -7,6 +12,8 @@
  */
 export default function GlobalNotFound() {
   return (
-    <div>404 placeholder</div>
+    <div className={cn('container')}>
+      <h1 className={cn('title')}>404</h1>
+    </div>
   )
 }

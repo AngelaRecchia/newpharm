@@ -9,16 +9,14 @@
     "start": "next start",
     "lint": "next lint",
     "generate:types": "tsx scripts/generate-storyblok-types.ts",
-    "generate:component": "tsx scripts/generate-component.ts"
+    "generate:component": "tsx scripts/generate-component.ts",
+    "clone:home-it": "node scripts/clone-home-to-it.mjs"
   },
   "dependencies": {
     "@storyblok/react": "^4.6.0",
     "@storyblok/richtext": "^3.8.2",
-    "@studio-freight/lenis": "^1.0.42",
     "@tailwindcss/postcss": "^4.1.18",
     "classnames": "^2.5.1",
-    "clsx": "^2.1.1",
-    "framer": "^2.4.1",
     "gsap": "^3.14.2",
     "lenis": "^1.3.17",
     "motion": "^12.27.1",

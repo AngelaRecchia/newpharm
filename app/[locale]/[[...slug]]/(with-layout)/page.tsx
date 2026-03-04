@@ -1,7 +1,6 @@
 import { getAllStories, getStory, getRelatedStoriesByTags, getRelatedProjectsByProduct } from '@/lib/api/storyblok/stories'
 import StoryblokRenderer from '@/components/StoryblokRenderer'
 import { setRequestLocale } from 'next-intl/server'
-import { getTranslations } from 'next-intl/server'
 import { notFound } from 'next/navigation'
 import { PageStoryblok, StoryStoryblok } from '@/types/storyblok'
 import localeConfig from '@/i18n/locales.json'
@@ -47,7 +46,6 @@ export async function generateStaticParams() {
       }
     }
 
-    console.log(`✅ Generated ${params.length} static params for ${locales.length} locales`)
     return params
   } catch (error) {
     console.error('Error generating static params:', error)
@@ -128,13 +126,28 @@ export default async function WithLayoutPage({ params }: PageProps) {
 export async function generateMetadata({ params }: PageProps) {
   const { locale, slug } = await params
 
-  // Pass locale to getTranslations for static rendering
-  const t = await getTranslations({ locale, namespace: 'Metadata' })
-
   const storySlug = slug && slug.length > 0 ? slug.join('/') : ''
+  const story = await getStory(storySlug, locale)
+
+  const title = story?.name
+    ? `${story.name} | Newpharm`
+    : 'Newpharm'
+
+  const description =
+    story?.content?.short_description ||
+    story?.content?.description ||
+    ''
 
   return {
-    title: 'Newpharm',
-    description: 'Newpharm - Progetto Next.js con Storyblok',
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      siteName: 'Newpharm',
+    },
+    alternates: {
+      canonical: `/${locale}${storySlug ? `/${storySlug}` : ''}`,
+    },
   }
 }
