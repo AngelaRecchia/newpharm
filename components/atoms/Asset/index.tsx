@@ -313,7 +313,7 @@ const Asset = ({
                         alt={assetAlt}
                         className={cn('asset', 'asset-image', 'asset-image-mobile')}
                         fill
-
+                        sizes={`(min-width: 1024px) ${desktopSuffix}px, ${mobileSuffix}px`}
                         quality={80}
                         {...rest}
                     />
@@ -322,7 +322,7 @@ const Asset = ({
                         alt={assetAlt}
                         className={cn('asset', 'asset-image', 'asset-image-desktop')}
                         fill
-
+                        sizes={`(min-width: 1024px) ${desktopSuffix}px, ${mobileSuffix}px`}
                         quality={80}
                         {...rest}
                     />

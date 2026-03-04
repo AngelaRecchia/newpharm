@@ -9,7 +9,8 @@
     "start": "next start",
     "lint": "next lint",
     "generate:types": "tsx scripts/generate-storyblok-types.ts",
-    "generate:component": "tsx scripts/generate-component.ts"
+    "generate:component": "tsx scripts/generate-component.ts",
+    "clone:home-it": "node scripts/clone-home-to-it.mjs"
   },
   "dependencies": {
     "@kworq/storyblok-space-cloner": "^0.2.2",

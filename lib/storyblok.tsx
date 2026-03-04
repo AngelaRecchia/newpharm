@@ -19,6 +19,7 @@ const Asset = ({ blok, ...props }: { blok?: AssetStoryblok } & any) => {
   if (!blok) return null
   return <AssetComponent blok={blok} {...props} />
 }
+
 import DivisionBox from '@/components/organisms/DivisionBox'
 import CtaBox from '@/components/organisms/CtaBox'
 import SplitBanner from '@/components/organisms/SplitBanner'

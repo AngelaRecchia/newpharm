@@ -1,0 +1,39 @@
+@use "../../../../styles" as *;
+
+.container {
+  min-height: 100vh;
+  background-color: $c-primary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $s-24;
+}
+
+.content {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $s-64;
+}
+
+.title {
+  @include t-huge;
+  color: $c-white;
+  margin: 0;
+}
+
+.link {
+  @include t-h3;
+  color: $c-white;
+  text-decoration: none;
+  padding: $s-16 $s-32;
+  border: 2px solid $c-white;
+  border-radius: $s-8;
+  @include transition(all, $td-300);
+
+  &:hover {
+    background-color: $c-white;
+    color: $c-primary;
+  }
+}
