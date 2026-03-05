@@ -10,7 +10,9 @@
     "lint": "next lint",
     "generate:types": "tsx scripts/generate-storyblok-types.ts",
     "generate:component": "tsx scripts/generate-component.ts",
-    "clone:home-it": "node scripts/clone-home-to-it.mjs"
+    "clone:home-it": "node scripts/clone-home-to-it.mjs",
+    "import:datasources": "node scripts/import-datasources-v2.mjs",
+    "import:datasources:dry": "node scripts/import-datasources-v2.mjs --dry-run"
   },
   "dependencies": {
     "@kworq/storyblok-space-cloner": "^0.2.2",
@@ -21,6 +23,7 @@
     "gsap": "^3.14.2",
     "lenis": "^1.3.17",
     "motion": "^12.27.1",
+    "motion-dom": "^12.27.1",
     "next": "^15.0.0",
     "next-intl": "^4.7.0",
     "react": "^18.3.1",

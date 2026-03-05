@@ -3,8 +3,8 @@ import createNextIntlPlugin from "next-intl/plugin";
 
 const nextConfig: NextConfig = {
   images: {
-    formats: ['image/avif', 'image/webp'],
-    remotePatterns: [{ protocol: 'https', hostname: 'a.storyblok.com' }],
+    formats: ["image/avif", "image/webp"],
+    remotePatterns: [{ protocol: "https", hostname: "a.storyblok.com" }],
     qualities: [25, 50, 75, 80, 90, 100],
   },
   webpack: (config, { isServer }) => {
@@ -14,9 +14,9 @@ const nextConfig: NextConfig = {
         fs: false,
         path: false,
         crypto: false,
-      }
+      };
     }
-    return config
+    return config;
   },
 };
 

@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 
 interface StoryblokRendererProps {
   blok: any
-  story?: any // Pass the full story for live editing support
+  story?: any
 }
 
 /**
@@ -16,7 +16,8 @@ function isInsideStoryblokEditor(): boolean {
   try {
     return (
       window.location !== window.parent.location ||
-      window.location.search.includes('_storyblok')
+      window.location.search.includes('_storyblok') ||
+      window.location.search.includes('_storyblok_tk')
     )
   } catch {
     // Cross-origin iframe access throws — assume we're in the editor
@@ -25,37 +26,10 @@ function isInsideStoryblokEditor(): boolean {
 }
 
 /**
- * Inner component mounted ONLY inside the visual editor.
- * Subscribes to live-editing via useStoryblok (triggers API calls).
- */
-function LiveEditor({ blok, story }: StoryblokRendererProps) {
-  const [content, setContent] = useState(blok)
-
-  const liveStory = useStoryblok(
-    story?.full_slug || '',
-    { version: 'draft' },
-    {
-      resolveRelations: '*',
-      resolveLinks: 'url',
-    }
-  )
-
-  useEffect(() => {
-    if (liveStory?.content) {
-      setContent(liveStory.content)
-    }
-  }, [liveStory])
-
-  if (!content || !content.component) return null
-
-  return <StoryblokComponent blok={content} />
-}
-
-/**
  * StoryblokRenderer
  *
  * During normal development/production: renders statically with zero client-side API calls.
- * Inside the Storyblok visual editor: mounts LiveEditor for real-time updates.
+ * Inside the Storyblok visual editor: uses useStoryblok for real-time updates.
  */
 export default function StoryblokRenderer({ blok, story }: StoryblokRendererProps) {
   const [isEditor, setIsEditor] = useState(false)
@@ -64,11 +38,26 @@ export default function StoryblokRenderer({ blok, story }: StoryblokRendererProp
     setIsEditor(isInsideStoryblokEditor())
   }, [])
 
+  // Calcola lo slug sempre (per evitare problemi con gli hooks)
+  const fullSlug = story?.full_slug || (typeof window !== 'undefined'
+    ? window.location.pathname.replace(/^\//, '').replace(/\/$/, '') || 'home'
+    : '')
+
+  // Chiama sempre useStoryblok (ma lo usa solo se siamo nell'editor)
+  // Passa null come slug se non siamo nell'editor per evitare fetch inutili
+  const liveStory = useStoryblok(
+    isEditor ? fullSlug : null,
+    { version: 'draft' },
+    {
+      resolveRelations: '*',
+      resolveLinks: 'url',
+    }
+  )
+
   if (!blok || !blok.component) return null
 
-  if (isEditor) {
-    return <LiveEditor blok={blok} story={story} />
-  }
+  // Se siamo nell'editor, usa il contenuto live se disponibile
+  const content = isEditor && liveStory?.content ? liveStory.content : blok
 
-  return <StoryblokComponent blok={blok} />
+  return <StoryblokComponent blok={content} />
 }

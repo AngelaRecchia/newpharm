@@ -1,0 +1,38 @@
+@use "../../../styles" as *;
+
+.wrapper {
+  background-color: $c-white;
+  color: $c-black;
+
+  position: relative;
+  overflow: hidden;
+}
+
+.container {
+  @include container-md;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: $s-24;
+
+  @include lg {
+    gap: $s-40;
+  }
+}
+
+.text,
+.text span {
+  will-change: color;
+  @include t-h2;
+}
+
+.word {
+  display: inline;
+  transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.links {
+  will-change: opacity, transform;
+}

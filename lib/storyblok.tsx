@@ -36,6 +36,7 @@ const FullBanner = dynamic(() => import('@/components/organisms/FullBanner'))
 const Carousel = dynamic(() => import('@/components/organisms/Carousel'))
 const Banneraccordion = dynamic(() => import('@/components/organisms/BannerAccordion'))
 const StickyImage = dynamic(() => import('@/components/organisms/StickyImage'))
+const TextReveal = dynamic(() => import('@/components/organisms/TextReveal'))
 const VideoYt = dynamic(() => import('@/components/organisms/VideoYt'))
 const components = {
 
@@ -48,6 +49,7 @@ const components = {
   carousel: Carousel,
   banner_accordion: Banneraccordion,
   sticky_image: StickyImage,
+  text_reveal: TextReveal,
   video_yt: VideoYt,
   spec_table: SpecTable,
   icon_text_highlight: IconTextHighlight,
@@ -67,13 +69,31 @@ const components = {
   footer: Footer,
 }
 
+/**
+ * Detect if we're inside the Storyblok Visual Editor (iframe or _storyblok param)
+ */
+function isInsideStoryblokEditor(): boolean {
+  if (typeof window === 'undefined') return false
+  try {
+    return (
+      window.location !== window.parent.location ||
+      window.location.search.includes('_storyblok') ||
+      window.location.search.includes('_storyblok_tk')
+    )
+  } catch {
+    // Cross-origin iframe access throws — assume we're in the editor
+    return true
+  }
+}
+
 // Initialize Storyblok at module level (runs once when module loads)
 // This ensures components are registered before any rendering occurs
+// Bridge is enabled in draft mode - loadStoryblokBridge() will activate it when in editor
 storyblokInit({
   accessToken: process.env.NEXT_PUBLIC_STORYBLOK_ACCESS_TOKEN || '',
   use: [apiPlugin],
   components,
-  bridge: shouldEnableBridge(), // Enable bridge for visual editor in draft mode
+  bridge: shouldEnableBridge(), // Enable bridge in draft mode for live editing
 })
 
 /**
@@ -82,8 +102,18 @@ storyblokInit({
  */
 export function StoryblokProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
-    // Carica il bridge di Storyblok solo in draft mode (non in produzione)
-    if (!shouldEnableBridge() || typeof window === 'undefined') {
+    if (typeof window === 'undefined') {
+      return
+    }
+
+    // Rileva se siamo nell'editor di Storyblok
+    const inEditor = isInsideStoryblokEditor()
+    const bridgeEnabled = shouldEnableBridge()
+
+    // Carica il bridge di Storyblok solo se:
+    // 1. Siamo in modalità draft (shouldEnableBridge)
+    // 2. Siamo effettivamente nell'editor di Storyblok
+    if (!bridgeEnabled || !inEditor) {
       return
     }
 
@@ -94,7 +124,7 @@ export function StoryblokProvider({ children }: { children: ReactNode }) {
           method: 'POST',
         })
         if (response.ok) {
-          console.log('✅ Cache invalidated after Storyblok edit')
+          // Cache invalidated
         }
       } catch (error) {
         console.error('Failed to invalidate cache:', error)
@@ -118,9 +148,10 @@ export function StoryblokProvider({ children }: { children: ReactNode }) {
       .then(() => {
         bridgeLoaded = true
 
-        // Ascolta eventi del bridge
-        // Il bridge emette eventi quando il contenuto cambia
+        // Il bridge è ora attivo e connesso all'editor
         if ((window as any).storyblok) {
+          // Ascolta eventi del bridge
+          // Il bridge emette eventi quando il contenuto cambia
           ; (window as any).storyblok.on(['input', 'change', 'published'], handleInput)
         }
 

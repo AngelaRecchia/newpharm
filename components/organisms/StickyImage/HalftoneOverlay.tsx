@@ -243,23 +243,23 @@ const HalftoneOverlay: React.FC<HalftoneOverlayProps> = (props) => {
         let running = true
         let lastProgress = progressRef.current
         let rafId: number | null = null
-        
+
         const loop = () => {
             if (!running) return
-            
+
             const currentProgress = progressRef.current
             // Renderizza solo se il progress è cambiato
             if (currentProgress !== lastProgress) {
                 renderFrame()
                 lastProgress = currentProgress
             }
-            
+
             // Continua il loop solo se necessario
             if (running) {
                 rafId = requestAnimationFrame(loop)
             }
         }
-        
+
         // Avvia il loop
         rafId = requestAnimationFrame(loop)
         rafRef.current = rafId

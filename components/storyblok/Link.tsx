@@ -2,6 +2,7 @@
 
 import { LinkStoryblok } from '@/types/storyblok'
 import Button from '@/components/atoms/Button'
+import { storyblokEditable } from '@storyblok/react'
 
 /**
  * Componente Link di Storyblok che renderizza un Button
@@ -31,6 +32,7 @@ export default function Link({ blok }: { blok?: LinkStoryblok }) {
             label={label || undefined}
             link={link || undefined}
             variant={buttonVariant}
+
         />
     )
 }

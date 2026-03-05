@@ -114,7 +114,7 @@ export default async function WithLayoutPage({ params }: PageProps) {
   return (
     <>
       {story.content && (
-        <StoryblokRenderer blok={story.content} />
+        <StoryblokRenderer blok={story.content} story={story} />
       )}
     </>
   )
