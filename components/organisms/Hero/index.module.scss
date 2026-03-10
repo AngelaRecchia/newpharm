@@ -6,6 +6,7 @@
 
   .container {
     @include container-lg;
+
     position: relative;
     z-index: 1;
   }

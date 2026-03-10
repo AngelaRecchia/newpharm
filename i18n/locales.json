@@ -1,4 +1,10 @@
 {
-  "locales": ["ar", "en", "it"],
+  "locales": [
+    "ar",
+    "componenti",
+    "demo",
+    "en",
+    "it"
+  ],
   "defaultLocale": "it"
 }

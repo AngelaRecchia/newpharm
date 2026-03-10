@@ -29,6 +29,16 @@ export default function RichText({ content, className, blok, raw = false }: Rich
 
 
     const resolvers: StoryblokRichTextResolvers<React.ReactElement> = {
+        // Resolver per paragrafi — strip attributi non-DOM come textAlign
+        paragraph: (node) => {
+            const { textAlign, ...safeAttrs } = (node.attrs || {}) as any
+            const style = textAlign ? { textAlign } : undefined
+            return React.createElement(
+                'p',
+                { ...safeAttrs, style, key: `p-${Math.random()}` },
+                node.children
+            )
+        },
         // Resolver per i nodi di tipo "blok" (nested bloks)
         blok: (node) => {
             // node.attrs contiene i dati del blok annidato

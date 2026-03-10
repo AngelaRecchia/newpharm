@@ -1,0 +1,180 @@
+@use "../../../styles" as *;
+
+.wrapper {
+  width: 100%;
+  overflow: clip;
+  background-color: $c-white;
+  --height: 100dvw;
+  --content-height: 0px; // Impostata da JS
+
+  @include lg {
+    --height: 50dvw;
+  }
+
+  // Il modulo successivo deve essere position relative per gestire lo z-index
+  & + * {
+    position: relative;
+    z-index: 1;
+  }
+
+  &.has-link {
+    .content-wrapper {
+      @include lg {
+        @include transition(transform, $td-300);
+      }
+    }
+
+    .asset-wrapper > * {
+      @include lg {
+        @include transition(transform, $td-300);
+      }
+    }
+
+    &.is-hovered {
+      .content-wrapper {
+        @include lg {
+          transform: translateX($s-24);
+        }
+      }
+
+      .asset-wrapper > * {
+        @include lg {
+          transform: scale(1.03);
+        }
+      }
+    }
+  }
+
+  &.orientation-right {
+    .container {
+      @include lg {
+        flex-direction: row-reverse;
+      }
+    }
+
+    &.has-link {
+      .content-wrapper {
+        @include lg {
+          @include transition(padding-inline-end, $td-300);
+        }
+      }
+
+      &.is-hovered {
+        .content-wrapper {
+          @include lg {
+            padding-inline-end: $s-24;
+            padding-inline-start: 0;
+          }
+        }
+      }
+    }
+  }
+  //   &[data-box-image]:not(:has(+ [data-box-image])) {
+  //     --height: 50dvw;
+
+  //     aspect-ratio: 2 / 1;
+  //     .asset-wrapper {
+  //       aspect-ratio: 1;
+
+  //       @include lg {
+  //         height: 100%;
+  //       }
+  //     }
+
+  //     .content-wrapper {
+  //       @include lg {
+  //         aspect-ratio: 1;
+  //       }
+  //     }
+  //   }
+
+  // Se c'è un fratello successivo BoxImage
+  &[data-box-image]:has(+ [data-box-image]) {
+    --height: 100dvh;
+
+    height: var(--height);
+
+    .content-wrapper {
+      @include lg {
+        height: 100%;
+      }
+    }
+  }
+}
+
+.container {
+  @include lg {
+    height: auto;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}
+
+.asset-wrapper {
+  width: 100%;
+
+  position: sticky;
+  top: 0;
+
+  > * {
+    @include transition(transform, $td-300);
+    aspect-ratio: 1;
+  }
+
+  @include untilLg {
+    height: 0;
+  }
+
+  @include lg {
+    height: 100%;
+    flex-basis: 50%;
+    max-width: 50%;
+  }
+}
+
+// ho messo stato sticky desktop in data-box image ma non è giusto, lì devo sovrascrivere solo altezza
+// inoltre le regole css non sembra star targhetizzando
+.content-wrapper {
+  width: 100%;
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+  z-index: 1;
+
+  // Se NON c'è un fratello successivo BoxImage, aspect ratio 1 (quadrata)
+  @include untilLg {
+    padding-top: 100%;
+  }
+
+  @include lg {
+    flex-basis: 50%;
+    max-width: 50%;
+  }
+}
+
+.content {
+  background-color: $c-white;
+
+  padding: $s-40 $s-24 $s-128;
+  display: flex;
+  flex-direction: column;
+  gap: $s-16;
+
+  @include lg {
+    gap: $s-32;
+    padding: $s-96 $s-40 $s-128;
+  }
+}
+
+.title {
+  @include t-h2;
+}
+
+.subtitle {
+  @include t-h3;
+}
+
+.link-wrapper {
+  margin-top: $s-8;
+}

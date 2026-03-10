@@ -4,11 +4,9 @@ import '@/app/app.scss'
 import { StoryblokProvider } from '@/lib/storyblok'
 import { ViewportProvider } from '@/lib/context/viewport-context'
 import { SmoothScrollProvider } from '@/lib/context/smooth-scroll-context'
-import { NextIntlClientProvider } from 'next-intl'
+import { IntlProvider } from '@/lib/intl-provider'
 import { getMessages, setRequestLocale } from 'next-intl/server'
 import { notFound } from 'next/navigation'
-import { hasLocale } from 'next-intl'
-import { routing } from '@/i18n/routing'
 import localeConfig from '@/i18n/locales.json'
 
 // Load Inter font with support for Latin and Arabic
@@ -55,11 +53,11 @@ export default async function RootLayout({ children, params }: Props) {
       <body className={inter.className}>
 
         <StoryblokProvider>
-          <NextIntlClientProvider messages={messages}>
+          <IntlProvider locale={locale} messages={messages}>
             <ViewportProvider>
               <SmoothScrollProvider>{children}</SmoothScrollProvider>
             </ViewportProvider>
-          </NextIntlClientProvider>
+          </IntlProvider>
         </StoryblokProvider>
 
       </body>

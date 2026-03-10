@@ -7,6 +7,20 @@ import Lenis from 'lenis'
 
 gsap.registerPlugin(ScrollTrigger)
 
+// Configurazione globale per ridurre forced reflows
+if (typeof window !== 'undefined') {
+  // Configura ScrollTrigger per batchare gli aggiornamenti
+  ScrollTrigger.config({
+    autoRefreshEvents: 'visibilitychange,DOMContentLoaded,load',
+    ignoreMobileResize: true, // Ignora resize su mobile per migliorare performance
+  })
+  
+  // Configura GSAP per usare GPU acceleration quando possibile
+  gsap.config({
+    force3D: 'auto', // Usa GPU acceleration automaticamente
+  })
+}
+
 interface SmoothScrollContextType {
   lenis: Lenis | null
 }
@@ -37,6 +51,20 @@ export function SmoothScrollProvider({ children }: { children: ReactNode }) {
     lenisRef.current = lenis
     initializedRef.current = true
 
+    // Cache delle dimensioni della viewport per evitare forced reflows
+    let cachedViewport = {
+      width: window.innerWidth,
+      height: window.innerHeight,
+    }
+
+    // Aggiorna il cache solo quando necessario (resize)
+    const updateViewportCache = () => {
+      cachedViewport.width = window.innerWidth
+      cachedViewport.height = window.innerHeight
+    }
+
+    window.addEventListener('resize', updateViewportCache, { passive: true })
+
     // Setup ScrollTrigger scroller proxy for Lenis
     ScrollTrigger.scrollerProxy(document.body, {
       scrollTop(value?: number) {
@@ -46,11 +74,12 @@ export function SmoothScrollProvider({ children }: { children: ReactNode }) {
         return lenis.scroll
       },
       getBoundingClientRect() {
+        // Usa valori cached invece di accedere a window.innerWidth/Height ogni volta
         return {
           top: 0,
           left: 0,
-          width: window.innerWidth,
-          height: window.innerHeight,
+          width: cachedViewport.width,
+          height: cachedViewport.height,
         }
       },
     })
@@ -71,6 +100,7 @@ export function SmoothScrollProvider({ children }: { children: ReactNode }) {
 
     // Cleanup
     return () => {
+      window.removeEventListener('resize', updateViewportCache)
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill())
       lenis.destroy()
       lenisRef.current = null

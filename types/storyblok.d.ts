@@ -163,6 +163,14 @@ export interface FaqsStoryblok {
   _editable?: string;
 }
 
+export interface GalleryStoryblok {
+  title?: string | null; // Optional
+  images?: AssetStoryblok[] | null; // Optional
+  _uid: string;
+  component: string;
+  _editable?: string;
+}
+
 export interface FooterStoryblok {
   newsletter_text?: string | null; // Optional
   address?: string | null; // Optional
@@ -421,6 +429,7 @@ export type StoryblokComponent =
   | FaqsStoryblok
   | FooterStoryblok
   | Full_bannerStoryblok
+  | GalleryStoryblok
   | HeaderStoryblok
   | HeroStoryblok
   | Icon_text_highlightStoryblok

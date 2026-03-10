@@ -5,6 +5,8 @@ import styles from './index.module.scss';
 import Button from '@/components/atoms/Button';
 import SmartLink from '@/components/atoms/SmartLink';
 import Asset from '@/components/atoms/Asset';
+import { isEmpty, getFirstValidLink } from '@/lib/api/utils/links';
+
 const cn = classNames.bind(styles);
 
 
@@ -12,18 +14,19 @@ const CardCtaBox = ({ blok }: { blok?: Card_cta_boxStoryblok }) => {
     if (!blok) return <></>;
 
     const { title, link, image, color } = blok;
-    const hasLink = link && link.length > 0 && link[0];
+    const validLink = getFirstValidLink(link);
+    const hasImage = image && !isEmpty(image.filename);
 
-    const Tag = hasLink ? SmartLink : 'div';
-    const props = hasLink ? { link: link[0].link } : {};
+    const Tag = validLink ? SmartLink : 'div';
+    const props = validLink ? { link: validLink.link } : {};
     return (
-        <Tag className={cn('wrapper', color, { hasImage: image && image.filename.length > 0 })} {...storyblokEditable(blok as any)} {...props}>
+        <Tag className={cn('wrapper', color, { hasImage })} {...storyblokEditable(blok as any)} {...props}>
 
-            {image && image.filename.length > 0 && <Asset asset={image} size="l" overlay />}
+            {hasImage && <Asset asset={image} size="l" overlay />}
 
             <div className={cn('content')}>
-                <h2 className={cn('title')}>{title}</h2>
-                {hasLink && < Button label={link[0].label} variant={color === 'black' ? 'primary' : 'secondary'} />}
+                {!isEmpty(title) && <h2 className={cn('title')}>{title}</h2>}
+                {validLink && <Button link={validLink.link} label={validLink.label} variant={color === 'black' ? 'primary' : 'secondary'} />}
             </div>
         </Tag>
     )

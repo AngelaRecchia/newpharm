@@ -8,16 +8,18 @@ import { storyblokEditable } from '@storyblok/react'
 import Asset from '@/components/atoms/Asset'
 import AccordionItem from '@/components/atoms/AccordionItem'
 import RichText from '@/components/organisms/RichText'
+import { useViewport } from '@/lib/context/viewport-context'
+import { isEmpty } from '@/lib/api/utils/links'
 
 const cn = classNames.bind(styles)
 
 const Tabs = ({ blok }: { blok: TabsStoryblok }) => {
   const { title, asset, items } = blok
-  const [openIndex, setOpenIndex] = useState<number | null>(0)
 
-  const handleToggle = (index: number) => {
-    setOpenIndex(openIndex === index ? null : index)
-  }
+
+  const { isDesktop } = useViewport()
+
+  const hasTitle = !isEmpty(title)
 
   return (
     <section className={cn('wrapper')} {...storyblokEditable(blok as any)}>
@@ -28,7 +30,7 @@ const Tabs = ({ blok }: { blok: TabsStoryblok }) => {
 
         <div className={cn('content-wrapper')}>
           <div className={cn('content')}>
-            {title && <h2 className={cn('title')}>{title}</h2>}
+            {hasTitle && <h2 className={cn('title')}>{title}</h2>}
 
             {items && items.length > 0 && (
               <div className={cn('items')}>
@@ -37,6 +39,7 @@ const Tabs = ({ blok }: { blok: TabsStoryblok }) => {
                     key={item._uid}
                     label={item.title || ''}
                     variant="secondary"
+                    bgColor="white"
                   >
                     <RichText content={item.text} raw />
                   </AccordionItem>
@@ -48,7 +51,7 @@ const Tabs = ({ blok }: { blok: TabsStoryblok }) => {
 
         {asset && asset.length > 0 && (
           <div className={cn('asset')}>
-            <Asset asset={asset} size="m" mode="fit" />
+            <Asset asset={asset} size="m" mode={!isDesktop ? "fit" : "bg"} />
           </div>
         )}
       </div>

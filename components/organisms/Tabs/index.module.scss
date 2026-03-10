@@ -1,8 +1,8 @@
 @use "../../../styles" as *;
 
 .wrapper {
+  background-color: $c-surface;
 }
-
 .title {
   @include t-h3;
   margin: 0;
@@ -15,18 +15,19 @@
   gap: $s-40;
 
   @include lg {
+    width: 100%;
+    padding-block: $s-40;
     display: grid;
-    grid-template-columns: 1fr 1fr;
-
-    gap: $s-64;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 0;
     align-items: start;
   }
 }
 
 .content-wrapper {
   @include lg {
-    width: calc(80% - $s-40 * 2);
-    margin-inline: auto;
+    grid-column: 2 / span 4;
+    height: 100%;
   }
 }
 
@@ -34,9 +35,13 @@
   display: flex;
   flex-direction: column;
   gap: $s-40;
+  height: 100%;
 
   @include lg {
-    gap: $s-80;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 0;
+    padding-block: $s-80;
     grid-column: 2 / span 4;
   }
 }
@@ -44,8 +49,16 @@
 .asset {
   @include lg {
     position: sticky;
-    top: var(--sticky-top, var(--header-height, 4.25rem));
+    // Sticky sempre: quando header è visibile usa header-height + padding,
+    // quando header è nascosto usa solo padding (--sticky-top sarà 0)
+    top: calc((var(--sticky-top, var(--header-height, 0px)) + 2.5rem));
+    // Transizione sincronizzata con l'animazione dell'header (300ms ease)
+    transition: top 300ms ease;
+    will-change: top; // Ottimizza l'animazione
     width: 100%;
+
+    grid-column: 7 / span 6;
+    aspect-ratio: 1;
   }
 }
 
@@ -53,4 +66,9 @@
   display: flex;
   flex-direction: column;
   gap: $s-8;
+
+  @include lg {
+    align-self: center;
+    margin-top: $s-80;
+  }
 }

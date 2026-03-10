@@ -185,28 +185,22 @@
   padding-inline: $s-24;
   padding-block: $s-40;
 
-  width: clamp(
-    80%,
-    calc(
-      100% -
-        (
-          20% * (100vw - $breakpoint-m - ($s-40 * 2)) /
-            ($breakpoint-xxl - $breakpoint-m)
-        )
-    ),
-    100%
-  );
+  width: 100%;
+  max-width: 40rem;
   @include md {
+    // 10 colonne su 12 del viewport, ma massimo 10/12 di 1920px (1600px)
+    width: calc(10 / 12 * 100%);
+    max-width: calc(10 / 12 * $breakpoint-xxxl); // 1600px
     padding-block: $s-80;
   }
 
   @include lg {
-    padding-inline: 0;
+    padding-inline: $s-40;
   }
 }
 
 @mixin container-lg {
-  max-width: 1920px;
+  max-width: $breakpoint-xxxl;
   margin-inline: auto;
   padding-inline: $s-24; // 24px mobile
   padding-block: $s-40;

@@ -10,6 +10,7 @@ import { useFormatter, useTranslations } from 'next-intl';
 import FullBanner from '@/components/organisms/FullBanner';
 import RichText from '@/components/organisms/RichText';
 import { RelatedStory } from '@/lib/api/storyblok/stories';
+import { isEmpty } from '@/lib/api/utils/links';
 
 import Carousel from '@/components/organisms/Carousel';
 const cn = classNames.bind(styles);
@@ -30,6 +31,9 @@ const Story = ({ blok, relatedStories }: StoryProps) => {
     const formattedDate = dateTime ? format.dateTime(dateTime, { dateStyle: 'medium' }) : null;
 
     const tags = useMemo(() => typeof tag === 'string' ? [tag] : tag || [], [tag]);
+    const hasTitle = !isEmpty(title);
+    const hasAuthor = !isEmpty(author);
+    const hasReadingTime = !isEmpty(reading_time);
 
     return (
         <div  {...storyblokEditable(blok as any)}>
@@ -40,11 +44,11 @@ const Story = ({ blok, relatedStories }: StoryProps) => {
                             <Tag key={tag} tag={t(tag)} variant='secondary' />
                         ))}
                     </div>
-                    {title && title.length > 0 && <h1 className={cn('title')}>{title}</h1>}
+                    {hasTitle && <h1 className={cn('title')}>{title}</h1>}
 
                     <div className={cn('info')}>
-                        {author && <span className={cn('author')}>{author}</span>}
-                        {reading_time && <span className={cn('reading-time')}>{reading_time}</span>}
+                        {hasAuthor && <span className={cn('author')}>{author}</span>}
+                        {hasReadingTime && <span className={cn('reading-time')}>{reading_time}</span>}
                         {date && <span className={cn('date')}>{formattedDate}</span>}
                     </div>
                 </div>

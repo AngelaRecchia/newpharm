@@ -4,20 +4,23 @@ import { FaqsStoryblok } from '@/types/storyblok'
 import { storyblokEditable } from '@storyblok/react'
 import AccordionItem from '@/components/atoms/AccordionItem'
 import RichText from '@/components/organisms/RichText'
+import { isEmpty } from '@/lib/api/utils/links'
 
 const cn = classNames.bind(styles)
 
 const Faqs = ({ blok }: { blok: FaqsStoryblok }) => {
   const { title, description, items } = blok
+  const hasTitle = !isEmpty(title)
+  const hasDescription = !isEmpty(description)
 
   return (
     <section className={cn('wrapper')} {...storyblokEditable(blok as any)}>
 
       <div className={cn('container')}>
-        {(title || description) && (
+        {(hasTitle || hasDescription) && (
           <div className={cn('head')}>
-            {title && <h2 className={cn('title')}>{title}</h2>}
-            {description && <p className={cn('description')}>{description}</p>}
+            {hasTitle && <h2 className={cn('title')}>{title}</h2>}
+            {hasDescription && <p className={cn('description')}>{description}</p>}
           </div>
         )}
 

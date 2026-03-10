@@ -25,50 +25,63 @@ const FullBanner = ({ blok }: { blok?: Full_bannerStoryblok }) => {
         let scrollTrigger: ScrollTrigger | null = null;
 
         // Wait for Lenis and ScrollTrigger to be ready
+        // Usa requestAnimationFrame per evitare forced reflows
         const initAnimation = () => {
             if (!wrapperRef.current || !assetRef.current) return;
 
             const { variant } = blok || {};
 
-            // Fattore di velocità parallax (.5 = si muove a metà velocità dello scroll)
-            const parallaxSpeed = 0.3;
-            const wrapperHeight = wrapperRef.current.offsetHeight - (variant === 'padding' ? -64 : 0);
-            const parallaxDistance = wrapperHeight * parallaxSpeed;
+            // Usa requestAnimationFrame per batchare le letture geometriche
+            requestAnimationFrame(() => {
+                if (!wrapperRef.current || !assetRef.current) return;
 
-            // Crea l'animazione parallax
-            // top bottom: y = -parallaxDistance
-            // top top: y = 0 (progress = 0.5 perché modulo = 100vh)
-            // bottom top: y = +parallaxDistance
-            const target = assetRef.current.querySelector('video') || assetRef.current.querySelector('img');
+                // Fattore di velocità parallax (.5 = si muove a metà velocità dello scroll)
+                const parallaxSpeed = 0.3;
+                // Leggi le dimensioni una sola volta e cacheale
+                const wrapperHeight = wrapperRef.current.offsetHeight - (variant === 'padding' ? -64 : 0);
+                const parallaxDistance = wrapperHeight * parallaxSpeed;
 
-            // Timeline con keyframes: progress 0 = -n, 0.5 = 0, 1 = +n
-            const tl = gsap.timeline({
-                scrollTrigger: {
-                    trigger: wrapperRef.current,
-                    start: 'top bottom',
-                    end: 'bottom top',
-                    scrub: true,
-                }
+                // Crea l'animazione parallax
+                // top bottom: y = -parallaxDistance
+                // top top: y = 0 (progress = 0.5 perché modulo = 100vh)
+                // bottom top: y = +parallaxDistance
+                const target = assetRef.current.querySelector('video') || assetRef.current.querySelector('img');
+                
+                if (!target) return;
+
+                // Timeline con keyframes: progress 0 = -n, 0.5 = 0, 1 = +n
+                // Usa invalidateOnRefresh: false per evitare ricalcoli non necessari
+                const tl = gsap.timeline({
+                    scrollTrigger: {
+                        trigger: wrapperRef.current,
+                        start: 'top bottom',
+                        end: 'bottom top',
+                        scrub: true,
+                        invalidateOnRefresh: false, // Evita ricalcoli quando ScrollTrigger si aggiorna
+                    }
+                });
+
+                // Primo tween: da -n a 0 (progress 0 → 0.5)
+                tl.fromTo(target,
+                    { y: -parallaxDistance, force3D: true }, // force3D usa GPU acceleration
+                    { y: 0, duration: 0.5, ease: 'none', force3D: true }
+                );
+
+                // Secondo tween: da 0 a +n (progress 0.5 → 1)
+                tl.to(target,
+                    { y: parallaxDistance, duration: 0.5, ease: 'none', force3D: true }
+                );
+
+                scrollTrigger = tl.scrollTrigger || null;
             });
-
-            // Primo tween: da -n a 0 (progress 0 → 0.5)
-            tl.fromTo(target,
-                { y: -parallaxDistance },
-                { y: 0, duration: 0.5, ease: 'none' }
-            );
-
-            // Secondo tween: da 0 a +n (progress 0.5 → 1)
-            tl.to(target,
-                { y: parallaxDistance, duration: 0.5, ease: 'none' }
-            );
-
-            scrollTrigger = tl.scrollTrigger || null;
-
-            // Refresh ScrollTrigger per assicurarsi che funzioni correttamente
-            ScrollTrigger.refresh();
         };
 
-        initAnimation();
+        // Aspetta che il layout sia completo prima di inizializzare
+        if (document.readyState === 'complete') {
+            initAnimation();
+        } else {
+            window.addEventListener('load', initAnimation, { once: true });
+        }
 
         // Cleanup
         return () => {

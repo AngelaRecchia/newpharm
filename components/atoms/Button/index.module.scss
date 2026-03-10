@@ -85,4 +85,33 @@
       --button-hover: 1;
     }
   }
+
+  // Animazione icona al hover e click (per bottoni con solo icona)
+  &.animated {
+    svg {
+      @include transition(transform, $td-200);
+    }
+
+    // Default: anima verso destra
+    &:hover svg {
+      transform: translateX(2px);
+    }
+
+    &:active svg {
+      transform: translateX(3px);
+    }
+
+    // Se è un bottone "left" (chevron-left, arrow-left) o ha classe button-prev, anima verso sinistra
+    &.button-left:hover svg,
+    &.button-prev:hover svg,
+    &[class*="prev"]:hover svg {
+      transform: translateX(-2px);
+    }
+
+    &.button-left:active svg,
+    &.button-prev:active svg,
+    &[class*="prev"]:active svg {
+      transform: translateX(-4px);
+    }
+  }
 }

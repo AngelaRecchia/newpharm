@@ -13,6 +13,9 @@ import { getMessagesFromDatasource } from "../lib/api/storyblok/datasource";
  *
  * @see https://next-intl.dev/docs/routing/setup
  */
+// Map to store missing messages per locale
+const missingMessagesByLocale = new Map<string, Set<string>>();
+
 export default getRequestConfig(async ({ requestLocale }) => {
   // Typically corresponds to the `[locale]` segment
   let locale = await requestLocale;
@@ -31,20 +34,51 @@ export default getRequestConfig(async ({ requestLocale }) => {
   const isRTL = locale === "ar";
   const dir = isRTL ? "rtl" : "ltr";
 
+  // Initialize Set for this locale if it doesn't exist
+  if (!missingMessagesByLocale.has(locale)) {
+    missingMessagesByLocale.set(locale, new Set<string>());
+  }
+  const missingMessages = missingMessagesByLocale.get(locale)!;
+
   return {
     locale,
     messages,
     timeZone: "Europe/Rome",
     now: new Date(),
+
+    // 1. Questo evita che l'errore interrompa il rendering
+    getMessageFallback: ({ namespace, key, error }) => {
+      // Costruisci la chiave completa del messaggio
+      const messageKey = namespace ? `${namespace}.${key}` : key;
+
+      // Se c'è un errore di messaggio mancante, raccogli la chiave
+      if (error && error.code === IntlErrorCode.MISSING_MESSAGE) {
+        if (!missingMessages.has(messageKey)) {
+          missingMessages.add(messageKey);
+          // Logga tutte le label mancanti insieme
+          const allMissing = Array.from(missingMessages);
+          console.warn(
+            `[next-intl] Missing messages for locale "${locale}":`,
+            allMissing
+          );
+        }
+      }
+      // Restituisce solo la chiave (es. "nav.home") invece di crashare
+      return messageKey;
+    },
+
+    // 2. Questo gestisce il LOGGING per altri errori e previene che vengano rilanciati
     onError: (error) => {
       if (error.code === IntlErrorCode.MISSING_MESSAGE) {
-        console.warn(error);
+        // Gli errori MISSING_MESSAGE sono già gestiti da getMessageFallback
+        // Non rilanciare l'errore - questo previene che venga mostrato come errore
+        return;
       } else {
-        // Other errors indicate a bug in the app and should be reported
-        console.error(error);
+        console.error(error); // Errori critici meglio lasciarli come error
       }
     },
-    // Add direction for RTL support
+
+    // 3. Configurazione per prevenire errori in sviluppo
     ...(isRTL && { direction: "rtl" }),
   };
 });

@@ -49,18 +49,10 @@
         pointer-events: none;
       }
 
-      &:hover svg {
-        transform: translateX(2px);
+      svg {
+        width: $s-24;
+        height: $s-24;
       }
-
-      &:global(.button-prev):hover svg {
-        transform: translateX(-2px);
-      }
-    }
-    svg {
-      width: $s-24;
-      height: $s-24;
-      @include transition(transform, $td-200);
     }
   }
 }

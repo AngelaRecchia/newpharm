@@ -2,13 +2,14 @@ import classNames from 'classnames/bind'
 import styles from './index.module.scss'
 import { Icon_text_highlightStoryblok } from '@/types/storyblok'
 import Asset from '@/components/atoms/Asset'
+import { storyblokEditable } from '@storyblok/react'
 
 const cn = classNames.bind(styles)
 
 const IconTextHighlight = ({ blok }: { blok: Icon_text_highlightStoryblok }) => {
   const { title, description, items } = blok
   return (
-    <div className={cn('wrapper')}>
+    <div className={cn('wrapper')} {...storyblokEditable(blok as any)}>
       <div className={cn('container')}>
         <div className={cn('head')}>
           <h3 className={cn('title')}>{title}</h3>

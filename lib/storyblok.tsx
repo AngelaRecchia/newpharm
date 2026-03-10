@@ -27,7 +27,7 @@ import SpecTable from '@/components/organisms/SpecTable'
 import IconTextHighlight from '@/components/organisms/IconTextHighlight'
 import Tabs from '@/components/organisms/Tabs'
 import Faqs from '@/components/organisms/Faqs'
-
+import BoxImage from '@/components/organisms/BoxImage'
 // Heavy components (GSAP / Swiper / WebGL) — dynamic imports for bundle splitting
 const Header = dynamic(() => import('@/components/organisms/Header'))
 const Footer = dynamic(() => import('@/components/organisms/Footer'))
@@ -38,6 +38,7 @@ const Banneraccordion = dynamic(() => import('@/components/organisms/BannerAccor
 const StickyImage = dynamic(() => import('@/components/organisms/StickyImage'))
 const TextReveal = dynamic(() => import('@/components/organisms/TextReveal'))
 const VideoYt = dynamic(() => import('@/components/organisms/VideoYt'))
+const Gallery = dynamic(() => import('@/components/organisms/Gallery'))
 const components = {
 
   // Organisms
@@ -55,6 +56,8 @@ const components = {
   icon_text_highlight: IconTextHighlight,
   tabs: Tabs,
   faqs: Faqs,
+  gallery: Gallery,
+  box_image: BoxImage,
 
   // Atoms
   asset: Asset,

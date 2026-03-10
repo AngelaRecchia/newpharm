@@ -13,6 +13,7 @@ interface AccordionItemProps {
     children: ReactNode
     defaultOpen?: boolean
     variant?: 'primary' | 'secondary'
+    bgColor?: 'surface' | 'white'
 }
 
 /**
@@ -21,7 +22,7 @@ interface AccordionItemProps {
  * Animazione apertura/chiusura con gsap.
  * L'icona cambia da "+" (more) a "−" (minus) in base allo stato.
  */
-const AccordionItem = ({ label, children, defaultOpen = false, variant = 'primary' }: AccordionItemProps) => {
+const AccordionItem = ({ label, children, defaultOpen = false, variant = 'primary', bgColor = 'surface' }: AccordionItemProps) => {
     const [isOpen, setIsOpen] = useState(defaultOpen)
     const contentRef = useRef<HTMLDivElement>(null)
 
@@ -54,7 +55,7 @@ const AccordionItem = ({ label, children, defaultOpen = false, variant = 'primar
     }, [isOpen])
 
     return (
-        <div className={cn('wrapper', { open: isOpen })}>
+        <div className={cn('wrapper', bgColor, { open: isOpen })}>
             <button
                 type="button"
                 className={cn('header')}

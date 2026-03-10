@@ -43,10 +43,10 @@ export default function StoryblokRenderer({ blok, story }: StoryblokRendererProp
     ? window.location.pathname.replace(/^\//, '').replace(/\/$/, '') || 'home'
     : '')
 
-  // Chiama sempre useStoryblok (ma lo usa solo se siamo nell'editor)
-  // Passa null come slug se non siamo nell'editor per evitare fetch inutili
+  // Chiama sempre useStoryblok (hooks devono essere chiamati incondizionatamente)
+  // Passa stringa vuota se non siamo nell'editor — useStoryblok non farà fetch con ''
   const liveStory = useStoryblok(
-    isEditor ? fullSlug : null,
+    isEditor && fullSlug ? fullSlug : '',
     { version: 'draft' },
     {
       resolveRelations: '*',

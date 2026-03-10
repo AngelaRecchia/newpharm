@@ -1,3 +1,4 @@
+import { forwardRef } from 'react'
 import classNames from 'classnames/bind';
 import styles from './index.module.scss';
 import { storyblokEditable } from '@storyblok/react'
@@ -10,7 +11,7 @@ import Icon from '../Icon'
 import SmartLink from '../SmartLink'
 import { StoryblokLink } from '@/lib/api/utils/links'
 
-interface ButtonProps {
+export interface ButtonProps {
     icon?: keyof typeof icons
     label?: string
     onClick?: () => void
@@ -21,11 +22,13 @@ interface ButtonProps {
     variant?: 'primary' | 'secondary' | 'tertiary'
     size?: 'small' | 'medium',
     weight?: 'normal' | 'bold'
+    animated?: boolean
+    inert?: boolean
     'aria-label'?: string
     /** Blok Storyblok completo (opzionale, per storyblokEditable) */
     blok?: LinkStoryblok
 }
-const Button = ({ icon = 'right-small', label, onClick, className, href, target, link, variant = 'primary', size = 'medium', weight = 'bold', 'aria-label': ariaLabel, blok, ...props }: ButtonProps) => {
+const Button = forwardRef<HTMLButtonElement, ButtonProps>(({ icon = 'right-small', label, onClick, className, href, target, link, variant = 'primary', size = 'medium', weight = 'bold', animated = false, inert = false, 'aria-label': ariaLabel, blok, ...props }, ref) => {
     // Se blok è presente, applica storyblokEditable
     const editableProps = blok ? storyblokEditable(blok as any) : {}
 
@@ -34,6 +37,9 @@ const Button = ({ icon = 'right-small', label, onClick, className, href, target,
     const onlyIcon = hasIcon && !hasLabel
 
     const linkTarget = link?.linktype === 'url' || link?.linktype === 'external' ? target || '_blank' : target
+
+    // Rileva se l'icona è una freccia sinistra (per animazione inversa)
+    const isLeftIcon = icon === 'chevron-left'
 
     const buttonClasses = cn('button', {
         buttonPrimary: variant === 'primary',
@@ -44,6 +50,8 @@ const Button = ({ icon = 'right-small', label, onClick, className, href, target,
         buttonWithIcon: hasLabel && hasIcon,
         buttonSizeSmall: size === 'small',
         buttonSizeMedium: size === 'medium',
+        animated: animated,
+        'button-left': animated && isLeftIcon, // Classe per animazione verso sinistra
     }, className)
 
     const children = (
@@ -53,6 +61,15 @@ const Button = ({ icon = 'right-small', label, onClick, className, href, target,
             {hasLabel && hasIcon && <div className={cn('buttonIcon')}><Icon type={icon} size='s' weight={weight} /></div>}
         </>
     )
+
+    // Se inert è true, renderizza come div (solo visuale, non cliccabile)
+    if (inert) {
+        return (
+            <div className={buttonClasses} aria-label={ariaLabel} {...editableProps} {...props}>
+                {children}
+            </div>
+        )
+    }
 
     // Renderizza come SmartLink se c'è un link o href, altrimenti come button
     if (link || href) {
@@ -64,10 +81,10 @@ const Button = ({ icon = 'right-small', label, onClick, className, href, target,
     }
 
     return (
-        <button onClick={onClick} className={buttonClasses} aria-label={ariaLabel} {...editableProps} {...props}>
+        <button ref={ref} onClick={onClick} className={buttonClasses} aria-label={ariaLabel} {...editableProps} {...props}>
             {children}
         </button>
     )
-}
+})
 
 export default Button

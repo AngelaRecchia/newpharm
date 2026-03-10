@@ -117,7 +117,7 @@ export default function Header({
       if (isHeaderVisible) {
         root.style.setProperty('--sticky-top', 'var(--header-height)')
       } else {
-        root.style.setProperty('--sticky-top', '0')
+        root.style.setProperty('--sticky-top', '0px') // Usa '0px' invece di '0' per compatibilità con calc
       }
     }
   }, [isHeaderVisible])

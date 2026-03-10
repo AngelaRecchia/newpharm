@@ -13,6 +13,7 @@ import { RelatedStory } from '@/lib/api/storyblok/stories';
 import { useFormatter, useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 import Button from '@/components/atoms/Button';
+import { isEmpty } from '@/lib/api/utils/links';
 
 const cn = classNames.bind(styles);
 
@@ -62,15 +63,15 @@ const Carousel = ({ title, subtitle, link, items, variant }: CarouselProps) => {
                 <div className={cn('header-wrapper')}>
                     <div className={cn('header')}>
                         {computedTitle && <h2 className={cn('title')}>{computedTitle}</h2>}
-                        {subtitle && <p className={cn('subtitle')}>{subtitle}</p>}
+                        {!isEmpty(subtitle) && <p className={cn('subtitle')}>{subtitle}</p>}
 
                         {computedLink && <Button href={computedLink as string} label={computedTitle} />}
                     </div>
 
 
                     <div className={cn('buttons-wrapper')}>
-                        <Button className={cn('button-prev')} icon='chevron-left' variant='tertiary' weight='normal' />
-                        <Button className={cn('button-next')} icon='chevron-right' variant='tertiary' weight='normal' />
+                        <Button className={cn('button-prev')} icon='chevron-left' variant='tertiary' weight='normal' animated={true} />
+                        <Button className={cn('button-next')} icon='chevron-right' variant='tertiary' weight='normal' animated={true} />
                     </div>
                 </div>
 

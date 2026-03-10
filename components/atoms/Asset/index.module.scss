@@ -11,6 +11,10 @@
   &.assetModeFit {
     position: relative;
     inset: unset;
+    --asset-position: relative;
+    --asset-height: auto;
+    --asset-object-fit: contain;
+    --asset-width: 100%;
   }
 
   &.assetHasOverlay {
@@ -55,9 +59,10 @@
     position: relative;
     img,
     video {
-      position: relative !important;
-      height: auto !important;
-      object-fit: contain !important;
+      position: var(--asset-position, relative) !important;
+      height: var(--asset-height, auto) !important;
+      object-fit: var(--asset-object-fit, contain) !important;
+      width: var(--asset-width, 100%) !important;
     }
   }
 }

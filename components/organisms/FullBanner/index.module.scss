@@ -78,6 +78,12 @@
     .asset-wrapper {
       inset: 0;
       position: absolute;
+      will-change: transform;
+      
+      img,
+      video {
+        will-change: transform;
+      }
     }
 
     .asset-video-control-wrapper {

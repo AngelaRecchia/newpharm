@@ -5,7 +5,6 @@ import NextImage, { ImageProps as NextImageProps } from 'next/image'
 import classNames from 'classnames/bind'
 import { storyblokEditable } from '@storyblok/react'
 import { useViewport } from '@/lib/context/viewport-context'
-import Icon from '@/components/atoms/Icon'
 import styles from './index.module.scss'
 import Button from '../Button'
 import { useTranslations } from 'next-intl'
@@ -136,6 +135,8 @@ const Asset = ({
 }: AssetComponentProps) => {
     const { isDesktop } = useViewport()
     const t = useTranslations()
+    // Traccia quali immagini sono già state caricate per evitare refetch al resize
+    const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set())
 
     // Se blok è presente, estrai asset da blok e applica storyblokEditable
     let finalAsset: StoryblokAsset | StoryblokAsset[] | StoryblokAssetWithBreakpoints | null | undefined = asset
@@ -294,7 +295,8 @@ const Asset = ({
         const hasDifferentAssets = assetWithBreakpoints?.mobile && assetWithBreakpoints?.desktop && mobileSrc !== desktopSrc
 
         if (hasDifferentAssets) {
-            // Renderizza entrambe le immagini, CSS le mostrerà/nasconderà in base al breakpoint
+            // Renderizza solo l'immagine necessaria, ma mantiene in cache quelle già caricate
+            // per evitare refetch al resize della finestra
             // Verifica che entrambi gli src siano validi
             if (!mobileSrc || !desktopSrc || mobileSrc.trim() === '' || desktopSrc.trim() === '') {
                 return null
@@ -302,30 +304,49 @@ const Asset = ({
 
             const mobileTransformed = `${mobileSrc}/m/${mobileSuffix}x0`
             const desktopTransformed = `${desktopSrc}/m/${desktopSuffix}x0`
+            const currentTransformed = isDesktop ? desktopTransformed : mobileTransformed
+            const otherTransformed = isDesktop ? mobileTransformed : desktopTransformed
+            const isOtherLoaded = loadedImages.has(otherTransformed)
+
+            // Callback per tracciare quando un'immagine è stata caricata
+            const handleImageLoad = useCallback((src: string) => {
+                setLoadedImages(prev => new Set(prev).add(src))
+            }, [])
 
             return (
-                <div className={cn('asset-image-wrapper', {
-                    assetHasOverlay: overlay,
-                    assetModeFit: mode === 'fit'
-                }, className)} data-asset {...editableProps}>
+                <div
+                    className={cn('asset-image-wrapper', {
+                        assetHasOverlay: overlay,
+                        assetModeFit: mode === 'fit'
+                    }, className)}
+                    data-asset
+
+                    {...editableProps}>
+                    {/* Immagine corrente: sempre visibile */}
                     <NextImage
-                        src={mobileTransformed}
+                        src={currentTransformed}
                         alt={assetAlt}
-                        className={cn('asset', 'asset-image', 'asset-image-mobile')}
+                        className={cn('asset', 'asset-image')}
                         fill
+                        priority
                         sizes={`(min-width: 1024px) ${desktopSuffix}px, ${mobileSuffix}px`}
                         quality={80}
+                        onLoad={() => handleImageLoad(currentTransformed)}
                         {...rest}
                     />
-                    <NextImage
-                        src={desktopTransformed}
-                        alt={assetAlt}
-                        className={cn('asset', 'asset-image', 'asset-image-desktop')}
-                        fill
-                        sizes={`(min-width: 1024px) ${desktopSuffix}px, ${mobileSuffix}px`}
-                        quality={80}
-                        {...rest}
-                    />
+                    {/* Immagine alternativa: renderizza solo se già caricata in precedenza per evitare refetch */}
+                    {isOtherLoaded && (
+                        <NextImage
+                            src={otherTransformed}
+                            alt={assetAlt}
+                            className={cn('asset', 'asset-image', isDesktop ? 'asset-image-mobile' : 'asset-image-desktop')}
+                            fill
+                            sizes={`(min-width: 1024px) ${desktopSuffix}px, ${mobileSuffix}px`}
+                            quality={80}
+                            style={{ display: 'none' }}
+                            {...rest}
+                        />
+                    )}
                 </div>
             )
         } else {
@@ -334,10 +355,14 @@ const Asset = ({
             const transformedSrc = `${currentSrc}/m/${suffix}x0`
 
             return (
-                <div className={cn('asset-image-wrapper', {
-                    assetHasOverlay: overlay,
-                    assetModeFit: mode === 'fit'
-                }, className)} data-asset {...editableProps}>
+                <div
+                    className={cn('asset-image-wrapper', {
+                        assetHasOverlay: overlay,
+                        assetModeFit: mode === 'fit'
+                    }, className)}
+                    data-asset
+
+                    {...editableProps}>
                     <NextImage
                         src={transformedSrc}
                         alt={assetAlt}
@@ -354,10 +379,13 @@ const Asset = ({
 
     // Fallback per tipo sconosciuto (renderizza come immagine senza trasformazioni)
     return (
-        <div className={cn('asset-image-wrapper', {
-            assetHasOverlay: overlay,
-            assetModeFit: mode === 'fit'
-        }, className)} data-asset>
+        <div
+            className={cn('asset-image-wrapper', {
+                assetHasOverlay: overlay,
+                assetModeFit: mode === 'fit'
+            }, className)}
+            data-asset
+        >
             <NextImage
                 src={currentSrc}
                 alt={assetAlt}
