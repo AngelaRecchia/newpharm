@@ -1,5 +1,8 @@
 @use "../../../styles" as *;
 
+// ==============================================
+// Wrapper
+// ==============================================
 .wrapper {
   width: 100%;
   overflow: clip;
@@ -11,115 +14,41 @@
     --height: 50dvw;
   }
 
-  // Il modulo successivo deve essere position relative per gestire lo z-index
   & + * {
     position: relative;
     z-index: 1;
   }
 
-  &.has-link {
-    .content-wrapper {
-      @include lg {
-        @include transition(transform, $td-300);
-      }
-    }
-
-    .asset-wrapper > * {
-      @include lg {
-        @include transition(transform, $td-300);
-      }
-    }
-
-    &.is-hovered {
-      .content-wrapper {
-        @include lg {
-          transform: translateX($s-24);
-        }
-      }
-
-      .asset-wrapper > * {
-        @include lg {
-          transform: scale(1.03);
-        }
-      }
-    }
-  }
-
-  &.orientation-right {
-    .container {
-      @include lg {
-        flex-direction: row-reverse;
-      }
-    }
-
-    &.has-link {
-      .content-wrapper {
-        @include lg {
-          @include transition(padding-inline-end, $td-300);
-        }
-      }
-
-      &.is-hovered {
-        .content-wrapper {
-          @include lg {
-            padding-inline-end: $s-24;
-            padding-inline-start: 0;
-          }
-        }
-      }
-    }
-  }
-  //   &[data-box-image]:not(:has(+ [data-box-image])) {
-  //     --height: 50dvw;
-
-  //     aspect-ratio: 2 / 1;
-  //     .asset-wrapper {
-  //       aspect-ratio: 1;
-
-  //       @include lg {
-  //         height: 100%;
-  //       }
-  //     }
-
-  //     .content-wrapper {
-  //       @include lg {
-  //         aspect-ratio: 1;
-  //       }
-  //     }
-  //   }
-
-  // Se c'è un fratello successivo BoxImage
-  &[data-box-image]:has(+ [data-box-image]) {
+  // Fratelli BoxImage adiacenti (prima o dopo): altezza fullscreen
+  &[data-box-image]:has(+ [data-box-image]),
+  &[data-box-image] ~ [data-box-image] {
     --height: 100dvh;
-
-    height: var(--height);
-
-    .content-wrapper {
-      @include lg {
-        height: 100%;
-      }
-    }
   }
 }
 
+// ==============================================
+// Layout
+// ==============================================
 .container {
   @include lg {
-    height: auto;
     display: flex;
-    flex-direction: row;
     align-items: flex-start;
   }
 }
 
 .asset-wrapper {
   width: 100%;
-
   position: sticky;
   top: 0;
 
-  > * {
+  img,
+  video {
     @include transition(transform, $td-300);
-    aspect-ratio: 1;
+  }
+
+  > * {
+    overflow: clip;
+    height: var(--height);
   }
 
   @include untilLg {
@@ -127,14 +56,11 @@
   }
 
   @include lg {
-    height: 100%;
     flex-basis: 50%;
     max-width: 50%;
   }
 }
 
-// ho messo stato sticky desktop in data-box image ma non è giusto, lì devo sovrascrivere solo altezza
-// inoltre le regole css non sembra star targhetizzando
 .content-wrapper {
   width: 100%;
   text-decoration: none;
@@ -142,20 +68,23 @@
   position: relative;
   z-index: 1;
 
-  // Se NON c'è un fratello successivo BoxImage, aspect ratio 1 (quadrata)
   @include untilLg {
     padding-top: 100%;
   }
 
   @include lg {
+    min-height: var(--height);
     flex-basis: 50%;
     max-width: 50%;
   }
 }
 
+// ==============================================
+// Content
+// ==============================================
 .content {
   background-color: $c-white;
-
+  min-height: calc(var(--height) / 2);
   padding: $s-40 $s-24 $s-128;
   display: flex;
   flex-direction: column;
@@ -177,4 +106,62 @@
 
 .link-wrapper {
   margin-top: $s-8;
+}
+
+// ==============================================
+// Hover (solo desktop, con link)
+// ==============================================
+.wrapper.has-link {
+  .content-wrapper {
+    @include lg {
+      @include transition(transform, $td-300);
+    }
+  }
+
+  .asset-wrapper > * {
+    @include lg {
+      @include transition(transform, $td-300);
+    }
+  }
+
+  &.is-hovered {
+    .content-wrapper {
+      @include lg {
+        transform: translateX($s-24);
+      }
+    }
+
+    .asset-wrapper img,
+    .asset-wrapper video {
+      @include lg {
+        transform: scale(1.03);
+      }
+    }
+  }
+}
+
+// ==============================================
+// Orientation right
+// ==============================================
+.wrapper.orientation-right {
+  .container {
+    @include lg {
+      flex-direction: row-reverse;
+    }
+  }
+
+  &.has-link {
+    .content-wrapper {
+      @include lg {
+        @include transition(padding-inline-end, $td-300);
+      }
+    }
+
+    &.is-hovered .content-wrapper {
+      @include lg {
+        padding-inline-end: $s-24;
+        padding-inline-start: 0;
+      }
+    }
+  }
 }

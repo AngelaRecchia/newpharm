@@ -1,6 +1,6 @@
 'use client'
 
-import React, { ReactNode, useEffect, useRef } from 'react'
+import React, { ReactNode, useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Lenis from 'lenis'
@@ -31,13 +31,14 @@ export const SmoothScrollContext = React.createContext<SmoothScrollContextType>(
 
 export function SmoothScrollProvider({ children }: { children: ReactNode }) {
   const lenisRef = useRef<Lenis | null>(null)
-  const initializedRef = useRef(false)
+  const rafIdRef = useRef<number | null>(null)
+  const [lenis, setLenis] = useState<Lenis | null>(null)
 
   useEffect(() => {
-    if (typeof window === 'undefined' || initializedRef.current) return
+    if (typeof window === 'undefined') return
 
     // Initialize Lenis
-    const lenis = new Lenis({
+    const lenisInstance = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: 'vertical',
@@ -48,8 +49,8 @@ export function SmoothScrollProvider({ children }: { children: ReactNode }) {
       infinite: false,
     })
 
-    lenisRef.current = lenis
-    initializedRef.current = true
+    lenisRef.current = lenisInstance
+    setLenis(lenisInstance)
 
     // Cache delle dimensioni della viewport per evitare forced reflows
     let cachedViewport = {
@@ -69,12 +70,11 @@ export function SmoothScrollProvider({ children }: { children: ReactNode }) {
     ScrollTrigger.scrollerProxy(document.body, {
       scrollTop(value?: number) {
         if (arguments.length && value !== undefined) {
-          lenis.scrollTo(value, { immediate: true })
+          lenisInstance.scrollTo(value, { immediate: true })
         }
-        return lenis.scroll
+        return lenisInstance.scroll
       },
       getBoundingClientRect() {
-        // Usa valori cached invece di accedere a window.innerWidth/Height ogni volta
         return {
           top: 0,
           left: 0,
@@ -85,31 +85,35 @@ export function SmoothScrollProvider({ children }: { children: ReactNode }) {
     })
 
     // Update ScrollTrigger on Lenis scroll
-    lenis.on('scroll', ScrollTrigger.update)
+    lenisInstance.on('scroll', ScrollTrigger.update)
 
     // Set ScrollTrigger default scroller
     ScrollTrigger.defaults({ scroller: document.body })
 
-    // Lenis animation frame
+    // Lenis animation frame con cancellazione corretta
     function raf(time: number) {
-      lenis.raf(time)
-      requestAnimationFrame(raf)
+      lenisInstance.raf(time)
+      rafIdRef.current = requestAnimationFrame(raf)
     }
 
-    requestAnimationFrame(raf)
+    rafIdRef.current = requestAnimationFrame(raf)
 
     // Cleanup
     return () => {
+      if (rafIdRef.current !== null) {
+        cancelAnimationFrame(rafIdRef.current)
+        rafIdRef.current = null
+      }
       window.removeEventListener('resize', updateViewportCache)
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill())
-      lenis.destroy()
+      lenisInstance.destroy()
       lenisRef.current = null
-      initializedRef.current = false
+      setLenis(null)
     }
   }, [])
 
   return (
-    <SmoothScrollContext.Provider value={{ lenis: lenisRef.current }}>
+    <SmoothScrollContext.Provider value={{ lenis }}>
       {children}
     </SmoothScrollContext.Provider>
   )

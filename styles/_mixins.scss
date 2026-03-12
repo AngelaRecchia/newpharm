@@ -204,6 +204,7 @@
   margin-inline: auto;
   padding-inline: $s-24; // 24px mobile
   padding-block: $s-40;
+  width: 100%;
 
   @include lg {
     padding-inline: $s-40; // 40px desktop

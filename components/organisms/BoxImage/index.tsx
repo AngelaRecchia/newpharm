@@ -8,7 +8,7 @@ import Asset from '@/components/atoms/Asset'
 import Button from '@/components/atoms/Button'
 import SmartLink from '@/components/atoms/SmartLink'
 import { AssetStoryblok, LinkStoryblok } from '@/types/storyblok'
-import { isEmpty, isLinkStoryblokValid } from '@/lib/api/utils/links'
+import { isEmpty, isLinkEmpty } from '@/lib/api/utils/links'
 import { useViewport } from '@/lib/context/viewport-context'
 
 const cn = classNames.bind(styles)
@@ -18,7 +18,7 @@ interface BoxImageStoryblok {
     asset?: AssetStoryblok[] | null
     title?: string | null
     subtitle?: string | null
-    link?: LinkStoryblok
+    link?: LinkStoryblok[]
     orientation?: 'left' | 'right' | null
     _uid: string
     component: string
@@ -35,16 +35,15 @@ const BoxImage = ({ blok }: { blok?: BoxImageStoryblok }) => {
     const { asset, title, subtitle, link, orientation = 'left' } = blok
     const hasTitle = !isEmpty(title)
     const hasSubtitle = !isEmpty(subtitle)
-    const hasLink = isLinkStoryblokValid(link)
+    // Il link è valido se esiste e ha un link interno valido (non serve la label)
+    const hasLink = link && !isLinkEmpty(link[0]?.link)
+
     // Prende solo il primo asset dall'array (supporta sia immagini che video)
     const firstAsset = asset && asset.length > 0 ? asset[0] : null
     const isRightOriented = orientation === 'right'
 
-    // Estrae il link Storyblok dal LinkStoryblok
-    const storyblokLink = hasLink && link?.link ? link.link : null
 
-    const ContentWrapper = hasLink && storyblokLink ? SmartLink : 'div'
-    const contentWrapperProps = hasLink && storyblokLink ? { link: storyblokLink } : {}
+
 
     // Gestione hover per effetti su link
     useEffect(() => {
@@ -116,18 +115,22 @@ const BoxImage = ({ blok }: { blok?: BoxImageStoryblok }) => {
                 )}
 
                 <div ref={contentWrapperRef} className={cn('content-wrapper')}>
-                    <ContentWrapper {...contentWrapperProps}>
+                    {hasLink ? (
+                        <SmartLink link={link as any}>
+                            <div className={cn('content')}>
+                                {hasTitle && <h2 className={cn('title')}>{title}</h2>}
+                                {hasSubtitle && <p className={cn('subtitle')}>{subtitle}</p>}
+                                <div className={cn('link-wrapper')}>
+                                    <Button link={link} variant="secondary" inert={true} />
+                                </div>
+                            </div>
+                        </SmartLink>
+                    ) : (
                         <div className={cn('content')}>
                             {hasTitle && <h2 className={cn('title')}>{title}</h2>}
                             {hasSubtitle && <p className={cn('subtitle')}>{subtitle}</p>}
-
-                            {hasLink && storyblokLink && (
-                                <div className={cn('link-wrapper')}>
-                                    <Button link={storyblokLink} variant="secondary" inert={true} />
-                                </div>
-                            )}
                         </div>
-                    </ContentWrapper>
+                    )}
                 </div>
             </div>
         </section>

@@ -26,6 +26,7 @@ export function IntlProvider({ locale, messages, children }: { locale: string; m
     <NextIntlClientProvider
       locale={locale}
       messages={messages}
+      timeZone="Europe/Rome"
       onError={handleIntlError}
       getMessageFallback={getMessageFallback}
     >

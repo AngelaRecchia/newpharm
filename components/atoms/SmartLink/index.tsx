@@ -10,7 +10,7 @@ type LinkProps = ComponentProps<typeof Link>
 
 interface SmartLinkProps extends Omit<LinkProps, 'href'> {
     href?: string
-    link?: StoryblokLink & { anchor?: string } | null
+    link?: (StoryblokLink & { anchor?: string }) | (StoryblokLink & { anchor?: string })[] | null
     children?: React.ReactNode
 }
 
@@ -19,11 +19,15 @@ interface SmartLinkProps extends Omit<LinkProps, 'href'> {
  * 
  * Can accept either:
  * - `href`: A direct URL string
- * - `link`: A Storyblok link object (multilink field)
+ * - `link`: A Storyblok link object (multilink field) or an array of link objects
  * 
  * If the href contains a locale prefix (e.g., '/it/page' or '/it'),
  * it extracts the locale and uses it with next-intl's Link component,
  * removing the locale from the href path.
+ * 
+ * If `link` is an array, it uses the first valid link from the array.
+ * 
+ * If neither `href` nor `link` is valid, it renders a `div` instead of a link.
  * 
  * Examples:
  * - href="/it/about" → <Link href="/about" locale="it" />
@@ -32,31 +36,52 @@ interface SmartLinkProps extends Omit<LinkProps, 'href'> {
  * - href="about" → <Link href="about" /> (relative path, no locale processing)
  * - href="https://example.com" → <Link href="https://example.com" /> (external, no locale processing)
  * - link={storyblokLink} → Uses getLinkUrl() to extract URL from Storyblok link
+ * - link={[link1, link2]} → Uses the first valid link from the array
+ * - No valid href/link → <div> (non-clickable)
  */
-const SmartLink = forwardRef<HTMLAnchorElement, SmartLinkProps>(({ href, link, ...props }, ref) => {
+const SmartLink = forwardRef<HTMLAnchorElement | HTMLDivElement, SmartLinkProps>(({ href, link, ...props }, ref) => {
     const locales = routing.locales
 
     // Se c'è un link Storyblok, usa quello, altrimenti usa href
-    let linkUrl = link ? getLinkUrl(link) : href
+    // Gestisce sia array che singolo link
+    let linkUrl: string | undefined
+    if (link) {
+        if (Array.isArray(link)) {
+            // Se è un array, prendi il primo link valido
+            const firstLink = link.find(l => l && getLinkUrl(l))
+            const url = firstLink ? getLinkUrl(firstLink) : null
+            linkUrl = url || undefined
+        } else {
+            const url = getLinkUrl(link)
+            linkUrl = url || undefined
+        }
+    }
 
-    // Se non c'è URL valido, non renderizzare nulla
+    // Se non c'è linkUrl da link, usa href
     if (!linkUrl) {
-        linkUrl = '/'
+        linkUrl = href
+    }
+
+    // Se non c'è URL valido, renderizza un div
+    // Rimuovi le props specifiche di link/anchor che non sono valide per un div
+    if (!linkUrl) {
+        const { target, replace, href, ...divProps } = props as any
+        return <div ref={ref as React.Ref<HTMLDivElement>} {...(divProps as React.HTMLAttributes<HTMLDivElement>)} />
     }
 
     // Se è un anchor link (inizia con #), passa direttamente
     if (linkUrl.startsWith('#')) {
-        return <Link ref={ref} href={linkUrl} {...props} />
+        return <Link ref={ref as React.Ref<HTMLAnchorElement>} href={linkUrl} {...props} />
     }
 
     // Se è un URL esterno (http/https), passa direttamente
     if (linkUrl.match(/^https?:\/\//i)) {
-        return <a ref={ref} href={linkUrl} {...props} target="_blank" rel="noopener noreferrer" />
+        return <a ref={ref as React.Ref<HTMLAnchorElement>} href={linkUrl} {...props} target="_blank" rel="noopener noreferrer" />
     }
 
     // Se l'URL inizia con www., trattalo come URL esterno
     if (linkUrl.match(/^www\./i)) {
-        return <a ref={ref} href={`https://${linkUrl}`} {...props} target="_blank" rel="noopener noreferrer" />
+        return <a ref={ref as React.Ref<HTMLAnchorElement>} href={`https://${linkUrl}`} {...props} target="_blank" rel="noopener noreferrer" />
     }
 
     // Check if URL starts with locale (with or without leading slash)
@@ -77,20 +102,20 @@ const SmartLink = forwardRef<HTMLAnchorElement, SmartLinkProps>(({ href, link, .
                 pathWithoutLocale = '/' + pathWithoutLocale
             }
 
-            return <Link ref={ref} href={pathWithoutLocale} locale={detectedLocale} {...props} />
+            return <Link ref={ref as React.Ref<HTMLAnchorElement>} href={pathWithoutLocale} locale={detectedLocale} {...props} />
         }
     }
 
     // If URL starts with / but no locale detected, process normally
     if (linkUrl.startsWith('/')) {
         // Regular internal link without locale prefix
-        return <Link ref={ref} href={linkUrl} {...props} />
+        return <Link ref={ref as React.Ref<HTMLAnchorElement>} href={linkUrl} {...props} />
     }
 
     // Se l'URL non inizia con / e non ha locale, potrebbe essere un percorso relativo
     // Normalizzalo aggiungendo / all'inizio per renderlo assoluto
     const normalizedUrl = linkUrl.startsWith('/') ? linkUrl : '/' + linkUrl
-    return <Link ref={ref} href={normalizedUrl} {...props} />
+    return <Link ref={ref as React.Ref<HTMLAnchorElement>} href={normalizedUrl} {...props} />
 })
 
 SmartLink.displayName = 'SmartLink'

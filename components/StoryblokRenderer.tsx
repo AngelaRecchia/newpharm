@@ -38,10 +38,8 @@ export default function StoryblokRenderer({ blok, story }: StoryblokRendererProp
     setIsEditor(isInsideStoryblokEditor())
   }, [])
 
-  // Calcola lo slug sempre (per evitare problemi con gli hooks)
-  const fullSlug = story?.full_slug || (typeof window !== 'undefined'
-    ? window.location.pathname.replace(/^\//, '').replace(/\/$/, '') || 'home'
-    : '')
+  // Usa full_slug dalla story prop (stabile tra server e client, no hydration mismatch)
+  const fullSlug = story?.full_slug || ''
 
   // Chiama sempre useStoryblok (hooks devono essere chiamati incondizionatamente)
   // Passa stringa vuota se non siamo nell'editor — useStoryblok non farà fetch con ''

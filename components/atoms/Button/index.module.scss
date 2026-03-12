@@ -114,4 +114,12 @@
       transform: translateX(-4px);
     }
   }
+
+  // Rotazione icona per link esterni (solo quando è onlyIcon con arrow)
+  &.button-external {
+    svg {
+      transform: rotate(-45deg);
+      @include transition(transform, $td-200);
+    }
+  }
 }
