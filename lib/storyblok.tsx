@@ -28,6 +28,7 @@ import IconTextHighlight from '@/components/organisms/IconTextHighlight'
 import Tabs from '@/components/organisms/Tabs'
 import Faqs from '@/components/organisms/Faqs'
 import BoxImage from '@/components/organisms/BoxImage'
+import ProjectsHighlight from '@/components/organisms/ProjectsHighlight'
 // Heavy components (GSAP / Swiper / WebGL) — dynamic imports for bundle splitting
 const Header = dynamic(() => import('@/components/organisms/Header'))
 const Footer = dynamic(() => import('@/components/organisms/Footer'))
@@ -58,6 +59,7 @@ const components = {
   faqs: Faqs,
   gallery: Gallery,
   box_image: BoxImage,
+  projects_highlight: ProjectsHighlight,
 
   // Atoms
   asset: Asset,

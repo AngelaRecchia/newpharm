@@ -1,0 +1,121 @@
+@use "../../../styles" as *;
+
+// ==============================================
+// Wrapper
+// ==============================================
+.wrapper {
+  width: 100%;
+  background-color: $c-black;
+  color: $c-white;
+}
+
+// ==============================================
+// Container
+// ==============================================
+.container {
+  @include container-lg;
+}
+
+// ==============================================
+// Header
+// ==============================================
+.head {
+  padding-bottom: $s-48;
+  display: flex;
+  flex-direction: column;
+  gap: $s-16;
+
+  @include md {
+    gap: $s-24;
+    width: 50%;
+    margin-inline-start: auto;
+  }
+
+  .title {
+    @include t-h2;
+  }
+}
+
+// ==============================================
+// Cards Stack
+// ==============================================
+.cards {
+  --padding: #{$s-16};
+  position: relative;
+  padding-block: var(--padding);
+  display: flex;
+  flex-direction: column;
+  gap: var(--padding);
+
+  // Top frame overlay — copre le card quando passano sotto il bordo
+  &::before {
+    content: "";
+    display: block;
+    position: sticky;
+    top: 0;
+    height: var(--padding);
+    background-color: $c-black;
+    z-index: 2;
+    margin-bottom: calc(var(--padding) * -1);
+    flex-shrink: 0;
+  }
+
+  // Bottom frame overlay — le card entrano da dietro questo bordo
+  &::after {
+    content: "";
+    display: block;
+    position: sticky;
+    bottom: 0;
+    height: var(--padding);
+    background-color: $c-black;
+    z-index: 2;
+    margin-top: calc(var(--padding) * -1);
+    flex-shrink: 0;
+  }
+}
+
+.card {
+  position: sticky;
+  top: var(--padding);
+  width: 100%;
+  height: calc(100dvh - var(--padding) * 2);
+  display: flex;
+  justify-content: center;
+  overflow: clip;
+  margin-bottom: var(--padding);
+}
+
+.card-link {
+  position: sticky;
+  bottom: calc(var(--padding) + $s-16);
+  margin-bottom: calc($s-16);
+
+  background-color: $c-white;
+  color: $c-black;
+  width: 100%;
+  margin-inline: $s-16;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: $s-8;
+  padding: $s-16;
+  z-index: 3;
+  align-self: flex-end;
+  margin-top: auto;
+
+  @include md {
+    max-width: max(30%, 500px);
+  }
+
+  .card-button {
+    flex-shrink: 0;
+  }
+}
+
+.card-image {
+  width: 100%;
+  height: 132%;
+  top: -16%;
+  position: absolute;
+  overflow: clip;
+}
