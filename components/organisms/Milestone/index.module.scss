@@ -1,0 +1,111 @@
+@use "../../../styles" as *;
+
+// ==============================================
+// Wrapper
+// ==============================================
+.wrapper {
+  width: 100%;
+  background-color: $c-black;
+  color: $c-white;
+}
+
+// ==============================================
+// Container
+// ==============================================
+.container {
+  @include container-lg;
+  padding-block: $s-40;
+
+  display: flex;
+  flex-direction: column;
+  gap: $s-40;
+
+  @include lg {
+    gap: $s-64;
+    padding-block: $s-80;
+  }
+}
+
+// ==============================================
+// Header
+// ==============================================
+.head {
+  @include md {
+    width: 50%;
+    margin-inline-start: auto;
+    padding-bottom: $s-64;
+  }
+}
+
+.title {
+  @include t-h2;
+  margin: 0;
+}
+
+// ==============================================
+// Items
+// ==============================================
+.items {
+  display: flex;
+  flex-direction: column;
+}
+
+.item {
+  border-bottom: 1px solid rgba($c-white, 0.2);
+}
+
+.item-container {
+  @include container-md;
+  padding-block: $s-24;
+  padding-inline: 0;
+  display: flex;
+  flex-direction: column;
+  gap: $s-16;
+  @include md {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    padding-block: $s-40;
+    align-items: center;
+  }
+}
+
+.item-title__wrapper {
+  overflow: clip;
+}
+
+.item-title {
+  @include t-huge;
+  margin: 0;
+  transform: translateY(1em);
+  transition: transform 0.8s ease;
+  transition-delay: calc(var(--i, 0) * 0.1s);
+
+  .is-visible & {
+    transform: translateY(0);
+  }
+}
+
+.item-text__wrapper {
+  overflow: clip;
+}
+
+.item-text {
+  @include t-body;
+  transform: translateY(1em);
+  opacity: 0;
+  transition: transform 0.8s ease calc(var(--i, 0) * 0.1s + 0.15s), opacity 0.8s ease calc(var(--i, 0) * 0.1s + 0.15s);
+
+  .is-visible & {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+// ==============================================
+// Footer
+// ==============================================
+.footer {
+  display: flex;
+  justify-content: center;
+}

@@ -6,7 +6,7 @@
  * 
  * Per rigenerare: npm run generate:types
  * 
- * Generato il: 2026-03-12T22:08:03.219Z
+ * Generato il: 2026-03-14T14:15:28.896Z
  */
 
 
@@ -221,6 +221,24 @@ export interface LinkStoryblok {
 }
 
 
+export interface MilestoneStoryblok {
+  title?: string | null // Optional
+  items?: any[] | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface Milestone_itemStoryblok {
+  title?: string | null // Optional
+  text?: string | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
 export interface Nav_itemStoryblok {
   label?: string | null // Optional
   link?: { id: string; url: string; linktype: string; fieldtype: string; cached_url?: string; } | null // Optional
@@ -363,7 +381,7 @@ export interface Text_revealStoryblok {
 /**
  * Union type di tutti i componenti Storyblok
  */
-export type StoryblokComponent = Accordion_itemStoryblok | Anchor_linkStoryblok | AssetStoryblok | Banner_accordionStoryblok | Box_imageStoryblok | Card_boxStoryblok | Card_cta_boxStoryblok | Card_divisionStoryblok | Card_highlightStoryblok | Card_icon_textStoryblok | CarouselStoryblok | Cta_boxStoryblok | Division_boxStoryblok | FaqsStoryblok | FooterStoryblok | Full_bannerStoryblok | GalleryStoryblok | HeaderStoryblok | HeroStoryblok | Icon_text_highlightStoryblok | LinkStoryblok | Nav_itemStoryblok | PageStoryblok | ProductStoryblok | Projects_highlightStoryblok | Social_itemStoryblok | Spec_tableStoryblok | Split_bannerStoryblok | Sticky_imageStoryblok | StoryStoryblok | TabsStoryblok | TeaserStoryblok | Text_revealStoryblok
+export type StoryblokComponent = Accordion_itemStoryblok | Anchor_linkStoryblok | AssetStoryblok | Banner_accordionStoryblok | Box_imageStoryblok | Card_boxStoryblok | Card_cta_boxStoryblok | Card_divisionStoryblok | Card_highlightStoryblok | Card_icon_textStoryblok | CarouselStoryblok | Cta_boxStoryblok | Division_boxStoryblok | FaqsStoryblok | FooterStoryblok | Full_bannerStoryblok | GalleryStoryblok | HeaderStoryblok | HeroStoryblok | Icon_text_highlightStoryblok | LinkStoryblok | MilestoneStoryblok | Milestone_itemStoryblok | Nav_itemStoryblok | PageStoryblok | ProductStoryblok | Projects_highlightStoryblok | Social_itemStoryblok | Spec_tableStoryblok | Split_bannerStoryblok | Sticky_imageStoryblok | StoryStoryblok | TabsStoryblok | TeaserStoryblok | Text_revealStoryblok
 
 /**
  * Helper type per il prop 'blok' nei componenti Storyblok

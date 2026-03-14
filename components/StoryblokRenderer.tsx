@@ -43,8 +43,10 @@ export default function StoryblokRenderer({ blok, story }: StoryblokRendererProp
 
   // Chiama sempre useStoryblok (hooks devono essere chiamati incondizionatamente)
   // Passa stringa vuota se non siamo nell'editor — useStoryblok non farà fetch con ''
+  // Passa slug reale solo quando siamo nell'editor con uno slug valido.
+  // '_' produce un 404 gestito dalla libreria senza crash ('' invece fa fetch a cdn/stories/ che ritorna lista, non story)
   const liveStory = useStoryblok(
-    isEditor && fullSlug ? fullSlug : '',
+    isEditor && fullSlug ? fullSlug : '_',
     { version: 'draft' },
     {
       resolveRelations: '*',
