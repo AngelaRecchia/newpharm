@@ -1,0 +1,127 @@
+@use "../../../styles" as *;
+
+// ==============================================
+// Wrapper
+// ==============================================
+.wrapper {
+  width: 100%;
+  background-color: $c-white;
+  color: $c-black;
+
+  &.dark {
+    background-color: $c-black;
+    color: $c-white;
+  }
+}
+
+// ==============================================
+// Container
+// ==============================================
+.container {
+  @include container-md;
+}
+
+// ==============================================
+// Header
+// ==============================================
+.head {
+  margin-bottom: $s-40;
+
+  @include md {
+    margin-bottom: $s-80;
+  }
+}
+
+.title {
+  @include t-h2;
+  margin: 0;
+}
+
+// ==============================================
+// Items Grid
+// ==============================================
+.items {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: $s-16;
+
+  @include lg {
+    gap: $s-24;
+  }
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: $s-16;
+  align-items: center;
+  text-align: center;
+}
+
+// ==============================================
+// Logo
+// ==============================================
+.item-logo {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: $c-surface;
+  padding: $s-16;
+  overflow: hidden;
+
+  @include md {
+    padding: $s-24;
+  }
+}
+
+.logo-light,
+.logo-dark {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity $td-300 ease;
+
+  :global(img) {
+    object-fit: contain;
+    width: 100%;
+    height: 100%;
+
+    max-height: 3.5rem;
+  }
+}
+
+// Logo light visibile su sfondo chiaro (default)
+.logo-light {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 1;
+}
+
+.logo-dark {
+  opacity: 0;
+}
+
+// Quando il wrapper ha classe dark, mostra logo-dark e nasconde logo-light
+.wrapper.dark {
+  .logo-light {
+    opacity: 0;
+  }
+
+  .logo-dark {
+    opacity: 1;
+  }
+
+  .item-logo {
+    background-color: rgba($c-white, 0.1);
+  }
+
+  .item-description {
+    color: rgba($c-white, 0.8);
+  }
+}
