@@ -13,6 +13,7 @@ import SmartLink from '@/components/atoms/SmartLink'
 import Icon from '@/components/atoms/Icon'
 import VideoYt from '@/components/organisms/VideoYt'
 import { StoryblokComponent } from '@storyblok/react'
+import { hasRichTextContent } from '@/lib/api/utils/richtext'
 
 const cn = classNames.bind(styles)
 
@@ -73,7 +74,7 @@ const Product = ({ blok }: { blok: ProductStoryblok }) => {
   const hasContent = (content: any, type: string): boolean => {
     if (!content) return false
     if (type === 'richtext' && typeof content === 'object') {
-      return Array.isArray(content.content) && content.content.length > 0
+      return hasRichTextContent(content)
     }
     if (type === 'file') {
       return !!(content as any).filename

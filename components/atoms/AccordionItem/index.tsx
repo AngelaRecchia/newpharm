@@ -25,7 +25,7 @@ interface AccordionItemProps {
 const AccordionItem = ({ label, children, defaultOpen = false, variant = 'primary', bgColor = 'surface' }: AccordionItemProps) => {
     const [isOpen, setIsOpen] = useState(defaultOpen)
     const contentRef = useRef<HTMLDivElement>(null)
-
+    console.log(label,)
     useEffect(() => {
         if (!contentRef.current) return
         const content = contentRef.current
