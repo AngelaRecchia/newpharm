@@ -2,6 +2,8 @@
 
 import { StoryblokComponent, useStoryblok } from '@storyblok/react'
 import { useEffect, useState } from 'react'
+import { getStoryblokVersion } from '@/lib/api/storyblok/config'
+import { STORYBLOK_RESOLVE_RELATIONS } from '@/lib/api/storyblok/resolveRelations'
 
 interface StoryblokRendererProps {
   blok: any
@@ -38,18 +40,23 @@ export default function StoryblokRenderer({ blok, story }: StoryblokRendererProp
     setIsEditor(isInsideStoryblokEditor())
   }, [])
 
-  // Usa full_slug dalla story prop (stabile tra server e client, no hydration mismatch)
-  const fullSlug = story?.full_slug || ''
+  // Slug CDN: sempre da story (SSR/CSR allineati). Non usare '_' come placeholder:
+  // useStoryblok fa comunque GET /v2/cdn/stories/{slug} e 'stories/_' → 404.
+  const storySlug = (story?.full_slug || '').trim()
 
-  // Chiama sempre useStoryblok (hooks devono essere chiamati incondizionatamente)
-  // Passa stringa vuota se non siamo nell'editor — useStoryblok non farà fetch con ''
-  // Passa slug reale solo quando siamo nell'editor con uno slug valido.
-  // '_' produce un 404 gestito dalla libreria senza crash ('' invece fa fetch a cdn/stories/ che ritorna lista, non story)
+  // Opzioni CDN (2° arg): vanno qui — solo questo oggetto è passato a `api.get('cdn/stories/{slug}', r)`.
+  // Il 3° arg serve al bridge live; se `resolve_relations` è solo lì, la prima fetch non risolve le relazioni.
+  const cdnParams = {
+    version: getStoryblokVersion(),
+    resolve_relations: STORYBLOK_RESOLVE_RELATIONS,
+    resolve_links: 'url' as const,
+  }
+
   const liveStory = useStoryblok(
-    isEditor && fullSlug ? fullSlug : '_',
-    { version: 'draft' },
+    storySlug || '_',
+    cdnParams,
     {
-      resolveRelations: '*',
+      resolveRelations: STORYBLOK_RESOLVE_RELATIONS,
       resolveLinks: 'url',
     }
   )

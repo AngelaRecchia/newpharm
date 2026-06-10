@@ -194,13 +194,15 @@ export type StoryblokBlok = StoryblokComponent
       fs.mkdirSync(typesDir, { recursive: true })
     }
 
-    // Salva il file
-    const outputPath = path.join(typesDir, 'storyblok.d.ts')
+    // Salva il file generato
+    const outputPath = path.join(typesDir, 'storyblok.generated.d.ts')
     fs.writeFileSync(outputPath, fileContent, 'utf-8')
 
     console.log(`\n✅ Types generati con successo in: ${outputPath}`)
-    console.log(`\n💡 Importa i types nei componenti:`)
+    console.log(`\n💡 I tipi vengono esportati da: types/storyblok.d.ts`)
+    console.log(`   Importa i types nei componenti:`)
     console.log(`   import { HeaderStoryblok } from '@/types/storyblok'`)
+    console.log(`\n📝 Per sovrascrivere tipi, modifica: types/storyblok.overrides.d.ts`)
     console.log(`\n🔄 Per rigenerare i types dopo modifiche su Storyblok:`)
     console.log(`   npm run generate:types`)
   } catch (error: any) {

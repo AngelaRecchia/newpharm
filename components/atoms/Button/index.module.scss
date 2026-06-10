@@ -5,6 +5,7 @@
 @use "../../../styles" as *;
 
 .button {
+  flex-shrink: 0;
   @include flex-center;
   border-radius: 9999px;
   cursor: pointer;

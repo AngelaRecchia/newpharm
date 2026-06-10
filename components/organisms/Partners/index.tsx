@@ -27,26 +27,38 @@ export default function Partners({ blok }: { blok?: PartnersStoryblok }) {
 
                 {items && items.length > 0 && (
                     <div className={cn('items')}>
-                        {items.map((item: Logo_itemStoryblok) => (
-                            <div key={item._uid} className={cn('item')}>
-                                <div className={cn('item-logo')}>
-                                    {!isDark ?
-                                        item.logo_light && (
-                                            <div className={cn('logo-light')}>
-                                                <Asset asset={item.logo_light} size="s" mode="fit" alt={!!item.description?.length ? item.description : item.logo_light.alt || ''} />
-                                            </div>
+                        {items.map((item: Logo_itemStoryblok) => {
+                            const logoLight = Array.isArray(item.logo_light)
+                                ? item.logo_light[0]
+                                : item.logo_light
+                            const logoDark = Array.isArray(item.logo_dark)
+                                ? item.logo_dark[0]
+                                : item.logo_dark
+                            const lightAlt =
+                                item.description && item.description.length > 0
+                                    ? item.description
+                                    : (logoLight as { alt?: string } | undefined)?.alt || ''
+
+                            return (
+                                <div key={item._uid} className={cn('item')}>
+                                    <div className={cn('item-logo')}>
+                                        {!isDark ? (
+                                            logoLight && (
+                                                <div className={cn('logo-light')}>
+                                                    <Asset asset={logoLight} size="s" mode="fit" alt={lightAlt} />
+                                                </div>
+                                            )
                                         ) : (
-                                            item.logo_dark && (
+                                            logoDark && (
                                                 <div className={cn('logo-dark')}>
-                                                    <Asset asset={item.logo_dark} size="s" mode="fit" />
+                                                    <Asset asset={logoDark} size="s" mode="fit" />
                                                 </div>
                                             )
                                         )}
-
+                                    </div>
                                 </div>
-
-                            </div>
-                        ))}
+                            )
+                        })}
                     </div>
                 )}
             </div>

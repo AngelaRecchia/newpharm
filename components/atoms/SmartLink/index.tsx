@@ -4,13 +4,14 @@ import { forwardRef } from 'react'
 import { Link } from '@/i18n/navigation'
 import { routing } from '@/i18n/routing'
 import { ComponentProps } from 'react'
-import { getLinkUrl, StoryblokLink } from '@/lib/api/utils/links'
+import { getLinkUrl, StoryblokLink, getFirstValidLink, isLinkStoryblokValid } from '@/lib/api/utils/links'
+import { LinkStoryblok } from '@/types/storyblok'
 
 type LinkProps = ComponentProps<typeof Link>
 
 interface SmartLinkProps extends Omit<LinkProps, 'href'> {
     href?: string
-    link?: (StoryblokLink & { anchor?: string }) | (StoryblokLink & { anchor?: string })[] | null
+    link?: (StoryblokLink & { anchor?: string }) | (StoryblokLink & { anchor?: string })[] | LinkStoryblok | LinkStoryblok[] | null
     children?: React.ReactNode
 }
 
@@ -19,13 +20,14 @@ interface SmartLinkProps extends Omit<LinkProps, 'href'> {
  * 
  * Can accept either:
  * - `href`: A direct URL string
- * - `link`: A Storyblok link object (multilink field) or an array of link objects
+ * - `link`: A Storyblok link object (multilink field), LinkStoryblok, or arrays of either
  * 
  * If the href contains a locale prefix (e.g., '/it/page' or '/it'),
  * it extracts the locale and uses it with next-intl's Link component,
  * removing the locale from the href path.
  * 
  * If `link` is an array, it uses the first valid link from the array.
+ * If `link` is a LinkStoryblok, it extracts the nested `link` field.
  * 
  * If neither `href` nor `link` is valid, it renders a `div` instead of a link.
  * 
@@ -36,6 +38,7 @@ interface SmartLinkProps extends Omit<LinkProps, 'href'> {
  * - href="about" → <Link href="about" /> (relative path, no locale processing)
  * - href="https://example.com" → <Link href="https://example.com" /> (external, no locale processing)
  * - link={storyblokLink} → Uses getLinkUrl() to extract URL from Storyblok link
+ * - link={linkStoryblok} → Extracts link.link and uses getLinkUrl()
  * - link={[link1, link2]} → Uses the first valid link from the array
  * - No valid href/link → <div> (non-clickable)
  */
@@ -43,17 +46,47 @@ const SmartLink = forwardRef<HTMLAnchorElement | HTMLDivElement, SmartLinkProps>
     const locales = routing.locales
 
     // Se c'è un link Storyblok, usa quello, altrimenti usa href
-    // Gestisce sia array che singolo link
+    // Gestisce sia array che singolo link, sia StoryblokLink che LinkStoryblok
     let linkUrl: string | undefined
     if (link) {
         if (Array.isArray(link)) {
-            // Se è un array, prendi il primo link valido
-            const firstLink = link.find(l => l && getLinkUrl(l))
-            const url = firstLink ? getLinkUrl(firstLink) : null
-            linkUrl = url || undefined
+            // Se è un array, verifica se è LinkStoryblok[] o StoryblokLink[]
+            // Gestisce anche array misti
+            for (const item of link) {
+                if (!item) continue
+
+                // Verifica se è un LinkStoryblok (ha label, link e _uid)
+                if ('label' in item && 'link' in item && '_uid' in item) {
+                    // È un LinkStoryblok
+                    if (isLinkStoryblokValid(item as LinkStoryblok)) {
+                        const url = getLinkUrl((item as LinkStoryblok).link)
+                        if (url) {
+                            linkUrl = url
+                            break
+                        }
+                    }
+                } else {
+                    // È un StoryblokLink diretto
+                    const url = getLinkUrl(item as StoryblokLink & { anchor?: string })
+                    if (url) {
+                        linkUrl = url
+                        break
+                    }
+                }
+            }
         } else {
-            const url = getLinkUrl(link)
-            linkUrl = url || undefined
+            // Singolo link
+            if ('label' in link && 'link' in link && '_uid' in link) {
+                // È un LinkStoryblok
+                if (isLinkStoryblokValid(link as LinkStoryblok)) {
+                    const url = getLinkUrl((link as LinkStoryblok).link)
+                    linkUrl = url || undefined
+                }
+            } else {
+                // È un StoryblokLink diretto
+                const url = getLinkUrl(link as StoryblokLink & { anchor?: string })
+                linkUrl = url || undefined
+            }
         }
     }
 

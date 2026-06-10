@@ -1,0 +1,53 @@
+@use "../../../styles" as *;
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  // Sopra header / overlay sito (stesso stacking di molti layout fixed)
+  z-index: 10050;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: $s-24;
+  overflow-y: auto;
+  background: rgba(0, 0, 0, 0.75);
+}
+
+.panel {
+  position: relative;
+  width: 100%;
+  max-width: 36rem;
+  margin-block: auto;
+  padding: $s-40 $s-24;
+  background: $c-black;
+  color: $c-white;
+  border-radius: $s-4;
+
+  @include md {
+    max-width: 44rem;
+    padding: $s-40;
+  }
+}
+
+.close {
+  position: absolute;
+  top: $s-40;
+  right: $s-24;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  background: transparent;
+  color: $c-white;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid $c-primary;
+    outline-offset: 2px;
+  }
+
+  @include md {
+    right: $s-40;
+  }
+}

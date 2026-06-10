@@ -6,6 +6,7 @@
 
 import { getStoryblokApi } from "./client";
 import { getStoryblokVersion, getCacheVersion } from "./config";
+import { STORYBLOK_RESOLVE_RELATIONS } from "./resolveRelations";
 import { AssetStoryblok } from "@/types/storyblok";
 
 export interface GetStoryOptions {
@@ -67,7 +68,7 @@ export async function getStory(
     const params: Record<string, any> = {
       version,
       resolve_links: "url",
-      resolve_relations: "",
+      resolve_relations: STORYBLOK_RESOLVE_RELATIONS,
       ...options,
     };
 

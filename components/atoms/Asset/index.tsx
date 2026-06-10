@@ -239,6 +239,10 @@ const Asset = ({
         }
     }, [isPlaying])
 
+    const handleImageLoad = useCallback((src: string) => {
+        setLoadedImages(prev => new Set(prev).add(src))
+    }, [])
+
     // Se non c'è un src valido, non renderizzare nulla
     if (!currentSrc || currentSrc.trim() === '') {
         return null
@@ -307,11 +311,6 @@ const Asset = ({
             const currentTransformed = isDesktop ? desktopTransformed : mobileTransformed
             const otherTransformed = isDesktop ? mobileTransformed : desktopTransformed
             const isOtherLoaded = loadedImages.has(otherTransformed)
-
-            // Callback per tracciare quando un'immagine è stata caricata
-            const handleImageLoad = useCallback((src: string) => {
-                setLoadedImages(prev => new Set(prev).add(src))
-            }, [])
 
             return (
                 <div

@@ -70,6 +70,7 @@ export default async function LocaleLayout({
   }
 
 
+
   return (
     <GlobalSettingsProvider settings={settings}>
 

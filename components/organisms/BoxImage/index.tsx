@@ -30,9 +30,7 @@ const BoxImage = ({ blok }: { blok?: BoxImageStoryblok }) => {
     const contentWrapperRef = useRef<HTMLDivElement>(null)
     const { isDesktop } = useViewport()
 
-    if (!blok) return <></>
-
-    const { asset, title, subtitle, link, orientation = 'left' } = blok
+    const { asset, title, subtitle, link, orientation = 'left' } = blok ?? {}
     const hasTitle = !isEmpty(title)
     const hasSubtitle = !isEmpty(subtitle)
     // Il link è valido se esiste e ha un link interno valido (non serve la label)
@@ -41,9 +39,6 @@ const BoxImage = ({ blok }: { blok?: BoxImageStoryblok }) => {
     // Prende solo il primo asset dall'array (supporta sia immagini che video)
     const firstAsset = asset && asset.length > 0 ? asset[0] : null
     const isRightOriented = orientation === 'right'
-
-
-
 
     // Gestione hover per effetti su link
     useEffect(() => {
@@ -67,8 +62,7 @@ const BoxImage = ({ blok }: { blok?: BoxImageStoryblok }) => {
             contentWrapper.removeEventListener('mouseenter', handleMouseEnter)
             contentWrapper.removeEventListener('mouseleave', handleMouseLeave)
         }
-    }, [hasLink, isDesktop, cn])
-
+    }, [hasLink, isDesktop])
 
     // Calcola l'altezza del content-wrapper e imposta la variabile CSS
     useEffect(() => {
@@ -96,6 +90,7 @@ const BoxImage = ({ blok }: { blok?: BoxImageStoryblok }) => {
         }
     }, [isDesktop])
 
+    if (!blok) return <></>
 
     return (
         <section

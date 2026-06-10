@@ -21,9 +21,19 @@ interface StoryblokStory {
   slug: string;
   full_slug: string;
   is_folder: boolean;
+  /** Cartella annidata: punta alla story padre; radice = null / assente */
   parent_id: number | null;
   published: boolean;
   [key: string]: any;
+}
+
+/** Solo cartelle di primo livello (locale root), non sotto-cartelle tipo `it/section` */
+function isRootLocaleFolder(story: StoryblokStory): boolean {
+  const full = (story.full_slug ?? story.slug ?? "").trim();
+  if (!full || full.includes("/")) return false;
+  const p = story.parent_id;
+  if (p != null && p !== 0) return false;
+  return true;
 }
 
 interface StoryblokStoriesResponse {
@@ -101,10 +111,11 @@ function writeFsCache(fileName: string, data: unknown): void {
  * Retrieves available locales from Storyblok using Management API.
  *
  * How it works:
- * 1. Queries Management API for root-level folders (parent_id = 0)
- * 2. Filters folders based on published status and exclude list
- * 3. Optionally verifies each folder has at least one published story
- * 4. Returns unique locale codes
+ * 1. Queries Management API per tutte le cartelle (`folder_only`), senza `level` (non supportato qui)
+ * 2. Tiene solo cartelle di **primo livello**: `full_slug` senza `/` e senza `parent_id` (o parent 0)
+ * 3. Filtra published / excludePaths
+ * 4. Opzionalmente verifica che ogni cartella abbia almeno una story pubblicata (CDN)
+ * 5. Restituisce i codici locale
  *
  * In development the result is cached to .cache/storyblok/_langs.json.
  * Delete the file (or the whole .cache folder) to force a refresh.
@@ -140,21 +151,36 @@ export async function getLangs(
     const spaceId = getSpaceId();
     const requirePublished = getStoryblokVersion() === "published";
 
-    // Get all root-level folders
-    const response = await managementApi.get(`spaces/${spaceId}/stories`, {
-      folder_only: true,
-      level: 0,
-    });
+    /** Tutte le pagine: `folder_only` senza `level` (non supportato) restituisce anche cartelle annidate */
+    const allFolderStories: StoryblokStory[] = [];
+    const perPage = 100;
+    let page = 1;
+    let hasMore = true;
 
-    const data = response.data as StoryblokStoriesResponse;
-    if (!data?.stories || data.stories.length === 0) {
-      console.warn("No root-level folders found in Storyblok");
+    while (hasMore) {
+      const response = await managementApi.get(`spaces/${spaceId}/stories`, {
+        folder_only: true,
+        per_page: perPage,
+        page,
+      });
+
+      const data = response.data as StoryblokStoriesResponse;
+      const batch = data?.stories ?? [];
+      allFolderStories.push(...batch);
+      hasMore = batch.length === perPage;
+      page += 1;
+    }
+
+    if (allFolderStories.length === 0) {
+      console.warn("No folders found in Storyblok");
       return [];
     }
 
-    // Filter folder candidates
-    const folderCandidates = data.stories
+    // Filter folder candidates: solo root locale (no nested `it/foo`)
+    const folderCandidates = allFolderStories
       .filter((story) => {
+        if (!isRootLocaleFolder(story)) return false;
+
         // Skip unpublished folders in production
         if (requirePublished && !story.published) {
           return false;

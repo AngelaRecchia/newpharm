@@ -17,9 +17,9 @@ const TextReveal = ({ blok }: { blok?: Text_revealStoryblok }) => {
     const textRef = useRef<HTMLHeadingElement>(null)
     const linksRef = useRef<HTMLDivElement>(null)
 
-    if (!blok) return <></>
+    const text = blok?.text
+    const link = blok?.link
 
-    const { text, link } = blok
     useEffect(() => {
         if (!wrapperRef.current || !textRef.current || !text?.trim()) return
         const wrapper = wrapperRef.current
@@ -123,7 +123,7 @@ const TextReveal = ({ blok }: { blok?: Text_revealStoryblok }) => {
         }
     }, [text, link])
 
-
+    if (!blok) return <></>
 
     // Gestisce link come array o singolo elemento
     const linkArray = Array.isArray(link) ? link : link ? [link] : []

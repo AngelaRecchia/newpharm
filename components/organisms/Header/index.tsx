@@ -13,6 +13,7 @@ import { AnimatePresence, motion } from 'motion/react'
 
 import { useTranslations } from 'next-intl'
 import classNames from 'classnames/bind'
+import { useBodyScrollLock } from '@/lib/use-body-scroll-lock'
 import styles from './index.module.scss'
 
 const cn = classNames.bind(styles)
@@ -44,6 +45,10 @@ export default function Header({
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  const headerOverlayOpen =
+    (openDropdownIndex !== null && !isMobile) || (isMobile && mobileMenuOpen)
+  useBodyScrollLock(headerOverlayOpen)
 
   const toggleDropdown = (index: number) => {
 

@@ -1,10 +1,7 @@
 {
   "locales": [
-    "ar",
-    "componenti",
-    "demo",
-    "en",
-    "it"
+    "it",
+    "en"
   ],
   "defaultLocale": "it"
 }

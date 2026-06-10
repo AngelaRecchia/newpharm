@@ -1,0 +1,17 @@
+@use "sass:color" as color;
+@use "../../../styles" as *;
+
+@function white-alpha($a) {
+  @return color.change($c-white, $alpha: $a);
+}
+
+.root {
+  min-height: 4.75rem;
+  border-radius: $s-4;
+}
+
+.loading {
+  min-height: 4.75rem;
+  border: 1px dashed white-alpha(0.2);
+  border-radius: $s-4;
+}

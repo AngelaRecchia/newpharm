@@ -42,6 +42,12 @@
   }
 }
 
+@mixin untilMd {
+  @media (max-width: #{$breakpoint-m - 1px}) {
+    @content;
+  }
+}
+
 @mixin untilLg {
   @media (max-width: #{$breakpoint-l - 1px}) {
     @content;

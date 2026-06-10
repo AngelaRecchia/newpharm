@@ -15,6 +15,10 @@ export interface ButtonProps {
     icon?: keyof typeof icons
     label?: string
     onClick?: () => void
+    /** Solo per `<button>` (non link) */
+    type?: React.ButtonHTMLAttributes<HTMLButtonElement>['type']
+    disabled?: boolean
+    onFocus?: () => void
     className?: string
     href?: string
     target?: string
@@ -28,7 +32,7 @@ export interface ButtonProps {
     /** Blok Storyblok completo (opzionale, per storyblokEditable) */
     blok?: LinkStoryblok
 }
-const Button = forwardRef<HTMLButtonElement | HTMLDivElement, ButtonProps>(({ icon = 'right-small', label: labelProp, onClick, className, href, target, link, variant = 'primary', size = 'medium', weight = 'bold', animated = false, inert = false, 'aria-label': ariaLabel, blok, ...props }, ref) => {
+const Button = forwardRef<HTMLButtonElement | HTMLDivElement, ButtonProps>(({ icon = 'right-small', label: labelProp, onClick, onFocus, className, href, target, link, variant = 'primary', size = 'medium', weight = 'bold', animated = false, inert = false, 'aria-label': ariaLabel, blok, type, disabled, ...props }, ref) => {
     // Se blok è presente, applica storyblokEditable
     const editableProps = blok ? storyblokEditable(blok as any) : {}
 
@@ -97,10 +101,20 @@ const Button = forwardRef<HTMLButtonElement | HTMLDivElement, ButtonProps>(({ ic
         </>
     )
 
+    /** Attributi DOM comuni a div / link / button (ordine: editable Storyblok poi resto) */
+    const sharedProps = {
+        className: buttonClasses,
+        'aria-label': ariaLabel,
+        'data-button': true,
+        onFocus,
+        ...editableProps,
+        ...props,
+    }
+
     // Se inert è true, renderizza come div (solo visuale, non cliccabile)
     if (inert) {
         return (
-            <div ref={ref as React.Ref<HTMLDivElement>} className={buttonClasses} aria-label={ariaLabel} {...editableProps} {...props}>
+            <div ref={ref as React.Ref<HTMLDivElement>} {...sharedProps}>
                 {children}
             </div>
         )
@@ -109,17 +123,31 @@ const Button = forwardRef<HTMLButtonElement | HTMLDivElement, ButtonProps>(({ ic
     // Renderizza come SmartLink se c'è un link o href, altrimenti come button
     if (extractedLink || href) {
         return (
-            <SmartLink ref={ref as React.Ref<HTMLAnchorElement | HTMLDivElement>} link={extractedLink} href={href} target={linkTarget} className={buttonClasses} aria-label={ariaLabel} {...editableProps} {...props}>
+            <SmartLink
+                ref={ref as React.Ref<HTMLAnchorElement | HTMLDivElement>}
+                link={extractedLink}
+                href={href}
+                target={linkTarget}
+                {...sharedProps}
+            >
                 {children}
             </SmartLink>
         )
     }
 
     return (
-        <button ref={ref as React.Ref<HTMLButtonElement>} onClick={onClick} className={buttonClasses} aria-label={ariaLabel} {...editableProps} {...props}>
+        <button
+            ref={ref as React.Ref<HTMLButtonElement>}
+            type={type}
+            disabled={disabled}
+            onClick={onClick}
+            {...sharedProps}
+        >
             {children}
         </button>
     )
 })
+
+Button.displayName = 'Button'
 
 export default Button

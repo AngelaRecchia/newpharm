@@ -11,7 +11,7 @@ import styles from './index.module.scss';
 
 import { render } from 'storyblok-rich-text-react-renderer';
 
-import Input from "../../atoms/Input";
+import TextField from "@/components/atoms/TextField";
 import SocialItem from "../../atoms/SocialItem";
 
 
@@ -19,7 +19,7 @@ import classNames from 'classnames/bind';
 import SmartLink from "@/components/atoms/SmartLink";
 import { useGlobalSettings } from "@/lib/context/global-settings-context";
 import { useViewport } from "@/lib/context/viewport-context";
-import Dropdown from "@/components/atoms/Dropdown";
+import Select from "@/components/molecules/Select";
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -107,7 +107,7 @@ export default function Footer({
                 <p className={cn('newsletterText')}>{newsletter_text}</p>
 
                 <div className={cn('newsletterInput')}>
-                    <Input placeholder="Email" type="email" skin="light" />
+                    <TextField variant="inline" placeholder="Email" type="email" skin="light" />
                 </div>
 
             </div>
@@ -155,7 +155,8 @@ export default function Footer({
                         </ul>
 
                         <div className={cn('langs')}>
-                            <Dropdown
+                            <Select
+                                variant="menu"
                                 options={locales.map((locale) => ({
                                     value: locale,
                                     label: t(locale),

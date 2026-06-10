@@ -1,0 +1,204 @@
+@use "sass:color" as color;
+@use "../../../styles" as *;
+
+@function white-alpha($a) {
+  @return color.change($c-white, $alpha: $a);
+}
+
+// --- variant: native (form, on dark) ---
+
+.nativeRoot {
+  width: 100%;
+}
+
+.nativeField {
+  display: flex;
+  flex-direction: column;
+  gap: $s-8;
+  width: 100%;
+  margin: 0;
+}
+
+.nativeLabel {
+  @include t-help;
+  color: white-alpha(0.6);
+}
+
+.selectWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.nativeSelect {
+  width: 100%;
+  padding: $s-12 $s-32 $s-12 0;
+  border: none;
+  border-bottom: 1px solid white-alpha(0.6);
+  background: transparent;
+  color: $c-white;
+  @include t-note;
+  appearance: none;
+  cursor: pointer;
+  border-radius: 0;
+  @include transition(border-color, $td-200);
+
+  @include md {
+    padding: $s-12 $s-32 $s-12 $s-16;
+  }
+
+  &:hover,
+  &:focus,
+  &:focus-visible {
+    outline: none;
+    border-bottom-color: $c-white;
+  }
+
+  /** Placeholder chiuso: stesso t-note, tono label */
+  &.nativeSelectPlaceholder {
+    color: white-alpha(0.6);
+  }
+
+  option {
+    background: $c-black;
+    color: $c-white;
+    @include t-note;
+  }
+
+  option[value=''] {
+    color: white-alpha(0.6);
+  }
+}
+
+.nativeSelectError {
+  border-bottom-color: $c-alert;
+
+  &:hover,
+  &:focus,
+  &:focus-visible {
+    border-bottom-color: $c-alert;
+  }
+}
+
+.selectChevron {
+  position: absolute;
+  right: 0;
+  bottom: $s-12;
+  pointer-events: none;
+  color: white-alpha(0.6);
+  display: flex;
+  @include transition(color, $td-200);
+}
+
+.selectWrap:hover .selectChevron,
+.selectWrap:focus-within .selectChevron {
+  color: $c-white;
+}
+
+.errorRow {
+  display: flex;
+  align-items: center;
+  gap: $s-8;
+  margin-top: $s-4;
+}
+
+.errorIcon {
+  flex-shrink: 0;
+  display: flex;
+  color: $c-alert;
+}
+
+.errorText {
+  @include t-note;
+  color: $c-alert;
+  margin: 0;
+}
+
+// --- variant: menu (footer language, custom listbox) ---
+
+.menuRoot {
+  position: relative;
+}
+
+.menuTrigger {
+  @include t-note;
+  padding: 6px 12px;
+  background: transparent;
+  border-radius: 200px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  &:hover,
+  &.menuTriggerOpen {
+    background-color: $c-white;
+    color: $c-black;
+    text-decoration: underline;
+  }
+}
+
+.menuChevron {
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+
+  &.menuChevronRotated {
+    transform: rotate(180deg);
+  }
+}
+
+.menuPanel {
+  min-width: 10.5rem;
+  padding: $s-16 $s-8;
+  position: absolute;
+  top: calc(100% + $s-24);
+  inset-inline-end: 0;
+  z-index: 100;
+  background: $c-surface;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.menuPanelTop {
+  top: $s-24;
+}
+
+.menuInner {
+  display: flex;
+  flex-direction: column;
+  gap: $s-8;
+}
+
+.menuOption {
+  position: relative;
+  display: block;
+  width: 100%;
+  cursor: pointer;
+  @include t-note;
+  color: $c-black;
+  text-align: start;
+  padding: $s-8;
+  transition: all 0.15s ease;
+
+  &.menuOptionSelected {
+    text-decoration: underline;
+    cursor: default;
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset-inline-end: 0;
+      top: 0;
+      height: 100%;
+      width: 2px;
+      background-color: $c-primary;
+    }
+  }
+}
+
+.menuOption:not(.menuOptionSelected):hover {
+  background-color: $c-primary;
+  color: $c-white;
+}

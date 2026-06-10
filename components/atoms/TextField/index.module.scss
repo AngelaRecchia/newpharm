@@ -1,0 +1,127 @@
+@use "sass:color" as color;
+@use "../../../styles" as *;
+
+@function white-alpha($a) {
+  @return color.change($c-white, $alpha: $a);
+}
+
+// --- variant: form (label + underline on dark) ---
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: $s-8;
+}
+
+.label {
+  @include t-help;
+  color: white-alpha(0.6);
+}
+
+.input {
+  width: 100%;
+  padding: $s-12 0;
+  border: none;
+  border-bottom: 1px solid white-alpha(0.6);
+  background: transparent;
+  color: $c-white;
+  @include t-note;
+  border-radius: 0;
+  @include transition(border-color, $td-200);
+
+  @include md {
+    padding: $s-12 $s-16;
+  }
+
+  &::placeholder {
+    color: white-alpha(0.6);
+  }
+
+  &:hover,
+  &:focus,
+  &:focus-visible {
+    outline: none;
+    border-bottom-color: $c-white;
+  }
+}
+
+// --- variant: inline (newsletter / footer: row + icon button) ---
+
+.inlineWrapper {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: $s-24;
+  width: 100%;
+  border-bottom: 1px solid;
+  transition: border-color $td-300 $ease-natural;
+  padding: $s-16 $s-16 $s-16 0;
+
+  @include md {
+    padding: $s-16;
+  }
+
+  &.inlineWrapperDefault {
+    border-color: rgba(0, 0, 0, 0.3);
+    color: $c-black;
+
+    &:has(.inlineInput:focus-visible) {
+      border-color: rgba(0, 0, 0, 1);
+    }
+  }
+
+  &.inlineWrapperLight {
+    border-color: rgba(255, 255, 255, 0.3);
+    color: $c-white;
+
+    &:has(.inlineInput:focus-visible) {
+      border-color: rgba(255, 255, 255, 1);
+    }
+  }
+}
+
+.inlineInput {
+  width: 100%;
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+
+  @include t-note;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  letter-spacing: -0.03em;
+
+  .inlineWrapperDefault & {
+    color: $c-black;
+
+    &::placeholder {
+      color: $c-black;
+      opacity: 0.4;
+    }
+
+    &:focus-visible {
+      opacity: 0.8;
+    }
+  }
+
+  .inlineWrapperLight & {
+    color: $c-white;
+
+    &::placeholder {
+      color: $c-white;
+      opacity: 0.6;
+    }
+
+    &:focus-visible {
+      opacity: 0.9;
+    }
+  }
+
+  &:focus-visible {
+    &::placeholder {
+      opacity: 0;
+    }
+  }
+}

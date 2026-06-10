@@ -1,0 +1,173 @@
+@use "../../../styles" as *;
+
+.wrapper {
+  background-color: $c-surface;
+}
+
+.container {
+  @include container-lg;
+
+  @include md {
+    min-height: 100vh;
+
+    display: grid;
+  }
+}
+
+.layout {
+  @include md {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: $s-32;
+
+  @include md {
+    margin-inline: auto;
+    max-width: 80%;
+    padding-block: $s-96;
+    justify-content: center;
+  }
+}
+
+.title {
+  @include t-h3;
+  margin: 0;
+}
+
+// Anteprima grande: desktop colonna sx sticky
+.preview {
+  &.sticky {
+    display: none;
+
+    @include md {
+      position: sticky;
+      top: 0;
+      height: 100%;
+      max-height: 100vh;
+      align-self: start;
+      display: grid;
+      align-content: center;
+    }
+  }
+
+  &.mobile {
+    height: 23rem;
+    @include md {
+      display: none;
+    }
+  }
+}
+
+.previewInner {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-block: $s-16;
+  overflow: hidden;
+  height: 100%;
+}
+
+.previewFrame {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, auto);
+  justify-items: center;
+  width: 100%;
+  max-width: 70%;
+  height: 100%;
+  margin-inline: auto;
+
+  @include untilMd {
+    [data-asset],
+    img {
+      height: 100%;
+      --asset-height: 100%;
+    }
+  }
+
+  @include md {
+    min-width: 250px;
+    max-width: 60%;
+    height: auto;
+  }
+}
+
+.previewMotion {
+  grid-area: 1 / 1;
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  will-change: opacity;
+}
+
+.previewAsset {
+  position: relative;
+  width: 100%;
+  height: auto;
+}
+
+.previewFallback {
+  width: 100%;
+  height: 100%;
+  background: $c-gray-100;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: $s-24;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: $c-white;
+  gap: $s-16;
+  padding: $s-16 $s-24;
+
+  cursor: pointer;
+  transition: background-color $td-300 $ease-out;
+
+  &:hover {
+    background: $c-black;
+    color: $c-white;
+    transition: background-color $td-300 $ease-in-out;
+
+    [data-button] {
+      color: $c-black;
+      background-color: $c-white;
+    }
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $c-primary;
+    outline-offset: 2px;
+  }
+}
+
+.footer {
+  display: flex;
+  justify-content: center;
+  margin-top: $s-8;
+
+  @include lg {
+    justify-content: flex-end;
+  }
+}
