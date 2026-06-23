@@ -13,10 +13,16 @@
 import type * as Generated from "./storyblok.generated";
 import type { StoryblokLink } from "@/lib/api/utils/links";
 import type { AssetStoryblok, LinkStoryblok } from "./storyblok.generated";
+import type { ISbRichtext } from "@storyblok/react";
 
 /** Catalog — campi CMS oltre al generato */
 export interface CatalogStoryblok extends Generated.CatalogStoryblok {
   short_description?: string | null;
+}
+
+/** product — composition come richtext in CMS */
+export interface ProductStoryblok extends Generated.ProductStoryblok {
+  composition?: ISbRichtext | null;
 }
 
 /** Story Catalog risolta da CDN (resolve_relations su catalogs_download.items) */

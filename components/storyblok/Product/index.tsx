@@ -85,7 +85,7 @@ const Product = ({ blok }: { blok: ProductStoryblok }) => {
   // Accordion items — solo quelli con contenuto
   const accordionItems = [
     { label: t('product_application-areas'), content: application_areas_text, type: 'richtext' as const },
-    { label: t('product_composition'), content: composition, type: 'text' as const },
+    { label: t('product_composition'), content: composition, type: 'richtext' as const },
     { label: t('product_target-pests'), content: null, type: 'text' as const },
     { label: t('product_dosage'), content: dosage_and_application, type: 'richtext' as const },
     { label: t('product_units-per-carton'), content: units_per_carton, type: 'richtext' as const },
@@ -98,9 +98,11 @@ const Product = ({ blok }: { blok: ProductStoryblok }) => {
       <div className={cn('sticky-section')}>
         {/* Colonna sinistra — immagine prodotto */}
         <div className={cn('image-col')}>
-          <div className={cn('tag')}>
-            <Tag tag={t(category)} variant="primary" />
-          </div>
+          {category && (
+            <div className={cn('tag')}>
+              <Tag tag={t(category)} variant="primary" />
+            </div>
+          )}
           <div className={cn('product-image')}>
             <Asset asset={mainImage} mode="fit" priority={true} />
           </div>

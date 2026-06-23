@@ -44,7 +44,6 @@ export type {
   Milestone_itemStoryblok,
   Nav_itemStoryblok,
   PageStoryblok,
-  ProductStoryblok,
   Projects_highlightStoryblok,
   Social_itemStoryblok,
   Spec_tableStoryblok,
@@ -64,6 +63,7 @@ export type {
   CatalogsDownloadStoryblok,
   CatalogStoryResolved,
   CatalogStoryblok,
+  ProductStoryblok,
   Video_ytStoryblok,
   SettingsStoryblok,
 } from "./storyblok.overrides";
@@ -99,7 +99,7 @@ export type StoryblokComponent =
   | Generated.Milestone_itemStoryblok
   | Generated.Nav_itemStoryblok
   | Generated.PageStoryblok
-  | Generated.ProductStoryblok
+  | Overrides.ProductStoryblok
   | Generated.Projects_highlightStoryblok
   | Generated.Social_itemStoryblok
   | Generated.Spec_tableStoryblok

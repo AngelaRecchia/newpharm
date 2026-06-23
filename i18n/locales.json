@@ -1,7 +1,12 @@
 {
   "locales": [
-    "it",
-    "en"
+    "ar",
+    "cataloghi",
+    "componenti",
+    "demo",
+    "demo",
+    "en",
+    "it"
   ],
   "defaultLocale": "it"
 }

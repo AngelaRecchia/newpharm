@@ -11,6 +11,8 @@
     "generate:types": "tsx scripts/generate-storyblok-types.ts",
     "generate:component": "tsx scripts/generate-component.ts",
     "clone:home-it": "node scripts/clone-home-to-it.mjs",
+    "import:products": "node scripts/import-products-from-csv.mjs",
+    "import:products:dry": "node scripts/import-products-from-csv.mjs --dry-run",
     "import:datasources": "node scripts/import-datasources-v2.mjs",
     "import:datasources:dry": "node scripts/import-datasources-v2.mjs --dry-run"
   },
@@ -39,6 +41,7 @@
     "@types/react-dom": "^18.3.0",
     "@types/react-google-recaptcha": "^2.1.9",
     "autoprefixer": "^10.4.0",
+    "csv-parse": "^7.0.0",
     "dotenv": "^16.3.1",
     "eslint": "^8.0.0",
     "eslint-config-next": "15.5.19",
