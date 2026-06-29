@@ -137,14 +137,21 @@ export async function getLangs(
   options: {
     excludePaths?: string[];
     checkForContent?: boolean;
+    /** Bypass .cache/storyblok/_langs.json (es. script fetch-locales pre-build) */
+    skipCache?: boolean;
   } = {}
 ): Promise<string[]> {
-  // Check filesystem cache first (dev only)
-  const cached = readFsCache<string[]>("_langs.json");
-  if (cached) return cached;
+  const {
+    excludePaths = ["layout-components"],
+    checkForContent = true,
+    skipCache = false,
+  } = options;
 
-  const { excludePaths = ["layout-components"], checkForContent = true } =
-    options;
+  // Check filesystem cache first (dev only)
+  if (!skipCache) {
+    const cached = readFsCache<string[]>("_langs.json");
+    if (cached) return cached;
+  }
 
   try {
     const managementApi = getManagementApi();

@@ -101,6 +101,7 @@ const HalftoneOverlay: React.FC<HalftoneOverlayProps> = (props) => {
     const textureRef = useRef<WebGLTexture | null>(null)
     const internalProgressRef = useRef(0)
     const progressRef = (mode === 'scroll' ? props.progressRef : internalProgressRef) as React.MutableRefObject<number>
+    const renderRef = mode === 'scroll' ? (props as HalftoneOverlayScrollProps).renderRef : undefined
     const rafRef = useRef<number | null>(null)
     const tweenRef = useRef<gsap.core.Tween | null>(null)
 
@@ -244,14 +245,14 @@ const HalftoneOverlay: React.FC<HalftoneOverlayProps> = (props) => {
         ro.observe(container)
 
         if (mode === 'scroll') {
-            if (props.renderRef) {
-                props.renderRef.current = renderFrame
+            if (renderRef) {
+                renderRef.current = renderFrame
             }
             renderFrame()
 
             return () => {
-                if (props.renderRef) {
-                    props.renderRef.current = null
+                if (renderRef) {
+                    renderRef.current = null
                 }
                 ro.disconnect()
             }

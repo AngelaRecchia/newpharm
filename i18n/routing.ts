@@ -8,7 +8,7 @@ import localeConfig from "./locales.json";
  * Do NOT import any module that uses Node.js APIs (fs, path, process.cwd, etc.)
  *
  * Locales are read from i18n/locales.json, generated at build time by:
- *   node scripts/fetch-locales.mjs
+ *   npx tsx scripts/fetch-locales.ts
  */
 export const routing = defineRouting({
   locales: localeConfig.locales as readonly string[],
