@@ -399,9 +399,111 @@ export interface RelatedProject {
   asset: AssetStoryblok[];
 }
 
+function extractProductUuids(relatedProducts: unknown): string[] {
+  if (!relatedProducts) return [];
+  if (Array.isArray(relatedProducts)) {
+    return relatedProducts.filter(
+      (uuid): uuid is string => typeof uuid === "string" && uuid.length > 0
+    );
+  }
+  if (typeof relatedProducts === "string") {
+    return relatedProducts
+      .split(",")
+      .map((uuid) => uuid.trim())
+      .filter(Boolean);
+  }
+  return [];
+}
+
+function toRelatedProject(story: Story): RelatedProject {
+  return {
+    full_slug: story.full_slug,
+    title: story.content?.title || story.name,
+    asset: story.content?.asset || [],
+  };
+}
+
+/** Indice invertito productUuid → progetti (una sola fetch paginata per locale) */
+const relatedProjectsIndexCache = new Map<
+  string,
+  Promise<Map<string, RelatedProject[]>>
+>();
+
+async function buildRelatedProjectsIndex(
+  locale?: string,
+  options: GetStoryOptions = {}
+): Promise<Map<string, RelatedProject[]>> {
+  const storyblokApi = getStoryblokApi();
+  const version = options.version || getStoryblokVersion();
+  const cv = await getCacheVersion();
+  const index = new Map<string, RelatedProject[]>();
+
+  let page = 1;
+  let hasMore = true;
+
+  while (hasMore) {
+    const params: Record<string, any> = {
+      version,
+      per_page: 100,
+      page,
+      excluding_fields: "body,article",
+      "filter_query[component][in]": "project",
+      ...options,
+    };
+
+    if (locale) {
+      params.starts_with = `${locale}/`;
+    }
+
+    if (cv !== undefined) {
+      params.cv = cv;
+    }
+
+    const { data } = await storyblokApi.get("cdn/stories", params);
+    const stories: Story[] = data?.stories ?? [];
+
+    if (stories.length === 0) {
+      break;
+    }
+
+    for (const story of stories) {
+      const project = toRelatedProject(story);
+      const productUuids = extractProductUuids(story.content?.related_products);
+
+      for (const productUuid of productUuids) {
+        const existing = index.get(productUuid) ?? [];
+        existing.push(project);
+        index.set(productUuid, existing);
+      }
+    }
+
+    hasMore = stories.length === params.per_page;
+    page += 1;
+  }
+
+  return index;
+}
+
+function getRelatedProjectsIndex(
+  locale?: string,
+  options: GetStoryOptions = {}
+): Promise<Map<string, RelatedProject[]>> {
+  const cacheKey = `${options.version || getStoryblokVersion()}:${locale ?? "__all__"}`;
+  const cached = relatedProjectsIndexCache.get(cacheKey);
+
+  if (cached) {
+    return cached;
+  }
+
+  const promise = buildRelatedProjectsIndex(locale, options);
+  relatedProjectsIndexCache.set(cacheKey, promise);
+  return promise;
+}
+
 /**
- * Query inversa: trova tutti i progetti che referenziano un prodotto
- * Cerca nel campo related_products dei content type "project"
+ * Query inversa: trova tutti i progetti che referenziano un prodotto.
+ * Usa un indice invertito (fetch unica paginata per locale) per evitare
+ * N chiamate API durante la build statica.
  *
  * @param productUuid - UUID del prodotto corrente
  * @param locale - Locale per filtrare le stories
@@ -416,39 +518,8 @@ export async function getRelatedProjectsByProduct(
   try {
     if (!productUuid) return [];
 
-    const storyblokApi = getStoryblokApi();
-    const version = options.version || getStoryblokVersion();
-    const cv = await getCacheVersion();
-
-    const params: Record<string, any> = {
-      version,
-      per_page: 100,
-      excluding_fields: "body,article",
-      ...options,
-    };
-
-    if (locale) {
-      params.starts_with = `${locale}/`;
-    }
-
-    params["filter_query[component][in]"] = "project";
-    params["filter_query[related_products][in]"] = productUuid;
-
-    if (cv !== undefined) {
-      params.cv = cv;
-    }
-
-    const { data } = await storyblokApi.get("cdn/stories", params);
-
-    if (!data?.stories || data.stories.length === 0) {
-      return [];
-    }
-
-    return data.stories.map((story: Story) => ({
-      full_slug: story.full_slug,
-      title: story.content?.title || story.name,
-      asset: story.content?.asset || [],
-    }));
+    const index = await getRelatedProjectsIndex(locale, options);
+    return index.get(productUuid) ?? [];
   } catch (error) {
     console.error("[Storyblok] Error fetching related projects by product:", error);
     return [];

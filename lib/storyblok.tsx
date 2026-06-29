@@ -28,6 +28,7 @@ import IconTextHighlight from '@/components/organisms/IconTextHighlight'
 import Tabs from '@/components/organisms/Tabs'
 import Faqs from '@/components/organisms/Faqs'
 import BoxImage from '@/components/organisms/BoxImage'
+import BoxImageCarousel from '@/components/organisms/BoxImageCarousel'
 import ProjectsHighlight from '@/components/organisms/ProjectsHighlight'
 import Milestone from '@/components/organisms/Milestone'
 import Partners from '@/components/organisms/Partners'
@@ -63,6 +64,7 @@ const components = {
   faqs: Faqs,
   gallery: Gallery,
   box_image: BoxImage,
+  box_image_carousel: BoxImageCarousel,
   projects_highlight: ProjectsHighlight,
   milestone: Milestone,
   partners: Partners,

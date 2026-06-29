@@ -23,6 +23,7 @@ export type {
   AssetStoryblok,
   Banner_accordionStoryblok,
   Box_imageStoryblok,
+  Box_image_carouselStoryblok,
   Card_boxStoryblok,
   Card_cta_boxStoryblok,
   Card_divisionStoryblok,
@@ -78,6 +79,7 @@ export type StoryblokComponent =
   | Generated.AssetStoryblok
   | Generated.Banner_accordionStoryblok
   | Generated.Box_imageStoryblok
+  | Generated.Box_image_carouselStoryblok
   | Generated.Card_boxStoryblok
   | Generated.Card_cta_boxStoryblok
   | Generated.Card_divisionStoryblok
