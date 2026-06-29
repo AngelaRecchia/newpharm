@@ -19,7 +19,7 @@ interface BoxImageStoryblok {
     title?: string | null
     subtitle?: string | null
     link?: LinkStoryblok[]
-    orientation?: 'left' | 'right' | null
+    image_alignment?: 'left' | 'right' | null
     _uid: string
     component: string
     _editable?: string
@@ -30,7 +30,7 @@ const BoxImage = ({ blok }: { blok?: BoxImageStoryblok }) => {
     const contentWrapperRef = useRef<HTMLDivElement>(null)
     const { isDesktop } = useViewport()
 
-    const { asset, title, subtitle, link, orientation = 'left' } = blok ?? {}
+    const { asset, title, subtitle, link, image_alignment = 'left' } = blok ?? {}
     const hasTitle = !isEmpty(title)
     const hasSubtitle = !isEmpty(subtitle)
     // Il link è valido se esiste e ha un link interno valido (non serve la label)
@@ -38,7 +38,6 @@ const BoxImage = ({ blok }: { blok?: BoxImageStoryblok }) => {
 
     // Prende solo il primo asset dall'array (supporta sia immagini che video)
     const firstAsset = asset && asset.length > 0 ? asset[0] : null
-    const isRightOriented = orientation === 'right'
 
     // Gestione hover per effetti su link
     useEffect(() => {
@@ -97,7 +96,7 @@ const BoxImage = ({ blok }: { blok?: BoxImageStoryblok }) => {
             ref={wrapperRef}
             className={cn('wrapper', {
                 'has-link': hasLink,
-                'orientation-right': isRightOriented
+                'image-alignment-right': image_alignment === 'right'
             })}
             {...storyblokEditable(blok as any)}
             data-box-image

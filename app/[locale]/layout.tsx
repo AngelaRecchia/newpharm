@@ -18,7 +18,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: 'Newpharm',
-  description: 'Newpharm - Progetto Next.js con Storyblok',
+  description: 'Newpharm - Sito ufficiale di Newpharm',
 }
 
 export function generateStaticParams() {
@@ -49,7 +49,7 @@ export default async function RootLayout({ children, params }: Props) {
   const dir = isRTL ? 'rtl' : 'ltr'
 
   return (
-    <html lang={locale} dir={dir}>
+    <html lang={locale} dir={dir} className={inter.variable}>
       <body className={inter.className}>
 
         <StoryblokProvider>

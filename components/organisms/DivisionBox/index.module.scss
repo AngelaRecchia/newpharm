@@ -6,17 +6,21 @@
 
 .wrapper {
   background-color: $c-white;
+  overflow: clip;
 }
 
 .container {
   @include container-lg;
 
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: $s-64;
   padding-block: $s-80;
 }
 
 .head {
   margin-inline-start: auto;
-  margin-bottom: $s-64;
   display: flex;
   flex-direction: column;
   gap: $s-16;
@@ -30,19 +34,61 @@
   .title {
     @include t-h2;
   }
+}
 
-  .link {
-    margin-top: $s-32;
+.carousel-wrapper {
+  position: relative;
+  width: 100%;
+  align-self: stretch;
+}
+
+.swiper {
+  width: 100%;
+  overflow: visible;
+}
+
+.swiper-slide {
+  height: auto;
+  width: calc(100% - #{$s-40});
+
+  @include md {
+    width: calc(50% - #{$s-8});
   }
 }
 
-.cards {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: $s-24;
+.buttons-wrapper {
+  position: absolute;
+  top: calc(50% - #{$s-16});
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
+  display: flex;
+  justify-content: space-between;
+  z-index: 10;
+  pointer-events: none;
 
-  @include md {
-    grid-template-columns: repeat(2, 1fr);
-    gap: $s-16;
+  button {
+    pointer-events: auto;
+    background-color: $c-surface;
+    box-shadow: 0 0 16px rgba(0, 0, 0, 0.2);
+
+    &[disabled] {
+      opacity: 0.5;
+      cursor: default;
+      pointer-events: none;
+    }
+
+    svg {
+      width: $s-24;
+      height: $s-24;
+    }
   }
+}
+
+.button-prev {
+  margin-inline-start: calc(#{$s-16} * -1);
+}
+
+.button-next {
+  margin-inline-end: calc(#{$s-24} * -1);
 }

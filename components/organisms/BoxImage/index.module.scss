@@ -83,7 +83,6 @@
 // Content
 // ==============================================
 .content {
-  background-color: $c-white;
   min-height: calc(var(--height) / 2);
   padding: $s-40 $s-24 $s-128;
   display: flex;
@@ -143,25 +142,10 @@
 // ==============================================
 // Orientation right
 // ==============================================
-.wrapper.orientation-right {
+.wrapper.image-alignment-right {
   .container {
     @include lg {
       flex-direction: row-reverse;
-    }
-  }
-
-  &.has-link {
-    .content-wrapper {
-      @include lg {
-        @include transition(padding-inline-end, $td-300);
-      }
-    }
-
-    &.is-hovered .content-wrapper {
-      @include lg {
-        padding-inline-end: $s-24;
-        padding-inline-start: 0;
-      }
     }
   }
 }

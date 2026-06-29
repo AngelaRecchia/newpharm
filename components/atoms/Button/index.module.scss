@@ -6,6 +6,7 @@
 
 .button {
   flex-shrink: 0;
+  font-family: inherit;
   @include flex-center;
   border-radius: 9999px;
   cursor: pointer;

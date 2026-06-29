@@ -6,7 +6,7 @@
  * 
  * Per rigenerare: npm run generate:types
  * 
- * Generato il: 2026-03-20T21:36:55.532Z
+ * Generato il: 2026-06-29T09:57:52.973Z
  */
 
 
@@ -52,6 +52,7 @@ export interface Box_imageStoryblok {
   subtitle?: string | null // Optional
   asset?: any[] | null // Optional
   link?: any[] | null // Optional
+  image_alignment?: any | null // Optional
   _uid: string
   component: string
   _editable?: string
@@ -136,6 +137,16 @@ export interface CatalogStoryblok {
   qr_code?: any | null // Optional
   file?: { id: number; alt: string; name: string; focus: string; title: string; filename: string; copyright: string; fieldtype: string; } | null // Optional
   image?: any[] | null // Optional
+  short_description?: string | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface Catalogs_downloadStoryblok {
+  title?: string | null // Optional
+  items?: string | null // Optional
   _uid: string
   component: string
   _editable?: string
@@ -300,8 +311,7 @@ export interface PartnersStoryblok {
 
 export interface ProductStoryblok {
   title: string
-  /** Tab Storyblok (nome tecnico con UUID) */
-  "tab-cd7f2c9c-47a9-4630-a228-1739262250da"?: any | null // Optional
+  tab-cd7f2c9c-47a9-4630-a228-1739262250da?: any | null // Optional
   secondary_title?: string | null // Optional
   images?: any[] | null // Optional
   short_description?: string | null // Optional
@@ -382,6 +392,7 @@ export interface Sticky_imageStoryblok {
   title?: string | null // Optional
   image?: any[] | null // Optional
   content?: string | null // Optional
+  animated?: boolean | null // Optional
   _uid: string
   component: string
   _editable?: string
@@ -432,7 +443,7 @@ export interface Text_revealStoryblok {
 /**
  * Union type di tutti i componenti Storyblok
  */
-export type StoryblokComponent = Accordion_itemStoryblok | Anchor_linkStoryblok | AssetStoryblok | Banner_accordionStoryblok | Box_imageStoryblok | Card_boxStoryblok | Card_cta_boxStoryblok | Card_divisionStoryblok | Card_highlightStoryblok | Card_icon_textStoryblok | Card_slideshowStoryblok | CarouselStoryblok | CatalogStoryblok | Cta_boxStoryblok | Division_boxStoryblok | FaqsStoryblok | FooterStoryblok | Full_bannerStoryblok | GalleryStoryblok | HeaderStoryblok | HeroStoryblok | Icon_text_highlightStoryblok | LinkStoryblok | Logo_itemStoryblok | MilestoneStoryblok | Milestone_itemStoryblok | Nav_itemStoryblok | PageStoryblok | PartnersStoryblok | ProductStoryblok | Projects_highlightStoryblok | SlideshowStoryblok | Social_itemStoryblok | Spec_tableStoryblok | Split_bannerStoryblok | Sticky_imageStoryblok | StoryStoryblok | TabsStoryblok | TeaserStoryblok | Text_revealStoryblok
+export type StoryblokComponent = Accordion_itemStoryblok | Anchor_linkStoryblok | AssetStoryblok | Banner_accordionStoryblok | Box_imageStoryblok | Card_boxStoryblok | Card_cta_boxStoryblok | Card_divisionStoryblok | Card_highlightStoryblok | Card_icon_textStoryblok | Card_slideshowStoryblok | CarouselStoryblok | CatalogStoryblok | Catalogs_downloadStoryblok | Cta_boxStoryblok | Division_boxStoryblok | FaqsStoryblok | FooterStoryblok | Full_bannerStoryblok | GalleryStoryblok | HeaderStoryblok | HeroStoryblok | Icon_text_highlightStoryblok | LinkStoryblok | Logo_itemStoryblok | MilestoneStoryblok | Milestone_itemStoryblok | Nav_itemStoryblok | PageStoryblok | PartnersStoryblok | ProductStoryblok | Projects_highlightStoryblok | SlideshowStoryblok | Social_itemStoryblok | Spec_tableStoryblok | Split_bannerStoryblok | Sticky_imageStoryblok | StoryStoryblok | TabsStoryblok | TeaserStoryblok | Text_revealStoryblok
 
 /**
  * Helper type per il prop 'blok' nei componenti Storyblok

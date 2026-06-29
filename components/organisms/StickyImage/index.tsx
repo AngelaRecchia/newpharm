@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import classNames from 'classnames/bind'
@@ -10,40 +10,100 @@ import RichText from '../RichText'
 import Asset, { getAssetSrc } from '@/components/atoms/Asset'
 import HalftoneOverlay from './HalftoneOverlay'
 import { useViewport } from '@/lib/context/viewport-context'
+import { SmoothScrollContext } from '@/lib/context/smooth-scroll-context'
 
 gsap.registerPlugin(ScrollTrigger)
 
 const cn = classNames.bind(styles)
 
 const StickyImage = ({ blok }: { blok: Sticky_imageStoryblok }) => {
-  const { image, title, content } = blok
+  const { image, title, content, animated } = blok
+  const isAnimated = animated !== false
   const { isDesktop } = useViewport()
+  const { lenis } = useContext(SmoothScrollContext)
+  const sectionRef = useRef<HTMLElement>(null)
   const leftRef = useRef<HTMLDivElement>(null)
   const rightRef = useRef<HTMLDivElement>(null)
   const [imageSrc, setImageSrc] = useState<string | null>(null)
   const [webglSupported, setWebglSupported] = useState(true)
   const halftoneProgressRef = useRef(0)
+  const halftoneRenderRef = useRef<(() => void) | null>(null)
 
-  // Check supporto WebGL
+  const refreshScroll = useCallback(() => {
+    requestAnimationFrame(() => {
+      lenis?.resize()
+      ScrollTrigger.refresh()
+    })
+  }, [lenis])
+
+  // Check supporto WebGL (solo se animazione attiva)
   useEffect(() => {
+    if (!isAnimated) {
+      setWebglSupported(false)
+      return
+    }
+
     const canvas = document.createElement('canvas')
     const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl')
     setWebglSupported(!!gl)
-  }, [])
+  }, [isAnimated])
 
-  // Estrai la src dell'immagine (solo su desktop)
+  // Estrai la src dell'immagine per l'overlay canvas (solo desktop + animato)
   useEffect(() => {
-    if (!image || typeof window === 'undefined' || !isDesktop) {
+    if (!isAnimated || !image || typeof window === 'undefined' || !isDesktop) {
       setImageSrc(null)
       return
     }
 
     setImageSrc(getAssetSrc(image, true))
-  }, [image, isDesktop])
+  }, [image, isDesktop, isAnimated])
+
+  // Sincronizza Lenis/ScrollTrigger dopo il settle iniziale del layout (immagini, font)
+  useEffect(() => {
+    const section = sectionRef.current
+    if (!section) return
+
+    let debounceId: ReturnType<typeof setTimeout> | null = null
+    const scheduleRefresh = () => {
+      if (debounceId) clearTimeout(debounceId)
+      debounceId = setTimeout(refreshScroll, 150)
+    }
+
+    const images = section.querySelectorAll('img')
+    images.forEach((img) => {
+      if (!img.complete) {
+        img.addEventListener('load', scheduleRefresh, { once: true })
+      }
+    })
+
+    document.fonts.ready.then(scheduleRefresh)
+    scheduleRefresh()
+
+    return () => {
+      if (debounceId) clearTimeout(debounceId)
+      images.forEach((img) => img.removeEventListener('load', scheduleRefresh))
+    }
+  }, [refreshScroll])
+
+  // Su resize finestra aggiorna solo Lenis — ScrollTrigger.refresh() qui duplicava i nested blok
+  useEffect(() => {
+    let debounceId: ReturnType<typeof setTimeout> | null = null
+    const handleResize = () => {
+      if (debounceId) clearTimeout(debounceId)
+      debounceId = setTimeout(() => lenis?.resize(), 100)
+    }
+
+    window.addEventListener('resize', handleResize)
+
+    return () => {
+      if (debounceId) clearTimeout(debounceId)
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [lenis])
 
   // ScrollTrigger – progress halftone legato allo scroll
   useEffect(() => {
-    if (!isDesktop || !leftRef.current || !rightRef.current) return
+    if (!isAnimated || !isDesktop || !leftRef.current || !rightRef.current) return
 
     const mediaQuery = window.matchMedia('(min-width: 1024px)')
     if (!mediaQuery.matches) return
@@ -52,41 +112,26 @@ const StickyImage = ({ blok }: { blok: Sticky_imageStoryblok }) => {
 
     const scrollTrigger = ScrollTrigger.create({
       trigger: right,
+      scroller: document.body,
       start: 'top top',
       end: 'bottom center',
       scrub: true,
       invalidateOnRefresh: true,
-      onUpdate: (self) => { halftoneProgressRef.current = self.progress },
+      onUpdate: (self) => {
+        halftoneProgressRef.current = self.progress
+        halftoneRenderRef.current?.()
+      },
     })
 
-    // Refresh after images/fonts settle the layout
-    const images = right.querySelectorAll('img')
-    let loaded = 0
-    const total = images.length
-    const onImageReady = () => {
-      loaded++
-      if (loaded >= total) ScrollTrigger.refresh()
-    }
-    images.forEach((img) => {
-      if (img.complete) { loaded++ } else { img.addEventListener('load', onImageReady, { once: true }) }
-    })
-    if (loaded >= total && total > 0) ScrollTrigger.refresh()
-
-    // Also refresh after fonts are ready
-    document.fonts.ready.then(() => ScrollTrigger.refresh())
-
-    const handleResize = () => ScrollTrigger.refresh()
-    window.addEventListener('resize', handleResize)
+    refreshScroll()
 
     return () => {
       scrollTrigger.kill()
-      window.removeEventListener('resize', handleResize)
-      images.forEach((img) => img.removeEventListener('load', onImageReady))
     }
-  }, [isDesktop])
+  }, [isDesktop, isAnimated, refreshScroll])
 
   return (
-    <section className={cn('wrapper', { 'no-webgl': !webglSupported })}>
+    <section ref={sectionRef} className={cn('wrapper', { 'no-webgl': !isAnimated || !webglSupported })}>
       <div className={cn('title')}>
         <h2 >{title}</h2>
       </div>
@@ -97,13 +142,14 @@ const StickyImage = ({ blok }: { blok: Sticky_imageStoryblok }) => {
             <Asset asset={image} mode='fit' priority={true} />
           </div>
 
-          {isDesktop && imageSrc && webglSupported && (
+          {isAnimated && isDesktop && imageSrc && webglSupported && (
             <div className={cn('halftone-overlay-wrapper')}>
               <HalftoneOverlay
                 imageSrc={imageSrc}
                 columns={60}
                 mode='scroll'
                 progressRef={halftoneProgressRef}
+                renderRef={halftoneRenderRef}
               />
             </div>
           )}

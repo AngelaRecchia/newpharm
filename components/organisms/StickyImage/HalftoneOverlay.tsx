@@ -23,6 +23,8 @@ interface HalftoneOverlayScrollProps extends HalftoneOverlayBaseProps {
     /** Progress legato direttamente allo scroll (0–1) */
     mode: 'scroll'
     progressRef: React.MutableRefObject<number>
+    /** Callback di render invocato da ScrollTrigger onUpdate */
+    renderRef?: React.MutableRefObject<(() => void) | null>
     overlayVisible?: never
 }
 
@@ -236,9 +238,24 @@ const HalftoneOverlay: React.FC<HalftoneOverlayProps> = (props) => {
             if (nw > 0 && nh > 0) {
                 canvas.width = nw * dpr
                 canvas.height = nh * dpr
+                renderFrame()
             }
         })
         ro.observe(container)
+
+        if (mode === 'scroll') {
+            if (props.renderRef) {
+                props.renderRef.current = renderFrame
+            }
+            renderFrame()
+
+            return () => {
+                if (props.renderRef) {
+                    props.renderRef.current = null
+                }
+                ro.disconnect()
+            }
+        }
 
         let running = true
         let lastProgress = progressRef.current
@@ -248,19 +265,16 @@ const HalftoneOverlay: React.FC<HalftoneOverlayProps> = (props) => {
             if (!running) return
 
             const currentProgress = progressRef.current
-            // Renderizza solo se il progress è cambiato
             if (currentProgress !== lastProgress) {
                 renderFrame()
                 lastProgress = currentProgress
             }
 
-            // Continua il loop solo se necessario
             if (running) {
                 rafId = requestAnimationFrame(loop)
             }
         }
 
-        // Avvia il loop
         rafId = requestAnimationFrame(loop)
         rafRef.current = rafId
 

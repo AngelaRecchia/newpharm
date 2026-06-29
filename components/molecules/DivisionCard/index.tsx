@@ -5,6 +5,7 @@ import classNames from 'classnames/bind';
 import styles from './index.module.scss';
 import Asset from '@/components/atoms/Asset';
 import { Card_divisionStoryblok } from '@/types/storyblok';
+import { getLinkUrl } from '@/lib/api/utils/links';
 
 const cn = classNames.bind(styles);
 
@@ -13,6 +14,7 @@ interface DivisionCardProps {
 }
 
 const DivisionCard = ({ card }: DivisionCardProps) => {
+    const hasValidLink = Boolean(getLinkUrl(card.link));
 
     const cardContent = (
         <>
@@ -46,7 +48,7 @@ const DivisionCard = ({ card }: DivisionCardProps) => {
         </>
     );
 
-    if (card.link) {
+    if (hasValidLink) {
         return (
             <SmartLink
                 link={card.link}
