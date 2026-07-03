@@ -2,6 +2,9 @@
 // MIXINS
 // ============================================
 
+@use "sass:math";
+@use "sass:map";
+@use "sass:meta";
 @use "variables" as *;
 @use "eases" as *;
 
@@ -171,6 +174,73 @@
   @include xxl {
     letter-spacing: -0.05em;
   }
+}
+
+/// Scale tipografiche fluid (320px → 1440px → cap) per max-width sincronizzata
+$fluid-type-scales: (
+  h6: (
+    min: 1.125rem,
+    xxl: 1.25rem,
+    max: 1.5rem,
+  ),
+  h3: (
+    min: 1.375rem,
+    xxl: 1.75rem,
+    max: 2.25rem,
+  ),
+  h2: (
+    min: 1.625rem,
+    xxl: 2.5rem,
+    max: 3.5rem,
+  ),
+  h1: (
+    min: 2.375rem,
+    xxl: 3.75rem,
+    max: 5rem,
+  ),
+  huge: (
+    min: 4.5rem,
+    xxl: 7.75rem,
+    max: 10.5rem,
+  ),
+);
+
+@function -to-rem($value) {
+  @if meta.type-of($value) == "number" and math.unit($value) == "px" {
+    @return math.div($value, 16px) * 1rem;
+  }
+
+  @return $value;
+}
+
+/// Max-width fluida allineata a una scala tipografica.
+/// Passa la larghezza desiderata a 1440px; il mixin deriva il ratio dal font a 1440.
+///
+/// @example
+///   @include t-h1;
+///   @include fluid-type-max-width(900px, h1);
+///   @include fluid-type-max-width(56.25rem, h1);
+@mixin fluid-type-max-width($width-at-xxl, $type: h1) {
+  $scale: map.get($fluid-type-scales, $type);
+
+  @if $scale == null {
+    @error "fluid-type-max-width: tipo '#{$type}' non supportato. Usa: #{map.keys($fluid-type-scales)}";
+  }
+
+  $min: map.get($scale, min);
+  $xxl: map.get($scale, xxl);
+  $max: map.get($scale, max);
+  $width: -to-rem($width-at-xxl);
+  $ratio: math.div($width, $xxl);
+
+  max-width: clamp(
+    calc(#{$min} * #{$ratio}),
+    calc(
+      (#{$min} + (#{$xxl} - #{$min}) * ((100vw - 320px) / (1440px - 320px))) *
+        #{$ratio}
+    ),
+    calc(#{$max} * #{$ratio})
+  );
 }
 
 @mixin t-huge {
