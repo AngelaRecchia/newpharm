@@ -31,6 +31,8 @@ const Product = ({ blok }: { blok: ProductStoryblok }) => {
     composition,
     dosage_and_application,
     units_per_carton,
+    usage,
+    dimensions,
     registration,
     safety_data_sheet,
     video,
@@ -88,6 +90,8 @@ const Product = ({ blok }: { blok: ProductStoryblok }) => {
     { label: t('product_composition'), content: composition, type: 'richtext' as const },
     { label: t('product_target-pests'), content: null, type: 'text' as const },
     { label: t('product_dosage'), content: dosage_and_application, type: 'richtext' as const },
+    { label: t('product_usage'), content: usage, type: 'richtext' as const },
+    { label: t('product_dimensions'), content: dimensions, type: 'richtext' as const },
     { label: t('product_units-per-carton'), content: units_per_carton, type: 'richtext' as const },
     { label: t('product_download'), content: safety_data_sheet, type: 'file' as const },
   ].filter(item => hasContent(item.content, item.type))
