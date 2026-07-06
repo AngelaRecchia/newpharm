@@ -6,7 +6,7 @@ import { storyblokEditable } from '@storyblok/react';
 import { useRouter, usePathname } from '@/i18n/navigation'
 import { useParams } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl'
-import { useRef, useEffect, useState } from 'react'
+import { useRef, useEffect, useState, useContext } from 'react'
 import styles from './index.module.scss';
 
 import { render } from 'storyblok-rich-text-react-renderer';
@@ -19,6 +19,7 @@ import classNames from 'classnames/bind';
 import SmartLink from "@/components/atoms/SmartLink";
 import { useGlobalSettings } from "@/lib/context/global-settings-context";
 import { useViewport } from "@/lib/context/viewport-context";
+import { SmoothScrollContext, refreshPageScroll } from "@/lib/context/smooth-scroll-context";
 import Select from "@/components/molecules/Select";
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -43,6 +44,7 @@ export default function Footer({
     const router = useRouter()
     const footerRef = useRef<HTMLElement>(null)
     const { height: viewportHeight } = useViewport()
+    const { lenis } = useContext(SmoothScrollContext)
 
     const [pageReady, setPageReady] = useState(false)
 
@@ -86,12 +88,23 @@ export default function Footer({
             invalidateOnRefresh: true,
         });
 
+        let resizeDebounceId: ReturnType<typeof setTimeout> | null = null
+        const mainResizeObserver = new ResizeObserver(() => {
+            if (resizeDebounceId) clearTimeout(resizeDebounceId)
+            resizeDebounceId = setTimeout(() => {
+                refreshPageScroll(lenis)
+            }, 100)
+        })
+        mainResizeObserver.observe(mainElement)
+
         return () => {
+            if (resizeDebounceId) clearTimeout(resizeDebounceId)
+            mainResizeObserver.disconnect()
             scrollTrigger.kill();
             uncover.kill();
             gsap.set(footer, { clearProps: 'yPercent' });
         };
-    }, [pageReady, viewportHeight, pathname]);
+    }, [pageReady, viewportHeight, pathname, lenis]);
 
     if (!blok) return null;
 

@@ -166,8 +166,4 @@
   display: flex;
   justify-content: center;
   margin-top: $s-8;
-
-  @include lg {
-    justify-content: flex-end;
-  }
 }

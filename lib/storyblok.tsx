@@ -29,6 +29,7 @@ import Tabs from '@/components/organisms/Tabs'
 import Faqs from '@/components/organisms/Faqs'
 import BoxImage from '@/components/organisms/BoxImage'
 import BoxImageCarousel from '@/components/organisms/BoxImageCarousel'
+import FullBanner from '@/components/organisms/FullBanner'
 import ProjectsHighlight from '@/components/organisms/ProjectsHighlight'
 import Milestone from '@/components/organisms/Milestone'
 import Partners from '@/components/organisms/Partners'
@@ -38,7 +39,6 @@ import CatalogsDownload from '@/components/organisms/CatalogsDownload'
 const Header = dynamic(() => import('@/components/organisms/Header'))
 const Footer = dynamic(() => import('@/components/organisms/Footer'))
 const HeroComponent = dynamic(() => import('@/components/organisms/Hero'))
-const FullBanner = dynamic(() => import('@/components/organisms/FullBanner'))
 const Carousel = dynamic(() => import('@/components/organisms/Carousel'))
 const Banneraccordion = dynamic(() => import('@/components/organisms/BannerAccordion'))
 const StickyImage = dynamic(() => import('@/components/organisms/StickyImage'))

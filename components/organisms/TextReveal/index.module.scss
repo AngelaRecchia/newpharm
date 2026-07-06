@@ -30,7 +30,11 @@
 
 .word {
   display: inline;
-  transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.char {
+  display: inline;
+  will-change: color;
 }
 
 .links {

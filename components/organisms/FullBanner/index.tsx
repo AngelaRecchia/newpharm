@@ -11,7 +11,6 @@ import { storyblokEditable } from '@storyblok/react';
 import Asset from '@/components/atoms/Asset';
 import RichText from '@/components/organisms/RichText';
 import { hasRichTextContent } from '@/lib/api/utils/richtext';
-import { useIsFirstFullBanner } from '@/lib/context/header-layout-context';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -21,7 +20,6 @@ const FullBanner = ({ blok }: { blok?: Full_bannerStoryblok }) => {
 
     const wrapperRef = useRef<HTMLElement>(null);
     const assetRef = useRef<HTMLDivElement>(null);
-    const isFirstOnPage = useIsFirstFullBanner();
 
     useEffect(() => {
         if (typeof window === 'undefined' || !wrapperRef.current || !assetRef.current) return;
@@ -102,7 +100,7 @@ const FullBanner = ({ blok }: { blok?: Full_bannerStoryblok }) => {
     return (
         <section
             ref={wrapperRef}
-            className={cn('wrapper', variant, { offsetHeader: isFirstOnPage })}
+            className={cn('wrapper', variant)}
             {...storyblokEditable(blok as any)}
         >
             <div className={cn('container')}>
@@ -122,6 +120,7 @@ const FullBanner = ({ blok }: { blok?: Full_bannerStoryblok }) => {
                             size="l"
                             overlay
                             hideControls={false}
+                            priority
                         />
                     </div>
                 )}

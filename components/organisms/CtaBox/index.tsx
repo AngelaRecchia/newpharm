@@ -16,7 +16,12 @@ const CtaBox = ({ blok }: { blok?: Cta_boxStoryblok }) => {
     const { cards } = blok;
 
     return (
-        <section className={cn('wrapper')} {...storyblokEditable(blok as any)} style={{ '--cards-count': cards?.length || 0 } as React.CSSProperties}>
+        <section
+            className={cn('wrapper')}
+            data-cta-box
+            {...storyblokEditable(blok as any)}
+            style={{ '--cards-count': cards?.length || 0 } as React.CSSProperties}
+        >
 
             {cards?.map((card) => (
                 <CardCtaBox key={card._uid} blok={card} />

@@ -6,8 +6,8 @@ import { PageStoryblok } from '@/types/storyblok'
 export default function Page({ blok }: { blok: PageStoryblok }) {
     return (
         <div {...storyblokEditable(blok as any)}>
-            {blok.body?.map((nestedBlok: any) => (
-                <StoryblokComponent blok={nestedBlok} key={nestedBlok._uid} />
+            {blok.body?.map((nestedBlok: any, index: number) => (
+                <StoryblokComponent blok={nestedBlok} key={`${nestedBlok._uid}-${index}`} />
             ))}
         </div>
     )

@@ -5,11 +5,10 @@ import Footer from '@/components/organisms/Footer'
 import { getStory } from '@/lib/api/storyblok/stories'
 import { HeroStoryblok, PageStoryblok } from '@/types/storyblok'
 import Header from '@/components/organisms/Header'
-import { HeaderLayoutProvider } from '@/lib/context/header-layout-context'
 
 /**
  * Determina la variante dell'header in base al primo blocco nel body della page
- * Se il primo blocco è hero primary, hero secondary, o division_box, 
+ * Se il primo blocco è hero primary, hero secondary, division_box o full_banner,
  * l'header è transparent, altrimenti è white
  */
 function getHeaderVariant(firstBlock: any): 'transparent' | 'white' {
@@ -30,7 +29,7 @@ function getHeaderVariant(firstBlock: any): 'transparent' | 'white' {
     return 'transparent'
   }
 
-  // Controlla se è un full_banner (hero full viewport sotto header)
+  // Controlla se è un full_banner
   if (firstBlock.component === 'full_banner') {
     return 'transparent'
   }
@@ -64,7 +63,6 @@ export default async function LocaleLayout({
 
   // Determina la variante dell'header in base al primo blocco del body
   let headerVariant: 'transparent' | 'white' = 'white'
-  let firstBodyComponent: string | null = null
 
   if (story?.content) {
     const pageContent = story.content as PageStoryblok
@@ -73,7 +71,6 @@ export default async function LocaleLayout({
     if (pageContent.body && pageContent.body.length > 0) {
       const firstBlock = pageContent.body[0]
       headerVariant = getHeaderVariant(firstBlock)
-      firstBodyComponent = firstBlock.component ?? null
     }
   }
 
@@ -83,7 +80,6 @@ export default async function LocaleLayout({
     <GlobalSettingsProvider settings={settings}>
 
       <div className='wrapper scroller'>
-      <HeaderLayoutProvider firstBodyComponent={firstBodyComponent}>
         {settings?.header.length > 0 && (
           <Header blok={settings?.header[0]} variant={headerVariant} />
         )}
@@ -91,7 +87,6 @@ export default async function LocaleLayout({
         <main className='main'>
           {children}
         </main>
-      </HeaderLayoutProvider>
 
         {settings?.footer.length > 0 && (
           <Footer blok={settings?.footer[0]} />

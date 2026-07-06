@@ -1,17 +1,17 @@
 'use client'
 
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import classNames from 'classnames/bind'
 import { AnimatePresence, motion } from 'motion/react'
 import { storyblokEditable } from '@storyblok/react'
 import { useTranslations } from 'next-intl'
 import Asset from '@/components/atoms/Asset'
-import Icon from '@/components/atoms/Icon'
 import {
   CatalogStoryblok,
   CatalogStoryResolved,
   CatalogsDownloadStoryblok,
 } from '@/types/storyblok'
+import { useRefreshPageScroll } from '@/lib/context/smooth-scroll-context'
 import CatalogDownloadModal from './CatalogDownloadModal'
 import {
   firstCoverAsset,
@@ -32,6 +32,8 @@ export default function CatalogsDownload({
   blok?: CatalogsDownloadStoryblok
 }) {
   const t = useTranslations('')
+  const refreshPageScroll = useRefreshPageScroll()
+  const skipScrollRefresh = useRef(true)
   const { title, items } = blok ?? {}
   const productDownloadLabel = t('product_download')
 
@@ -84,6 +86,14 @@ export default function CatalogsDownload({
     setVisibleCount((n) => Math.min(n + PAGE_STEP, catalogs.length))
   }, [catalogs.length])
 
+  useEffect(() => {
+    if (skipScrollRefresh.current) {
+      skipScrollRefresh.current = false
+      return
+    }
+    refreshPageScroll()
+  }, [visibleCount, refreshPageScroll])
+
   const openDownloadForCatalog = useCallback(
     (catalog: CatalogStoryblok) => {
       const { fileUrl, modalFileName, shortDescription } = getCatalogRowMeta(
@@ -115,17 +125,16 @@ export default function CatalogsDownload({
     )
   }
 
-  const previewKey = previewCatalog?._uid ?? `idx-${previewIndex}`
-
   const renderPreview = (variant: 'sticky' | 'mobile') => {
     if (!coverAsset) return <></>
+    const previewMotionKey = `${previewCatalog?._uid ?? 'catalog'}-${previewIndex}-${variant}`
     return (
       <div className={cn('preview', variant)} aria-hidden={true}>
         <div className={cn('previewInner')}>
           <div className={cn('previewFrame')}>
             <AnimatePresence mode="sync" initial={false}>
               <motion.div
-                key={previewKey}
+                key={previewMotionKey}
                 className={cn('previewMotion')}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -170,7 +179,7 @@ export default function CatalogsDownload({
 
                 return (
                   <li
-                    key={catalog._uid || `row-${rowIndex}`}
+                    key={`${catalog._uid}-${rowIndex}`}
                     role="button"
                     tabIndex={0}
                     className={cn('row')}
@@ -204,16 +213,13 @@ export default function CatalogsDownload({
 
             {hasMore && (
               <div className={cn('footer')}>
-                <button
-                  type="button"
-                  className={cn('loadMore')}
+                <Button
+                  icon='chevron-down'
+                  label={t('load_more')}
+                  variant='secondary'
+                  size='small'
                   onClick={loadMore}
-                >
-                  <span>Carica altri</span>
-                  <span className={cn('loadMoreIcon')} aria-hidden>
-                    <Icon type="chevron-down" size="s" weight="normal" />
-                  </span>
-                </button>
+                />
               </div>
             )}
           </div>

@@ -26,7 +26,7 @@ const CardCtaBox = ({ blok }: { blok?: Card_cta_boxStoryblok }) => {
 
             <div className={cn('content')}>
                 {!isEmpty(title) && <h2 className={cn('title')}>{title}</h2>}
-                {validLink && <Button link={validLink.link} label={validLink.label} variant={color === 'black' ? 'primary' : 'secondary'} />}
+                {validLink && <Button inert label={validLink.label} variant={color === 'black' ? 'primary' : 'secondary'} />}
             </div>
         </Tag>
     )

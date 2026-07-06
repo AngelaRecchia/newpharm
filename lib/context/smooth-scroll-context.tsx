@@ -1,6 +1,6 @@
 'use client'
 
-import React, { ReactNode, useEffect, useRef, useState } from 'react'
+import React, { ReactNode, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Lenis from 'lenis'
@@ -28,6 +28,19 @@ interface SmoothScrollContextType {
 export const SmoothScrollContext = React.createContext<SmoothScrollContextType>({
   lenis: null,
 })
+
+/** Ricalcola altezza scroll Lenis e posizioni ScrollTrigger dopo cambi layout (es. load more) */
+export function refreshPageScroll(lenis: Lenis | null) {
+  requestAnimationFrame(() => {
+    lenis?.resize()
+    ScrollTrigger.refresh()
+  })
+}
+
+export function useRefreshPageScroll() {
+  const { lenis } = useContext(SmoothScrollContext)
+  return useCallback(() => refreshPageScroll(lenis), [lenis])
+}
 
 export function SmoothScrollProvider({ children }: { children: ReactNode }) {
   const lenisRef = useRef<Lenis | null>(null)

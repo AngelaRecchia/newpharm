@@ -26,32 +26,36 @@ const TextReveal = ({ blok }: { blok?: Text_revealStoryblok }) => {
         const textElement = textRef.current
         const linksContainer = linksRef.current
 
-        // Funzione per dividere il testo in parole e applicare l'effetto reveal
+        // Funzione per dividere il testo in parole/lettere e applicare l'effetto reveal
         const setupTextReveal = (element: HTMLElement | null) => {
             if (!element) return
             element.innerHTML = ''
-            const textContent = text;
-            // Dividi il testo in parole mantenendo gli spazi
+            const textContent = text
             const words = textContent.split(/(\s+)/).filter((item: string) => item.length > 0)
 
-            // Crea uno span per ogni parola (non per gli spazi)
             words.forEach((word) => {
                 if (word.trim()) {
-                    const span = document.createElement('span')
-                    span.textContent = word
-                    span.className = styles.word
-                    element.appendChild(span)
+                    const wordSpan = document.createElement('span')
+                    wordSpan.className = styles.word
+
+                    for (const char of word) {
+                        const charSpan = document.createElement('span')
+                        charSpan.textContent = char
+                        charSpan.className = styles.char
+                        charSpan.setAttribute('aria-hidden', 'true')
+                        wordSpan.appendChild(charSpan)
+                    }
+
+                    element.appendChild(wordSpan)
                 } else {
-                    // Mantieni gli spazi come text node
                     element.appendChild(document.createTextNode(word))
                 }
             })
 
-            const wordSpans = element.querySelectorAll(`.${styles.word}`)
-            if (wordSpans.length === 0) return
+            const charSpans = element.querySelectorAll<HTMLElement>(`.${styles.char}`)
+            if (charSpans.length === 0) return
 
-            // Imposta colore iniziale grigio chiaro per tutte le parole
-            gsap.set(wordSpans, {
+            gsap.set(charSpans, {
                 color: 'rgba(0, 0, 0, 0.2)',
             })
 
@@ -71,32 +75,20 @@ const TextReveal = ({ blok }: { blok?: Text_revealStoryblok }) => {
                 scrub: 1, // Aumenta lo smoothing (1 = 1 secondo di lag)
                 onUpdate: (self) => {
                     const progress = self.progress
-                    const totalWords = wordSpans.length
-                    const revealProgress = progress * totalWords
+                    const totalChars = charSpans.length
+                    const revealProgress = progress * totalChars
 
-                    // Animazione reveal del testo con interpolazione graduale
-                    wordSpans.forEach((word, index) => {
-                        // Calcola quanto è rivelata questa parola (0 = grigio, 1 = nero)
-                        let wordProgress = 0
+                    charSpans.forEach((char, index) => {
+                        let charProgress = 0
 
                         if (index < Math.floor(revealProgress)) {
-                            // Parola completamente rivelata
-                            wordProgress = 1
+                            charProgress = 1
                         } else if (index === Math.floor(revealProgress)) {
-                            // Parola parzialmente rivelata (interpolazione)
-                            wordProgress = revealProgress - index
+                            charProgress = revealProgress - index
                         }
 
-                        // Interpola il colore tra grigio chiaro e nero
-                        const opacity = 0.2 + (wordProgress * 0.8) // Da 0.2 a 1.0
-                        const color = `rgba(0, 0, 0, ${opacity})`
-
-                        gsap.to(word, {
-                            color: color,
-                            duration: 0.3,
-                            ease: 'power2.out',
-                            overwrite: true,
-                        })
+                        const opacity = 0.2 + charProgress * 0.8
+                        gsap.set(char, { color: `rgba(0, 0, 0, ${opacity})` })
                     })
 
                     // Animazione links quando lo scroll è quasi completato (progress > 0.8)

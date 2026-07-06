@@ -24,6 +24,7 @@
 
   @include md {
     height: calc((100vw / var(--cards-count)) - $s-24 * 2);
+    max-height: 57.5rem; // 920px
   }
 
   @include lg {
