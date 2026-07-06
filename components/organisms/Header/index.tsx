@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 
 import { useViewport } from '@/lib/context/viewport-context'
+import { useHeaderLayout } from '@/lib/context/header-layout-context'
 
 import { getLinkUrl } from '@/lib/api/utils/links'
 import { HeaderStoryblok, Nav_itemStoryblok } from '@/types/storyblok'
@@ -41,6 +42,8 @@ export default function Header({
   const [mounted, setMounted] = useState(false)
 
   const { isMobile } = useViewport()
+  const { setHeaderHeight } = useHeaderLayout()
+  const headerRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
     setMounted(true)
@@ -127,6 +130,20 @@ export default function Header({
     }
   }, [isHeaderVisible])
 
+  useEffect(() => {
+    const el = headerRef.current
+    if (!el) return
+
+    const updateHeight = () => setHeaderHeight(el.offsetHeight)
+
+    updateHeight()
+
+    const resizeObserver = new ResizeObserver(updateHeight)
+    resizeObserver.observe(el)
+
+    return () => resizeObserver.disconnect()
+  }, [setHeaderHeight])
+
 
 
 
@@ -160,7 +177,7 @@ export default function Header({
 
   return (
     <>
-      <header className={headerClasses} data-transparent={variant === 'transparent'} {...storyblokEditable(blok as any)}>
+      <header ref={headerRef} className={headerClasses} data-transparent={variant === 'transparent'} {...storyblokEditable(blok as any)}>
 
         <div className={cn('headerContent')}>
           {/* Logo */}

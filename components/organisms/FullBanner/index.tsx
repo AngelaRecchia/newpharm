@@ -9,6 +9,9 @@ import styles from './index.module.scss'
 import classNames from 'classnames/bind'
 import { storyblokEditable } from '@storyblok/react';
 import Asset from '@/components/atoms/Asset';
+import RichText from '@/components/organisms/RichText';
+import { hasRichTextContent } from '@/lib/api/utils/richtext';
+import { useIsFirstFullBanner } from '@/lib/context/header-layout-context';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -18,6 +21,7 @@ const FullBanner = ({ blok }: { blok?: Full_bannerStoryblok }) => {
 
     const wrapperRef = useRef<HTMLElement>(null);
     const assetRef = useRef<HTMLDivElement>(null);
+    const isFirstOnPage = useIsFirstFullBanner();
 
     useEffect(() => {
         if (typeof window === 'undefined' || !wrapperRef.current || !assetRef.current) return;
@@ -98,12 +102,14 @@ const FullBanner = ({ blok }: { blok?: Full_bannerStoryblok }) => {
     return (
         <section
             ref={wrapperRef}
-            className={cn('wrapper', variant)}
+            className={cn('wrapper', variant, { offsetHeader: isFirstOnPage })}
             {...storyblokEditable(blok as any)}
         >
             <div className={cn('container')}>
                 <div className={cn('content')}>
-                    <h2 className={cn('title')}>{title}</h2>
+                    {hasRichTextContent(title) && (
+                        <RichText content={title} raw className={cn('title')} />
+                    )}
                 </div>
 
                 {asset && (

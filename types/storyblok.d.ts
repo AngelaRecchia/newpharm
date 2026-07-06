@@ -34,7 +34,6 @@ export type {
   Division_boxStoryblok,
   FaqsStoryblok,
   FooterStoryblok,
-  Full_bannerStoryblok,
   GalleryStoryblok,
   HeaderStoryblok,
   HeroStoryblok,
@@ -65,6 +64,7 @@ export type {
   CatalogStoryResolved,
   CatalogStoryblok,
   ProductStoryblok,
+  Full_bannerStoryblok,
   Video_ytStoryblok,
   SettingsStoryblok,
 } from "./storyblok.overrides";
@@ -90,7 +90,7 @@ export type StoryblokComponent =
   | Generated.Division_boxStoryblok
   | Generated.FaqsStoryblok
   | Generated.FooterStoryblok
-  | Generated.Full_bannerStoryblok
+  | Overrides.Full_bannerStoryblok
   | Generated.GalleryStoryblok
   | Generated.HeaderStoryblok
   | Generated.HeroStoryblok

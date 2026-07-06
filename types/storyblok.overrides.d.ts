@@ -25,6 +25,11 @@ export interface ProductStoryblok extends Generated.ProductStoryblok {
   composition?: ISbRichtext | null;
 }
 
+/** full_banner — title come richtext in CMS */
+export interface Full_bannerStoryblok extends Generated.Full_bannerStoryblok {
+  title?: ISbRichtext | null;
+}
+
 /** Story Catalog risolta da CDN (resolve_relations su catalogs_download.items) */
 export interface CatalogStoryResolved {
   uuid: string;
