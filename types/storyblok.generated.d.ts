@@ -328,7 +328,7 @@ export interface ProductStoryblok {
   registration?: string | null // Optional
   safety_data_sheet?: { id: number; alt: string; name: string; focus: string; title: string; filename: string; copyright: string; fieldtype: string; } | null // Optional
   title: string
-  tab-cd7f2c9c-47a9-4630-a228-1739262250da?: any | null // Optional
+  "tab-cd7f2c9c-47a9-4630-a228-1739262250da"?: any | null // Optional
   secondary_title?: string | null // Optional
   images?: any[] | null // Optional
   short_description?: string | null // Optional
