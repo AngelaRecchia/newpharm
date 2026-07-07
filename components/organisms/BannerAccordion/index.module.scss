@@ -6,29 +6,53 @@
 
 .wrapper {
   position: relative;
+  z-index: 2;
   min-height: 100dvh;
   overflow: clip;
+  background-color: $c-black;
+  isolation: isolate;
+
+  .container {
+    position: relative;
+    min-height: 100dvh;
+  }
 
   .image {
     position: absolute;
     inset: 0;
+    z-index: 0;
+  }
+
+  .content-position {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    z-index: 1;
+    transform: translateY(-50%);
+    pointer-events: none;
+
+    > .content {
+      pointer-events: auto;
+    }
+
+    height: calc(208px + 80px);
+
+    @include md {
+      height: calc(208px + 128px);
+    }
   }
 
   .content {
     @include container-lg;
     max-width: none;
     position: absolute;
-    left: 0;
-    right: 0;
-    top: calc(50% - 208px / 2); // 208px is the height of the card box
-    z-index: 1;
     display: flex;
     align-items: baseline;
     gap: $s-16;
-    will-change: transform;
     width: fit-content;
+    will-change: transform;
     backface-visibility: hidden;
     -webkit-font-smoothing: antialiased;
-    transform: translateZ(0); // Forza accelerazione hardware
   }
 }
