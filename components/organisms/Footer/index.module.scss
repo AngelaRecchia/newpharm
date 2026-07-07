@@ -7,6 +7,13 @@
 .footer {
   border-top: 1px solid rgba(255, 255, 255, 0.2);
 
+  @include md {
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    z-index: 0;
+  }
+
   .newsletter {
     background-color: $c-black;
     color: $c-white;

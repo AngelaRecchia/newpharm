@@ -12,9 +12,38 @@ gsap.registerPlugin(ScrollTrigger)
 
 const cn = classNames.bind(styles)
 
+const DIM_COLOR = 'rgba(0, 0, 0, 0.2)'
+const FULL_COLOR = 'rgba(0, 0, 0, 1)'
+
+function splitTextIntoChars(element: HTMLElement, text: string) {
+    element.innerHTML = ''
+    const words = text.split(/(\s+)/).filter((item) => item.length > 0)
+
+    words.forEach((word) => {
+        if (word.trim()) {
+            const wordSpan = document.createElement('span')
+            wordSpan.className = styles.word
+
+            for (const char of word) {
+                const charSpan = document.createElement('span')
+                charSpan.textContent = char
+                charSpan.className = styles.char
+                charSpan.setAttribute('aria-hidden', 'true')
+                wordSpan.appendChild(charSpan)
+            }
+
+            element.appendChild(wordSpan)
+        } else {
+            element.appendChild(document.createTextNode(word))
+        }
+    })
+
+    return element.querySelectorAll<HTMLElement>(`.${styles.char}`)
+}
+
 const TextReveal = ({ blok }: { blok?: Text_revealStoryblok }) => {
     const wrapperRef = useRef<HTMLElement>(null)
-    const textRef = useRef<HTMLHeadingElement>(null)
+    const textRef = useRef<HTMLSpanElement>(null)
     const linksRef = useRef<HTMLDivElement>(null)
 
     const text = blok?.text
@@ -22,108 +51,70 @@ const TextReveal = ({ blok }: { blok?: Text_revealStoryblok }) => {
 
     useEffect(() => {
         if (!wrapperRef.current || !textRef.current || !text?.trim()) return
+
         const wrapper = wrapperRef.current
         const textElement = textRef.current
         const linksContainer = linksRef.current
 
-        // Funzione per dividere il testo in parole/lettere e applicare l'effetto reveal
-        const setupTextReveal = (element: HTMLElement | null) => {
-            if (!element) return
-            element.innerHTML = ''
-            const textContent = text
-            const words = textContent.split(/(\s+)/).filter((item: string) => item.length > 0)
+        const charSpans = splitTextIntoChars(textElement, text)
+        if (charSpans.length === 0) return
 
-            words.forEach((word) => {
-                if (word.trim()) {
-                    const wordSpan = document.createElement('span')
-                    wordSpan.className = styles.word
+        gsap.set(charSpans, { color: DIM_COLOR })
 
-                    for (const char of word) {
-                        const charSpan = document.createElement('span')
-                        charSpan.textContent = char
-                        charSpan.className = styles.char
-                        charSpan.setAttribute('aria-hidden', 'true')
-                        wordSpan.appendChild(charSpan)
-                    }
-
-                    element.appendChild(wordSpan)
-                } else {
-                    element.appendChild(document.createTextNode(word))
-                }
-            })
-
-            const charSpans = element.querySelectorAll<HTMLElement>(`.${styles.char}`)
-            if (charSpans.length === 0) return
-
-            gsap.set(charSpans, {
-                color: 'rgba(0, 0, 0, 0.2)',
-            })
-
-            // Setup iniziale per i links
-            if (linksContainer) {
-                gsap.set(linksContainer, {
-                    opacity: 0,
-                    y: 40,
-                })
-            }
-
-            // Crea l'animazione di reveal basata sullo scroll
-            const scrollTrigger = ScrollTrigger.create({
-                trigger: wrapper,
-                start: 'top 80%',
-                end: 'top 20%',
-                scrub: 1, // Aumenta lo smoothing (1 = 1 secondo di lag)
-                onUpdate: (self) => {
-                    const progress = self.progress
-                    const totalChars = charSpans.length
-                    const revealProgress = progress * totalChars
-
-                    charSpans.forEach((char, index) => {
-                        let charProgress = 0
-
-                        if (index < Math.floor(revealProgress)) {
-                            charProgress = 1
-                        } else if (index === Math.floor(revealProgress)) {
-                            charProgress = revealProgress - index
-                        }
-
-                        const opacity = 0.2 + charProgress * 0.8
-                        gsap.set(char, { color: `rgba(0, 0, 0, ${opacity})` })
-                    })
-
-                    // Animazione links quando lo scroll è quasi completato (progress > 0.8)
-                    if (linksContainer) {
-                        const linksProgress = Math.max(0, Math.min(1, (progress - 0.8) / 0.2)) // Da 0.8 a 1.0
-                        gsap.to(linksContainer, {
-                            opacity: linksProgress,
-                            y: 40 * (1 - linksProgress),
-                            duration: 0.1,
-                            overwrite: true,
-                        })
-                    }
-                },
-            })
-
-            return scrollTrigger
+        if (linksContainer) {
+            gsap.set(linksContainer, { opacity: 0, y: 40 })
         }
 
-        // Setup reveal per la colonna testo
-        const textScrollTrigger = setupTextReveal(textElement)
+        const tl = gsap.timeline({
+            scrollTrigger: {
+                trigger: wrapper,
+                start: 'top 85%',
+                end: 'top 15%',
+                scrub: 2.5,
+            },
+        })
+
+        tl.to(
+            charSpans,
+            {
+                color: FULL_COLOR,
+                ease: 'power1.inOut',
+                duration: 0.35,
+                stagger: {
+                    amount: 0.9,
+                    from: 'start',
+                    ease: 'power2.inOut',
+                },
+            },
+            0
+        )
+
+        if (linksContainer) {
+            tl.to(
+                linksContainer,
+                {
+                    opacity: 1,
+                    y: 0,
+                    ease: 'power2.out',
+                    duration: 0.25,
+                },
+                0.78
+            )
+        }
 
         return () => {
-            textScrollTrigger?.kill()
+            tl.scrollTrigger?.kill()
+            tl.kill()
         }
     }, [text, link])
 
     if (!blok) return <></>
 
-    // Gestisce link come array o singolo elemento
     const linkArray = Array.isArray(link) ? link : link ? [link] : []
 
     return (
         <section ref={wrapperRef} className={cn('wrapper')} {...storyblokEditable(blok as any)}>
             <div className={cn('container')}>
-
                 <div className={cn('content')}>
                     {text && (
                         <h2 className={cn('text')}>
@@ -141,8 +132,6 @@ const TextReveal = ({ blok }: { blok?: Text_revealStoryblok }) => {
                     )}
                 </div>
             </div>
-
-
         </section>
     )
 }

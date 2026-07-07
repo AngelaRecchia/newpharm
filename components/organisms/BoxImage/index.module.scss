@@ -10,7 +10,7 @@
   --height: 100dvw;
   --content-height: 0px; // Impostata da JS
 
-  @include lg {
+  @include md {
     --height: 50dvw;
   }
 
@@ -30,7 +30,7 @@
 // Layout
 // ==============================================
 .container {
-  @include lg {
+  @include md {
     display: flex;
     align-items: flex-start;
   }
@@ -51,11 +51,11 @@
     height: var(--height);
   }
 
-  @include untilLg {
+  @include untilMd {
     height: 0;
   }
 
-  @include lg {
+  @include md {
     flex-basis: 50%;
     max-width: 50%;
   }
@@ -68,11 +68,11 @@
   position: relative;
   z-index: 1;
 
-  @include untilLg {
-    padding-top: 100%;
+  @include untilMd {
+    padding-top: var(--height);
   }
 
-  @include lg {
+  @include md {
     min-height: var(--height);
     flex-basis: 50%;
     max-width: 50%;
@@ -89,7 +89,11 @@
   flex-direction: column;
   gap: $s-16;
 
-  @include lg {
+  @include untilMd {
+    background-color: $c-white;
+  }
+
+  @include md {
     gap: $s-32;
     padding: $s-96 $s-40 $s-128;
   }
@@ -111,28 +115,37 @@
 // Hover (solo desktop, con link)
 // ==============================================
 .wrapper.has-link {
+  --button-hover: 0;
+
   .content-wrapper {
-    @include lg {
+    @include md {
       @include transition(transform, $td-300);
     }
   }
 
   .asset-wrapper > * {
-    @include lg {
+    @include md {
       @include transition(transform, $td-300);
+    }
+  }
+
+  @include md {
+    &:hover,
+    &.is-hovered {
+      --button-hover: 1;
     }
   }
 
   &.is-hovered {
     .content-wrapper {
-      @include lg {
+      @include md {
         transform: translateX($s-24);
       }
     }
 
     .asset-wrapper img,
     .asset-wrapper video {
-      @include lg {
+      @include md {
         transform: scale(1.03);
       }
     }
@@ -144,7 +157,7 @@
 // ==============================================
 .wrapper.image-alignment-right {
   .container {
-    @include lg {
+    @include md {
       flex-direction: row-reverse;
     }
   }

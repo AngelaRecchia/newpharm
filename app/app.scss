@@ -36,6 +36,8 @@ body {
     min-height: 100dvh;
     position: relative;
     z-index: 1;
+    // Fix Safari per sticky revealing footer
+    transform: translate3d(0, 0, 0);
   }
 
   header[data-transparent="false"] + .main {
