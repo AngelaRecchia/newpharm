@@ -96,7 +96,14 @@ const Button = forwardRef<HTMLButtonElement | HTMLDivElement, ButtonProps>(({ ic
     const children = (
         <>
             {hasLabel && <span>{extractedLabel}</span>}
-            {onlyIcon && <Icon type={icon} size='m' weight={weight} />}
+            {onlyIcon && (
+                <Icon
+                    type={icon}
+                    size={icon === 'hamburger' ? 'l' : 'm'}
+                    weight={weight}
+                    className={icon === 'hamburger' ? undefined : cn('iconOnly')}
+                />
+            )}
             {hasLabel && hasIcon && <div className={cn('buttonIcon')}><Icon type={icon} size='s' weight={weight} /></div>}
         </>
     )
