@@ -7,7 +7,7 @@
   width: 100%;
   background-color: $c-white;
   color: $c-black;
-
+  position: relative;
   &.dark {
     background-color: $c-black;
     color: $c-white;

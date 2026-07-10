@@ -126,60 +126,6 @@ const BoxImage = ({ blok }: { blok?: BoxImageStoryblok }) => {
 
     }, [hasLink, untilMd])
 
-
-
-    // Calcola l'altezza del content-wrapper e imposta la variabile CSS
-
-    useEffect(() => {
-
-        if (!contentWrapperRef.current || !wrapperRef.current || !untilMd) return
-
-
-
-        const contentWrapper = contentWrapperRef.current
-
-        const wrapper = wrapperRef.current
-
-
-
-        const updateContentHeight = () => {
-
-            const height = contentWrapper.offsetHeight
-
-            wrapper.style.setProperty('--content-height', `${height}px`)
-
-            const nextSibling = wrapper.nextElementSibling as HTMLElement
-
-            if (nextSibling) nextSibling.style.setProperty('--content-height', `${height}px`)
-
-        }
-
-
-
-        // Calcola inizialmente
-
-        updateContentHeight()
-
-
-
-        // Ricalcola su resize del content-wrapper
-
-        const resizeObserver = new ResizeObserver(updateContentHeight)
-
-        resizeObserver.observe(contentWrapper)
-
-
-
-        return () => {
-
-            resizeObserver.disconnect()
-
-        }
-
-    }, [untilMd])
-
-
-
     if (!blok) return <></>
 
 

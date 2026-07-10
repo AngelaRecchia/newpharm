@@ -8,10 +8,10 @@
   overflow: clip;
   background-color: $c-white;
   --height: 100dvw;
-  --content-height: 0px; // Impostata da JS
 
   @include md {
-    --height: 50dvw;
+    --height: 100dvh;
+    overflow: visible;
   }
 
   & + * {
@@ -56,6 +56,7 @@
   }
 
   @include md {
+    top: 0; // fisso: --sticky-top dell'header causava saltino
     flex-basis: 50%;
     max-width: 50%;
   }
@@ -73,6 +74,7 @@
   }
 
   @include md {
+    overflow: hidden;
     min-height: var(--height);
     flex-basis: 50%;
     max-width: 50%;
@@ -88,14 +90,12 @@
   display: flex;
   flex-direction: column;
   gap: $s-16;
-
-  @include untilMd {
-    background-color: $c-white;
-  }
+  background-color: $c-white;
 
   @include md {
     gap: $s-32;
     padding: $s-96 $s-40 $s-128;
+    @include transition(transform, $td-300);
   }
 }
 
@@ -117,12 +117,6 @@
 .wrapper.has-link {
   --button-hover: 0;
 
-  .content-wrapper {
-    @include md {
-      @include transition(transform, $td-300);
-    }
-  }
-
   .asset-wrapper > * {
     @include md {
       @include transition(transform, $td-300);
@@ -137,7 +131,7 @@
   }
 
   &.is-hovered {
-    .content-wrapper {
+    .content {
       @include md {
         transform: translateX($s-24);
       }
