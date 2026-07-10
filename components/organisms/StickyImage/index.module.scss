@@ -45,6 +45,10 @@
       align-items: center;
       gap: $s-40;
 
+      > div {
+        width: 100%;
+      }
+
       [data-asset] {
         max-width: 37.5rem;
         margin: 0 auto;
