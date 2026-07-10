@@ -24,9 +24,7 @@
     align-items: center;
     gap: $s-16;
 
-    @include t-h6;
-
-    @include lg {
+    @include md {
       flex-direction: row;
       gap: $s-32;
       padding: $s-24 $s-40;
@@ -35,8 +33,9 @@
     .newsletterText {
       padding: 0;
       margin: 0;
+      @include t-h6;
 
-      @include lg {
+      @include md {
         flex-grow: 4;
       }
     }

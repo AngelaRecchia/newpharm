@@ -145,7 +145,7 @@ export default function Header({
 
   const handleEscape = (e: KeyboardEvent) => {
     if (e.key === 'Escape') {
-      setOpenDropdownIndex(null)
+      closeMenu()
     }
   }
 
@@ -198,7 +198,10 @@ export default function Header({
                 <Button
                   icon={mobileMenuOpen ? 'close' : 'hamburger'}
                   aria-label={t('menu')}
-                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                  onClick={() => {
+                    if (mobileMenuOpen) closeMenu()
+                    else setMobileMenuOpen(true)
+                  }}
                 />
               )}
             </div>
@@ -211,8 +214,14 @@ export default function Header({
           <AnimatePresence>
             {mobileMenuOpen && (
 
-              <motion.nav className={cn('headerMobileNavWrapper')} initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, y: 0, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.2 }}>
+              <motion.nav
+                className={cn('headerMobileNavWrapper')}
+                data-lenis-prevent
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
                 <ul className={cn('headerMobileNav')} >
                   {navItems.map((item, index) => {
                     const hasItems = item.items && item.items.length > 0

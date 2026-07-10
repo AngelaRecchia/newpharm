@@ -19,6 +19,7 @@ const cn = classNames.bind(styles);
 const FullBanner = ({ blok }: { blok?: Full_bannerStoryblok }) => {
 
     const wrapperRef = useRef<HTMLElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
     const assetRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -26,40 +27,35 @@ const FullBanner = ({ blok }: { blok?: Full_bannerStoryblok }) => {
 
         let scrollTrigger: ScrollTrigger | null = null;
 
-        // Wait for Lenis and ScrollTrigger to be ready
-        // Usa requestAnimationFrame per evitare forced reflows
         const initAnimation = () => {
             if (!wrapperRef.current || !assetRef.current) return;
 
             const { variant } = blok || {};
+            const isPaddingVariant = variant === 'padding';
+            const scrollTriggerEl = isPaddingVariant && containerRef.current
+                ? containerRef.current
+                : wrapperRef.current;
 
-            // Usa requestAnimationFrame per batchare le letture geometriche
             requestAnimationFrame(() => {
-                if (!wrapperRef.current || !assetRef.current) return;
+                if (!wrapperRef.current || !assetRef.current || !scrollTriggerEl) return;
 
-                // Fattore di velocità parallax (.5 = si muove a metà velocità dello scroll)
                 const parallaxSpeed = 0.3;
-                // Leggi le dimensioni una sola volta e cacheale
-                const wrapperHeight = wrapperRef.current.offsetHeight - (variant === 'padding' ? -64 : 0);
-                const parallaxDistance = wrapperHeight * parallaxSpeed;
+                const parallaxHeight = scrollTriggerEl.offsetHeight;
+                const parallaxDistance = parallaxHeight * parallaxSpeed;
 
-                // Crea l'animazione parallax
-                // top bottom: y = -parallaxDistance
-                // top top: y = 0 (progress = 0.5 perché modulo = 100vh)
-                // bottom top: y = +parallaxDistance
-                const target = assetRef.current.querySelector('video') || assetRef.current.querySelector('img');
-                
+                assetRef.current.style.setProperty('--parallax-shift', `${parallaxDistance}px`);
+
+                const target = assetRef.current.firstElementChild as HTMLElement | null;
+
                 if (!target) return;
 
-                // Timeline con keyframes: progress 0 = -n, 0.5 = 0, 1 = +n
-                // Usa invalidateOnRefresh: false per evitare ricalcoli non necessari
                 const tl = gsap.timeline({
                     scrollTrigger: {
-                        trigger: wrapperRef.current,
+                        trigger: scrollTriggerEl,
                         start: 'top bottom',
                         end: 'bottom top',
                         scrub: true,
-                        invalidateOnRefresh: false, // Evita ricalcoli quando ScrollTrigger si aggiorna
+                        invalidateOnRefresh: true,
                     }
                 });
 
@@ -87,6 +83,7 @@ const FullBanner = ({ blok }: { blok?: Full_bannerStoryblok }) => {
 
         // Cleanup
         return () => {
+            assetRef.current?.style.removeProperty('--parallax-shift');
             if (scrollTrigger) {
                 scrollTrigger.kill();
             }
@@ -103,7 +100,7 @@ const FullBanner = ({ blok }: { blok?: Full_bannerStoryblok }) => {
             className={cn('wrapper', variant)}
             {...storyblokEditable(blok as any)}
         >
-            <div className={cn('container')}>
+            <div ref={containerRef} className={cn('container')}>
                 <div className={cn('content')}>
                     {hasRichTextContent(title) && (
                         <RichText content={title} raw className={cn('title')} />

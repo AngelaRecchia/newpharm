@@ -68,9 +68,18 @@
     .asset-wrapper {
       position: absolute;
       inset: 0;
-
+      overflow: hidden;
       will-change: transform;
       z-index: 0;
+
+      > :global(*) {
+        inset: auto;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: calc(100% + var(--parallax-shift, 0px) * 2);
+        top: calc(var(--parallax-shift, 0px) * -1);
+      }
     }
 
     .content {
@@ -97,7 +106,17 @@
     .asset-wrapper {
       inset: 0;
       position: absolute;
+      overflow: hidden;
       will-change: transform;
+
+      > :global(*) {
+        inset: auto;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: calc(100% + var(--parallax-shift, 0px) * 2);
+        top: calc(var(--parallax-shift, 0px) * -1);
+      }
 
       img,
       video {

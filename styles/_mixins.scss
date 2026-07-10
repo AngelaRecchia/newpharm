@@ -107,32 +107,26 @@
 }
 
 @mixin t-h6 {
-  // 18px to 20px (320px-1440px), continua fino a ~24px a 2560px
+  // 20px fisso fino a 1440px, cresce fino a 24px a 2560px
   font-size: clamp(
-    1.125rem,
+    1.25rem,
     calc(
-      1.125rem + (1.25rem - 1.125rem) * ((100vw - 320px) / (1440px - 320px))
+      1.25rem + (1.5rem - 1.25rem) *
+        ((100vw - 1440px) / (#{$fluid-type-max-viewport} - 1440px))
     ),
     1.5rem
-  ); // 18px to 24px
-  line-height: clamp(
-    1.4,
-    calc(1.4 + (1.3 - 1.4) * ((100vw - 320px) / (1440px - 320px))),
-    1.3
-  );
-  letter-spacing: -0.02em;
-
-  @include xxl {
-    letter-spacing: -0.03em;
-  }
+  ); // 20px → 24px
+  line-height: 1.3;
+  letter-spacing: -0.03em;
 }
 
 @mixin t-h3 {
-  // 22px to 28px (320px-1440px), continua fino a ~36px a 2560px
+  // 22px to 28px (375px-1440px), continua fino a ~36px a 2560px
   font-size: clamp(
     1.375rem,
     calc(
-      1.375rem + (1.75rem - 1.375rem) * ((100vw - 320px) / (1440px - 320px))
+      1.375rem + (1.75rem - 1.375rem) *
+        ((100vw - #{$fluid-type-min-viewport}) / (1440px - #{$fluid-type-min-viewport}))
     ),
     2.25rem
   ); // 22px to 36px
@@ -145,10 +139,13 @@
 }
 
 @mixin t-h2 {
-  // 26px to 40px (320px-1440px), continua fino a ~56px a 2560px
+  // 26px to 40px (375px-1440px), continua fino a ~56px a 2560px
   font-size: clamp(
     1.625rem,
-    calc(1.625rem + (2.5rem - 1.625rem) * ((100vw - 320px) / (1440px - 320px))),
+    calc(
+      1.625rem + (2.5rem - 1.625rem) *
+        ((100vw - #{$fluid-type-min-viewport}) / (1440px - #{$fluid-type-min-viewport}))
+    ),
     3.5rem
   ); // 26px to 56px
   line-height: 1.2;
@@ -160,11 +157,12 @@
 }
 
 @mixin t-h1 {
-  // 38px to 60px (320px-1440px), continua fino a ~80px a 2560px
+  // 38px to 60px (375px-1440px), continua fino a ~80px a 2560px
   font-size: clamp(
     2.375rem,
     calc(
-      2.375rem + (3.75rem - 2.375rem) * ((100vw - 320px) / (1440px - 320px))
+      2.375rem + (3.75rem - 2.375rem) *
+        ((100vw - #{$fluid-type-min-viewport}) / (1440px - #{$fluid-type-min-viewport}))
     ),
     5rem
   ); // 38px to 80px
@@ -176,10 +174,10 @@
   }
 }
 
-/// Scale tipografiche fluid (320px → 1440px → cap) per max-width sincronizzata
+/// Scale tipografiche fluid (375px → 1440px → cap) per max-width sincronizzata
 $fluid-type-scales: (
   h6: (
-    min: 1.125rem,
+    min: 1.25rem,
     xxl: 1.25rem,
     max: 1.5rem,
   ),
@@ -236,7 +234,8 @@ $fluid-type-scales: (
   max-width: clamp(
     calc(#{$min} * #{$ratio}),
     calc(
-      (#{$min} + (#{$xxl} - #{$min}) * ((100vw - 320px) / (1440px - 320px))) *
+      (#{$min} + (#{$xxl} - #{$min}) *
+          ((100vw - #{$fluid-type-min-viewport}) / (1440px - #{$fluid-type-min-viewport}))) *
         #{$ratio}
     ),
     calc(#{$max} * #{$ratio})
@@ -244,10 +243,13 @@ $fluid-type-scales: (
 }
 
 @mixin t-huge {
-  // 72px to 124px (320px-1440px), continua fino a ~168px a 2560px
+  // 72px to 124px (375px-1440px), continua fino a ~168px a 2560px
   font-size: clamp(
     4.5rem,
-    calc(4.5rem + (7.75rem - 4.5rem) * ((100vw - 320px) / (1440px - 320px))),
+    calc(
+      4.5rem + (7.75rem - 4.5rem) *
+        ((100vw - #{$fluid-type-min-viewport}) / (1440px - #{$fluid-type-min-viewport}))
+    ),
     10.5rem
   ); // 72px to 168px
   line-height: 1;

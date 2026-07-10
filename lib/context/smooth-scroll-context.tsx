@@ -29,6 +29,40 @@ export const SmoothScrollContext = React.createContext<SmoothScrollContextType>(
   lenis: null,
 })
 
+let scrollLockCount = 0
+
+function lockPageScroll(lenis: Lenis) {
+  if (scrollLockCount === 0) {
+    lenis.stop()
+  }
+  scrollLockCount += 1
+}
+
+function unlockPageScroll(lenis: Lenis) {
+  scrollLockCount = Math.max(0, scrollLockCount - 1)
+  if (scrollLockCount === 0) {
+    lenis.start()
+  }
+}
+
+/**
+ * Blocca lo scroll della pagina tramite Lenis (contatore per overlay multipli).
+ * Per aree scrollabili interne (menu mobile, modale) usare `data-lenis-prevent`.
+ */
+export function useScrollLock(locked: boolean) {
+  const { lenis } = useContext(SmoothScrollContext)
+
+  useEffect(() => {
+    if (!locked || !lenis) return
+
+    lockPageScroll(lenis)
+
+    return () => {
+      unlockPageScroll(lenis)
+    }
+  }, [locked, lenis])
+}
+
 /** Ricalcola altezza scroll Lenis e posizioni ScrollTrigger dopo cambi layout (es. load more) */
 export function refreshPageScroll(lenis: Lenis | null) {
   requestAnimationFrame(() => {
@@ -118,6 +152,10 @@ export function SmoothScrollProvider({ children }: { children: ReactNode }) {
         rafIdRef.current = null
       }
       window.removeEventListener('resize', updateViewportCache)
+      if (scrollLockCount > 0) {
+        lenisInstance.start()
+        scrollLockCount = 0
+      }
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill())
       lenisInstance.destroy()
       lenisRef.current = null

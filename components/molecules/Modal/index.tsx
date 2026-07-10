@@ -82,6 +82,7 @@ export default function Modal({
     <div
       className={cn('backdrop')}
       role="presentation"
+      data-lenis-prevent
       style={style}
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose()

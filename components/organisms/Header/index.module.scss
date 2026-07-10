@@ -104,13 +104,15 @@
   }
 
   &MobileNavWrapper {
-    overflow: clip;
-    position: absolute;
-
-    top: 4.25rem; // header height 68px;
-
-    inset-inline-start: 0;
-
+    position: fixed;
+    top: 4.25rem; // header height 68px
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 1;
+    overflow-x: clip;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
     background-color: $c-white;
     width: 100%;
 
@@ -128,6 +130,7 @@
 
   &MobileNavItem {
     width: 100%;
+    color: $c-black;
     @include t-h3;
     @include flex-between;
 
