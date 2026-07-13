@@ -57,7 +57,7 @@ export default function HeroComponent({ blok }: { blok?: HeroStoryblok }) {
 
                 <div className={cn('content')}>
                     <h1 className={cn('title')}>{title}</h1>
-                    <p className={cn('subtitle')}>{subtitle}</p>
+                    {subtitle && <p className={cn('subtitle')}>{subtitle}</p>}
                 </div>
 
                 {links && links.length > 0 && (
