@@ -10,20 +10,18 @@
   --height: 100dvw;
 
   @include md {
-    --height: 100dvh;
-    overflow: visible;
+    --height: 50dvw;
+    overflow: clip;
   }
 
   & + * {
     position: relative;
     z-index: 1;
   }
+}
 
-  // Fratelli BoxImage adiacenti (prima o dopo): altezza fullscreen
-  &[data-box-image]:has(+ [data-box-image]),
-  &[data-box-image] ~ [data-box-image] {
-    --height: 100dvh;
-  }
+.wrapper.carousel {
+  --height: 100dvh;
 }
 
 // ==============================================
@@ -49,6 +47,10 @@
   > * {
     overflow: clip;
     height: var(--height);
+
+    @include md {
+      height: max(var(--height), var(--content-height, 0px));
+    }
   }
 
   @include untilMd {

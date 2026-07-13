@@ -2,6 +2,8 @@
 
 .wrapper {
   background-color: $c-white;
+  position: relative;
+  overflow: clip;
 }
 
 .head-container {

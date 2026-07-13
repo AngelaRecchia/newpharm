@@ -12,7 +12,7 @@
 
 import type * as Generated from "./storyblok.generated";
 import type { StoryblokLink } from "@/lib/api/utils/links";
-import type { AssetStoryblok, LinkStoryblok } from "./storyblok.generated";
+import type { AssetStoryblok } from "./storyblok.generated";
 import type { ISbRichtext } from "@storyblok/react";
 
 /** Catalog — campi CMS oltre al generato */
@@ -50,6 +50,11 @@ export interface CatalogsDownloadStoryblok {
   _uid: string;
   component: string;
   _editable?: string;
+}
+
+/** link — variant blue | black */
+export interface LinkStoryblok extends Generated.LinkStoryblok {
+  variant?: "blue" | "black" | null;
 }
 
 /**

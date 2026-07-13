@@ -38,7 +38,6 @@ export type {
   HeaderStoryblok,
   HeroStoryblok,
   Icon_text_highlightStoryblok,
-  LinkStoryblok,
   Logo_itemStoryblok,
   MilestoneStoryblok,
   Milestone_itemStoryblok,
@@ -65,6 +64,7 @@ export type {
   CatalogStoryblok,
   ProductStoryblok,
   Full_bannerStoryblok,
+  LinkStoryblok,
   Video_ytStoryblok,
   SettingsStoryblok,
 } from "./storyblok.overrides";
@@ -95,7 +95,7 @@ export type StoryblokComponent =
   | Generated.HeaderStoryblok
   | Generated.HeroStoryblok
   | Generated.Icon_text_highlightStoryblok
-  | Generated.LinkStoryblok
+  | Overrides.LinkStoryblok
   | Generated.Logo_itemStoryblok
   | Generated.MilestoneStoryblok
   | Generated.Milestone_itemStoryblok
