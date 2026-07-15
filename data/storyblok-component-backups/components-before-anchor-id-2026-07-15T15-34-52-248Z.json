@@ -1,0 +1,1314 @@
+[
+  {
+    "name": "banner_accordion",
+    "display_name": null,
+    "description": "",
+    "created_at": "2026-03-03T22:32:26.472Z",
+    "updated_at": "2026-07-13T22:06:09.432Z",
+    "id": 151091390355485,
+    "schema": {
+      "image": {
+        "type": "bloks",
+        "pos": 0,
+        "maximum": 1,
+        "restrict_type": "",
+        "restrict_components": true,
+        "component_whitelist": [
+          "asset"
+        ],
+        "component_denylist": [],
+        "id": "iIbDangJTZ2-QqLSV6-dkA"
+      },
+      "items": {
+        "type": "bloks",
+        "pos": 1,
+        "restrict_type": "",
+        "restrict_components": true,
+        "component_whitelist": [
+          "card_box"
+        ],
+        "component_denylist": [],
+        "id": "v1L1xYiGRHOoYbexMqfFxg"
+      },
+      "anchor_id": {
+        "type": "text",
+        "display_name": "Anchor ID",
+        "description": "ID HTML per link ancora (es. chi-siamo). Solo minuscole, numeri e trattini.",
+        "regex": "^[a-z0-9-]*$",
+        "translatable": false,
+        "required": false,
+        "pos": 2,
+        "id": "iiAeGejgRV6D75e1KWzYYA"
+      }
+    },
+    "image": null,
+    "preview_field": null,
+    "is_root": false,
+    "preview_tmpl": null,
+    "is_nestable": true,
+    "all_presets": [],
+    "preset_id": null,
+    "real_name": "banner_accordion",
+    "component_group_uuid": "1607edfa-9b1d-4c27-ba7d-1671cbbbbf37",
+    "color": null,
+    "icon": null,
+    "internal_tags_list": [],
+    "internal_tag_ids": [],
+    "content_type_asset_preview": null,
+    "metadata": {}
+  },
+  {
+    "name": "box_image",
+    "display_name": null,
+    "description": "",
+    "created_at": "2026-03-06T22:28:43.413Z",
+    "updated_at": "2026-07-13T22:06:13.771Z",
+    "id": 152152159915858,
+    "schema": {
+      "title": {
+        "type": "textarea",
+        "pos": 0,
+        "id": "0huEkuFcSaylvolhIQXcfQ"
+      },
+      "subtitle": {
+        "type": "textarea",
+        "pos": 1,
+        "id": "1lO5iYkAQG-6vEcOKGoH4w"
+      },
+      "asset": {
+        "type": "bloks",
+        "pos": 3,
+        "restrict_type": "",
+        "restrict_components": true,
+        "component_whitelist": [
+          "asset"
+        ],
+        "component_denylist": [],
+        "maximum": 1,
+        "id": "LwJE9VLSSLKK1b6ZUEaUBQ"
+      },
+      "link": {
+        "type": "bloks",
+        "pos": 3,
+        "restrict_type": "",
+        "restrict_components": true,
+        "component_whitelist": [
+          "link"
+        ],
+        "component_denylist": [],
+        "id": "AAt3Pg9wTFSGRhXPGWbaFA"
+      },
+      "image_alignment": {
+        "type": "option",
+        "pos": 4,
+        "use_uuid": true,
+        "options": [
+          {
+            "_uid": "bc9f7fac-62e6-4dac-9508-93da1714c822",
+            "name": "left",
+            "value": "left"
+          },
+          {
+            "_uid": "7dcb9565-1f14-4dd0-9c91-88fb85526b02",
+            "value": "right",
+            "name": "right"
+          }
+        ],
+        "exclude_empty_option": true,
+        "default_value": "left",
+        "id": "m-Xcu_bKQciVvNjIicREyA"
+      },
+      "anchor_id": {
+        "type": "text",
+        "display_name": "Anchor ID",
+        "description": "ID HTML per link ancora (es. chi-siamo). Solo minuscole, numeri e trattini.",
+        "regex": "^[a-z0-9-]*$",
+        "translatable": false,
+        "required": false,
+        "pos": 5,
+        "id": "EVIBAXnjTnmXGZPPIcghMQ"
+      }
+    },
+    "image": null,
+    "preview_field": null,
+    "is_root": false,
+    "preview_tmpl": null,
+    "is_nestable": true,
+    "all_presets": [],
+    "preset_id": null,
+    "real_name": "box_image",
+    "component_group_uuid": "af943f96-cf62-45e0-90c5-a8c02da54812",
+    "color": null,
+    "icon": null,
+    "internal_tags_list": [],
+    "internal_tag_ids": [],
+    "content_type_asset_preview": null,
+    "metadata": {}
+  },
+  {
+    "name": "box_image_carousel",
+    "display_name": null,
+    "description": "",
+    "created_at": "2026-06-29T15:46:04.270Z",
+    "updated_at": "2026-07-13T22:06:14.274Z",
+    "id": 192751060055472,
+    "schema": {
+      "title": {
+        "type": "text",
+        "pos": 0,
+        "id": "huJEUu9WROCu09Dh18c5Pg"
+      },
+      "items": {
+        "type": "bloks",
+        "pos": 1,
+        "restrict_type": "",
+        "restrict_components": true,
+        "component_whitelist": [
+          "box_image"
+        ],
+        "component_denylist": [],
+        "id": "Am6dSu6LS3CKJ2rPijoE6w"
+      },
+      "anchor_id": {
+        "type": "text",
+        "display_name": "Anchor ID",
+        "description": "ID HTML per link ancora (es. chi-siamo). Solo minuscole, numeri e trattini.",
+        "regex": "^[a-z0-9-]*$",
+        "translatable": false,
+        "required": false,
+        "pos": 2,
+        "id": "qvMXy3APS_qBikTLHjUWSQ"
+      }
+    },
+    "image": null,
+    "preview_field": null,
+    "is_root": false,
+    "preview_tmpl": null,
+    "is_nestable": true,
+    "all_presets": [],
+    "preset_id": null,
+    "real_name": "box_image_carousel",
+    "component_group_uuid": "1607edfa-9b1d-4c27-ba7d-1671cbbbbf37",
+    "color": null,
+    "icon": null,
+    "internal_tags_list": [],
+    "internal_tag_ids": [],
+    "content_type_asset_preview": null,
+    "metadata": {}
+  },
+  {
+    "name": "carousel",
+    "display_name": null,
+    "description": "",
+    "created_at": "2026-03-03T22:34:28.546Z",
+    "updated_at": "2026-07-13T22:06:08.912Z",
+    "id": 151091890370595,
+    "schema": {
+      "title": {
+        "type": "text",
+        "pos": 0,
+        "id": "5Csvo0U6SEq3ohiJvIQ_1g"
+      },
+      "subtitle": {
+        "type": "text",
+        "pos": 1,
+        "id": "QMNOOI_zS_-bL8hsD_liTA"
+      },
+      "link": {
+        "type": "bloks",
+        "pos": 2,
+        "restrict_type": "",
+        "restrict_components": true,
+        "component_whitelist": [
+          "link"
+        ],
+        "component_denylist": [],
+        "maximum": 1,
+        "id": "Z8SQNKSLR5iqv9UiH2Dqog"
+      },
+      "anchor_id": {
+        "type": "text",
+        "display_name": "Anchor ID",
+        "description": "ID HTML per link ancora (es. chi-siamo). Solo minuscole, numeri e trattini.",
+        "regex": "^[a-z0-9-]*$",
+        "translatable": false,
+        "required": false,
+        "pos": 3,
+        "id": "-UXnhgZkR_CDRf82idWYSA"
+      }
+    },
+    "image": null,
+    "preview_field": null,
+    "is_root": false,
+    "preview_tmpl": null,
+    "is_nestable": true,
+    "all_presets": [],
+    "preset_id": null,
+    "real_name": "carousel",
+    "component_group_uuid": "1607edfa-9b1d-4c27-ba7d-1671cbbbbf37",
+    "color": null,
+    "icon": null,
+    "internal_tags_list": [],
+    "internal_tag_ids": [],
+    "content_type_asset_preview": null,
+    "metadata": {}
+  },
+  {
+    "name": "catalogs_download",
+    "display_name": null,
+    "description": "",
+    "created_at": "2026-03-20T21:41:38.472Z",
+    "updated_at": "2026-07-13T22:06:16.722Z",
+    "id": 157095110550884,
+    "schema": {
+      "title": {
+        "type": "text",
+        "pos": 0,
+        "id": "Qv0sCu5cQFmGmBXTZe9oLg"
+      },
+      "items": {
+        "type": "options",
+        "pos": 1,
+        "source": "internal_stories",
+        "filter_content_type": [
+          "catalog"
+        ],
+        "allow_advanced_search": true,
+        "entry_appearance": "card",
+        "folder_slug": "{0}",
+        "id": "of8GduiaR6K4y_iRp8V1Pg"
+      },
+      "anchor_id": {
+        "type": "text",
+        "display_name": "Anchor ID",
+        "description": "ID HTML per link ancora (es. chi-siamo). Solo minuscole, numeri e trattini.",
+        "regex": "^[a-z0-9-]*$",
+        "translatable": false,
+        "required": false,
+        "pos": 2,
+        "id": "i8LHgUkpTfS9i4WDxO2EJg"
+      }
+    },
+    "image": null,
+    "preview_field": null,
+    "is_root": false,
+    "preview_tmpl": null,
+    "is_nestable": true,
+    "all_presets": [],
+    "preset_id": null,
+    "real_name": "catalogs_download",
+    "component_group_uuid": "1607edfa-9b1d-4c27-ba7d-1671cbbbbf37",
+    "color": null,
+    "icon": null,
+    "internal_tags_list": [],
+    "internal_tag_ids": [],
+    "content_type_asset_preview": null,
+    "metadata": {}
+  },
+  {
+    "name": "cta_box",
+    "display_name": null,
+    "description": "",
+    "created_at": "2026-03-03T22:34:29.446Z",
+    "updated_at": "2026-07-13T22:06:07.459Z",
+    "id": 151091894056996,
+    "schema": {
+      "cards": {
+        "type": "bloks",
+        "pos": 0,
+        "maximum": 3,
+        "restrict_type": "",
+        "restrict_components": true,
+        "component_whitelist": [
+          "card_cta_box"
+        ],
+        "component_denylist": [],
+        "id": "6RYqE-5oRJygHqSpcWtoSw"
+      },
+      "anchor_id": {
+        "type": "text",
+        "display_name": "Anchor ID",
+        "description": "ID HTML per link ancora (es. chi-siamo). Solo minuscole, numeri e trattini.",
+        "regex": "^[a-z0-9-]*$",
+        "translatable": false,
+        "required": false,
+        "pos": 1,
+        "id": "CZdvXJAVSqySuvhwwYp5VA"
+      }
+    },
+    "image": null,
+    "preview_field": null,
+    "is_root": false,
+    "preview_tmpl": null,
+    "is_nestable": true,
+    "all_presets": [],
+    "preset_id": null,
+    "real_name": "cta_box",
+    "component_group_uuid": "1607edfa-9b1d-4c27-ba7d-1671cbbbbf37",
+    "color": null,
+    "icon": null,
+    "internal_tags_list": [],
+    "internal_tag_ids": [],
+    "content_type_asset_preview": null,
+    "metadata": {}
+  },
+  {
+    "name": "division_box",
+    "display_name": null,
+    "description": "",
+    "created_at": "2026-03-03T22:34:29.563Z",
+    "updated_at": "2026-07-13T22:06:06.980Z",
+    "id": 151091894540325,
+    "schema": {
+      "title": {
+        "type": "text",
+        "pos": 0,
+        "id": "x6k_Bx6gSCOKXyjJ9tSkKQ"
+      },
+      "link": {
+        "type": "bloks",
+        "pos": 1,
+        "restrict_type": "",
+        "restrict_components": true,
+        "component_whitelist": [
+          "link"
+        ],
+        "component_denylist": [],
+        "id": "DXgGjfaGToSbZd1aGtWecw"
+      },
+      "cards": {
+        "type": "bloks",
+        "pos": 2,
+        "id": "6_EULHOsRH6xNT8qnppiww",
+        "maximum": 6,
+        "restrict_type": "",
+        "restrict_components": true,
+        "component_whitelist": [
+          "card_division"
+        ],
+        "component_denylist": []
+      },
+      "anchor_id": {
+        "type": "text",
+        "display_name": "Anchor ID",
+        "description": "ID HTML per link ancora (es. chi-siamo). Solo minuscole, numeri e trattini.",
+        "regex": "^[a-z0-9-]*$",
+        "translatable": false,
+        "required": false,
+        "pos": 3,
+        "id": "kgzTiZfRQhaii013DnjXvA"
+      }
+    },
+    "image": null,
+    "preview_field": null,
+    "is_root": false,
+    "preview_tmpl": null,
+    "is_nestable": true,
+    "all_presets": [],
+    "preset_id": null,
+    "real_name": "division_box",
+    "component_group_uuid": "1607edfa-9b1d-4c27-ba7d-1671cbbbbf37",
+    "color": null,
+    "icon": null,
+    "internal_tags_list": [],
+    "internal_tag_ids": [],
+    "content_type_asset_preview": null,
+    "metadata": {}
+  },
+  {
+    "name": "faqs",
+    "display_name": null,
+    "description": "",
+    "created_at": "2026-03-03T22:34:29.675Z",
+    "updated_at": "2026-07-13T22:06:12.837Z",
+    "id": 151091894994982,
+    "schema": {
+      "title": {
+        "type": "text",
+        "pos": 0,
+        "id": "ne8Re0DiS0W2mNcEsBJ5gw"
+      },
+      "description": {
+        "type": "textarea",
+        "pos": 1,
+        "id": "xW99T3KsT0SDsNwkBSSSNA"
+      },
+      "items": {
+        "type": "bloks",
+        "pos": 2,
+        "id": "9JzaHDROQ5CNKjDFHNyCMg",
+        "restrict_type": "",
+        "restrict_components": true,
+        "component_whitelist": [
+          "accordion_item"
+        ],
+        "component_denylist": []
+      },
+      "anchor_id": {
+        "type": "text",
+        "display_name": "Anchor ID",
+        "description": "ID HTML per link ancora (es. chi-siamo). Solo minuscole, numeri e trattini.",
+        "regex": "^[a-z0-9-]*$",
+        "translatable": false,
+        "required": false,
+        "pos": 3,
+        "id": "pJCSR0dMTkWryyk51WrZzQ"
+      }
+    },
+    "image": null,
+    "preview_field": null,
+    "is_root": false,
+    "preview_tmpl": null,
+    "is_nestable": true,
+    "all_presets": [],
+    "preset_id": null,
+    "real_name": "faqs",
+    "component_group_uuid": "1607edfa-9b1d-4c27-ba7d-1671cbbbbf37",
+    "color": null,
+    "icon": null,
+    "internal_tags_list": [],
+    "internal_tag_ids": [],
+    "content_type_asset_preview": null,
+    "metadata": {}
+  },
+  {
+    "name": "full_banner",
+    "display_name": null,
+    "description": "",
+    "created_at": "2026-03-03T22:34:30.644Z",
+    "updated_at": "2026-07-13T22:06:07.944Z",
+    "id": 151091898964008,
+    "schema": {
+      "title": {
+        "type": "richtext",
+        "pos": 0,
+        "id": "be650b5ASWCoxXd7Hr3mMw",
+        "rtl": false,
+        "customize_toolbar": true
+      },
+      "asset": {
+        "type": "asset",
+        "pos": 1,
+        "id": "1NwzM-lgS7Ko1aDZV3Jphg"
+      },
+      "variant": {
+        "type": "option",
+        "pos": 2,
+        "use_uuid": true,
+        "options": [
+          {
+            "_uid": "b5ce046a-ac84-45d4-9174-1ecfd63a7388",
+            "name": "full",
+            "value": "full"
+          },
+          {
+            "_uid": "ec009595-ee63-48f1-880f-209361d40f89",
+            "value": "padding",
+            "name": "padding"
+          }
+        ],
+        "exclude_empty_option": true,
+        "default_value": "full",
+        "id": "KNhN9hlwS_KB6BRhDszMiQ"
+      },
+      "anchor_id": {
+        "type": "text",
+        "display_name": "Anchor ID",
+        "description": "ID HTML per link ancora (es. chi-siamo). Solo minuscole, numeri e trattini.",
+        "regex": "^[a-z0-9-]*$",
+        "translatable": false,
+        "required": false,
+        "pos": 3,
+        "id": "z0TQ0yzlQsuIe71SgDZWDw"
+      }
+    },
+    "image": null,
+    "preview_field": null,
+    "is_root": false,
+    "preview_tmpl": null,
+    "is_nestable": true,
+    "all_presets": [],
+    "preset_id": null,
+    "real_name": "full_banner",
+    "component_group_uuid": "1607edfa-9b1d-4c27-ba7d-1671cbbbbf37",
+    "color": null,
+    "icon": null,
+    "internal_tags_list": [],
+    "internal_tag_ids": [],
+    "content_type_asset_preview": null,
+    "metadata": {}
+  },
+  {
+    "name": "gallery",
+    "display_name": null,
+    "description": "",
+    "created_at": "2026-03-05T22:26:52.906Z",
+    "updated_at": "2026-07-13T22:06:13.314Z",
+    "id": 151797812870882,
+    "schema": {
+      "title": {
+        "type": "text",
+        "pos": 0,
+        "id": "71i-3U8OT-K1xSg_PVJJzA"
+      },
+      "images": {
+        "type": "bloks",
+        "pos": 1,
+        "restrict_type": "",
+        "restrict_components": true,
+        "component_whitelist": [
+          "asset"
+        ],
+        "component_denylist": [],
+        "id": "yUCULoyqRaSIdS-xNlNvKg"
+      },
+      "anchor_id": {
+        "type": "text",
+        "display_name": "Anchor ID",
+        "description": "ID HTML per link ancora (es. chi-siamo). Solo minuscole, numeri e trattini.",
+        "regex": "^[a-z0-9-]*$",
+        "translatable": false,
+        "required": false,
+        "pos": 2,
+        "id": "2zAl58vWQAmrGY8onXeUGw"
+      }
+    },
+    "image": null,
+    "preview_field": null,
+    "is_root": false,
+    "preview_tmpl": null,
+    "is_nestable": true,
+    "all_presets": [],
+    "preset_id": null,
+    "real_name": "gallery",
+    "component_group_uuid": "1607edfa-9b1d-4c27-ba7d-1671cbbbbf37",
+    "color": null,
+    "icon": null,
+    "internal_tags_list": [],
+    "internal_tag_ids": [],
+    "content_type_asset_preview": null,
+    "metadata": {}
+  },
+  {
+    "name": "hero",
+    "display_name": null,
+    "description": "",
+    "created_at": "2026-03-03T22:34:31.616Z",
+    "updated_at": "2026-07-13T22:06:06.474Z",
+    "id": 151091902945322,
+    "schema": {
+      "variant": {
+        "type": "option",
+        "pos": 0,
+        "use_uuid": true,
+        "options": [
+          {
+            "_uid": "1608e2c0-4760-49f1-9e86-b5a5238aaacb",
+            "name": "primary",
+            "value": "primary"
+          },
+          {
+            "_uid": "0532523a-0d6c-46c3-8bea-ac8cc39a9f29",
+            "value": "secondary",
+            "name": "secondary"
+          },
+          {
+            "_uid": "22cb9bb6-9101-433f-ae62-6ef60ba3327f",
+            "value": "tertiary",
+            "name": "tertiary"
+          }
+        ],
+        "exclude_empty_option": true,
+        "default_value": "primary",
+        "id": "P5UwbIY1QkaaRMakPv7zMQ"
+      },
+      "title": {
+        "type": "text",
+        "pos": 1,
+        "id": "jJHwW98QR22LXCcuEoqPGw"
+      },
+      "subtitle": {
+        "type": "text",
+        "pos": 2,
+        "id": "OdgV3pwlSZyrgn-FXW7vZw"
+      },
+      "background": {
+        "type": "asset",
+        "pos": 3,
+        "filetypes": [
+          "images",
+          "videos"
+        ],
+        "id": "rCpDltCkQDCbadKptpXqIA"
+      },
+      "links": {
+        "type": "bloks",
+        "pos": 4,
+        "id": "0dXF8mY3ROKjHrt4hLc-Eg",
+        "restrict_type": "",
+        "restrict_components": true,
+        "component_whitelist": [
+          "link"
+        ],
+        "component_denylist": []
+      },
+      "anchor_id": {
+        "type": "text",
+        "display_name": "Anchor ID",
+        "description": "ID HTML per link ancora (es. chi-siamo). Solo minuscole, numeri e trattini.",
+        "regex": "^[a-z0-9-]*$",
+        "translatable": false,
+        "required": false,
+        "pos": 5,
+        "id": "gvhecOx2RP-UOZy-PX5ZKw"
+      }
+    },
+    "image": null,
+    "preview_field": null,
+    "is_root": false,
+    "preview_tmpl": null,
+    "is_nestable": true,
+    "all_presets": [],
+    "preset_id": null,
+    "real_name": "hero",
+    "component_group_uuid": "1607edfa-9b1d-4c27-ba7d-1671cbbbbf37",
+    "color": null,
+    "icon": null,
+    "internal_tags_list": [],
+    "internal_tag_ids": [],
+    "content_type_asset_preview": null,
+    "metadata": {}
+  },
+  {
+    "name": "icon_text_highlight",
+    "display_name": null,
+    "description": "",
+    "created_at": "2026-03-03T22:34:31.722Z",
+    "updated_at": "2026-07-13T22:06:11.852Z",
+    "id": 151091903379499,
+    "schema": {
+      "title": {
+        "type": "text",
+        "pos": 0,
+        "id": "U8kXFf-vRECzz7VcGu6L1A"
+      },
+      "description": {
+        "type": "textarea",
+        "pos": 1,
+        "id": "xIsrg-WiSfSJghj5uTilLw"
+      },
+      "items": {
+        "type": "bloks",
+        "pos": 2,
+        "id": "Q2jAvriCT7GUaGCYUxClSg",
+        "restrict_type": "",
+        "restrict_components": true,
+        "component_whitelist": [
+          "card_icon_text"
+        ],
+        "component_denylist": []
+      },
+      "anchor_id": {
+        "type": "text",
+        "display_name": "Anchor ID",
+        "description": "ID HTML per link ancora (es. chi-siamo). Solo minuscole, numeri e trattini.",
+        "regex": "^[a-z0-9-]*$",
+        "translatable": false,
+        "required": false,
+        "pos": 3,
+        "id": "3qQ71NNrR66utWjIC6MD0A"
+      }
+    },
+    "image": null,
+    "preview_field": null,
+    "is_root": false,
+    "preview_tmpl": null,
+    "is_nestable": true,
+    "all_presets": [],
+    "preset_id": null,
+    "real_name": "icon_text_highlight",
+    "component_group_uuid": "1607edfa-9b1d-4c27-ba7d-1671cbbbbf37",
+    "color": null,
+    "icon": null,
+    "internal_tags_list": [],
+    "internal_tag_ids": [],
+    "content_type_asset_preview": null,
+    "metadata": {}
+  },
+  {
+    "name": "milestone",
+    "display_name": "Milestone",
+    "description": null,
+    "created_at": "2026-03-14T14:15:02.951Z",
+    "updated_at": "2026-07-13T22:06:15.236Z",
+    "id": 154861989702293,
+    "schema": {
+      "title": {
+        "type": "text",
+        "pos": 0,
+        "id": "fOwuwbXlT8CHcyCkP7F2gg"
+      },
+      "items": {
+        "type": "bloks",
+        "pos": 1,
+        "restrict_type": "",
+        "restrict_components": true,
+        "component_whitelist": [
+          "milestone_item"
+        ],
+        "id": "_CPHA0ALTb-1xMtb-vsRlg",
+        "component_denylist": [],
+        "component_group_whitelist": [],
+        "component_group_denylist": [],
+        "component_tag_whitelist": [],
+        "component_tag_denylist": []
+      },
+      "anchor_id": {
+        "type": "text",
+        "display_name": "Anchor ID",
+        "description": "ID HTML per link ancora (es. chi-siamo). Solo minuscole, numeri e trattini.",
+        "regex": "^[a-z0-9-]*$",
+        "translatable": false,
+        "required": false,
+        "pos": 2,
+        "id": "EYHEQIz3SpOA-5S_4B6sMg"
+      }
+    },
+    "image": null,
+    "preview_field": null,
+    "is_root": false,
+    "preview_tmpl": null,
+    "is_nestable": true,
+    "all_presets": [],
+    "preset_id": null,
+    "real_name": "Milestone",
+    "component_group_uuid": "1607edfa-9b1d-4c27-ba7d-1671cbbbbf37",
+    "color": null,
+    "icon": null,
+    "internal_tags_list": [],
+    "internal_tag_ids": [],
+    "content_type_asset_preview": null,
+    "metadata": {}
+  },
+  {
+    "name": "partners",
+    "display_name": null,
+    "description": "",
+    "created_at": "2026-03-14T15:17:26.748Z",
+    "updated_at": "2026-07-13T22:06:15.715Z",
+    "id": 154877324286669,
+    "schema": {
+      "variant": {
+        "type": "option",
+        "pos": 0,
+        "use_uuid": true,
+        "options": [
+          {
+            "_uid": "866f2178-965f-4682-8e7e-46d8d0ca83ea",
+            "name": "light",
+            "value": "light"
+          },
+          {
+            "_uid": "c665718b-bbe1-4369-b4e9-88d8cff75371",
+            "value": "dark",
+            "name": "dark"
+          }
+        ],
+        "exclude_empty_option": true,
+        "default_value": "light",
+        "id": "kIRkgwe3QQmtCe-KvE5XVg"
+      },
+      "title": {
+        "type": "text",
+        "pos": 1,
+        "id": "Q2qXT-C6Tj60R5gMHsOauQ"
+      },
+      "items": {
+        "type": "bloks",
+        "pos": 2,
+        "id": "kftOpknHTxu2c75MO8L4iw",
+        "restrict_type": "",
+        "restrict_components": true,
+        "component_whitelist": [
+          "logo_item"
+        ],
+        "component_denylist": []
+      },
+      "anchor_id": {
+        "type": "text",
+        "display_name": "Anchor ID",
+        "description": "ID HTML per link ancora (es. chi-siamo). Solo minuscole, numeri e trattini.",
+        "regex": "^[a-z0-9-]*$",
+        "translatable": false,
+        "required": false,
+        "pos": 3,
+        "id": "Hdqrt6h2TPuZFD065uZgug"
+      }
+    },
+    "image": null,
+    "preview_field": null,
+    "is_root": false,
+    "preview_tmpl": null,
+    "is_nestable": true,
+    "all_presets": [],
+    "preset_id": null,
+    "real_name": "partners",
+    "component_group_uuid": "1607edfa-9b1d-4c27-ba7d-1671cbbbbf37",
+    "color": null,
+    "icon": null,
+    "internal_tags_list": [],
+    "internal_tag_ids": [],
+    "content_type_asset_preview": null,
+    "metadata": {}
+  },
+  {
+    "name": "projects_highlight",
+    "display_name": null,
+    "description": "",
+    "created_at": "2026-03-12T21:35:33.082Z",
+    "updated_at": "2026-07-13T22:06:14.762Z",
+    "id": 154262458709755,
+    "schema": {
+      "title": {
+        "type": "text",
+        "pos": 0,
+        "id": "kIRlRUitR4SNvir4m14CGw"
+      },
+      "link": {
+        "type": "bloks",
+        "pos": 1,
+        "restrict_type": "",
+        "restrict_components": true,
+        "component_whitelist": [
+          "link"
+        ],
+        "component_denylist": [],
+        "id": "hKjsBwKXR3CO2RzFgFuH7A"
+      },
+      "cards": {
+        "type": "bloks",
+        "pos": 2,
+        "id": "9LadCdfnTDCObbgei-Ghkg",
+        "restrict_type": "",
+        "restrict_components": true,
+        "component_whitelist": [
+          "card_highlight"
+        ],
+        "component_denylist": []
+      },
+      "anchor_id": {
+        "type": "text",
+        "display_name": "Anchor ID",
+        "description": "ID HTML per link ancora (es. chi-siamo). Solo minuscole, numeri e trattini.",
+        "regex": "^[a-z0-9-]*$",
+        "translatable": false,
+        "required": false,
+        "pos": 3,
+        "id": "2GU6y55VQL67__kJSf7PmQ"
+      }
+    },
+    "image": null,
+    "preview_field": null,
+    "is_root": false,
+    "preview_tmpl": null,
+    "is_nestable": true,
+    "all_presets": [],
+    "preset_id": null,
+    "real_name": "projects_highlight",
+    "component_group_uuid": "1607edfa-9b1d-4c27-ba7d-1671cbbbbf37",
+    "color": null,
+    "icon": null,
+    "internal_tags_list": [],
+    "internal_tag_ids": [],
+    "content_type_asset_preview": null,
+    "metadata": {}
+  },
+  {
+    "name": "slideshow",
+    "display_name": null,
+    "description": "",
+    "created_at": "2026-03-14T15:58:29.200Z",
+    "updated_at": "2026-07-13T22:06:16.225Z",
+    "id": 154887410498270,
+    "schema": {
+      "title": {
+        "type": "text",
+        "pos": 0,
+        "id": "quN6E8_3QzGipw9mKVeQ-Q"
+      },
+      "cards": {
+        "type": "bloks",
+        "pos": 1,
+        "id": "7q_8f-y2Qs2m6G-WJS3k2Q",
+        "restrict_type": "",
+        "restrict_components": true,
+        "component_whitelist": [
+          "card_slideshow"
+        ],
+        "component_denylist": []
+      },
+      "anchor_id": {
+        "type": "text",
+        "display_name": "Anchor ID",
+        "description": "ID HTML per link ancora (es. chi-siamo). Solo minuscole, numeri e trattini.",
+        "regex": "^[a-z0-9-]*$",
+        "translatable": false,
+        "required": false,
+        "pos": 2,
+        "id": "6j-PzEZyT-e-Ab3ly1EXSg"
+      }
+    },
+    "image": null,
+    "preview_field": null,
+    "is_root": false,
+    "preview_tmpl": null,
+    "is_nestable": true,
+    "all_presets": [],
+    "preset_id": null,
+    "real_name": "slideshow",
+    "component_group_uuid": "1607edfa-9b1d-4c27-ba7d-1671cbbbbf37",
+    "color": null,
+    "icon": null,
+    "internal_tags_list": [],
+    "internal_tag_ids": [],
+    "content_type_asset_preview": null,
+    "metadata": {}
+  },
+  {
+    "name": "spec_table",
+    "display_name": "Table",
+    "description": null,
+    "created_at": "2026-03-03T22:34:34.082Z",
+    "updated_at": "2026-07-13T22:06:11.364Z",
+    "id": 151091913046064,
+    "schema": {
+      "title": {
+        "type": "text",
+        "pos": 0,
+        "display_name": "Title",
+        "id": "byjBAyuvTva77oza_ZLVig"
+      },
+      "description": {
+        "type": "textarea",
+        "pos": 1,
+        "display_name": "Description",
+        "id": "nRGZtBFrTkaQBIsVtZo6_Q"
+      },
+      "table": {
+        "type": "table",
+        "pos": 2,
+        "display_name": "Table",
+        "id": "cb6lTq8oRpmxl-cn4TBVPg"
+      },
+      "table_code": {
+        "type": "textarea",
+        "pos": 3,
+        "id": "bl3_F7xYQQuiLkl56i5hrw",
+        "rich_markdown": true
+      },
+      "anchor_id": {
+        "type": "text",
+        "display_name": "Anchor ID",
+        "description": "ID HTML per link ancora (es. chi-siamo). Solo minuscole, numeri e trattini.",
+        "regex": "^[a-z0-9-]*$",
+        "translatable": false,
+        "required": false,
+        "pos": 4,
+        "id": "s3bQHgdtSj-tp-kRfMpCuw"
+      }
+    },
+    "image": null,
+    "preview_field": null,
+    "is_root": false,
+    "preview_tmpl": null,
+    "is_nestable": true,
+    "all_presets": [],
+    "preset_id": null,
+    "real_name": "Table",
+    "component_group_uuid": "1607edfa-9b1d-4c27-ba7d-1671cbbbbf37",
+    "color": null,
+    "icon": null,
+    "internal_tags_list": [],
+    "internal_tag_ids": [],
+    "content_type_asset_preview": null,
+    "metadata": {}
+  },
+  {
+    "name": "split_banner",
+    "display_name": null,
+    "description": "",
+    "created_at": "2026-03-03T22:34:34.924Z",
+    "updated_at": "2026-07-13T22:06:08.431Z",
+    "id": 151091916494897,
+    "schema": {
+      "items": {
+        "type": "bloks",
+        "pos": 0,
+        "restrict_type": "",
+        "restrict_components": true,
+        "component_whitelist": [
+          "asset"
+        ],
+        "component_denylist": [],
+        "id": "6LTVezi9S-295PP5zuyjCg",
+        "maximum": 2
+      },
+      "anchor_id": {
+        "type": "text",
+        "display_name": "Anchor ID",
+        "description": "ID HTML per link ancora (es. chi-siamo). Solo minuscole, numeri e trattini.",
+        "regex": "^[a-z0-9-]*$",
+        "translatable": false,
+        "required": false,
+        "pos": 1,
+        "id": "YbV1_A8yTjOZmTqLgSpMpA"
+      }
+    },
+    "image": null,
+    "preview_field": null,
+    "is_root": false,
+    "preview_tmpl": null,
+    "is_nestable": true,
+    "all_presets": [],
+    "preset_id": null,
+    "real_name": "split_banner",
+    "component_group_uuid": "1607edfa-9b1d-4c27-ba7d-1671cbbbbf37",
+    "color": null,
+    "icon": null,
+    "internal_tags_list": [],
+    "internal_tag_ids": [],
+    "content_type_asset_preview": null,
+    "metadata": {}
+  },
+  {
+    "name": "sticky_image",
+    "display_name": null,
+    "description": "",
+    "created_at": "2026-03-03T22:34:35.007Z",
+    "updated_at": "2026-07-13T22:06:09.905Z",
+    "id": 151091916834866,
+    "schema": {
+      "title": {
+        "type": "textarea",
+        "pos": 0,
+        "id": "jdbuak6aS62nNWnwIKuzUQ"
+      },
+      "image": {
+        "type": "bloks",
+        "pos": 1,
+        "id": "XLNgXj8iT6SMvY0o6M_9dA",
+        "restrict_type": "",
+        "restrict_components": true,
+        "component_whitelist": [
+          "asset"
+        ],
+        "component_denylist": []
+      },
+      "content": {
+        "type": "richtext",
+        "pos": 2,
+        "customize_toolbar": true,
+        "toolbar": [
+          "blok",
+          "bold",
+          "h2",
+          "h1"
+        ],
+        "restrict_type": "",
+        "restrict_components": true,
+        "component_whitelist": [
+          "link",
+          "asset"
+        ],
+        "component_denylist": [],
+        "id": "0syAl_NcR2uyjeqa1RrJzw"
+      },
+      "animated": {
+        "type": "boolean",
+        "pos": 3,
+        "default_value": true,
+        "id": "pYAzndDDRY2cSOEsWJZdVQ"
+      },
+      "anchor_id": {
+        "type": "text",
+        "display_name": "Anchor ID",
+        "description": "ID HTML per link ancora (es. chi-siamo). Solo minuscole, numeri e trattini.",
+        "regex": "^[a-z0-9-]*$",
+        "translatable": false,
+        "required": false,
+        "pos": 4,
+        "id": "vdTqvtrvRlGjwcy_ebrRjA"
+      }
+    },
+    "image": null,
+    "preview_field": null,
+    "is_root": false,
+    "preview_tmpl": null,
+    "is_nestable": true,
+    "all_presets": [],
+    "preset_id": null,
+    "real_name": "sticky_image",
+    "component_group_uuid": "1607edfa-9b1d-4c27-ba7d-1671cbbbbf37",
+    "color": null,
+    "icon": null,
+    "internal_tags_list": [],
+    "internal_tag_ids": [],
+    "content_type_asset_preview": null,
+    "metadata": {}
+  },
+  {
+    "name": "tabs",
+    "display_name": null,
+    "description": "",
+    "created_at": "2026-03-03T22:34:36.022Z",
+    "updated_at": "2026-07-13T22:06:12.340Z",
+    "id": 151091920992308,
+    "schema": {
+      "title": {
+        "type": "text",
+        "pos": 0,
+        "id": "0B4aoos3Rj2YmTbxph5mqQ"
+      },
+      "asset": {
+        "type": "bloks",
+        "pos": 1,
+        "maximum": 1,
+        "restrict_type": "",
+        "restrict_components": true,
+        "component_whitelist": [
+          "asset"
+        ],
+        "component_denylist": [],
+        "id": "zqHYRKccSeKyWyydl2u-_g"
+      },
+      "items": {
+        "type": "bloks",
+        "pos": 2,
+        "restrict_type": "",
+        "restrict_components": true,
+        "component_whitelist": [
+          "accordion_item"
+        ],
+        "component_denylist": [],
+        "id": "1V5ncyiBRh-_R6k-S71NEg"
+      },
+      "anchor_id": {
+        "type": "text",
+        "display_name": "Anchor ID",
+        "description": "ID HTML per link ancora (es. chi-siamo). Solo minuscole, numeri e trattini.",
+        "regex": "^[a-z0-9-]*$",
+        "translatable": false,
+        "required": false,
+        "pos": 3,
+        "id": "wYRMPo4sSFiDJmG7pUfwEw"
+      }
+    },
+    "image": null,
+    "preview_field": null,
+    "is_root": false,
+    "preview_tmpl": null,
+    "is_nestable": true,
+    "all_presets": [],
+    "preset_id": null,
+    "real_name": "tabs",
+    "component_group_uuid": "1607edfa-9b1d-4c27-ba7d-1671cbbbbf37",
+    "color": null,
+    "icon": null,
+    "internal_tags_list": [],
+    "internal_tag_ids": [],
+    "content_type_asset_preview": null,
+    "metadata": {}
+  },
+  {
+    "name": "text_reveal",
+    "display_name": null,
+    "description": "",
+    "created_at": "2026-03-04T22:15:18.081Z",
+    "updated_at": "2026-07-13T22:06:10.382Z",
+    "id": 151441072466844,
+    "schema": {
+      "text": {
+        "type": "textarea",
+        "pos": 0,
+        "id": "dbwXsdy7TFWshuiQKygNKw"
+      },
+      "link": {
+        "type": "bloks",
+        "pos": 1,
+        "maximum": 1,
+        "restrict_type": "",
+        "restrict_components": true,
+        "component_whitelist": [
+          "link"
+        ],
+        "component_denylist": [],
+        "id": "tu2MRAmuTmiIO6Uj-OlK4Q"
+      },
+      "anchor_id": {
+        "type": "text",
+        "display_name": "Anchor ID",
+        "description": "ID HTML per link ancora (es. chi-siamo). Solo minuscole, numeri e trattini.",
+        "regex": "^[a-z0-9-]*$",
+        "translatable": false,
+        "required": false,
+        "pos": 2,
+        "id": "swZAZv-ZTOiYuSekqTiLPA"
+      }
+    },
+    "image": null,
+    "preview_field": null,
+    "is_root": false,
+    "preview_tmpl": null,
+    "is_nestable": true,
+    "all_presets": [],
+    "preset_id": null,
+    "real_name": "text_reveal",
+    "component_group_uuid": "1607edfa-9b1d-4c27-ba7d-1671cbbbbf37",
+    "color": null,
+    "icon": null,
+    "internal_tags_list": [],
+    "internal_tag_ids": [],
+    "content_type_asset_preview": null,
+    "metadata": {}
+  },
+  {
+    "name": "video_yt",
+    "display_name": null,
+    "description": "",
+    "created_at": "2026-06-29T10:41:39.087Z",
+    "updated_at": "2026-07-13T22:06:10.887Z",
+    "id": 192676245867852,
+    "schema": {
+      "video_id": {
+        "type": "text",
+        "pos": 0,
+        "id": "I2mb5t3yTlW_yLzCTtr3Iw"
+      },
+      "anchor_id": {
+        "type": "text",
+        "display_name": "Anchor ID",
+        "description": "ID HTML per link ancora (es. chi-siamo). Solo minuscole, numeri e trattini.",
+        "regex": "^[a-z0-9-]*$",
+        "translatable": false,
+        "required": false,
+        "pos": 1,
+        "id": "W_LOMHTSRKKcIBEdsbTbdA"
+      }
+    },
+    "image": null,
+    "preview_field": null,
+    "is_root": false,
+    "preview_tmpl": null,
+    "is_nestable": true,
+    "all_presets": [],
+    "preset_id": null,
+    "real_name": "video_yt",
+    "component_group_uuid": "1607edfa-9b1d-4c27-ba7d-1671cbbbbf37",
+    "color": null,
+    "icon": null,
+    "internal_tags_list": [],
+    "internal_tag_ids": [],
+    "content_type_asset_preview": null,
+    "metadata": {}
+  }
+]

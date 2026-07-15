@@ -7,6 +7,7 @@ import { StoryblokComponent, storyblokEditable } from '@storyblok/react'
 import classNames from 'classnames/bind'
 import styles from './index.module.scss'
 import { Text_revealStoryblok } from '@/types/storyblok'
+import { getStoryblokAnchorId } from '@/lib/storyblok/anchor'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -113,7 +114,7 @@ const TextReveal = ({ blok }: { blok?: Text_revealStoryblok }) => {
     const linkArray = Array.isArray(link) ? link : link ? [link] : []
 
     return (
-        <section ref={wrapperRef} className={cn('wrapper')} {...storyblokEditable(blok as any)}>
+        <section ref={wrapperRef} className={cn('wrapper')} id={getStoryblokAnchorId(blok?.anchor_id)} {...storyblokEditable(blok as any)}>
             <div className={cn('container')}>
                 <div className={cn('content')}>
                     {text && (

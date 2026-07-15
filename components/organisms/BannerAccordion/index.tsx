@@ -9,6 +9,7 @@ import CardBox from '@/components/molecules/CardBox'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { BREAKPOINT_MD_PX } from '@/lib/breakpoints'
+import { getStoryblokAnchorId } from '@/lib/storyblok/anchor'
 import { useViewport } from '@/lib/context/viewport-context'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -179,7 +180,7 @@ const Banneraccordion = ({ blok }: { blok?: Banner_accordionStoryblok }) => {
   }, [items])
 
   return (
-    <div ref={wrapperRef} className={cn('wrapper')}>
+    <div ref={wrapperRef} className={cn('wrapper')} id={getStoryblokAnchorId(blok?.anchor_id)}>
       <div className={cn('container')}>
         <div className={cn('image')}>
           <Asset asset={image} size='l' overlay />

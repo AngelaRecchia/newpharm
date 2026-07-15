@@ -9,6 +9,7 @@ import Button from '@/components/atoms/Button'
 import SmartLink from '@/components/atoms/SmartLink'
 import { AssetStoryblok, LinkStoryblok } from '@/types/storyblok'
 import { isEmpty, isLinkEmpty } from '@/lib/api/utils/links'
+import { getStoryblokAnchorId } from '@/lib/storyblok/anchor'
 import { useViewport } from '@/lib/context/viewport-context'
 
 const cn = classNames.bind(styles)
@@ -19,6 +20,7 @@ interface BoxImageStoryblok {
     title?: string | null
     subtitle?: string | null
     link?: LinkStoryblok[]
+    anchor_id?: string | null
     image_alignment?: 'left' | 'right' | null
     _uid: string
     component: string
@@ -36,7 +38,7 @@ const BoxImage = ({
     const contentWrapperRef = useRef<HTMLDivElement>(null)
     const { untilMd } = useViewport()
 
-    const { asset, title, subtitle, link, image_alignment = 'left' } = blok ?? {}
+    const { asset, title, subtitle, link, image_alignment = 'left', anchor_id } = blok ?? {}
     const linkBlok = link?.[0]
     const hasTitle = !isEmpty(title)
     const hasSubtitle = !isEmpty(subtitle)
@@ -95,6 +97,7 @@ const BoxImage = ({
     return (
         <section
             ref={wrapperRef}
+            id={getStoryblokAnchorId(anchor_id)}
             className={cn('wrapper', {
                 carousel: variant === 'carousel',
                 'has-link': hasLink,

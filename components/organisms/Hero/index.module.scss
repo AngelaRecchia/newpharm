@@ -93,7 +93,14 @@
     }
 
     .swiper-slide {
-      width: 20.75rem; // 332px
+      min-width: 20.75rem; // 332px
+      width: calc(
+        (100% - (var(--hero-link-count, 4) - 1) * 8px) / var(--hero-link-count, 4)
+      );
+
+      > a {
+        width: 100%;
+      }
     }
 
     .content {

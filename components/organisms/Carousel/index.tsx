@@ -14,19 +14,26 @@ import { useFormatter, useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 import Button from '@/components/atoms/Button';
 import { isEmpty } from '@/lib/api/utils/links';
+import { CarouselStoryblok } from '@/types/storyblok';
+import { getStoryblokAnchorId } from '@/lib/storyblok/anchor';
 
 const cn = classNames.bind(styles);
 
 interface CarouselProps {
-
+    blok?: CarouselStoryblok;
     title?: string;
     subtitle?: string;
     link?: any[];
-    items: any[];
+    items?: any[];
     variant?: 'news' | 'products' | 'insects';
+    anchor_id?: string | null;
 }
 
-const Carousel = ({ title, subtitle, link, items, variant }: CarouselProps) => {
+const Carousel = ({ blok, title, subtitle, link, items = [], variant, anchor_id }: CarouselProps) => {
+    const resolvedTitle = title ?? blok?.title ?? undefined;
+    const resolvedSubtitle = subtitle ?? blok?.subtitle ?? undefined;
+    const resolvedLink = link ?? blok?.link ?? undefined;
+    const resolvedAnchorId = getStoryblokAnchorId(anchor_id ?? blok?.anchor_id);
     const format = useFormatter();
     const t = useTranslations('');
 
@@ -36,8 +43,8 @@ const Carousel = ({ title, subtitle, link, items, variant }: CarouselProps) => {
         if (variant === 'news') {
             return t('news');
         }
-        return title;
-    }, [variant, title, t]);
+        return resolvedTitle;
+    }, [variant, resolvedTitle, t]);
 
     const computedLink = useMemo(() => {
         if (variant === 'news' && items.length > 0) {
@@ -49,21 +56,21 @@ const Carousel = ({ title, subtitle, link, items, variant }: CarouselProps) => {
                 return slugParts.join('/');
             }
         }
-        return link
-    }, [variant, items, link]);
+        return resolvedLink
+    }, [variant, items, resolvedLink]);
 
     if (items.length === 0) {
         return <></>;
     }
 
     return (
-        <section className={cn('wrapper')}>
+        <section className={cn('wrapper')} id={resolvedAnchorId}>
             <div className={cn('container')}>
 
                 <div className={cn('header-wrapper')}>
                     <div className={cn('header')}>
                         {computedTitle && <h2 className={cn('title')}>{computedTitle}</h2>}
-                        {!isEmpty(subtitle) && <p className={cn('subtitle')}>{subtitle}</p>}
+                        {!isEmpty(resolvedSubtitle) && <p className={cn('subtitle')}>{resolvedSubtitle}</p>}
 
                         {computedLink && <Button href={computedLink as string} label={computedTitle} />}
                     </div>

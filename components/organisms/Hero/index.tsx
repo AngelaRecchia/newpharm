@@ -4,11 +4,12 @@ import Asset from '@/components/atoms/Asset';
 
 import styles from './index.module.scss';
 import classNames from 'classnames/bind';
-import { useMemo } from 'react';
+import { useMemo, type CSSProperties } from 'react';
 import AnchorLink from '@/components/atoms/AnchorLink';
 import Button from '@/components/atoms/Button';
 
 import { storyblokEditable } from '@storyblok/react';
+import { getStoryblokAnchorId } from '@/lib/storyblok/anchor';
 
 import { Swiper, SwiperSlide } from 'swiper/react';
 
@@ -29,14 +30,23 @@ export default function HeroComponent({ blok }: { blok?: HeroStoryblok }) {
             ))
         } else if (variant === 'secondary') {
 
-            return <Swiper spaceBetween={8} slidesPerView='auto' className={cn('swiper')}>
-                {links?.map((link) => (
-                    <SwiperSlide key={link._uid} className={cn('swiper-slide')}>
+            return (
+                <Swiper
+                    spaceBetween={8}
+                    slidesPerView='auto'
+                    className={cn('swiper')}
+                    style={
+                        { '--hero-link-count': links?.length ?? 1 } as CSSProperties
+                    }
+                >
+                    {links?.map((link) => (
+                        <SwiperSlide key={link._uid} className={cn('swiper-slide')}>
 
-                        <AnchorLink key={link._uid} link={link.link} label={link.label} description={link.description} />
-                    </SwiperSlide>
-                ))}
-            </Swiper>
+                            <AnchorLink key={link._uid} link={link.link} label={link.label} description={link.description} />
+                        </SwiperSlide>
+                    ))}
+                </Swiper>
+            )
         }
         return null;
     }, [blok])
@@ -44,7 +54,11 @@ export default function HeroComponent({ blok }: { blok?: HeroStoryblok }) {
 
     const { title, subtitle, background, links, variant } = blok;
     return (
-        <section className={cn('wrapper', variant)} {...storyblokEditable(blok as any)}>
+        <section
+            className={cn('wrapper', variant)}
+            id={getStoryblokAnchorId(blok.anchor_id)}
+            {...storyblokEditable(blok as any)}
+        >
 
 
             {variant !== 'tertiary' && background ?

@@ -6,6 +6,7 @@ import styles from './index.module.scss'
 import { storyblokEditable } from '@storyblok/react'
 import { Spec_tableStoryblok } from '@/types/storyblok'
 import { isEmpty } from '@/lib/api/utils/links'
+import { getStoryblokAnchorId } from '@/lib/storyblok/anchor'
 
 const cn = classNames.bind(styles)
 
@@ -39,7 +40,7 @@ const SpecTable = ({ blok }: { blok: Spec_tableStoryblok }) => {
     const hasTableStructure = table && typeof table === 'object' && 'thead' in table && 'tbody' in table
 
     return (
-        <div className={cn('wrapper')} {...storyblokEditable(blok as any)}>
+        <div className={cn('wrapper')} id={getStoryblokAnchorId(blok.anchor_id)} {...storyblokEditable(blok as any)}>
 
             <div className={cn('container')}>
                 {/* Header — titolo + descrizione */}

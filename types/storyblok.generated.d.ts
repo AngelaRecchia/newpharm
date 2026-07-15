@@ -6,7 +6,7 @@
  * 
  * Per rigenerare: npm run generate:types
  * 
- * Generato il: 2026-07-06T20:36:17.152Z
+ * Generato il: 2026-07-15T15:34:54.928Z
  */
 
 
@@ -41,6 +41,7 @@ export interface AssetStoryblok {
 export interface Banner_accordionStoryblok {
   image?: any[] | null // Optional
   items?: any[] | null // Optional
+  anchor_id?: string | null // Optional
   _uid: string
   component: string
   _editable?: string
@@ -53,6 +54,7 @@ export interface Box_imageStoryblok {
   asset?: any[] | null // Optional
   link?: any[] | null // Optional
   image_alignment?: any | null // Optional
+  anchor_id?: string | null // Optional
   _uid: string
   component: string
   _editable?: string
@@ -62,6 +64,7 @@ export interface Box_imageStoryblok {
 export interface Box_image_carouselStoryblok {
   title?: string | null // Optional
   items?: any[] | null // Optional
+  anchor_id?: string | null // Optional
   _uid: string
   component: string
   _editable?: string
@@ -135,6 +138,7 @@ export interface CarouselStoryblok {
   title?: string | null // Optional
   subtitle?: string | null // Optional
   link?: any[] | null // Optional
+  anchor_id?: string | null // Optional
   _uid: string
   component: string
   _editable?: string
@@ -156,6 +160,7 @@ export interface CatalogStoryblok {
 export interface Catalogs_downloadStoryblok {
   title?: string | null // Optional
   items?: string | null // Optional
+  anchor_id?: string | null // Optional
   _uid: string
   component: string
   _editable?: string
@@ -164,6 +169,7 @@ export interface Catalogs_downloadStoryblok {
 
 export interface Cta_boxStoryblok {
   cards?: any[] | null // Optional
+  anchor_id?: string | null // Optional
   _uid: string
   component: string
   _editable?: string
@@ -174,6 +180,7 @@ export interface Division_boxStoryblok {
   title?: string | null // Optional
   link?: any[] | null // Optional
   cards?: any[] | null // Optional
+  anchor_id?: string | null // Optional
   _uid: string
   component: string
   _editable?: string
@@ -184,6 +191,7 @@ export interface FaqsStoryblok {
   title?: string | null // Optional
   description?: string | null // Optional
   items?: any[] | null // Optional
+  anchor_id?: string | null // Optional
   _uid: string
   component: string
   _editable?: string
@@ -206,6 +214,7 @@ export interface Full_bannerStoryblok {
   title?: string | null // Optional
   asset?: { id: number; alt: string; name: string; focus: string; title: string; filename: string; copyright: string; fieldtype: string; } | null // Optional
   variant?: any | null // Optional
+  anchor_id?: string | null // Optional
   _uid: string
   component: string
   _editable?: string
@@ -215,6 +224,7 @@ export interface Full_bannerStoryblok {
 export interface GalleryStoryblok {
   title?: string | null // Optional
   images?: any[] | null // Optional
+  anchor_id?: string | null // Optional
   _uid: string
   component: string
   _editable?: string
@@ -235,6 +245,7 @@ export interface HeroStoryblok {
   subtitle?: string | null // Optional
   background?: { id: number; alt: string; name: string; focus: string; title: string; filename: string; copyright: string; fieldtype: string; } | null // Optional
   links?: any[] | null // Optional
+  anchor_id?: string | null // Optional
   _uid: string
   component: string
   _editable?: string
@@ -245,6 +256,7 @@ export interface Icon_text_highlightStoryblok {
   title?: string | null // Optional
   description?: string | null // Optional
   items?: any[] | null // Optional
+  anchor_id?: string | null // Optional
   _uid: string
   component: string
   _editable?: string
@@ -275,6 +287,7 @@ export interface Logo_itemStoryblok {
 export interface MilestoneStoryblok {
   title?: string | null // Optional
   items?: any[] | null // Optional
+  anchor_id?: string | null // Optional
   _uid: string
   component: string
   _editable?: string
@@ -312,6 +325,7 @@ export interface PartnersStoryblok {
   variant?: any | null // Optional
   title?: string | null // Optional
   items?: any[] | null // Optional
+  anchor_id?: string | null // Optional
   _uid: string
   component: string
   _editable?: string
@@ -356,6 +370,7 @@ export interface Projects_highlightStoryblok {
   title?: string | null // Optional
   link?: any[] | null // Optional
   cards?: any[] | null // Optional
+  anchor_id?: string | null // Optional
   _uid: string
   component: string
   _editable?: string
@@ -374,6 +389,7 @@ export interface SettingsStoryblok {
 export interface SlideshowStoryblok {
   title?: string | null // Optional
   cards?: any[] | null // Optional
+  anchor_id?: string | null // Optional
   _uid: string
   component: string
   _editable?: string
@@ -394,6 +410,7 @@ export interface Spec_tableStoryblok {
   description?: string | null // Optional
   table?: any[][] | null // Optional
   table_code?: string | null // Optional
+  anchor_id?: string | null // Optional
   _uid: string
   component: string
   _editable?: string
@@ -402,6 +419,7 @@ export interface Spec_tableStoryblok {
 
 export interface Split_bannerStoryblok {
   items?: any[] | null // Optional
+  anchor_id?: string | null // Optional
   _uid: string
   component: string
   _editable?: string
@@ -413,6 +431,7 @@ export interface Sticky_imageStoryblok {
   image?: any[] | null // Optional
   content?: string | null // Optional
   animated?: boolean | null // Optional
+  anchor_id?: string | null // Optional
   _uid: string
   component: string
   _editable?: string
@@ -438,6 +457,7 @@ export interface TabsStoryblok {
   title?: string | null // Optional
   asset?: any[] | null // Optional
   items?: any[] | null // Optional
+  anchor_id?: string | null // Optional
   _uid: string
   component: string
   _editable?: string
@@ -455,6 +475,7 @@ export interface TeaserStoryblok {
 export interface Text_revealStoryblok {
   text?: string | null // Optional
   link?: any[] | null // Optional
+  anchor_id?: string | null // Optional
   _uid: string
   component: string
   _editable?: string
@@ -463,6 +484,7 @@ export interface Text_revealStoryblok {
 
 export interface Video_ytStoryblok {
   video_id?: string | null // Optional
+  anchor_id?: string | null // Optional
   _uid: string
   component: string
   _editable?: string

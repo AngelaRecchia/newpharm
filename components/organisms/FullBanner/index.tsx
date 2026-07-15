@@ -8,6 +8,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import styles from './index.module.scss'
 import classNames from 'classnames/bind'
 import { storyblokEditable } from '@storyblok/react';
+import { getStoryblokAnchorId } from '@/lib/storyblok/anchor';
 import Asset from '@/components/atoms/Asset';
 import RichText from '@/components/organisms/RichText';
 import { hasRichTextContent } from '@/lib/api/utils/richtext';
@@ -98,6 +99,7 @@ const FullBanner = ({ blok }: { blok?: Full_bannerStoryblok }) => {
         <section
             ref={wrapperRef}
             className={cn('wrapper', variant)}
+            id={getStoryblokAnchorId(blok.anchor_id)}
             {...storyblokEditable(blok as any)}
         >
             <div ref={containerRef} className={cn('container')}>

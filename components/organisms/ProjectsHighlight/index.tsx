@@ -7,30 +7,13 @@ import { storyblokEditable } from '@storyblok/react'
 import Asset from '@/components/atoms/Asset'
 import Button from '@/components/atoms/Button'
 import SmartLink from '@/components/atoms/SmartLink'
-import { AssetStoryblok, LinkStoryblok } from '@/types/storyblok'
-import { StoryblokLink, isEmpty, isLinkEmpty } from '@/lib/api/utils/links'
+import { AssetStoryblok, Projects_highlightStoryblok } from '@/types/storyblok'
+import { isLinkEmpty } from '@/lib/api/utils/links'
+import { getStoryblokAnchorId } from '@/lib/storyblok/anchor'
 
 const cn = classNames.bind(styles)
 
-interface CardHighlight {
-    image?: AssetStoryblok[] | null
-    text?: string | null
-    link?: StoryblokLink & { anchor?: string } | null
-    _uid: string
-    component: string
-    _editable?: string
-}
-
-interface ProjectsHighlightStoryblok {
-    title?: string | null
-    link?: LinkStoryblok[]
-    cards?: CardHighlight[] | null
-    _uid: string
-    component: string
-    _editable?: string
-}
-
-export default function ProjectsHighlight({ blok }: { blok?: ProjectsHighlightStoryblok }) {
+export default function ProjectsHighlight({ blok }: { blok?: Projects_highlightStoryblok }) {
     const cardsRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
@@ -75,7 +58,7 @@ export default function ProjectsHighlight({ blok }: { blok?: ProjectsHighlightSt
     const { title, link, cards } = blok;
 
     return (
-        <section className={cn('wrapper')} {...storyblokEditable(blok as any)}>
+        <section className={cn('wrapper')} id={getStoryblokAnchorId(blok.anchor_id)} {...storyblokEditable(blok as any)}>
             <div className={cn('container')}>
                 {(title || link) && (
                     <div className={cn('head')}>
@@ -99,7 +82,7 @@ export default function ProjectsHighlight({ blok }: { blok?: ProjectsHighlightSt
                             <div key={card._uid} className={cn('card')}>
 
 
-                                {card.image?.map((image, index) => (
+                                {card.image?.map((image: AssetStoryblok, index: number) => (
                                     <div key={image._uid || `image-${index}`} className={cn('card-image')}>
                                         <Asset blok={image} size="l" />
                                     </div>

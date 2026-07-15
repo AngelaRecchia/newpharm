@@ -2,7 +2,8 @@
 
 import { useRef } from 'react';
 import { Division_boxStoryblok } from '@/types/storyblok';
-import { storyblokEditable } from '@storyblok/react';
+import { storyblokEditable } from '@storyblok/react'
+import { getStoryblokAnchorId } from '@/lib/storyblok/anchor';
 import classNames from 'classnames/bind';
 import styles from './index.module.scss';
 import Button from '@/components/atoms/Button';
@@ -27,7 +28,7 @@ const DivisionBox = ({ blok }: { blok?: Division_boxStoryblok }) => {
     if (!cards?.length) return <></>;
 
     return (
-        <section className={cn('wrapper')} {...storyblokEditable(blok as any)}>
+        <section className={cn('wrapper')} id={getStoryblokAnchorId(blok.anchor_id)} {...storyblokEditable(blok as any)}>
             <div className={cn('container')}>
                 <div className={cn('head')}>
                     {hasTitle && <h2 className={cn('title')}>{title}</h2>}

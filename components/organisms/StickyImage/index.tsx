@@ -11,6 +11,7 @@ import Asset, { getAssetSrc } from '@/components/atoms/Asset'
 import HalftoneOverlay from './HalftoneOverlay'
 import { useViewport } from '@/lib/context/viewport-context'
 import { SmoothScrollContext } from '@/lib/context/smooth-scroll-context'
+import { getStoryblokAnchorId } from '@/lib/storyblok/anchor'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -131,7 +132,7 @@ const StickyImage = ({ blok }: { blok: Sticky_imageStoryblok }) => {
   }, [isDesktop, isAnimated, refreshScroll])
 
   return (
-    <section ref={sectionRef} className={cn('wrapper', { 'no-webgl': !isAnimated || !webglSupported })}>
+    <section ref={sectionRef} className={cn('wrapper', { 'no-webgl': !isAnimated || !webglSupported })} id={getStoryblokAnchorId(blok.anchor_id)}>
       <div className={cn('title')}>
         <h2 >{title}</h2>
       </div>

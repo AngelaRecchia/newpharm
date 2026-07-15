@@ -13,6 +13,7 @@ import Button from '@/components/atoms/Button'
 import SmartLink from '@/components/atoms/SmartLink'
 import { SlideshowStoryblok, Card_slideshowStoryblok } from '@/types/storyblok'
 import { isLinkEmpty } from '@/lib/api/utils/links'
+import { getStoryblokAnchorId } from '@/lib/storyblok/anchor'
 
 const cn = classNames.bind(styles)
 
@@ -33,7 +34,7 @@ export default function Slideshow({ blok }: { blok?: SlideshowStoryblok }) {
 
 
     return (
-        <section className={cn('wrapper')} {...storyblokEditable(blok as any)}>
+        <section className={cn('wrapper')} id={getStoryblokAnchorId(blok.anchor_id)} {...storyblokEditable(blok as any)}>
             <div className={cn('container')}>
                 {title && (
                     <div className={cn('head')}>

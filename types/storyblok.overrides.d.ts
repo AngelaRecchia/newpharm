@@ -47,6 +47,7 @@ export interface CatalogsDownloadStoryblok {
   title?: string | null;
   /** UUID non risolti, oppure oggetti story dopo resolve_relations */
   items?: (CatalogStoryblok | CatalogStoryResolved | string)[] | null;
+  anchor_id?: string | null;
   _uid: string;
   component: string;
   _editable?: string;
@@ -66,6 +67,7 @@ export interface PartnersStoryblok {
   title?: string | null; // Optional
   variant?: "light" | "dark" | null; // Optional
   items?: any[] | null; // Optional
+  anchor_id?: string | null;
   _uid: string;
   component: string;
   _editable?: string;
@@ -77,6 +79,7 @@ export interface PartnersStoryblok {
 export interface SlideshowStoryblok {
   title?: string | null; // Optional
   cards?: Card_slideshowStoryblok[];
+  anchor_id?: string | null;
   _uid: string;
   component: string;
   _editable?: string;
@@ -97,6 +100,7 @@ export interface Card_slideshowStoryblok {
 /** video_yt — componente Storyblok */
 export interface Video_ytStoryblok {
   video_id?: string | null;
+  anchor_id?: string | null;
   _uid: string;
   component: string;
   _editable?: string;

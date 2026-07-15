@@ -19,6 +19,7 @@ import {
   getCatalogRowMeta,
 } from './catalogHelpers'
 import styles from './index.module.scss'
+import { getStoryblokAnchorId } from '@/lib/storyblok/anchor'
 import Button from '@/components/atoms/Button'
 
 const cn = classNames.bind(styles)
@@ -34,7 +35,7 @@ export default function CatalogsDownload({
   const t = useTranslations('')
   const refreshPageScroll = useRefreshPageScroll()
   const skipScrollRefresh = useRef(true)
-  const { title, items } = blok ?? {}
+  const { title, items, anchor_id } = blok ?? {}
   const productDownloadLabel = t('product_download')
 
   const catalogs = useMemo(() => {
@@ -117,7 +118,7 @@ export default function CatalogsDownload({
 
   if (catalogs.length === 0) {
     return (
-      <section className={cn('wrapper')} {...storyblokEditable(blok as any)}>
+      <section className={cn('wrapper')} id={getStoryblokAnchorId(anchor_id)} {...storyblokEditable(blok as any)}>
         <div className={cn('container')}>
           {title && <h2 className={cn('title')}>{title}</h2>}
         </div>
@@ -156,7 +157,7 @@ export default function CatalogsDownload({
   }
 
   return (
-    <section className={cn('wrapper')} {...storyblokEditable(blok as any)}>
+    <section className={cn('wrapper')} id={getStoryblokAnchorId(anchor_id)} {...storyblokEditable(blok as any)}>
       <CatalogDownloadModal
         open={downloadModal !== null}
         fileUrl={downloadModal?.url ?? ''}

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import classNames from 'classnames/bind'
 import styles from './index.module.scss'
 import { storyblokEditable } from '@storyblok/react'
+import { getStoryblokAnchorId } from '@/lib/storyblok/anchor'
 import Button from '@/components/atoms/Button'
 import { isEmpty } from '@/lib/api/utils/links'
 import { MilestoneStoryblok } from '@/types/storyblok'
@@ -50,7 +51,7 @@ const Milestone = ({ blok }: { blok?: MilestoneStoryblok }) => {
     const visibleItems = items?.slice(0, visibleCount)
 
     return (
-        <section className={cn('wrapper')} {...storyblokEditable(blok as any)}>
+        <section className={cn('wrapper')} id={getStoryblokAnchorId(blok.anchor_id)} {...storyblokEditable(blok as any)}>
             <div className={cn('container')}>
                 {!isEmpty(title) && (
                     <div className={cn('head')}>

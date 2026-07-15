@@ -9,6 +9,7 @@ import AccordionItem from '@/components/atoms/AccordionItem'
 import RichText from '@/components/organisms/RichText'
 import { isEmpty } from '@/lib/api/utils/links'
 import { TabsStoryblok } from '@/types/storyblok'
+import { getStoryblokAnchorId } from '@/lib/storyblok/anchor'
 import styles from './index.module.scss'
 
 const cn = classNames.bind(styles)
@@ -90,7 +91,7 @@ const Tabs = ({ blok }: { blok: TabsStoryblok }) => {
   }
 
   return (
-    <section className={cn('wrapper')} {...storyblokEditable(blok as any)}>
+    <section className={cn('wrapper')} id={getStoryblokAnchorId(blok.anchor_id)} {...storyblokEditable(blok as any)}>
       <div className={cn('container')}>
         <div className={cn('layout')}>
           {renderPreview('sticky')}

@@ -5,6 +5,7 @@ import classNames from 'classnames/bind'
 import styles from './index.module.scss'
 import { storyblokEditable } from '@storyblok/react'
 import { Video_ytStoryblok } from '@/types/storyblok'
+import { getStoryblokAnchorId } from '@/lib/storyblok/anchor'
 import { useTranslations } from 'next-intl'
 import Icon from '@/components/atoms/Icon'
 
@@ -66,6 +67,7 @@ const VideoYt = ({ blok, videoId: directVideoId }: VideoYtProps) => {
     return (
         <section
             className={cn('wrapper')}
+            id={getStoryblokAnchorId(blok?.anchor_id)}
             {...(blok ? storyblokEditable(blok as any) : {})}
         >
             <div className={cn('container')}>
