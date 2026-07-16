@@ -55,7 +55,8 @@
       }
 
       p,
-      div:has(> a) {
+      div:has(> a),
+      div:has([data-button]) {
         max-width: 25rem;
         margin: 0 auto;
       }
@@ -63,7 +64,8 @@
       @include lg {
         padding-block: $s-64;
         p,
-        div:has(> a) {
+        div:has(> a),
+        div:has([data-button]) {
           width: 55%;
         }
 

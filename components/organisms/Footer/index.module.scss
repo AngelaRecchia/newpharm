@@ -74,12 +74,16 @@
 
     address {
       flex-basis: 50%;
-      @include t-h6;
+      @include t-body;
       font-style: normal;
 
       p {
         padding: 0;
         margin: 0;
+      }
+
+      a {
+        text-decoration: underline;
       }
     }
 
