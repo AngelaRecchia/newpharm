@@ -97,7 +97,6 @@
   @include md {
     gap: $s-32;
     padding: $s-96 $s-40 $s-128;
-    @include transition(transform, $td-300);
   }
 }
 
@@ -111,6 +110,10 @@
 
 .link-wrapper {
   margin-top: $s-8;
+
+  @include md {
+    @include transition(transform, $td-300);
+  }
 }
 
 // ==============================================
@@ -133,7 +136,7 @@
   }
 
   &.is-hovered {
-    .content {
+    .link-wrapper {
       @include md {
         transform: translateX($s-24);
       }
