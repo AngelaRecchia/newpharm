@@ -94,6 +94,7 @@ const FullBanner = ({ blok }: { blok?: Full_bannerStoryblok }) => {
     if (!blok) return <></>;
 
     const { title, asset, variant } = blok;
+    const firstAsset = asset && asset.length > 0 ? asset[0] : null;
 
     return (
         <section
@@ -109,13 +110,13 @@ const FullBanner = ({ blok }: { blok?: Full_bannerStoryblok }) => {
                     )}
                 </div>
 
-                {asset && (
+                {firstAsset && (
                     <div
                         ref={assetRef}
                         className={cn('asset-wrapper')}
                     >
                         <Asset
-                            asset={asset}
+                            blok={firstAsset}
                             size="l"
                             overlay
                             hideControls={false}

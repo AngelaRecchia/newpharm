@@ -56,7 +56,7 @@ const Story = ({ blok, relatedStories }: StoryProps) => {
 
 
             {asset && asset.length > 0 && (
-                <FullBanner blok={{ asset: asset[0], _uid: '1', component: 'full_banner', variant: 'padding' }} />
+                <FullBanner blok={{ asset, _uid: '1', component: 'full_banner', variant: 'padding' }} />
             )}
 
 

@@ -212,7 +212,7 @@ export interface FooterStoryblok {
 
 export interface Full_bannerStoryblok {
   title?: string | null // Optional
-  asset?: { id: number; alt: string; name: string; focus: string; title: string; filename: string; copyright: string; fieldtype: string; } | null // Optional
+  asset?: AssetStoryblok[] | null // Optional
   variant?: any | null // Optional
   anchor_id?: string | null // Optional
   _uid: string

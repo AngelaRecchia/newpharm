@@ -54,5 +54,22 @@
     will-change: transform;
     backface-visibility: hidden;
     -webkit-font-smoothing: antialiased;
+
+    // Come Hero secondary: crescono per riempire 100vw, min = design
+    > * {
+      min-width: 20.5rem; // 328px
+      max-width: none;
+      width: calc(
+        (100vw - #{$s-24 * 2} - (var(--banner-card-count, 4) - 1) * #{$s-16}) /
+          var(--banner-card-count, 4)
+      );
+
+      @include md {
+        width: calc(
+          (100vw - #{$s-40 * 2} - (var(--banner-card-count, 4) - 1) * #{$s-16}) /
+            var(--banner-card-count, 4)
+        );
+      }
+    }
   }
 }

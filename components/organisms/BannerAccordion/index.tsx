@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState, type CSSProperties } from 'react'
 import classNames from 'classnames/bind'
 import styles from './index.module.scss'
 import { Banner_accordionStoryblok, Card_boxStoryblok } from '@/types/storyblok'
@@ -187,7 +187,13 @@ const Banneraccordion = ({ blok }: { blok?: Banner_accordionStoryblok }) => {
         </div>
 
         <div className={cn('content-position')}>
-          <div ref={contentRef} className={cn('content')}>
+          <div
+            ref={contentRef}
+            className={cn('content')}
+            style={
+              { '--banner-card-count': items?.length ?? 1 } as CSSProperties
+            }
+          >
             {items?.map((item, index) => (
               <CardBox
                 key={item._uid}

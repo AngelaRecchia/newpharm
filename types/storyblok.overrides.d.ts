@@ -25,9 +25,10 @@ export interface ProductStoryblok extends Generated.ProductStoryblok {
   composition?: ISbRichtext | null;
 }
 
-/** full_banner — title come richtext in CMS */
-export interface Full_bannerStoryblok extends Generated.Full_bannerStoryblok {
+/** full_banner — title richtext + asset come bloks Asset[] */
+export interface Full_bannerStoryblok extends Omit<Generated.Full_bannerStoryblok, 'title' | 'asset'> {
   title?: ISbRichtext | null;
+  asset?: AssetStoryblok[] | null;
 }
 
 /** Story Catalog risolta da CDN (resolve_relations su catalogs_download.items) */
