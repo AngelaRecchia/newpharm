@@ -26,7 +26,10 @@ export interface ProductStoryblok extends Generated.ProductStoryblok {
 }
 
 /** full_banner — title richtext + asset come bloks Asset[] */
-export interface Full_bannerStoryblok extends Omit<Generated.Full_bannerStoryblok, 'title' | 'asset'> {
+export interface Full_bannerStoryblok extends Omit<
+  Generated.Full_bannerStoryblok,
+  "title" | "asset"
+> {
   title?: ISbRichtext | null;
   asset?: AssetStoryblok[] | null;
 }
