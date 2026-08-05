@@ -28,10 +28,6 @@ export default function Slideshow({ blok }: { blok?: SlideshowStoryblok }) {
     const { title, cards } = blok
 
 
-    cards?.map((card: Card_slideshowStoryblok) => {
-        console.log(card.link)
-    })
-
 
     return (
         <section className={cn('wrapper')} id={getStoryblokAnchorId(blok.anchor_id)} {...storyblokEditable(blok as any)}>
