@@ -5,6 +5,7 @@
 // ============================================
 :root {
   --header-height: 4.25rem; // 68px - altezza header
+  --sticky-top: 4.25rem; // offset sticky sincronizzato con header (animato via JS)
 }
 
 html,

@@ -14,6 +14,7 @@ import Icon from '@/components/atoms/Icon'
 import VideoYt from '@/components/organisms/VideoYt'
 import { StoryblokComponent } from '@storyblok/react'
 import { hasRichTextContent } from '@/lib/api/utils/richtext'
+import { getProductCategorySlug } from '@/lib/product-filtri'
 
 const cn = classNames.bind(styles)
 
@@ -27,6 +28,7 @@ const Product = ({ blok }: { blok: ProductStoryblok }) => {
     features,
     product_type,
     category,
+    product_filtri,
     application_areas_text,
     composition,
     dosage_and_application,
@@ -40,6 +42,7 @@ const Product = ({ blok }: { blok: ProductStoryblok }) => {
     related_projects
   } = blok as any
 
+  const categorySlug = getProductCategorySlug(product_filtri, category)
 
   // Immagine principale = primo asset, secondarie = resto dell'array
   const mainImage = Array.isArray(images) && images.length > 0 ? [images[0]] : images
@@ -102,9 +105,9 @@ const Product = ({ blok }: { blok: ProductStoryblok }) => {
       <div className={cn('sticky-section')}>
         {/* Colonna sinistra — immagine prodotto */}
         <div className={cn('image-col')}>
-          {category && (
+          {categorySlug && (
             <div className={cn('tag')}>
-              <Tag tag={t(category)} variant="primary" />
+              <Tag tag={t(categorySlug)} variant="primary" />
             </div>
           )}
           <div className={cn('product-image')}>

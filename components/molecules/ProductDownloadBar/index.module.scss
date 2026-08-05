@@ -1,0 +1,178 @@
+@use "../../../styles" as *;
+
+.layout {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $s-24;
+  min-width: 0;
+  color: $c-white;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: $s-16;
+  min-width: 0;
+  flex: 1;
+}
+
+.thumb {
+  flex-shrink: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  overflow: hidden;
+  background-color: $c-white;
+
+  > * {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: $s-16 $s-24;
+  min-width: 0;
+}
+
+.link {
+  @include t-note;
+  display: inline-flex;
+  align-items: center;
+  gap: $s-8;
+  color: $c-white;
+  text-decoration: none;
+  white-space: nowrap;
+
+  &.inert {
+    cursor: default;
+    pointer-events: none;
+  }
+
+  &:not(.inert):hover {
+    text-decoration: underline;
+  }
+}
+
+.linkIcon {
+  color: $c-white;
+  flex-shrink: 0;
+}
+
+.right {
+  flex-shrink: 0;
+
+  [data-button] {
+    flex-shrink: 0;
+  }
+}
+
+.layout.multi {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+
+  .left {
+    align-items: flex-start;
+    flex: 1;
+    width: 100%;
+  }
+
+  .right {
+    margin-top: $s-40;
+    width: fit-content;
+    padding-inline-end: 3rem;
+
+    [data-button] {
+      width: fit-content;
+    }
+  }
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-width: 0;
+}
+
+.selectedCount,
+.selectedHint {
+  @include t-help;
+  margin: 0;
+  color: $c-white;
+}
+
+@include md {
+  .layout.multi {
+    flex-direction: row;
+    align-items: center;
+    gap: $s-24;
+
+    .left {
+      align-items: center;
+      width: auto;
+    }
+
+    .right {
+      margin-top: 0;
+      padding-inline-end: 0;
+      align-self: center;
+    }
+  }
+}
+
+.thumbs {
+  display: flex;
+  align-items: center;
+  gap: $s-8;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  flex-shrink: 0;
+}
+
+.thumbItem {
+  margin: 0;
+}
+
+.thumbButton {
+  display: block;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid rgba($c-white, 0.35);
+  background-color: $c-white;
+  cursor: pointer;
+
+  > * {
+    width: 100%;
+    height: 100%;
+  }
+
+  &:hover {
+    border-color: $c-white;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $c-white;
+    outline-offset: 2px;
+  }
+}
+
+@include mobile {
+  .layout:not(.multi) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $s-12;
+  }
+
+  .layout.multi .left {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

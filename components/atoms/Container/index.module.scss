@@ -1,0 +1,17 @@
+@use "../../../styles" as *;
+
+.wrapper {
+  width: 100%;
+
+  &.lg {
+    @include container-lg;
+  }
+
+  &.md {
+    @include container-md;
+  }
+
+  &.flushBlock {
+    padding-block: 0;
+  }
+}

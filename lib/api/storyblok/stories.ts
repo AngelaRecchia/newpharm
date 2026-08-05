@@ -190,6 +190,138 @@ export async function getAllStories(
 }
 
 /**
+ * Recupera stories per UUID preservando l'ordine richiesto.
+ * Richieste batched (max 50 UUID per chiamata — limite CDN Storyblok).
+ */
+export async function getStoriesByUuids(
+  uuids: string[],
+  locale?: string,
+  options: GetStoryOptions = {},
+): Promise<Story[]> {
+  const unique = [...new Set(uuids.filter(Boolean))]
+  if (unique.length === 0) return []
+
+  const CHUNK_SIZE = 50
+  const chunks: string[][] = []
+  for (let i = 0; i < unique.length; i += CHUNK_SIZE) {
+    chunks.push(unique.slice(i, i + CHUNK_SIZE))
+  }
+
+  try {
+    const storyblokApi = getStoryblokApi()
+    const version = options.version || getStoryblokVersion()
+    const cv = await getCacheVersion()
+
+    const chunkResults = await Promise.all(
+      chunks.map(async (chunk) => {
+        const params: Record<string, unknown> = {
+          version,
+          by_uuids: chunk.join(','),
+          resolve_links: 'url',
+          resolve_relations: STORYBLOK_RESOLVE_RELATIONS,
+          per_page: chunk.length,
+          ...options,
+        }
+
+        if (locale) {
+          params.language = locale
+        }
+
+        if (cv !== undefined) {
+          params.cv = cv
+        }
+
+        const { data } = await storyblokApi.get('cdn/stories', params)
+        return (data?.stories ?? []) as Story[]
+      }),
+    )
+
+    const byUuid = new Map<string, Story>()
+    for (const stories of chunkResults) {
+      for (const story of stories) {
+        byUuid.set(story.uuid, story)
+      }
+    }
+
+    return unique.map((uuid) => byUuid.get(uuid)).filter(Boolean) as Story[]
+  } catch (error) {
+    console.error('[Storyblok] Error fetching stories by UUID', error)
+    return []
+  }
+}
+
+const storiesByComponentCache = new Map<string, Promise<Story[]>>()
+
+/**
+ * Recupera tutte le stories di un content type nel locale corrente (prefetch paginato).
+ */
+export async function getStoriesByComponent(
+  component: string,
+  locale?: string,
+  options: GetStoryOptions = {},
+): Promise<Story[]> {
+  const cacheKey = `${component}:${options.version || getStoryblokVersion()}:${locale ?? '__all__'}`
+  const cached = storiesByComponentCache.get(cacheKey)
+  if (cached) return cached
+
+  const promise = fetchStoriesByComponent(component, locale, options)
+  storiesByComponentCache.set(cacheKey, promise)
+  return promise
+}
+
+async function fetchStoriesByComponent(
+  component: string,
+  locale?: string,
+  options: GetStoryOptions = {},
+): Promise<Story[]> {
+  try {
+    const storyblokApi = getStoryblokApi()
+    const version = options.version || getStoryblokVersion()
+    const cv = await getCacheVersion()
+    const stories: Story[] = []
+
+    let page = 1
+    let hasMore = true
+
+    while (hasMore) {
+      const params: Record<string, unknown> = {
+        version,
+        per_page: 100,
+        page,
+        resolve_links: 'url',
+        resolve_relations: STORYBLOK_RESOLVE_RELATIONS,
+        'filter_query[component][in]': component,
+        ...options,
+      }
+
+      if (locale) {
+        params.starts_with = `${locale}/`
+      }
+
+      if (cv !== undefined) {
+        params.cv = cv
+      }
+
+      const { data } = await storyblokApi.get('cdn/stories', params)
+      const batch = (data?.stories ?? []) as Story[]
+
+      if (batch.length === 0) {
+        break
+      }
+
+      stories.push(...batch)
+      hasMore = batch.length === 100
+      page += 1
+    }
+
+    return stories
+  } catch (error) {
+    console.error(`[Storyblok] Error fetching stories by component ${component}`, error)
+    return []
+  }
+}
+
+/**
  * Recupera story correlate che hanno almeno un tag in comune
  * Ritorna solo full_slug, title, date, tag, asset
  * Ordinate per: 1. presenza di tutti i tag, 2. data (più recente prima)

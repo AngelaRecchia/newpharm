@@ -6,7 +6,7 @@
  * 
  * Per rigenerare: npm run generate:types
  * 
- * Generato il: 2026-07-15T15:34:54.928Z
+ * Generato il: 2026-07-30T14:56:44.392Z
  */
 
 
@@ -124,6 +124,18 @@ export interface Card_icon_textStoryblok {
 }
 
 
+export interface Card_listing_editorialStoryblok {
+  image: { id: number; alt: string; name: string; focus: string; title: string; filename: string; copyright: string; fieldtype: string; }
+  title?: string | null // Optional
+  subtitle?: string | null // Optional
+  description?: string | null // Optional
+  link?: any[] | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
 export interface Card_slideshowStoryblok {
   image?: any[] | null // Optional
   text?: string | null // Optional
@@ -212,7 +224,7 @@ export interface FooterStoryblok {
 
 export interface Full_bannerStoryblok {
   title?: string | null // Optional
-  asset?: AssetStoryblok[] | null // Optional
+  asset?: any[] | null // Optional
   variant?: any | null // Optional
   anchor_id?: string | null // Optional
   _uid: string
@@ -263,11 +275,35 @@ export interface Icon_text_highlightStoryblok {
 }
 
 
+export interface InsectStoryblok {
+  title: string
+  image?: { id: number; alt: string; name: string; focus: string; title: string; filename: string; copyright: string; fieldtype: string; } | null // Optional
+  short_description?: string | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
 export interface LinkStoryblok {
   label?: string | null // Optional
   link?: { id: string; url: string; linktype: string; fieldtype: string; cached_url?: string; } | null // Optional
   description?: string | null // Optional
   variant?: any | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface ListingStoryblok {
+  type?: any | null // Optional
+  title?: string | null // Optional
+  subtitle?: string | null // Optional
+  editorial_variant?: any | null // Optional
+  empty_message?: string | null // Optional
+  cards?: any[] | null // Optional
+  anchor_id?: string | null // Optional
   _uid: string
   component: string
   _editable?: string
@@ -349,17 +385,24 @@ export interface ProductStoryblok {
   features?: string | null // Optional
   formulazione?: any | null // Optional
   product_type?: any | null // Optional
-  category: any
   tab_filtri?: any | null // Optional
   application_areas?: string | null // Optional
-  application_areas_sub?: string | null // Optional
-  target_pests?: string | null // Optional
-  target_pests_sub?: string | null // Optional
   tab_dettaglio?: any | null // Optional
   tab_media?: any | null // Optional
   video?: string | null // Optional
   related_products?: string | null // Optional
   body?: any[] | null // Optional
+  product_filtri?: any | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface ProjectStoryblok {
+  title: string
+  image?: { id: number; alt: string; name: string; focus: string; title: string; filename: string; copyright: string; fieldtype: string; } | null // Optional
+  short_description?: string | null // Optional
   _uid: string
   component: string
   _editable?: string
@@ -493,7 +536,7 @@ export interface Video_ytStoryblok {
 /**
  * Union type di tutti i componenti Storyblok
  */
-export type StoryblokComponent = Accordion_itemStoryblok | Anchor_linkStoryblok | AssetStoryblok | Banner_accordionStoryblok | Box_imageStoryblok | Box_image_carouselStoryblok | Card_boxStoryblok | Card_cta_boxStoryblok | Card_divisionStoryblok | Card_highlightStoryblok | Card_icon_textStoryblok | Card_slideshowStoryblok | CarouselStoryblok | CatalogStoryblok | Catalogs_downloadStoryblok | Cta_boxStoryblok | Division_boxStoryblok | FaqsStoryblok | FooterStoryblok | Full_bannerStoryblok | GalleryStoryblok | HeaderStoryblok | HeroStoryblok | Icon_text_highlightStoryblok | LinkStoryblok | Logo_itemStoryblok | MilestoneStoryblok | Milestone_itemStoryblok | Nav_itemStoryblok | PageStoryblok | PartnersStoryblok | ProductStoryblok | Projects_highlightStoryblok | SettingsStoryblok | SlideshowStoryblok | Social_itemStoryblok | Spec_tableStoryblok | Split_bannerStoryblok | Sticky_imageStoryblok | StoryStoryblok | TabsStoryblok | TeaserStoryblok | Text_revealStoryblok | Video_ytStoryblok
+export type StoryblokComponent = Accordion_itemStoryblok | Anchor_linkStoryblok | AssetStoryblok | Banner_accordionStoryblok | Box_imageStoryblok | Box_image_carouselStoryblok | Card_boxStoryblok | Card_cta_boxStoryblok | Card_divisionStoryblok | Card_highlightStoryblok | Card_icon_textStoryblok | Card_listing_editorialStoryblok | Card_slideshowStoryblok | CarouselStoryblok | CatalogStoryblok | Catalogs_downloadStoryblok | Cta_boxStoryblok | Division_boxStoryblok | FaqsStoryblok | FooterStoryblok | Full_bannerStoryblok | GalleryStoryblok | HeaderStoryblok | HeroStoryblok | Icon_text_highlightStoryblok | InsectStoryblok | LinkStoryblok | ListingStoryblok | Logo_itemStoryblok | MilestoneStoryblok | Milestone_itemStoryblok | Nav_itemStoryblok | PageStoryblok | PartnersStoryblok | ProductStoryblok | ProjectStoryblok | Projects_highlightStoryblok | SettingsStoryblok | SlideshowStoryblok | Social_itemStoryblok | Spec_tableStoryblok | Split_bannerStoryblok | Sticky_imageStoryblok | StoryStoryblok | TabsStoryblok | TeaserStoryblok | Text_revealStoryblok | Video_ytStoryblok
 
 /**
  * Helper type per il prop 'blok' nei componenti Storyblok

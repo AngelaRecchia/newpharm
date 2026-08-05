@@ -115,16 +115,15 @@ export default function Header({
     }
   }, [isMobile, mobileMenuOpen, variant, scrolled])
 
-  // Aggiorna la variabile CSS --sticky-top in base alla visibilità dell'header
+  // Aggiorna --sticky-top in sync con l'animazione hide/show dell'header (300ms)
   useEffect(() => {
-    if (typeof document !== 'undefined') {
-      const root = document.documentElement
-      if (isHeaderVisible) {
-        root.style.setProperty('--sticky-top', 'var(--header-height)')
-      } else {
-        root.style.setProperty('--sticky-top', '0px') // Usa '0px' invece di '0' per compatibilità con calc
-      }
-    }
+    if (typeof document === 'undefined') return
+
+    const root = document.documentElement
+    const headerHeight =
+      getComputedStyle(root).getPropertyValue('--header-height').trim() || '4.25rem'
+
+    root.style.setProperty('--sticky-top', isHeaderVisible ? headerHeight : '0px')
   }, [isHeaderVisible])
 
 

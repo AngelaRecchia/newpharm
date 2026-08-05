@@ -67,6 +67,12 @@ export type {
   LinkStoryblok,
   Video_ytStoryblok,
   SettingsStoryblok,
+  Card_listing_editorialStoryblok,
+  ListingStoryblok,
+  ProductsStoryblok,
+  ListingStoryResolved,
+  ListingVariantValue,
+  ListingVariantSlug,
 } from "./storyblok.overrides";
 
 /**
@@ -115,7 +121,10 @@ export type StoryblokComponent =
   | Overrides.PartnersStoryblok
   | Overrides.SlideshowStoryblok
   | Overrides.Card_slideshowStoryblok
-  | Overrides.CatalogsDownloadStoryblok;
+  | Overrides.CatalogsDownloadStoryblok
+  | Overrides.ListingStoryblok
+  | Overrides.ProductsStoryblok
+  | Overrides.Card_listing_editorialStoryblok;
 
 /**
  * Helper type per il prop 'blok' nei componenti Storyblok

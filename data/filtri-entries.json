@@ -1,0 +1,470 @@
+[
+  {
+    "name": "[CATEGORIA] Insetticidi e acaricidi",
+    "value": "category__insetticidi-e-acaricidi"
+  },
+  {
+    "name": "[INSETTICIDI E ACARICIDI] Acaro",
+    "value": "pest__acaro"
+  },
+  {
+    "name": "[INSETTICIDI E ACARICIDI] Acaro pollino",
+    "value": "pest__acaro-pollino"
+  },
+  {
+    "name": "[INSETTICIDI E ACARICIDI] Anobio del tabacco",
+    "value": "pest__anobio-del-tabacco"
+  },
+  {
+    "name": "[INSETTICIDI E ACARICIDI] Calabroni",
+    "value": "pest__calabroni"
+  },
+  {
+    "name": "[INSETTICIDI E ACARICIDI] Cimice",
+    "value": "pest__cimice"
+  },
+  {
+    "name": "[INSETTICIDI E ACARICIDI] Cimice dei letti",
+    "value": "pest__cimice-dei-letti"
+  },
+  {
+    "name": "[INSETTICIDI E ACARICIDI] Formica",
+    "value": "pest__formica"
+  },
+  {
+    "name": "[INSETTICIDI E ACARICIDI] Mosche",
+    "value": "pest__mosche"
+  },
+  {
+    "name": "[INSETTICIDI E ACARICIDI] Mosconi",
+    "value": "pest__mosconi"
+  },
+  {
+    "name": "[INSETTICIDI E ACARICIDI] Moscerini della frutta",
+    "value": "pest__moscerini-della-frutta"
+  },
+  {
+    "name": "[INSETTICIDI E ACARICIDI] Nidi di vespa",
+    "value": "pest__nidi-di-vespa"
+  },
+  {
+    "name": "[INSETTICIDI E ACARICIDI] Pesciolini d'argento",
+    "value": "pest__pesciolini-dargento"
+  },
+  {
+    "name": "[INSETTICIDI E ACARICIDI] Insetti delle derrate",
+    "value": "pest__insetti-delle-derrate"
+  },
+  {
+    "name": "[INSETTICIDI E ACARICIDI] Pidocchi",
+    "value": "pest__pidocchi"
+  },
+  {
+    "name": "[INSETTICIDI E ACARICIDI] Pulce",
+    "value": "pest__pulce"
+  },
+  {
+    "name": "[INSETTICIDI E ACARICIDI] Ragno",
+    "value": "pest__ragno"
+  },
+  {
+    "name": "[INSETTICIDI E ACARICIDI] Scarabei",
+    "value": "pest__scarabei"
+  },
+  {
+    "name": "[INSETTICIDI E ACARICIDI] Scarafaggi",
+    "value": "pest__scarafaggi"
+  },
+  {
+    "name": "[INSETTICIDI E ACARICIDI] Scarafaggio nero",
+    "value": "pest__scarafaggio-nero"
+  },
+  {
+    "name": "[INSETTICIDI E ACARICIDI] Tafani",
+    "value": "pest__tafani"
+  },
+  {
+    "name": "[INSETTICIDI E ACARICIDI] Tarme",
+    "value": "pest__tarme"
+  },
+  {
+    "name": "[INSETTICIDI E ACARICIDI] Vespa",
+    "value": "pest__vespa"
+  },
+  {
+    "name": "[INSETTICIDI E ACARICIDI] Zanzare",
+    "value": "pest__zanzare"
+  },
+  {
+    "name": "[INSETTICIDI E ACARICIDI] Zecche",
+    "value": "pest__zecche"
+  },
+  {
+    "name": "[CATEGORIA] Fitosanitari derrate",
+    "value": "category__fitosanitari-derrate"
+  },
+  {
+    "name": "[FITOSANITARI DERRATE] Frumento",
+    "value": "fitos__frumento"
+  },
+  {
+    "name": "[FITOSANITARI DERRATE] Avena",
+    "value": "fitos__avena"
+  },
+  {
+    "name": "[FITOSANITARI DERRATE] Triticale",
+    "value": "fitos__triticale"
+  },
+  {
+    "name": "[FITOSANITARI DERRATE] Orzo",
+    "value": "fitos__orzo"
+  },
+  {
+    "name": "[FITOSANITARI DERRATE] Sorgo",
+    "value": "fitos__sorgo"
+  },
+  {
+    "name": "[FITOSANITARI DERRATE] Risone",
+    "value": "fitos__risone"
+  },
+  {
+    "name": "[FITOSANITARI DERRATE] Mais",
+    "value": "fitos__mais"
+  },
+  {
+    "name": "[FITOSANITARI DERRATE] Farro",
+    "value": "fitos__farro"
+  },
+  {
+    "name": "[FITOSANITARI DERRATE] Segale",
+    "value": "fitos__segale"
+  },
+  {
+    "name": "[FITOSANITARI DERRATE] Miglio",
+    "value": "fitos__miglio"
+  },
+  {
+    "name": "[FITOSANITARI DERRATE] Grano saraceno",
+    "value": "fitos__grano-saraceno"
+  },
+  {
+    "name": "[FITOSANITARI DERRATE] Soia",
+    "value": "fitos__soia"
+  },
+  {
+    "name": "[FITOSANITARI DERRATE] Pisello proteico",
+    "value": "fitos__pisello-proteico"
+  },
+  {
+    "name": "[FITOSANITARI DERRATE] Semi oleosi",
+    "value": "fitos__semi-oleosi"
+  },
+  {
+    "name": "[FITOSANITARI DERRATE] Altre colture proteiche",
+    "value": "fitos__altre-colture-proteiche"
+  },
+  {
+    "name": "[CATEGORIA] Insetti e acari utili",
+    "value": "category__insetti-e-acari-utili"
+  },
+  {
+    "name": "[INSETTI E ACARI UTILI] Acaro pollino",
+    "value": "utili__acaro-pollino"
+  },
+  {
+    "name": "[INSETTI E ACARI UTILI] Mosche",
+    "value": "utili__mosche"
+  },
+  {
+    "name": "[INSETTI E ACARI UTILI] Tignole",
+    "value": "utili__tignole"
+  },
+  {
+    "name": "[INSETTI E ACARI UTILI] Zanzara tigre",
+    "value": "utili__zanzara-tigre"
+  },
+  {
+    "name": "[CATEGORIA] Monitoraggio",
+    "value": "category__monitoraggio"
+  },
+  {
+    "name": "[MONITORAGGIO] Cimice",
+    "value": "monitor__cimice"
+  },
+  {
+    "name": "[MONITORAGGIO] Cimice dei letti",
+    "value": "monitor__cimice-dei-letti"
+  },
+  {
+    "name": "[MONITORAGGIO] Coleottero giapponese",
+    "value": "monitor__coleottero-giapponese"
+  },
+  {
+    "name": "[MONITORAGGIO] Formica",
+    "value": "monitor__formica"
+  },
+  {
+    "name": "[MONITORAGGIO] Mosche",
+    "value": "monitor__mosche"
+  },
+  {
+    "name": "[MONITORAGGIO] Moscerini",
+    "value": "monitor__moscerini"
+  },
+  {
+    "name": "[MONITORAGGIO] Mosconi",
+    "value": "monitor__mosconi"
+  },
+  {
+    "name": "[MONITORAGGIO] Pesciolini d'argento",
+    "value": "monitor__pesciolini-dargento"
+  },
+  {
+    "name": "[MONITORAGGIO] Processionaria del pino",
+    "value": "monitor__processionaria-del-pino"
+  },
+  {
+    "name": "[MONITORAGGIO] Pulce",
+    "value": "monitor__pulce"
+  },
+  {
+    "name": "[MONITORAGGIO] Punteruolo rosso della palma",
+    "value": "monitor__punteruolo-rosso-della-palma"
+  },
+  {
+    "name": "[MONITORAGGIO] Scarabei",
+    "value": "monitor__scarabei"
+  },
+  {
+    "name": "[MONITORAGGIO] Scarafaggi",
+    "value": "monitor__scarafaggi"
+  },
+  {
+    "name": "[MONITORAGGIO] Tafani",
+    "value": "monitor__tafani"
+  },
+  {
+    "name": "[MONITORAGGIO] Tarme",
+    "value": "monitor__tarme"
+  },
+  {
+    "name": "[MONITORAGGIO] Termiti",
+    "value": "monitor__termiti"
+  },
+  {
+    "name": "[MONITORAGGIO] Topi",
+    "value": "monitor__topi"
+  },
+  {
+    "name": "[MONITORAGGIO] Zanzare",
+    "value": "monitor__zanzare"
+  },
+  {
+    "name": "[CATEGORIA] Trappole luminose",
+    "value": "category__trappole-luminose"
+  },
+  {
+    "name": "[TRAPPOLE LUMINOSE] Fluorescente",
+    "value": "trap__fluorescente"
+  },
+  {
+    "name": "[TRAPPOLE LUMINOSE] LED",
+    "value": "trap__led"
+  },
+  {
+    "name": "[TRAPPOLE LUMINOSE] Fluorescente e LED",
+    "value": "trap__fluorescente-e-led"
+  },
+  {
+    "name": "[CATEGORIA] Solventi",
+    "value": "category__solventi"
+  },
+  {
+    "name": "[SOLVENTI] Base vegetale",
+    "value": "solv__base-vegetale"
+  },
+  {
+    "name": "[SOLVENTI] Base glicemica",
+    "value": "solv__base-glicemica"
+  },
+  {
+    "name": "[SOLVENTI] Base alcolica",
+    "value": "solv__base-alcolica"
+  },
+  {
+    "name": "[CATEGORIA] Disinfettanti",
+    "value": "category__disinfettanti"
+  },
+  {
+    "name": "[DISINFETTANTI] Igienizzanti",
+    "value": "disinf__igienizzanti"
+  },
+  {
+    "name": "[DISINFETTANTI] Disinfettanti",
+    "value": "disinf__disinfettanti"
+  },
+  {
+    "name": "[DISINFETTANTI] Detergenti",
+    "value": "disinf__detergenti"
+  },
+  {
+    "name": "[DISINFETTANTI] Deodoranti",
+    "value": "disinf__deodoranti"
+  },
+  {
+    "name": "[CATEGORIA] Rodenticidi",
+    "value": "category__rodenticidi"
+  },
+  {
+    "name": "[RODENTICIDI] Crema",
+    "value": "rodent__crema"
+  },
+  {
+    "name": "[RODENTICIDI] Pasta Fresca",
+    "value": "rodent__pasta-fresca"
+  },
+  {
+    "name": "[RODENTICIDI] Grano",
+    "value": "rodent__grano"
+  },
+  {
+    "name": "[RODENTICIDI] Blocco",
+    "value": "rodent__blocco"
+  },
+  {
+    "name": "[CATEGORIA] Accessori roditori",
+    "value": "category__accessori-roditori"
+  },
+  {
+    "name": "[ACCESSORI RODITORI] Trappole meccaniche",
+    "value": "sub__trappole-meccaniche"
+  },
+  {
+    "name": "[ACCESSORI RODITORI] Stazioni di cattura/avvelenamento",
+    "value": "sub__stazioni-di-catturaavvelenamento"
+  },
+  {
+    "name": "[ACCESSORI RODITORI] Trappole adesive",
+    "value": "sub__trappole-adesive"
+  },
+  {
+    "name": "[ACCESSORI RODITORI] Accessori",
+    "value": "sub__accessori"
+  },
+  {
+    "name": "[ACCESSORI RODITORI] Attrattivi",
+    "value": "sub__attrattivi"
+  },
+  {
+    "name": "[CATEGORIA] Attrezzature e DPI",
+    "value": "category__attrezzature-e-dpi"
+  },
+  {
+    "name": "[ATTREZZATURE E DPI] Nebulizzazione automatizzata",
+    "value": "equip__nebulizzazione-automatizzata"
+  },
+  {
+    "name": "[ATTREZZATURE E DPI] Nebulizzatori ULV",
+    "value": "equip__nebulizzatori-ulv"
+  },
+  {
+    "name": "[ATTREZZATURE E DPI] Generatori di nebbia fredda",
+    "value": "equip__generatori-di-nebbia-fredda"
+  },
+  {
+    "name": "[ATTREZZATURE E DPI] Termonebbiogeni",
+    "value": "equip__termonebbiogeni"
+  },
+  {
+    "name": "[ATTREZZATURE E DPI] Applicazioni gel",
+    "value": "equip__applicazioni-gel"
+  },
+  {
+    "name": "[ATTREZZATURE E DPI] Irroratori e pompe",
+    "value": "equip__irroratori-e-pompe"
+  },
+  {
+    "name": "[ATTREZZATURE E DPI] Spargitori, impolverati ed erogatori",
+    "value": "equip__spargitori-impolverati-ed-erogatori"
+  },
+  {
+    "name": "[ATTREZZATURE E DPI] Trattamenti con il calore",
+    "value": "equip__trattamenti-con-il-calore"
+  },
+  {
+    "name": "[ATTREZZATURE E DPI] Protezione individuale",
+    "value": "equip__protezione-individuale"
+  },
+  {
+    "name": "[ATTREZZATURE E DPI] Trattamento diretto derrate",
+    "value": "equip__trattamento-diretto-derrate"
+  },
+  {
+    "name": "[CATEGORIA] Endoinfusione",
+    "value": "category__endoinfusione"
+  },
+  {
+    "name": "[ENDOINFUSIONE] Dispositivi latifoglie",
+    "value": "endo__dispositivi-latifoglie"
+  },
+  {
+    "name": "[ENDOINFUSIONE] Dispositivi conifere",
+    "value": "endo__dispositivi-conifere"
+  },
+  {
+    "name": "[ENDOINFUSIONE] Dispositivi palme",
+    "value": "endo__dispositivi-palme"
+  },
+  {
+    "name": "[ENDOINFUSIONE] Nutrizione",
+    "value": "endo__nutrizione"
+  },
+  {
+    "name": "[ENDOINFUSIONE] Protezione",
+    "value": "endo__protezione"
+  },
+  {
+    "name": "[CATEGORIA] Disabituanti e repellenti",
+    "value": "category__disabituanti-e-repellenti"
+  },
+  {
+    "name": "[DISABITUANTI E REPELLENTI] Uccelli",
+    "value": "repell__uccelli"
+  },
+  {
+    "name": "[DISABITUANTI E REPELLENTI] Mammiferi",
+    "value": "repell__mammiferi"
+  },
+  {
+    "name": "[DISABITUANTI E REPELLENTI] Rettili",
+    "value": "repell__rettili"
+  },
+  {
+    "name": "[CATEGORIA] Erbicidi",
+    "value": "category__erbicidi"
+  },
+  {
+    "name": "[CATEGORIA] Lumachicidi",
+    "value": "category__lumachicidi"
+  },
+  {
+    "name": "[CATEGORIA] Contro infestanti del legno",
+    "value": "category__contro-infestanti-del-legno"
+  },
+  {
+    "name": "[CONTRO INFESTANTI DEL LEGNO] Tarli",
+    "value": "legno__tarli"
+  },
+  {
+    "name": "[CONTRO INFESTANTI DEL LEGNO] Termiti",
+    "value": "legno__termiti"
+  },
+  {
+    "name": "[CONTRO INFESTANTI DEL LEGNO] Altri insetti xilofagi",
+    "value": "legno__altri-insetti-xilofagi"
+  },
+  {
+    "name": "[INSETTI E ACARI UTILI] Tarme",
+    "value": "utili__tarme"
+  }
+]

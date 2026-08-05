@@ -28,11 +28,17 @@ export interface ButtonProps {
     weight?: 'normal' | 'bold'
     animated?: boolean
     inert?: boolean
+    /** Icona nel cerchio sempre visibile (no animazione hover desktop) */
+    iconAlwaysVisible?: boolean
+    /** Icona flat senza cerchio, colore primary (14px) */
+    iconPlain?: boolean
+    /** Ruota l'icona di 45° (plus → cross) */
+    iconRotate?: boolean
     'aria-label'?: string
     /** Blok Storyblok completo (opzionale, per storyblokEditable) */
     blok?: LinkStoryblok
 }
-const Button = forwardRef<HTMLButtonElement | HTMLDivElement, ButtonProps>(({ icon = 'right-small', label: labelProp, onClick, onFocus, className, href, target, link, variant = 'primary', size = 'medium', weight = 'bold', animated = false, inert = false, 'aria-label': ariaLabel, blok, type, disabled, ...props }, ref) => {
+const Button = forwardRef<HTMLButtonElement | HTMLDivElement, ButtonProps>(({ icon = 'right-small', label: labelProp, onClick, onFocus, className, href, target, link, variant = 'primary', size = 'medium', weight = 'bold', animated = false, inert = false, iconAlwaysVisible = false, iconPlain = false, iconRotate = false, 'aria-label': ariaLabel, blok, type, disabled, ...props }, ref) => {
     // Se blok è presente, applica storyblokEditable
     const editableProps = blok ? storyblokEditable(blok as any) : {}
 
@@ -89,6 +95,9 @@ const Button = forwardRef<HTMLButtonElement | HTMLDivElement, ButtonProps>(({ ic
         buttonSizeSmall: size === 'small',
         buttonSizeMedium: size === 'medium',
         animated: animated,
+        iconAlwaysVisible,
+        iconPlain,
+        iconRotate,
         'button-left': animated && isLeftIcon, // Classe per animazione verso sinistra
         'button-external': onlyIcon && isArrowIcon && isExternalLink, // Classe per rotazione icona su link esterni
     }, className)
@@ -104,7 +113,11 @@ const Button = forwardRef<HTMLButtonElement | HTMLDivElement, ButtonProps>(({ ic
                     className={icon === 'hamburger' ? undefined : cn('iconOnly')}
                 />
             )}
-            {hasLabel && hasIcon && <div className={cn('buttonIcon')}><Icon type={icon} size='s' weight={weight} /></div>}
+            {hasLabel && hasIcon && (
+                <div className={cn('buttonIcon')}>
+                    <Icon type={icon} size="s" weight={weight} />
+                </div>
+            )}
         </>
     )
 

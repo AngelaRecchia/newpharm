@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+node_modules/
 /.pnp
 .pnp.js
 
@@ -14,6 +15,10 @@
 
 # production
 /build
+
+# Storyblok field plugins (build output)
+storyblok-plugins/**/dist/
+storyblok-plugins/**/dist-ssr/
 
 # misc
 .DS_Store

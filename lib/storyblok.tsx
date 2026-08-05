@@ -35,6 +35,8 @@ import Milestone from '@/components/organisms/Milestone'
 import Partners from '@/components/organisms/Partners'
 import Slideshow from '@/components/organisms/Slideshow'
 import CatalogsDownload from '@/components/organisms/CatalogsDownload'
+import Listing from '@/components/organisms/Listing'
+import Products from '@/components/organisms/Products'
 // Heavy components (GSAP / Swiper / WebGL) — dynamic imports for bundle splitting
 const Header = dynamic(() => import('@/components/organisms/Header'))
 const Footer = dynamic(() => import('@/components/organisms/Footer'))
@@ -70,6 +72,8 @@ const components = {
   partners: Partners,
   slideshow: Slideshow,
   catalogs_download: CatalogsDownload,
+  listing: Listing,
+  products: Products,
 
   // Atoms
   asset: Asset,

@@ -94,6 +94,8 @@ export function SmoothScrollProvider({ children }: { children: ReactNode }) {
       wheelMultiplier: 1,
       touchMultiplier: 2,
       infinite: false,
+      prevent: (node) =>
+        node instanceof Element && node.closest('[data-lenis-prevent]') !== null,
     })
 
     lenisRef.current = lenisInstance

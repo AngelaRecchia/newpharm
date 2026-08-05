@@ -1,0 +1,59 @@
+@use "../../../styles" as *;
+
+.wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $s-8;
+  padding-block: $s-24;
+}
+
+.pages {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.page {
+  @include t-note;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 200px;
+  border: none;
+  background: transparent;
+  color: $c-black;
+  cursor: pointer;
+  transition: background-color $td-200 ease, color $td-200 ease;
+
+  &:hover:not(:disabled) {
+    background-color: rgba($c-black, 0.06);
+  }
+
+  &.active {
+    background-color: $c-black;
+    color: $c-white;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+}
+
+.ellipsis {
+  @include t-note;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

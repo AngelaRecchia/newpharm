@@ -4,17 +4,14 @@
   "private": true,
   "scripts": {
     "fetch:locales": "tsx scripts/fetch-locales.ts",
-    "dev": "npm run fetch:locales && next dev --experimental-https",
-    "build": "npm run fetch:locales && next build",
+    "fetch:filtri": "tsx scripts/fetch-filtri.ts",
+    "fetch:storyblok": "npm run fetch:locales && npm run fetch:filtri",
+    "dev": "npm run fetch:storyblok && next dev --experimental-https",
+    "build": "npm run fetch:storyblok && next build",
     "start": "next start",
     "lint": "next lint",
     "generate:types": "tsx scripts/generate-storyblok-types.ts",
-    "generate:component": "tsx scripts/generate-component.ts",
-    "clone:home-it": "node scripts/clone-home-to-it.mjs",
-    "import:products": "node scripts/import-products-from-csv.mjs",
-    "import:products:dry": "node scripts/import-products-from-csv.mjs --dry-run",
-    "import:datasources": "node scripts/import-datasources-v2.mjs",
-    "import:datasources:dry": "node scripts/import-datasources-v2.mjs --dry-run"
+    "generate:component": "tsx scripts/generate-component.ts"
   },
   "dependencies": {
     "@kworq/storyblok-space-cloner": "^0.2.2",

@@ -5,7 +5,8 @@
 // Spacing
 $spacing: 0.0625rem; // 1px
 
-// Breakpoints (must match lib/breakpoints.ts: BREAKPOINT_MD_PX, BREAKPOINT_LG_PX)
+// Breakpoints (must match lib/breakpoints.ts)
+$breakpoint-s: 512px; // sm
 $breakpoint-m: 768px; // md
 $breakpoint-l: 1024px; // lg
 $breakpoint-xxl: 1440px;
@@ -14,8 +15,8 @@ $fluid-type-min-viewport: 375px;
 $fluid-type-max-viewport: 2560px;
 
 // Colors
-$c-primary: rgb(0, 111, 178);
-$c-surface: rgb(248, 248, 248);
+$c-primary: #006fb2;
+$c-surface: #f8f8f8;
 $c-alert: rgb(226, 7, 28);
 $c-white: rgb(255, 255, 255);
 $c-black: rgb(0, 0, 0);

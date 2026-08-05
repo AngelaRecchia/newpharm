@@ -1,0 +1,383 @@
+@use "../../../styles" as *;
+
+.wrapper {
+  background-color: $c-white;
+  overflow: visible;
+  max-width: 100%;
+}
+
+.inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $s-16;
+  padding-block: $s-16;
+  overflow: visible;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: $s-8;
+  min-width: 0;
+  overflow: visible;
+
+  @include md {
+    gap: $s-16;
+  }
+}
+
+// Desktop filter row — Figma: bg surface, h 50px, p 16, gap 16
+.bar {
+  display: none;
+  align-items: center;
+  gap: $s-16;
+  background-color: $c-surface;
+  padding: $s-16;
+  min-height: 3.125rem;
+  width: fit-content;
+  max-width: 100%;
+  overflow: visible;
+
+  @include md {
+    display: flex;
+  }
+}
+
+.barInner {
+  display: flex;
+  align-items: center;
+  gap: $s-16;
+  min-height: 2.125rem;
+  min-width: 0;
+}
+
+.label {
+  @include t-note;
+  margin: 0;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.divider {
+  width: 1px;
+  align-self: stretch;
+  background-color: $c-border-light;
+  flex-shrink: 0;
+}
+
+.dropdown {
+  position: relative;
+  min-width: 0;
+  flex-shrink: 0;
+
+  &.sort {
+    display: none;
+
+    @include md {
+      display: block;
+      flex-shrink: 0;
+      margin-inline-start: auto;
+    }
+
+    .dropdownPanel {
+      left: auto;
+      right: 0;
+    }
+  }
+}
+
+.dropdownTrigger {
+  @include t-note;
+  display: inline-flex;
+  align-items: center;
+  gap: $s-4;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: $c-black;
+  max-width: 100%;
+  text-align: start;
+
+  &.sort {
+    white-space: nowrap;
+  }
+}
+
+.dropdownTriggerLabel {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chevron {
+  flex-shrink: 0;
+  @include transition(transform, $td-200);
+
+  &.open {
+    transform: rotate(180deg);
+  }
+}
+
+.sortIcon {
+  flex-shrink: 0;
+}
+
+.dropdownPanel {
+  @include t-note;
+  position: absolute;
+  z-index: 21;
+  width: 13.285714em; // 186px @ 14px — scala con t-note oltre 1440px
+  max-height: 16.4375rem;
+  background: $c-surface;
+  border: 1px solid rgba($c-black, 0.1);
+  overflow: hidden;
+}
+
+.dropdownScrollArea {
+  position: relative;
+  z-index: 0;
+  display: flex;
+  align-items: stretch;
+  max-height: 16.4375rem;
+  min-height: 0;
+  // Il padding verticale sta qui (non su .dropdownScroll) così la
+  // scrollbar nativa resta a 16px dai bordi del pannello.
+  padding: $s-16;
+}
+
+.dropdownScroll {
+  display: flex;
+  flex-direction: column;
+  gap: $s-16;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+
+  &::-webkit-scrollbar {
+    width: 2px;
+  }
+
+  &::-webkit-scrollbar-button {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: $c-primary;
+    border-radius: 0;
+  }
+
+  // Firefox non supporta ::-webkit-scrollbar: usa le proprietà standard.
+  // NON impostarle sui Chromium: lì disattiverebbero gli stili webkit
+  // e tornerebbe la scrollbar nativa di Windows con le frecce.
+  @supports not selector(::-webkit-scrollbar) {
+    scrollbar-width: thin;
+    scrollbar-color: $c-primary transparent;
+  }
+}
+
+.dropdownFade {
+  position: absolute;
+  inset-inline-start: 0;
+  // Si ferma prima della scrollbar (16px di padding + 2px di barra)
+  inset-inline-end: calc(#{$s-16} + 2px);
+  height: 2.8125rem;
+  pointer-events: none;
+  z-index: 2;
+
+  // Il primo tratto del gradient resta pieno per tutta la zona di padding
+  // (16px), così non si vede lo stacco dove il contenuto viene tagliato.
+  &.top {
+    top: 0;
+    background: linear-gradient(
+      180deg,
+      $c-surface 0,
+      $c-surface $s-16,
+      rgba($c-surface, 0) 100%
+    );
+  }
+
+  &.bottom {
+    bottom: 0;
+    background: linear-gradient(
+      0deg,
+      $c-surface 0,
+      $c-surface $s-16,
+      rgba($c-surface, 0) 100%
+    );
+  }
+}
+
+.dropdownOption {
+  @include t-note;
+  display: block;
+  width: 100%;
+  text-align: start;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: $c-black;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &.selected {
+    text-decoration: underline;
+  }
+}
+
+.viewToggles {
+  display: inline-flex;
+  align-items: center;
+  gap: $s-12;
+  flex-shrink: 0;
+}
+
+.viewToggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  padding: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: $c-black;
+  flex-shrink: 0;
+  opacity: 0.35;
+  @include transition(opacity, $td-200);
+
+  &:hover {
+    opacity: 0.7;
+  }
+
+  &.active {
+    opacity: 1;
+  }
+}
+
+.iconButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  padding: $s-16;
+  background: $c-surface;
+  border: none;
+  cursor: pointer;
+  color: $c-black;
+  flex-shrink: 0;
+  @include transition(background-color, $td-200);
+
+  &:hover {
+    background: rgb(240, 240, 240);
+  }
+
+  &.active {
+    background: $c-black;
+    color: $c-white;
+  }
+}
+
+.mobileNav {
+  display: flex;
+  align-items: center;
+  gap: $s-8;
+  flex: 1;
+  min-width: 0;
+
+  @include md {
+    display: none;
+  }
+}
+
+.mobileTab {
+  flex: 1;
+  min-width: 0;
+  background: $c-surface;
+  padding: $s-16;
+}
+
+.mobileTabInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $s-8;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: inherit;
+  text-align: start;
+}
+
+.mobileTitle {
+  @include t-body;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mobileChevron {
+  flex-shrink: 0;
+  @include transition(transform, $td-200);
+
+  &.open {
+    transform: rotate(180deg);
+  }
+}
+
+.mobilePanel {
+  border-top: 1px solid $c-border-dark;
+  padding-block: $s-24;
+  display: flex;
+  flex-direction: column;
+  gap: $s-16;
+}
+
+.mobileGroup {
+  display: flex;
+  flex-direction: column;
+  gap: $s-8;
+}
+
+.mobileGroupLabel {
+  @include t-help;
+  margin: 0;
+  color: $c-gray-600;
+}
+
+.mobileOption {
+  @include t-note;
+  text-align: start;
+  padding: $s-8 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: $c-black;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &.selected {
+    text-decoration: underline;
+  }
+}

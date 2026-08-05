@@ -1,0 +1,110 @@
+@use "../../../styles" as *;
+
+.layout {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $s-24;
+  min-width: 0;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: $s-16;
+  min-width: 0;
+  flex: 1;
+}
+
+.slots {
+  display: flex;
+  align-items: center;
+  gap: $s-8;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  flex-shrink: 0;
+}
+
+.slot {
+  margin: 0;
+}
+
+.slotButton,
+.slotEmpty {
+  display: block;
+  width: 2.5rem;
+  height: 2.5rem;
+  overflow: hidden;
+  background-color: $c-white;
+}
+
+.slotButton {
+  padding: 0;
+  border: 1px solid rgba($c-white, 0.35);
+  cursor: pointer;
+
+  > * {
+    width: 100%;
+    height: 100%;
+  }
+
+  &:hover {
+    border-color: $c-white;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $c-white;
+    outline-offset: 2px;
+  }
+}
+
+.slotEmpty {
+  border: 1px solid rgba($c-white, 0.35);
+  background-color: transparent;
+}
+
+.copy {
+  min-width: 0;
+}
+
+.copyTitle {
+  @include t-note;
+  margin: 0;
+  font-weight: $font-weight-medium;
+}
+
+.copyHint {
+  @include t-help;
+  margin: $s-4 0 0;
+  opacity: 0.75;
+}
+
+.right {
+  flex-shrink: 0;
+
+  [data-button] {
+    background-color: $c-white;
+    color: $c-black;
+    border-radius: 999px;
+  }
+}
+
+@include mobile {
+  .layout {
+    flex-direction: column;
+    align-items: stretch;
+    gap: $s-16;
+  }
+
+  .left {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .right {
+    display: flex;
+    justify-content: flex-start;
+    padding-inline-end: 3rem;
+  }
+}

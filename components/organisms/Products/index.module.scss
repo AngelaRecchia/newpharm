@@ -1,0 +1,105 @@
+@use "../../../styles" as *;
+
+.wrapper {
+  width: 100%;
+  background-color: $c-white;
+  color: $c-black;
+  overflow: visible;
+}
+
+.stickySentinel {
+  width: 100%;
+  height: 1px;
+  pointer-events: none;
+}
+
+.stickyFilters {
+  position: sticky;
+  top: var(--sticky-top, 0px);
+  z-index: 20;
+  background-color: $c-white;
+  border-bottom: 1px solid transparent;
+  overflow: visible;
+  transition:
+    top 300ms ease,
+    box-shadow 300ms ease,
+    border-color 300ms ease;
+
+  &.stuck {
+    border-bottom-color: $c-border-dark;
+    box-shadow: 0 1px 0 rgba($c-black, 0.04);
+  }
+}
+
+.stickyFiltersInner {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  overflow: visible;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding-block-end: calc(#{$s-80} + var(--products-bar-offset, 0px));
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: $s-24;
+  max-width: 42rem;
+  padding-block-start: $s-40;
+}
+
+.title {
+  @include t-h2;
+  margin: 0;
+}
+
+.subtitle {
+  @include t-h3;
+  margin: 0;
+}
+
+.filters {
+  overflow: visible;
+
+  padding-block-end: $s-24;
+}
+
+.grid {
+  display: grid;
+  gap: $s-16;
+  padding-block-start: $s-40;
+  position: relative;
+
+  &.gridView {
+    @include listing-grid-columns(4);
+  }
+
+  &.listView {
+    grid-template-columns: minmax(0, 1fr);
+
+    @include md {
+      gap: $s-24;
+    }
+  }
+}
+
+.gridItem {
+  min-width: 0;
+}
+
+.footer {
+  display: flex;
+  justify-content: center;
+  padding-block-start: $s-64;
+}
+
+.empty {
+  @include t-body;
+  padding-block: $s-40;
+  color: $c-gray-600;
+}

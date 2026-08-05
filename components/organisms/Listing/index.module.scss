@@ -1,0 +1,67 @@
+@use "../../../styles" as *;
+
+.wrapper {
+  width: 100%;
+  background-color: $c-white;
+  color: $c-black;
+  padding-block: $s-40 $s-80;
+
+  &.dark {
+    background-color: $c-black;
+    color: $c-white;
+  }
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: $s-64;
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: $s-16;
+
+  @include lg {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: $s-24;
+  }
+}
+
+.title {
+  @include t-h2;
+  margin: 0;
+}
+
+.subtitle {
+  @include t-h3;
+  margin: 0;
+}
+
+.empty-message {
+  @include t-body;
+  padding: $s-24;
+  background-color: rgba($c-white, 0.06);
+  border-radius: $s-8;
+  max-width: 672px;
+}
+
+.grid {
+  display: grid;
+  gap: $s-16;
+
+  &.cols-3 {
+    @include listing-grid-columns(3);
+  }
+
+  &.cols-4 {
+    @include listing-grid-columns(4);
+  }
+}
+
+.footer {
+  display: flex;
+  justify-content: center;
+}

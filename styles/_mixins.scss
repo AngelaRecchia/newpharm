@@ -27,6 +27,12 @@
 }
 
 // Responsive
+@mixin sm {
+  @media (min-width: $breakpoint-s) {
+    @content;
+  }
+}
+
 @mixin mobile {
   @media (max-width: #{$breakpoint-m - 1px}) {
     @content;
@@ -66,6 +72,27 @@
 @mixin xxl {
   @media (min-width: $breakpoint-xxl) {
     @content;
+  }
+}
+
+// Listing grid: 1 col < 512, 2 col ≥ 512, 3 col ≥ 768, 4 col ≥ 1024
+@mixin listing-grid-columns($max-cols: 4) {
+  @if $max-cols >= 2 {
+    @include sm {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @if $max-cols >= 3 {
+    @include md {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @if $max-cols >= 4 {
+    @include lg {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
   }
 }
 

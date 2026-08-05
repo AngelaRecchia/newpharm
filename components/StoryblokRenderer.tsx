@@ -5,6 +5,40 @@ import { useEffect, useState } from 'react'
 import { getStoryblokVersion } from '@/lib/api/storyblok/config'
 import { STORYBLOK_RESOLVE_RELATIONS } from '@/lib/api/storyblok/resolveRelations'
 
+/**
+ * Copia `resolved_items` (e altri campi SSR) dal contenuto statico al live editor.
+ */
+function preserveSsrEnrichment(source: unknown, target: unknown): unknown {
+  if (!target || typeof target !== 'object') return target
+  if (!source || typeof source !== 'object') return target
+
+  if (Array.isArray(target)) {
+    const sourceArr = Array.isArray(source) ? source : []
+    return target.map((item, index) => preserveSsrEnrichment(sourceArr[index], item))
+  }
+
+  const sourceRecord = source as Record<string, unknown>
+  const targetRecord = target as Record<string, unknown>
+  const merged = { ...targetRecord }
+
+  if (
+    typeof merged.component === 'string' &&
+    merged.component === sourceRecord.component &&
+    Array.isArray(sourceRecord.resolved_items)
+  ) {
+    merged.resolved_items = sourceRecord.resolved_items
+  }
+
+  for (const key of Object.keys(merged)) {
+    if (key === 'resolved_items') continue
+    if (key in sourceRecord) {
+      merged[key] = preserveSsrEnrichment(sourceRecord[key], merged[key])
+    }
+  }
+
+  return merged
+}
+
 interface StoryblokRendererProps {
   blok: any
   story?: any
@@ -63,8 +97,11 @@ export default function StoryblokRenderer({ blok, story }: StoryblokRendererProp
 
   if (!blok || !blok.component) return null
 
-  // Se siamo nell'editor, usa il contenuto live se disponibile
-  const content = isEditor && liveStory?.content ? liveStory.content : blok
+  // Se siamo nell'editor, usa il contenuto live mantenendo enrichment SSR (resolved_items)
+  const content =
+    isEditor && liveStory?.content
+      ? preserveSsrEnrichment(blok, liveStory.content)
+      : blok
 
   return <StoryblokComponent blok={content} />
 }

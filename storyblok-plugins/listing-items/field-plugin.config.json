@@ -1,0 +1,12 @@
+{
+  "options": [
+    {
+      "name": "cdn_token",
+      "value": ""
+    },
+    {
+      "name": "datasource_slug",
+      "value": "filtri"
+    }
+  ]
+}

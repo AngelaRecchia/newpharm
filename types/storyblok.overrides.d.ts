@@ -118,3 +118,73 @@ export interface SettingsStoryblok {
   component: string;
   _editable?: string;
 }
+
+/** card_listing_editorial — nested card for listing editorial type */
+export interface Card_listing_editorialStoryblok {
+  image?: import("./storyblok.generated").AssetStoryblok[] | null;
+  title?: string | null;
+  subtitle?: string | null;
+  description?: string | null;
+  link?: LinkStoryblok[] | null;
+  _uid: string;
+  component: string;
+  _editable?: string;
+}
+
+export type ListingType = "editorial" | "hub" | "highlight";
+export type ListingEditorialVariant = "team" | "courses";
+export type ListingVariantSlug =
+  | "prodotto"
+  | "progetto"
+  | "insetto"
+  | "catalogo";
+
+export type ListingVariantValue = {
+  variant: ListingVariantSlug;
+  items: string[];
+  category?: string;
+  piu_recente?: boolean;
+  alfabetico?: boolean;
+};
+
+export interface ListingStoryResolved {
+  uuid: string;
+  name: string;
+  slug: string;
+  full_slug: string;
+  published_at?: string | null;
+  content: Record<string, unknown>;
+}
+
+/** listing — griglia card editorial / hub / highlight */
+export interface ListingStoryblok {
+  type?: ListingType | null;
+  title?: string | null;
+  subtitle?: string | null;
+  /** Plugin hub/highlight: variant + UUID story */
+  variant?: ListingVariantValue | null;
+  /** @deprecated use variant */
+  listing_items?: ListingVariantValue | null;
+  editorial_variant?: ListingEditorialVariant | null;
+  empty_message?: string | null;
+  cards?: Card_listing_editorialStoryblok[] | null;
+  resolved_items?: ListingStoryResolved[] | null;
+  anchor_id?: string | null;
+  _uid: string;
+  component: string;
+  _editable?: string;
+}
+
+/** products — listing prodotti con filtri sticky e chips categoria/sottofiltro */
+export interface ProductsStoryblok {
+  title?: string | null;
+  subtitle?: string | null;
+  variant?: ListingVariantValue | null;
+  /** @deprecated use variant */
+  listing_items?: ListingVariantValue | null;
+  resolved_items?: ListingStoryResolved[] | null;
+  anchor_id?: string | null;
+  _uid: string;
+  component: string;
+  _editable?: string;
+}
