@@ -16,6 +16,7 @@ const nextConfig: NextConfig = {
     ];
   },
   images: {
+    unoptimized: true,
     formats: ["image/avif", "image/webp"],
     remotePatterns: [{ protocol: "https", hostname: "a.storyblok.com" }],
     qualities: [25, 50, 75, 80, 90, 100],
