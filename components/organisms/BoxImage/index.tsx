@@ -109,7 +109,7 @@ const BoxImage = ({
             <div className={cn('container')}>
                 {firstAsset && (
                     <div className={cn('asset-wrapper')}>
-                        <Asset blok={firstAsset} size="m" />
+                        <Asset blok={firstAsset} size="l" />
                     </div>
                 )}
 
