@@ -117,7 +117,7 @@ const FullBanner = ({ blok }: { blok?: Full_bannerStoryblok }) => {
                     >
                         <Asset
                             blok={firstAsset}
-                            size="l"
+                            size="xl"
                             overlay
                             hideControls={false}
                             priority

@@ -12,7 +12,7 @@ import { AssetStoryblok } from '@/types/storyblok'
 
 const cn = classNames.bind(styles)
 
-type AssetSize = 's' | 'm' | 'l'
+type AssetSize = 's' | 'm' | 'l' | 'xl'
 
 /**
  * Mappa delle dimensioni per il servizio immagini Storyblok.
@@ -22,6 +22,7 @@ const sizeMap: Record<AssetSize, { fromLg: number; untilLg: number }> = {
     s: { fromLg: 640, untilLg: 320 },
     m: { fromLg: 1280, untilLg: 640 },
     l: { fromLg: 1920, untilLg: 968 },
+    xl: { fromLg: 2560, untilLg: 1280 },
 }
 
 /**
@@ -135,8 +136,6 @@ const Asset = ({
 }: AssetComponentProps) => {
     const { isDesktop } = useViewport()
     const t = useTranslations()
-    // Traccia quali immagini sono già state caricate per evitare refetch al resize
-    const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set())
 
     // Se blok è presente, estrai asset da blok e applica storyblokEditable
     let finalAsset: StoryblokAsset | StoryblokAsset[] | StoryblokAssetWithBreakpoints | null | undefined = asset
@@ -239,10 +238,6 @@ const Asset = ({
         }
     }, [isPlaying])
 
-    const handleImageLoad = useCallback((src: string) => {
-        setLoadedImages(prev => new Set(prev).add(src))
-    }, [])
-
     // Se non c'è un src valido, non renderizzare nulla
     if (!currentSrc || currentSrc.trim() === '') {
         return null
@@ -287,9 +282,44 @@ const Asset = ({
         const dimensions = sizeMap[size]
         const mobileSuffix = dimensions.untilLg
         const desktopSuffix = dimensions.fromLg
+        const imageSizes =
+            mode === 'bg'
+                ? '100vw'
+                : `(min-width: 1024px) ${desktopSuffix}px, ${mobileSuffix}px`
 
-        // Se abbiamo mobile e desktop diversi, renderizza entrambe le immagini
-        // Verifica se asset ha mobile e desktop diversi
+        const renderBreakpointImages = (
+            mobileTransformed: string,
+            desktopTransformed: string,
+        ) => (
+            <div
+                className={cn('asset-image-wrapper', {
+                    assetHasOverlay: overlay,
+                    assetModeFit: mode === 'fit',
+                }, className)}
+                data-asset
+                {...editableProps}
+            >
+                <NextImage
+                    src={mobileTransformed}
+                    alt={assetAlt}
+                    className={cn('asset', 'asset-image', 'asset-image-mobile')}
+                    fill
+                    sizes={imageSizes}
+                    quality={80}
+                    {...rest}
+                />
+                <NextImage
+                    src={desktopTransformed}
+                    alt={assetAlt}
+                    className={cn('asset', 'asset-image', 'asset-image-desktop')}
+                    fill
+                    sizes={imageSizes}
+                    quality={80}
+                    {...rest}
+                />
+            </div>
+        )
+
         // Normalizza asset (gestisce array)
         const normalizedAssetForBreakpoints = Array.isArray(finalAsset)
             ? (finalAsset.length > 0 ? finalAsset[0] : null)
@@ -299,81 +329,20 @@ const Asset = ({
         const hasDifferentAssets = assetWithBreakpoints?.mobile && assetWithBreakpoints?.desktop && mobileSrc !== desktopSrc
 
         if (hasDifferentAssets) {
-            // Renderizza solo l'immagine necessaria, ma mantiene in cache quelle già caricate
-            // per evitare refetch al resize della finestra
-            // Verifica che entrambi gli src siano validi
             if (!mobileSrc || !desktopSrc || mobileSrc.trim() === '' || desktopSrc.trim() === '') {
                 return null
             }
 
-            const mobileTransformed = `${mobileSrc}/m/${mobileSuffix}x0`
-            const desktopTransformed = `${desktopSrc}/m/${desktopSuffix}x0`
-            const currentTransformed = isDesktop ? desktopTransformed : mobileTransformed
-            const otherTransformed = isDesktop ? mobileTransformed : desktopTransformed
-            const isOtherLoaded = loadedImages.has(otherTransformed)
-
-            return (
-                <div
-                    className={cn('asset-image-wrapper', {
-                        assetHasOverlay: overlay,
-                        assetModeFit: mode === 'fit'
-                    }, className)}
-                    data-asset
-
-                    {...editableProps}>
-                    {/* Immagine corrente: sempre visibile */}
-                    <NextImage
-                        src={currentTransformed}
-                        alt={assetAlt}
-                        className={cn('asset', 'asset-image')}
-                        fill
-                        priority
-                        sizes={`(min-width: 1024px) ${desktopSuffix}px, ${mobileSuffix}px`}
-                        quality={80}
-                        onLoad={() => handleImageLoad(currentTransformed)}
-                        {...rest}
-                    />
-                    {/* Immagine alternativa: renderizza solo se già caricata in precedenza per evitare refetch */}
-                    {isOtherLoaded && (
-                        <NextImage
-                            src={otherTransformed}
-                            alt={assetAlt}
-                            className={cn('asset', 'asset-image', isDesktop ? 'asset-image-mobile' : 'asset-image-desktop')}
-                            fill
-                            sizes={`(min-width: 1024px) ${desktopSuffix}px, ${mobileSuffix}px`}
-                            quality={80}
-                            style={{ display: 'none' }}
-                            {...rest}
-                        />
-                    )}
-                </div>
-            )
-        } else {
-            // Usa la stessa immagine per entrambi i breakpoint
-            const suffix = isDesktop ? desktopSuffix : mobileSuffix
-            const transformedSrc = `${currentSrc}/m/${suffix}x0`
-
-            return (
-                <div
-                    className={cn('asset-image-wrapper', {
-                        assetHasOverlay: overlay,
-                        assetModeFit: mode === 'fit'
-                    }, className)}
-                    data-asset
-
-                    {...editableProps}>
-                    <NextImage
-                        src={transformedSrc}
-                        alt={assetAlt}
-                        className={cn('asset', 'asset-image')}
-                        fill
-                        sizes={`(min-width: 1024px) ${desktopSuffix}px, ${mobileSuffix}px`}
-                        quality={80}
-                        {...rest}
-                    />
-                </div>
+            return renderBreakpointImages(
+                `${mobileSrc}/m/${mobileSuffix}x0`,
+                `${desktopSrc}/m/${desktopSuffix}x0`,
             )
         }
+
+        const mobileTransformed = `${currentSrc}/m/${mobileSuffix}x0`
+        const desktopTransformed = `${currentSrc}/m/${desktopSuffix}x0`
+
+        return renderBreakpointImages(mobileTransformed, desktopTransformed)
     }
 
     // Fallback per tipo sconosciuto (renderizza come immagine senza trasformazioni)
