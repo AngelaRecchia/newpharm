@@ -1,7 +1,13 @@
 import type { ProductFiltriValue } from '@/lib/product-filtri'
 import type { ListingStoryResolved } from '@/lib/listing/types'
 import { getApplicationAreaMatchValues } from './applicationAreas'
+import { isProductBestseller } from './isProductBestseller'
 import type { ProductsFilterState } from './types'
+
+function getPublishedTimestamp(story: ListingStoryResolved): number {
+  const raw = story.first_published_at ?? story.published_at
+  return raw ? Date.parse(raw) : 0
+}
 
 export function filterProductStories(
   stories: ListingStoryResolved[],
@@ -51,14 +57,18 @@ export function sortProductStories(
     return copy
   }
 
-  // "Ultimi aggiunti": first_published_at non cambia alle ripubblicazioni
-  copy.sort((a, b) => {
-    const aRaw = a.first_published_at ?? a.published_at
-    const bRaw = b.first_published_at ?? b.published_at
-    const aDate = aRaw ? Date.parse(aRaw) : 0
-    const bDate = bRaw ? Date.parse(bRaw) : 0
-    return bDate - aDate
-  })
+  if (sort === 'bestsellers') {
+    copy.sort((a, b) => {
+      const aBest = isProductBestseller(a.content)
+      const bBest = isProductBestseller(b.content)
+      if (aBest !== bBest) return aBest ? -1 : 1
+      return getPublishedTimestamp(b) - getPublishedTimestamp(a)
+    })
+    return copy
+  }
+
+  // Ultimi aggiunti: first_published_at non cambia alle ripubblicazioni
+  copy.sort((a, b) => getPublishedTimestamp(b) - getPublishedTimestamp(a))
 
   return copy
 }

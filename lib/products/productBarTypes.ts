@@ -1,6 +1,6 @@
 import type { AssetStoryblok } from '@/types/storyblok'
 
-export const COMPARE_MAX = 4
+export const COMPARE_MAX = 2
 
 export type ProductBarItem = {
   uuid: string

@@ -5,6 +5,14 @@
   background-color: $c-white;
   color: $c-black;
   overflow: visible;
+
+  @include mobile {
+    --products-mobile-nav-offset: calc(3.5rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  @include md {
+    --products-mobile-nav-offset: 0px;
+  }
 }
 
 .stickySentinel {
@@ -42,7 +50,9 @@
   display: flex;
   flex-direction: column;
   gap: 0;
-  padding-block-end: calc(#{$s-80} + var(--products-bar-offset, 0px));
+  padding-block-end: calc(
+    #{$s-80} + var(--products-bar-offset, 0px) + var(--products-mobile-nav-offset, 0px)
+  );
 }
 
 .head {

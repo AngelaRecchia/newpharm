@@ -19,6 +19,12 @@
   background-color: var(--button-background-color);
   color: var(--button-color);
 
+  &Primary {
+    &.buttonWithIcon .buttonIcon {
+      color: $c-black;
+    }
+  }
+
   &Secondary {
     --button-background-color: #{$c-black};
     --button-color: #{$c-white};

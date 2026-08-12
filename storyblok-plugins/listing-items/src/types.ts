@@ -1,20 +1,28 @@
 export type ListingVariantSlug = 'prodotto' | 'progetto' | 'insetto' | 'catalogo'
 
+export type ListingSelectionMode = 'manual' | 'dynamic' | 'all'
+
+export type ListingProductVista = 'categoria' | 'application_area'
+
 export type ListingVariantValue = {
   variant: ListingVariantSlug
-  items: string[]
-  /** Solo prodotto: category__... dal datasource filtri */
+  selection_mode: ListingSelectionMode
+  vista?: ListingProductVista
   category?: string
-  piu_recente?: boolean
-  alfabetico?: boolean
+  subcategory?: string
+  application_area?: string
+  bestseller?: boolean
+  items: string[]
 }
 
 export const EMPTY_VALUE: ListingVariantValue = {
   variant: 'prodotto',
-  items: [],
+  selection_mode: 'dynamic',
   category: '',
-  piu_recente: false,
-  alfabetico: false,
+  subcategory: '',
+  application_area: '',
+  bestseller: false,
+  items: [],
 }
 
 export const VARIANT_TO_COMPONENT: Record<ListingVariantSlug, string> = {
@@ -35,4 +43,10 @@ export type FiltriEntry = {
   id?: number
   name: string
   value: string
+}
+
+export type ApplicationAreaEntry = {
+  name: string
+  value: string
+  id: string
 }

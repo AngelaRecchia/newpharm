@@ -1,5 +1,6 @@
 'use client'
 
+import { useCallback } from 'react'
 import classNames from 'classnames/bind'
 import { useTranslations } from 'next-intl'
 import Asset from '@/components/atoms/Asset'
@@ -39,7 +40,11 @@ export default function ProductDownloadBar({
   const removeHint = t('click_image_to_remove')
   const item = items[0] ?? null
 
-  const selectedCountLabel = t('prodotti_selezionati', { n: items.length })
+  const handleTechnicalSheetDownload = useCallback(async () => {
+    // TODO: fetch scheda tecnica
+  }, [])
+
+  const selectedCountLabel = `${items.length} ${t('prodotti_selezionati')}`
 
   return (
     <ProductActionBar
@@ -69,7 +74,9 @@ export default function ProductDownloadBar({
               ))}
             </ul>
             <div className={cn('copy')}>
-              <p className={cn('selectedCount')}>{selectedCountLabel}</p>
+              <p className={cn('selectedCount')}>
+                <strong>{items.length}</strong> {t('prodotti_selezionati')}
+              </p>
               <p className={cn('selectedHint')}>{removeHint}</p>
             </div>
           </div>
@@ -90,10 +97,14 @@ export default function ProductDownloadBar({
               {item.image ? <Asset asset={item.image} size="s" mode="fit" /> : null}
             </div>
             <div className={cn('links')}>
-              <span className={cn('link', 'inert')} aria-disabled="true">
+              <button
+                type="button"
+                className={cn('link')}
+                onClick={() => void handleTechnicalSheetDownload()}
+              >
                 <span>{technicalLabel}</span>
-                <Icon type="download" size="s" weight="normal" className={cn('linkIcon')} />
-              </span>
+                <Icon type="download" size="sm" weight="bold" className={cn('linkIcon')} />
+              </button>
               {item.safetySheetHref ? (
                 <a
                   className={cn('link')}
@@ -102,7 +113,7 @@ export default function ProductDownloadBar({
                   rel="noopener noreferrer"
                 >
                   <span>{safetyLabel}</span>
-                  <Icon type="download" size="s" weight="normal" className={cn('linkIcon')} />
+                  <Icon type="download" size="sm" weight="bold" className={cn('linkIcon')} />
                 </a>
               ) : null}
             </div>

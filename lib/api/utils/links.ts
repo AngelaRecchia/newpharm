@@ -4,6 +4,8 @@
  * Utility functions for handling Storyblok link fields (multilink).
  */
 
+import localeConfig from "@/i18n/locales.json";
+
 export interface StoryblokLink {
   id?: string;
   url?: string;
@@ -125,6 +127,56 @@ export function getLinkUrl(
 
   // Nessun URL valido trovato
   return null;
+}
+
+/**
+ * Normalizza un URL Storyblok interno per router/link next-intl (senza prefisso locale).
+ */
+export function resolveInternalPathForNavigation(url: string): string {
+  if (url.startsWith("#")) {
+    return url;
+  }
+
+  if (url.match(/^https?:\/\//i) || url.match(/^www\./i)) {
+    return url.match(/^www\./i) ? ensureProtocol(url) : url;
+  }
+
+  const locales = localeConfig.locales as readonly string[];
+  let path = url.trim();
+
+  if (!path.startsWith("/")) {
+    path = `/${path}`;
+  }
+
+  const match = path.match(/^\/([a-z]{2})(\/|$)/);
+  if (match && locales.includes(match[1])) {
+    path = path.replace(new RegExp(`^/${match[1]}`), "") || "/";
+  }
+
+  if (path !== "/" && !path.startsWith("/")) {
+    path = `/${path}`;
+  }
+
+  return path;
+}
+
+/**
+ * Costruisce href interno con query string per navigazione client-side.
+ */
+export function buildStoryblokNavigationHref(
+  url: string,
+  searchParams?: URLSearchParams,
+): string {
+  const normalized = resolveInternalPathForNavigation(url);
+  const query = searchParams?.toString();
+
+  if (normalized.match(/^https?:\/\//i)) {
+    if (!query) return normalized;
+    const separator = normalized.includes("?") ? "&" : "?";
+    return `${normalized}${separator}${query}`;
+  }
+
+  return query ? `${normalized}?${query}` : normalized;
 }
 
 /**

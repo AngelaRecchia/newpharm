@@ -1,6 +1,6 @@
 import type { ProductFiltersValue } from '@/components/molecules/ProductFilters'
 
-export type ProductsSortMode = 'recent' | 'alphabetical'
+export type ProductsSortMode = 'recent' | 'alphabetical' | 'bestsellers'
 
 export type ProductsViewMode = 'grid' | 'list'
 

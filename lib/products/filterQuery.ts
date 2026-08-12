@@ -11,7 +11,7 @@ import {
   type ProductsViewMode,
 } from '@/lib/products/types'
 
-const SORT_VALUES = new Set<ProductsSortMode>(['recent', 'alphabetical'])
+const SORT_VALUES = new Set<ProductsSortMode>(['recent', 'alphabetical', 'bestsellers'])
 const VIEW_VALUES = new Set<ProductsViewMode>(['grid', 'list'])
 
 type SearchParamsLike = Pick<URLSearchParams, 'get'>

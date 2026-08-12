@@ -1,21 +1,22 @@
 # listing-items (Storyblok field plugin)
 
-Field plugin per il blok `listing` (type hub/highlight): selezione variante content type e multi-select story filtrate.
+Plugin per il blok **listing** (hub / highlight) soltanto.
 
-## Sviluppo
+Il blok **Products** ha solo titolo, sottotitolo e anchor ID — **non** usa questo plugin: tutti i prodotti vengono fetchati SSR.
 
-```bash
-cd storyblok-plugins/listing-items
-npm install
-npm run dev
-```
+## Listing Hub / Highlight — prodotto
+
+- **Titolo e sottotitolo** nel blok listing (nessun filtri sticky)
+- **Dinamica**: checkbox Bestseller + vista opzionale (Categoria + sottocategoria, Application area)
+- **Manuale**: ricerca e toggle prodotti
+
+## Catalogo / Progetto / Insetto
+
+- **Tutti** (default): tutti selezionati, clic per escludere
+- **Manuale**: solo gli UUID scelti
 
 ## Deploy
-
-Richiede `STORYBLOK_PERSONAL_ACCESS_TOKEN` in `.env.local` (account PAT, non token space).
 
 ```bash
 node scripts/deploy-listing-items-plugin.mjs
 ```
-
-Poi in Storyblok: **Settings → Field Plugins → Install → listing-items** (se non già installato sul campo `variant` del blok `listing`).

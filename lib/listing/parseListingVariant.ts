@@ -1,5 +1,6 @@
 import type {
   ListingContentComponent,
+  ListingProductVista,
   ListingVariantSlug,
   ListingVariantValue,
   ListingStoryResolved,
@@ -12,6 +13,8 @@ const VALID_VARIANTS: ListingVariantSlug[] = [
   'insetto',
   'catalogo',
 ]
+
+const VALID_VISTAS: ListingProductVista[] = ['categoria', 'application_area']
 
 const LEGACY_VARIANT_MAP: Record<string, ListingVariantSlug> = {
   product: 'prodotto',
@@ -28,6 +31,29 @@ function normalizeVariant(raw: unknown): ListingVariantSlug {
   return LEGACY_VARIANT_MAP[raw] ?? 'prodotto'
 }
 
+function normalizeProdottoSelectionMode(
+  raw: unknown,
+  items: string[],
+): 'manual' | 'dynamic' {
+  if (raw === 'manual' || raw === 'dynamic') return raw
+  if (raw === 'automatic') return 'dynamic'
+  return items.length > 0 ? 'manual' : 'dynamic'
+}
+
+function normalizeRefSelectionMode(raw: unknown, items: string[]): 'all' | 'manual' {
+  if (raw === 'all' || raw === 'manual') return raw
+  if (raw === 'automatic' || raw === 'dynamic') return items.length > 0 ? 'manual' : 'all'
+  return items.length > 0 ? 'manual' : 'all'
+}
+
+function normalizeVista(raw: unknown, legacyCategory: string): ListingProductVista | undefined {
+  if (typeof raw === 'string' && VALID_VISTAS.includes(raw as ListingProductVista)) {
+    return raw as ListingProductVista
+  }
+  if (raw === 'bestseller') return undefined
+  return legacyCategory ? 'categoria' : undefined
+}
+
 export function parseListingVariant(raw: unknown): ListingVariantValue {
   if (raw == null || raw === '') {
     return { ...EMPTY_VARIANT_VALUE }
@@ -36,15 +62,34 @@ export function parseListingVariant(raw: unknown): ListingVariantValue {
   if (typeof raw === 'object' && raw !== null) {
     const value = raw as Record<string, unknown>
     const variantSource = value.variant ?? value.content_variant
+    const variant = normalizeVariant(variantSource)
+    const items = Array.isArray(value.items)
+      ? value.items.filter((id): id is string => typeof id === 'string' && id.length > 0)
+      : []
+    const category = typeof value.category === 'string' ? value.category : ''
+    const legacyBestsellerVista = value.vista === 'bestseller'
 
+    if (variant === 'prodotto') {
+      const selection_mode = normalizeProdottoSelectionMode(value.selection_mode, items)
+      return {
+        variant,
+        selection_mode,
+        vista: normalizeVista(value.vista, category),
+        category,
+        subcategory:
+          typeof value.subcategory === 'string' ? value.subcategory : '',
+        application_area:
+          typeof value.application_area === 'string' ? value.application_area : '',
+        bestseller: Boolean(value.bestseller) || legacyBestsellerVista,
+        items: selection_mode === 'manual' ? items : [],
+      }
+    }
+
+    const selection_mode = normalizeRefSelectionMode(value.selection_mode, items)
     return {
-      variant: normalizeVariant(variantSource),
-      items: Array.isArray(value.items)
-        ? value.items.filter((id): id is string => typeof id === 'string' && id.length > 0)
-        : [],
-      category: typeof value.category === 'string' ? value.category : '',
-      piu_recente: Boolean(value.piu_recente),
-      alfabetico: Boolean(value.alfabetico),
+      variant,
+      selection_mode,
+      items,
     }
   }
 
@@ -57,19 +102,6 @@ export function variantToComponent(variant: ListingVariantSlug): ListingContentC
 
 export function sortResolvedListingStories(
   stories: ListingStoryResolved[],
-  options: Pick<ListingVariantValue, 'piu_recente' | 'alfabetico'>,
 ): ListingStoryResolved[] {
-  const sorted = [...stories]
-  if (options.piu_recente) {
-    sorted.sort((a, b) => {
-      const aTime = a.published_at ? Date.parse(a.published_at) : 0
-      const bTime = b.published_at ? Date.parse(b.published_at) : 0
-      return bTime - aTime
-    })
-    return sorted
-  }
-  if (options.alfabetico) {
-    sorted.sort((a, b) => a.name.localeCompare(b.name, 'it'))
-  }
-  return sorted
+  return [...stories]
 }

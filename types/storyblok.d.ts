@@ -36,7 +36,6 @@ export type {
   FooterStoryblok,
   GalleryStoryblok,
   HeaderStoryblok,
-  HeroStoryblok,
   Icon_text_highlightStoryblok,
   Logo_itemStoryblok,
   MilestoneStoryblok,
@@ -64,12 +63,14 @@ export type {
   CatalogStoryblok,
   ProductStoryblok,
   Full_bannerStoryblok,
+  HeroStoryblok,
   LinkStoryblok,
   Video_ytStoryblok,
   SettingsStoryblok,
   Card_listing_editorialStoryblok,
   ListingStoryblok,
   ProductsStoryblok,
+  CompareStoryblok,
   ListingStoryResolved,
   ListingVariantValue,
   ListingVariantSlug,
@@ -99,7 +100,7 @@ export type StoryblokComponent =
   | Overrides.Full_bannerStoryblok
   | Generated.GalleryStoryblok
   | Generated.HeaderStoryblok
-  | Generated.HeroStoryblok
+  | Overrides.HeroStoryblok
   | Generated.Icon_text_highlightStoryblok
   | Overrides.LinkStoryblok
   | Generated.Logo_itemStoryblok
@@ -124,6 +125,7 @@ export type StoryblokComponent =
   | Overrides.CatalogsDownloadStoryblok
   | Overrides.ListingStoryblok
   | Overrides.ProductsStoryblok
+  | Overrides.CompareStoryblok
   | Overrides.Card_listing_editorialStoryblok;
 
 /**

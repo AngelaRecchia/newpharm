@@ -1,12 +1,33 @@
 'use client'
 
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import { createPortal } from 'react-dom'
 import classNames from 'classnames/bind'
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import Icon from '@/components/atoms/Icon'
+import { useScrollLock } from '@/lib/context/smooth-scroll-context'
 import type { ProductsFilterState, ProductsSortMode } from '@/lib/products/types'
 import styles from './index.module.scss'
 
 const cn = classNames.bind(styles)
+
+const MOBILE_PANEL_EASE = [0.4, 0, 0.2, 1] as const
+const MOBILE_EXPAND_EASE = [0.22, 1, 0.36, 1] as const
+
+const mobilePanelVariants = {
+  enter: (direction: number) => ({
+    x: direction > 0 ? '100%' : direction < 0 ? '-100%' : 0,
+    opacity: direction === 0 ? 1 : 0,
+  }),
+  center: {
+    x: 0,
+    opacity: 1,
+  },
+  exit: (direction: number) => ({
+    x: direction > 0 ? '-100%' : direction < 0 ? '100%' : 0,
+    opacity: 0,
+  }),
+}
 
 type Option = { value: string; label: string }
 
@@ -25,6 +46,8 @@ export type ProductsStickyNavProps = {
   sortLabel?: string
   allSolutionsLabel?: string
   allSectorsLabel?: string
+  /** Offset dal bottom per compare/download bar (es. 6.5rem) */
+  barOffset?: string
 }
 
 type FilterDropdownProps = {
@@ -167,7 +190,7 @@ function FilterDropdown({
   }, [open, options, updateScrollState])
 
   const triggerLabel = isSort
-    ? sortLabel
+    ? (selected?.label ?? sortLabel)
     : (selected?.label ?? placeholder)
 
   return (
@@ -244,6 +267,352 @@ function FilterDropdown({
   )
 }
 
+type MobileSubPanel = 'sectors' | 'solutions' | 'sort' | null
+
+type MobileScrollListProps = {
+  children: ReactNode
+  className?: string
+  gap?: 'default' | 'compact'
+}
+
+function MobileScrollList({ children, className, gap = 'default' }: MobileScrollListProps) {
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const [scrollState, setScrollState] = useState({
+    canScrollTop: false,
+    canScrollBottom: false,
+  })
+
+  const updateScrollState = useCallback(() => {
+    const el = scrollRef.current
+    if (!el) return
+
+    const { scrollHeight, clientHeight, scrollTop } = el
+    const canScroll = scrollHeight > clientHeight + 1
+
+    setScrollState({
+      canScrollTop: canScroll && scrollTop > 1,
+      canScrollBottom: canScroll && scrollTop + clientHeight < scrollHeight - 1,
+    })
+  }, [])
+
+  useEffect(() => {
+    const el = scrollRef.current
+    if (!el) return
+
+    updateScrollState()
+    const frame = requestAnimationFrame(updateScrollState)
+    el.addEventListener('scroll', updateScrollState, { passive: true })
+    const observer = new ResizeObserver(updateScrollState)
+    observer.observe(el)
+    return () => {
+      cancelAnimationFrame(frame)
+      el.removeEventListener('scroll', updateScrollState)
+      observer.disconnect()
+    }
+  }, [children, updateScrollState])
+
+  return (
+    <div className={cn('mobileScrollArea', className)}>
+      <div
+        ref={scrollRef}
+        className={cn('mobileScroll', { compact: gap === 'compact' })}
+        data-lenis-prevent
+        onWheel={(event) => event.stopPropagation()}
+        onTouchMove={(event) => event.stopPropagation()}
+      >
+        {children}
+      </div>
+      {scrollState.canScrollTop ? (
+        <div className={cn('mobileScrollFade', 'top')} aria-hidden />
+      ) : null}
+      {scrollState.canScrollBottom ? (
+        <div className={cn('mobileScrollFade', 'bottom')} aria-hidden />
+      ) : null}
+    </div>
+  )
+}
+
+type MobileOptionListProps = {
+  title: string
+  options: Option[]
+  value: string
+  onSelect: (value: string) => void
+  onBack: () => void
+}
+
+function MobileOptionList({ title, options, value, onSelect, onBack }: MobileOptionListProps) {
+  return (
+    <div className={cn('mobileSubPanel')}>
+      <button type="button" className={cn('mobileSubPanelBack')} onClick={onBack}>
+        <Icon type="chevron-left" size="l" weight="normal" />
+        <span>{title}</span>
+      </button>
+      <MobileScrollList gap="compact">
+        {options.map((option) => (
+          <button
+            key={option.value || 'all'}
+            type="button"
+            className={cn('mobileOption', { selected: value === option.value })}
+            onClick={() => onSelect(option.value)}
+          >
+            {option.label}
+          </button>
+        ))}
+      </MobileScrollList>
+    </div>
+  )
+}
+
+function MobileNavTab({
+  label,
+  onClick,
+  chevron = 'right',
+  expanded = false,
+}: {
+  label: string
+  onClick: () => void
+  chevron?: 'right' | 'down'
+  expanded?: boolean
+}) {
+  return (
+    <button type="button" className={cn('mobileNavTab')} onClick={onClick}>
+      <span className={cn('mobileNavTabLabel')}>{label}</span>
+      <span className={cn('mobileNavTabIcon')} aria-hidden>
+        <Icon
+          type={chevron === 'right' ? 'chevron-right' : 'chevron-down'}
+          size="m"
+          weight="normal"
+          className={cn('mobileNavTabChevron', { expanded, down: chevron === 'down' })}
+        />
+      </span>
+    </button>
+  )
+}
+
+function MobileStickyBar({
+  mobileOpen,
+  mobileSubPanel,
+  setMobileSubPanel,
+  selectedSectorLabel,
+  selectedCategoryLabel,
+  sectorOptions,
+  solutionOptions,
+  sortOptions,
+  filters,
+  interestedLabel,
+  sectorsLabel,
+  solutionsLabel,
+  sortLabel,
+  onApplicationAreaChange,
+  onCategoryChange,
+  onSortChange,
+  onViewChange,
+  toggleMobile,
+  setMobileOpen,
+  barOffset = '0px',
+  panelDirection,
+  onOpenSubPanel,
+  onBackToMain,
+}: {
+  mobileOpen: boolean
+  mobileSubPanel: MobileSubPanel
+  setMobileSubPanel: (value: MobileSubPanel | ((current: MobileSubPanel) => MobileSubPanel)) => void
+  selectedSectorLabel: string
+  selectedCategoryLabel: string
+  sectorOptions: Option[]
+  solutionOptions: Option[]
+  sortOptions: Option[]
+  filters: ProductsFilterState
+  interestedLabel: string
+  sectorsLabel: string
+  solutionsLabel: string
+  sortLabel: string
+  onApplicationAreaChange: (value: string | null) => void
+  onCategoryChange: (value: string | null) => void
+  onSortChange: (sort: ProductsSortMode) => void
+  onViewChange: (view: ProductsFilterState['view']) => void
+  toggleMobile: () => void
+  setMobileOpen: (value: boolean) => void
+  barOffset?: string
+  panelDirection: number
+  onOpenSubPanel: (panel: Exclude<MobileSubPanel, null>) => void
+  onBackToMain: () => void
+}) {
+  const [mounted, setMounted] = useState(false)
+  const reduceMotion = useReducedMotion()
+  const panelKey = mobileSubPanel ?? 'main'
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  useScrollLock(mobileOpen)
+
+  if (!mounted) return null
+
+  return createPortal(
+    <div
+      className={cn('mobileNavFixed')}
+      data-products-mobile-nav
+      style={{ '--products-bar-offset': barOffset } as CSSProperties}
+    >
+      <div className={cn('mobileShell')}>
+        <AnimatePresence initial={false}>
+          {mobileOpen ? (
+            <motion.div
+              key="mobile-panel-expand"
+              className={cn('mobilePanelExpand')}
+              initial={reduceMotion ? false : { height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={reduceMotion ? { opacity: 0 } : { height: 0, opacity: 0 }}
+              transition={{
+                height: {
+                  duration: reduceMotion ? 0.01 : 0.42,
+                  ease: MOBILE_EXPAND_EASE,
+                },
+                opacity: {
+                  duration: reduceMotion ? 0.01 : 0.3,
+                  ease: MOBILE_PANEL_EASE,
+                },
+              }}
+            >
+              <motion.div
+                className={cn('mobilePanelViewport')}
+                initial={reduceMotion ? false : { y: 12 }}
+                animate={{ y: 0 }}
+                exit={reduceMotion ? undefined : { y: 12 }}
+                transition={{
+                  duration: reduceMotion ? 0.01 : 0.42,
+                  ease: MOBILE_EXPAND_EASE,
+                }}
+              >
+                <AnimatePresence mode="wait" custom={panelDirection} initial={false}>
+                  <motion.div
+                    key={panelKey}
+                    custom={panelDirection}
+                    variants={mobilePanelVariants}
+                    initial={reduceMotion ? false : 'enter'}
+                    animate="center"
+                    exit={reduceMotion ? undefined : 'exit'}
+                    transition={{
+                      duration: reduceMotion ? 0.01 : 0.28,
+                      ease: MOBILE_PANEL_EASE,
+                    }}
+                    className={cn('mobilePanelStage')}
+                  >
+                    {mobileSubPanel === null ? (
+                      <div className={cn('mobileInner')}>
+                        <MobileNavTab
+                          label={selectedSectorLabel}
+                          onClick={() => onOpenSubPanel('sectors')}
+                        />
+                        <MobileNavTab
+                          label={selectedCategoryLabel}
+                          onClick={() => onOpenSubPanel('solutions')}
+                        />
+                      </div>
+                    ) : null}
+
+                    {mobileSubPanel === 'sectors' ? (
+                      <MobileOptionList
+                        title={sectorsLabel}
+                        options={sectorOptions}
+                        value={filters.applicationArea ?? ''}
+                        onBack={onBackToMain}
+                        onSelect={(value) => {
+                          onApplicationAreaChange(value || null)
+                          onBackToMain()
+                        }}
+                      />
+                    ) : null}
+
+                    {mobileSubPanel === 'solutions' ? (
+                      <MobileOptionList
+                        title={solutionsLabel}
+                        options={solutionOptions}
+                        value={filters.category ?? ''}
+                        onBack={onBackToMain}
+                        onSelect={(value) => {
+                          onCategoryChange(value || null)
+                          onBackToMain()
+                        }}
+                      />
+                    ) : null}
+
+                    {mobileSubPanel === 'sort' ? (
+                      <MobileOptionList
+                        title={sortLabel}
+                        options={sortOptions}
+                        value={filters.sort}
+                        onBack={onBackToMain}
+                        onSelect={(value) => {
+                          if (
+                            value === 'recent' ||
+                            value === 'alphabetical' ||
+                            value === 'bestsellers'
+                          ) {
+                            onSortChange(value)
+                          }
+                          onBackToMain()
+                        }}
+                      />
+                    ) : null}
+                  </motion.div>
+                </AnimatePresence>
+              </motion.div>
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
+
+        <div className={cn('mobileNavRow')}>
+          <div className={cn('mobileTab')}>
+            <MobileNavTab
+              label={interestedLabel}
+              chevron="down"
+              expanded={mobileOpen}
+              onClick={toggleMobile}
+            />
+          </div>
+          <button
+            type="button"
+            className={cn('iconButton', { active: filters.view === 'grid' })}
+            aria-label={filters.view === 'grid' ? 'Vista griglia' : 'Vista righe'}
+            aria-pressed={filters.view === 'grid'}
+            onClick={() => onViewChange(filters.view === 'grid' ? 'list' : 'grid')}
+          >
+            <Icon
+              type={filters.view === 'grid' ? 'grid-filled' : 'row-filled'}
+              size="ml"
+              weight="normal"
+            />
+          </button>
+          <button
+            type="button"
+            className={cn('iconButton', { active: mobileSubPanel === 'sort' })}
+            aria-label={sortLabel}
+            aria-expanded={mobileSubPanel === 'sort'}
+            onClick={() => {
+              if (!mobileOpen) {
+                setMobileOpen(true)
+                onOpenSubPanel('sort')
+                return
+              }
+              if (mobileSubPanel === 'sort') {
+                onBackToMain()
+                return
+              }
+              onOpenSubPanel('sort')
+            }}
+          >
+            <Icon type="sort-2" size="m" weight="normal" />
+          </button>
+        </div>
+      </div>
+    </div>,
+    document.body,
+  )
+}
+
 export default function ProductsStickyNav({
   filters,
   categoryOptions,
@@ -259,8 +628,11 @@ export default function ProductsStickyNav({
   sortLabel = 'Ordina per',
   allSolutionsLabel = 'Tutte le soluzioni',
   allSectorsLabel = 'Tutti i settori',
+  barOffset = '0px',
 }: ProductsStickyNavProps) {
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [mobileSubPanel, setMobileSubPanel] = useState<MobileSubPanel>(null)
+  const [panelDirection, setPanelDirection] = useState(0)
 
   const solutionOptions = [
     { value: '', label: allSolutionsLabel },
@@ -275,23 +647,46 @@ export default function ProductsStickyNav({
   const sortOptions: Option[] = [
     { value: 'recent', label: 'Ultimi aggiunti' },
     { value: 'alphabetical', label: 'Ordine alfabetico' },
+    { value: 'bestsellers', label: 'Bestsellers' },
   ]
 
-  const toggleSort = () => {
-    onSortChange(filters.sort === 'recent' ? 'alphabetical' : 'recent')
+  const selectedCategoryLabel =
+    categoryOptions.find((option) => option.value === filters.category)?.label ??
+    allSolutionsLabel
+
+  const selectedSectorLabel =
+    applicationAreaOptions.find((option) => option.value === filters.applicationArea)?.label ??
+    allSectorsLabel
+
+  const closeMobile = () => {
+    setMobileOpen(false)
+    setMobileSubPanel(null)
+    setPanelDirection(0)
   }
 
-  const toggleView = () => {
-    onViewChange(filters.view === 'grid' ? 'list' : 'grid')
+  const openMobile = () => {
+    setPanelDirection(0)
+    setMobileOpen(true)
+    setMobileSubPanel(null)
   }
 
-  const activeFilterCount =
-    (filters.category ? 1 : 0) + (filters.applicationArea ? 1 : 0)
+  const openSubPanel = (panel: Exclude<MobileSubPanel, null>) => {
+    setPanelDirection(1)
+    setMobileSubPanel(panel)
+  }
 
-  const mobileTabLabel =
-    activeFilterCount > 0
-      ? `${interestedLabel} (+${activeFilterCount})`
-      : interestedLabel
+  const backToMain = () => {
+    setPanelDirection(-1)
+    setMobileSubPanel(null)
+  }
+
+  const toggleMobile = () => {
+    if (mobileOpen) {
+      closeMobile()
+      return
+    }
+    openMobile()
+  }
 
   return (
     <div className={cn('wrapper', className)} data-products-sticky-nav>
@@ -337,46 +732,6 @@ export default function ProductsStickyNav({
               </button>
             </div>
           </div>
-
-          <div className={cn('mobileNav')}>
-            <div className={cn('mobileTab')}>
-              <button
-                type="button"
-                className={cn('mobileTabInner')}
-                aria-expanded={mobileOpen}
-                onClick={() => setMobileOpen((v) => !v)}
-              >
-                <span className={cn('mobileTitle')}>{mobileTabLabel}</span>
-                <Icon
-                  type="chevron-down"
-                  size="l"
-                  weight="normal"
-                  className={cn('mobileChevron', { open: mobileOpen })}
-                />
-              </button>
-            </div>
-            <button
-              type="button"
-              className={cn('iconButton', { active: filters.view === 'grid' })}
-              aria-label={filters.view === 'grid' ? 'Vista griglia' : 'Vista righe'}
-              aria-pressed={filters.view === 'grid'}
-              onClick={toggleView}
-            >
-              <Icon
-                type={filters.view === 'grid' ? 'grid-filled' : 'row-filled'}
-                size="ml"
-                weight="normal"
-              />
-            </button>
-            <button
-              type="button"
-              className={cn('iconButton')}
-              aria-label={sortLabel}
-              onClick={toggleSort}
-            >
-              <Icon type="sort-2" size="m" weight="normal" />
-            </button>
-          </div>
         </div>
 
         <FilterDropdown
@@ -386,53 +741,38 @@ export default function ProductsStickyNav({
           variant="sort"
           sortLabel={sortLabel}
           onChange={(value) => {
-            if (value === 'recent' || value === 'alphabetical') {
+            if (value === 'recent' || value === 'alphabetical' || value === 'bestsellers') {
               onSortChange(value)
             }
           }}
         />
       </div>
 
-      {mobileOpen ? (
-        <div className={cn('mobilePanel')}>
-          <div className={cn('mobileGroup')}>
-            <p className={cn('mobileGroupLabel')}>{solutionsLabel}</p>
-            {solutionOptions.map((option) => (
-              <button
-                key={option.value || 'all-solutions'}
-                type="button"
-                className={cn('mobileOption', {
-                  selected: (filters.category ?? '') === option.value,
-                })}
-                onClick={() => {
-                  onCategoryChange(option.value || null)
-                  setMobileOpen(false)
-                }}
-              >
-                {option.label}
-              </button>
-            ))}
-          </div>
-          <div className={cn('mobileGroup')}>
-            <p className={cn('mobileGroupLabel')}>{sectorsLabel}</p>
-            {sectorOptions.map((option) => (
-              <button
-                key={option.value || 'all-sectors'}
-                type="button"
-                className={cn('mobileOption', {
-                  selected: (filters.applicationArea ?? '') === option.value,
-                })}
-                onClick={() => {
-                  onApplicationAreaChange(option.value || null)
-                  setMobileOpen(false)
-                }}
-              >
-                {option.label}
-              </button>
-            ))}
-          </div>
-        </div>
-      ) : null}
+      <MobileStickyBar
+        mobileOpen={mobileOpen}
+        mobileSubPanel={mobileSubPanel}
+        setMobileSubPanel={setMobileSubPanel}
+        selectedSectorLabel={selectedSectorLabel}
+        selectedCategoryLabel={selectedCategoryLabel}
+        sectorOptions={sectorOptions}
+        solutionOptions={solutionOptions}
+        sortOptions={sortOptions}
+        filters={filters}
+        interestedLabel={interestedLabel}
+        sectorsLabel={sectorsLabel}
+        solutionsLabel={solutionsLabel}
+        sortLabel={sortLabel}
+        onApplicationAreaChange={onApplicationAreaChange}
+        onCategoryChange={onCategoryChange}
+        onSortChange={onSortChange}
+        onViewChange={onViewChange}
+        toggleMobile={toggleMobile}
+        setMobileOpen={setMobileOpen}
+        barOffset={barOffset}
+        panelDirection={panelDirection}
+        onOpenSubPanel={openSubPanel}
+        onBackToMain={backToMain}
+      />
     </div>
   )
 }

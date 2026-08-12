@@ -19,9 +19,10 @@ export default function HeroComponent({ blok }: { blok?: HeroStoryblok }) {
     const wrapperRef = useRef<HTMLElement>(null)
     const backgroundRef = useRef<HTMLDivElement>(null)
 
-    const hasStickyBackground = !!blok && blok.variant !== 'tertiary' && !!blok.background
+    const backgroundAsset = blok?.background?.length ? blok.background[0] : null
+    const hasStickyBackground = !!blok && blok.variant !== 'tertiary' && !!backgroundAsset
 
-    useStickyParallax(wrapperRef, backgroundRef, [blok?.variant, blok?.background], {
+    useStickyParallax(wrapperRef, backgroundRef, [blok?.variant, backgroundAsset], {
         enabled: hasStickyBackground,
     })
 
@@ -60,7 +61,7 @@ export default function HeroComponent({ blok }: { blok?: HeroStoryblok }) {
 
     if (!blok) return null
 
-    const { title, subtitle, background, links, variant } = blok
+    const { title, subtitle, links, variant } = blok
 
     const content = (
         <>
@@ -80,10 +81,10 @@ export default function HeroComponent({ blok }: { blok?: HeroStoryblok }) {
             id={getStoryblokAnchorId(blok.anchor_id)}
             {...storyblokEditable(blok as any)}
         >
-            {hasStickyBackground ? (
+            {hasStickyBackground && backgroundAsset ? (
                 <div className={cn('scene')}>
                     <div ref={backgroundRef} className={cn('background')}>
-                        <Asset asset={background} priority={true} size='xl' />
+                        <Asset blok={backgroundAsset} priority={true} size='xl' />
                     </div>
 
                     <div className={cn('foreground')}>

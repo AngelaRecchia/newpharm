@@ -5,6 +5,7 @@
   background-color: $c-white;
   color: $c-black;
   padding-block: $s-40 $s-80;
+  overflow: visible;
 
   &.dark {
     background-color: $c-black;
@@ -59,6 +60,12 @@
   &.cols-4 {
     @include listing-grid-columns(4);
   }
+}
+
+.empty {
+  @include t-body;
+  padding-block: $s-40;
+  color: $c-gray-600;
 }
 
 .footer {

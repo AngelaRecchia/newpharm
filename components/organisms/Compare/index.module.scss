@@ -1,0 +1,280 @@
+@use "../../../styles" as *;
+
+.wrapper {
+  background-color: $c-surface;
+  padding: $s-24 0 $s-40;
+
+  @include md {
+    padding: $s-40;
+    padding-bottom: $s-64;
+  }
+}
+
+.scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-inline: $s-24;
+
+  @include md {
+    overflow: visible;
+    padding-inline: 0;
+  }
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: $s-8;
+  align-items: stretch;
+  min-width: min(100%, 36.5rem);
+
+  @include md {
+    column-gap: $s-16;
+    min-width: 0;
+  }
+}
+
+.rowGroup {
+  display: contents;
+}
+
+.cell {
+  min-width: 0;
+  background-color: $c-white;
+  overflow: visible;
+  align-self: stretch;
+}
+
+.cell--left,
+.cell--right {
+  padding-inline: $s-24;
+
+  @include md {
+    padding-inline: $s-40;
+  }
+}
+
+.cell--select {
+  padding-top: $s-24;
+
+  @include md {
+    padding-top: $s-40;
+  }
+}
+
+.cell--image {
+  padding-top: $s-40;
+}
+
+.cell--intro {
+  padding-top: $s-40;
+  padding-bottom: $s-24;
+  min-height: 100%;
+
+  @include md {
+    padding-bottom: $s-40;
+  }
+}
+
+.cell--section {
+  display: flex;
+  flex-direction: column;
+  gap: $s-24;
+  min-height: 100%;
+  padding-bottom: $s-40;
+
+  &::before {
+    content: "";
+    display: block;
+    border-top: 1px solid $c-border-dark;
+    padding-top: $s-16;
+  }
+}
+
+.cell--footer {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding-bottom: $s-40;
+
+  @include md {
+    padding-bottom: $s-56;
+  }
+
+  &::before {
+    content: "";
+    display: block;
+    border-top: 1px solid $c-border-dark;
+    padding-top: $s-40;
+  }
+}
+
+.imageFrame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+
+  &.filled {
+    aspect-ratio: 1;
+    background-color: $c-surface;
+    overflow: hidden;
+  }
+
+  &.empty {
+    width: 12.5rem;
+    height: 12.5rem;
+    max-width: 100%;
+    margin-inline: auto;
+    border: 1px solid $c-border-dark;
+    background-color: transparent;
+
+    @include md {
+      width: 20.375rem;
+      height: 20.375rem;
+    }
+  }
+}
+
+.imageInner {
+  width: 65%;
+  max-width: 26.625rem;
+  mix-blend-mode: multiply;
+
+  @include mobile {
+    width: 72%;
+    max-width: 13.125rem;
+  }
+
+  > * {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.placeholderIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: $s-32;
+  height: $s-32;
+  border-radius: 50%;
+  background-color: $c-primary;
+  color: $c-white;
+
+  @include md {
+    width: $s-48;
+    height: $s-48;
+  }
+}
+
+.intro {
+  display: flex;
+  flex-direction: column;
+  gap: $s-24;
+  align-items: flex-start;
+  min-height: 100%;
+}
+
+.description {
+  @include t-body;
+  margin: 0;
+  color: $c-black;
+
+  @include mobile {
+    font-size: 1.125rem;
+    letter-spacing: -0.02em;
+    line-height: 1.4;
+  }
+
+  @include md {
+    @include t-h6;
+  }
+}
+
+.sectionLabel {
+  @include t-body;
+  margin: 0;
+  color: $c-black;
+}
+
+.sectionContent {
+  @include t-body;
+  flex: 1;
+  color: $c-black;
+
+  :global(p) {
+    margin: 0 0 $s-16;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.downloadLinks {
+  display: flex;
+  flex-direction: column;
+  gap: $s-16;
+}
+
+.downloadLink {
+  display: inline-flex;
+  align-items: center;
+  gap: $s-8;
+  @include t-body;
+  color: $c-black;
+  text-decoration: none;
+  width: fit-content;
+}
+
+.downloadLinkLabel {
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.dot {
+  display: block;
+  width: 1rem;
+  height: 1rem;
+  position: relative;
+  flex-shrink: 0;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 41.67% 33.33% 41.67% 50%;
+    border-radius: 999px;
+    background-color: $c-black;
+  }
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: $s-40;
+  min-height: 100%;
+  width: 100%;
+}
+
+.sheetLinks {
+  display: flex;
+  flex-direction: column;
+  gap: $s-16;
+}
+
+.sheetLink {
+  display: inline-flex;
+  align-items: center;
+  gap: $s-8;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  color: $c-black;
+  text-decoration: underline;
+  @include t-body;
+  width: fit-content;
+  cursor: pointer;
+}

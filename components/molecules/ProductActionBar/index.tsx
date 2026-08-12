@@ -72,7 +72,7 @@ export default function ProductActionBar({
             onClick={onClose}
             aria-label={closeLabel}
           >
-            <Icon type="close" size="m" weight="normal" />
+            <Icon type="close" size="l" weight="normal" />
           </button>
         </motion.div>
       ) : null}

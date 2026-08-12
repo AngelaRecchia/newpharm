@@ -12,7 +12,7 @@
 
 import type * as Generated from "./storyblok.generated";
 import type { StoryblokLink } from "@/lib/api/utils/links";
-import type { AssetStoryblok } from "./storyblok.generated";
+import type { AssetStoryblok, LinkStoryblok } from "./storyblok.generated";
 import type { ISbRichtext } from "@storyblok/react";
 
 /** Catalog — campi CMS oltre al generato */
@@ -23,6 +23,8 @@ export interface CatalogStoryblok extends Generated.CatalogStoryblok {
 /** product — composition come richtext in CMS */
 export interface ProductStoryblok extends Generated.ProductStoryblok {
   composition?: ISbRichtext | null;
+  bestseller?: boolean | null;
+  resources?: LinkStoryblok[] | null;
 }
 
 /** full_banner — title richtext + asset come bloks Asset[] */
@@ -32,6 +34,14 @@ export interface Full_bannerStoryblok extends Omit<
 > {
   title?: ISbRichtext | null;
   asset?: AssetStoryblok[] | null;
+}
+
+/** hero — background come bloks Asset[] */
+export interface HeroStoryblok extends Omit<
+  Generated.HeroStoryblok,
+  "background"
+> {
+  background?: AssetStoryblok[] | null;
 }
 
 /** Story Catalog risolta da CDN (resolve_relations su catalogs_download.items) */
@@ -139,12 +149,19 @@ export type ListingVariantSlug =
   | "insetto"
   | "catalogo";
 
+export type ListingSelectionMode = "manual" | "dynamic" | "all";
+
+export type ListingProductVista = "categoria" | "application_area";
+
 export type ListingVariantValue = {
   variant: ListingVariantSlug;
-  items: string[];
+  selection_mode: ListingSelectionMode;
+  vista?: ListingProductVista;
   category?: string;
-  piu_recente?: boolean;
-  alfabetico?: boolean;
+  subcategory?: string;
+  application_area?: string;
+  bestseller?: boolean;
+  items: string[];
 };
 
 export interface ListingStoryResolved {
@@ -175,13 +192,28 @@ export interface ListingStoryblok {
   _editable?: string;
 }
 
-/** products — listing prodotti con filtri sticky e chips categoria/sottofiltro */
+/**
+ * products — catalogo completo con filtri sticky.
+ * Titolo/subtitle nel blok; tutti i prodotti fetchati SSR (nessuna selezione CMS).
+ */
 export interface ProductsStoryblok {
   title?: string | null;
   subtitle?: string | null;
-  variant?: ListingVariantValue | null;
-  /** @deprecated use variant */
-  listing_items?: ListingVariantValue | null;
+  products_comparison_page?: StoryblokLink | null;
+  /** Popolato SSR da enrichListingBloks — non editabile in CMS */
+  resolved_items?: ListingStoryResolved[] | null;
+  anchor_id?: string | null;
+  _uid: string;
+  component: string;
+  _editable?: string;
+}
+
+/**
+ * compare — pagina confronto prodotti side-by-side.
+ * Tutti i prodotti fetchati SSR per le select.
+ */
+export interface CompareStoryblok {
+  /** Popolato SSR da enrichListingBloks — non editabile in CMS */
   resolved_items?: ListingStoryResolved[] | null;
   anchor_id?: string | null;
   _uid: string;

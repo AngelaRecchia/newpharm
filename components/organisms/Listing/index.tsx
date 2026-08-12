@@ -43,7 +43,6 @@ function RefCard({
 }) {
   switch (variant) {
     case 'catalogo':
-      return <CardListingRef {...props} />
     case 'progetto':
     case 'insetto':
       return <CardListingRef {...props} />
@@ -178,6 +177,10 @@ export default function Listing({ blok }: { blok?: ListingStoryblok }) {
               />
             ))}
           </div>
+        )}
+
+        {isHub && hubPageItems.length === 0 && (
+          <p className={cn('empty')}>Nessun elemento da mostrare.</p>
         )}
 
         {isHighlight && highlightVisible.length > 0 && (

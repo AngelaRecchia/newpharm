@@ -33,10 +33,15 @@
 .slotButton,
 .slotEmpty {
   display: block;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 72px;
+  height: 72px;
   overflow: hidden;
   background-color: $c-white;
+
+  @include md {
+    width: 34px;
+    height: 34px;
+  }
 }
 
 .slotButton {
@@ -69,9 +74,9 @@
 }
 
 .copyTitle {
-  @include t-note;
+  @include t-help;
   margin: 0;
-  font-weight: $font-weight-medium;
+  font-weight: 700;
 }
 
 .copyHint {
@@ -82,11 +87,21 @@
 
 .right {
   flex-shrink: 0;
+}
 
-  [data-button] {
-    background-color: $c-white;
-    color: $c-black;
-    border-radius: 999px;
+.compareButton {
+  background-color: $c-white;
+  color: $c-black;
+  border-radius: 999px;
+
+  &[class*="iconAlwaysVisible"] [class*="buttonIcon"] {
+    background-color: $c-black;
+    color: $c-white;
+    transform: scale(1);
+
+    svg {
+      opacity: 1;
+    }
   }
 }
 

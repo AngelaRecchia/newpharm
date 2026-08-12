@@ -1,0 +1,13 @@
+[
+  { "name": "ambienti-civili", "value": "Ambienti civili", "id": "151091176754381" },
+  { "name": "ambienti-sanitari", "value": "Ambienti sanitari", "id": "151091186982100" },
+  { "name": "ambienti-stoccaggio-pieni", "value": "Ambienti di stoccaggio pieni", "id": "193456520391290" },
+  { "name": "ambienti-stoccaggio-vuoti", "value": "Ambienti di stoccaggio vuoti", "id": "151091188538581" },
+  { "name": "aree-verdi", "value": "Aree verdi", "id": "151091179662543" },
+  { "name": "enti-e-comunita", "value": "Enti e comunità", "id": "203711162068038" },
+  { "name": "ho-re-ca", "value": "Ho.Re.Ca.", "id": "151091181124816" },
+  { "name": "industrie", "value": "Industrie e magazzini", "id": "151091182636241" },
+  { "name": "industrie-alimentari", "value": "Industrie alimentari", "id": "151091184209106" },
+  { "name": "mezzi-trasporto", "value": "Mezzi di trasporto", "id": "151091185687763" },
+  { "name": "zootecnia", "value": "Zootecnia", "id": "151091189869782" }
+]

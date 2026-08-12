@@ -1,6 +1,7 @@
 'use client'
 
 import classNames from 'classnames/bind'
+import { useReducedMotion } from 'motion/react'
 import { useTranslations } from 'next-intl'
 import styles from './index.module.scss'
 import Asset from '@/components/atoms/Asset'
@@ -18,6 +19,7 @@ export type CardListingRefProps = {
   href?: string
   safetySheetHref?: string
   layout?: 'grid' | 'list'
+  deferListActions?: boolean
   isInCompare?: boolean
   compareDisabled?: boolean
   isInDownloadSelection?: boolean
@@ -29,6 +31,7 @@ export type CardListingRefProps = {
 }
 
 function ListActions({
+  deferListActions,
   isInCompare,
   compareDisabled,
   isInDownloadSelection,
@@ -42,6 +45,7 @@ function ListActions({
   downloadLabel,
   addLabel,
 }: {
+  deferListActions?: boolean
   isInCompare?: boolean
   compareDisabled?: boolean
   isInDownloadSelection?: boolean
@@ -55,6 +59,7 @@ function ListActions({
   downloadLabel: string
   addLabel: string
 }) {
+  const reduceMotion = useReducedMotion()
   const downloadAction =
     downloadMultiMode && isInDownloadSelection ? (
       <Button
@@ -88,7 +93,11 @@ function ListActions({
     )
 
   return (
-    <div className={cn('listActions')}>
+    <div
+      className={cn('listActions', {
+        listActionsDeferred: deferListActions && !reduceMotion,
+      })}
+    >
       {isInCompare ? (
         <Button
           variant="secondary"
@@ -122,6 +131,7 @@ export function CardListingRef({
   image,
   href,
   layout = 'grid',
+  deferListActions,
   isInCompare,
   compareDisabled,
   isInDownloadSelection,
@@ -156,6 +166,7 @@ export function CardListingRef({
             <p className={cn('listDescription')}>{description}</p>
           ) : null}
           <ListActions
+            deferListActions={deferListActions}
             isInCompare={isInCompare}
             compareDisabled={compareDisabled}
             isInDownloadSelection={isInDownloadSelection}

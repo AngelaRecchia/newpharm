@@ -3,7 +3,7 @@ import classNames from 'classnames'
 import { icons } from './icons'
 import styles from './index.module.scss'
 
-type IconSize = 'xs' | 's' | 'm' | 'ml' | 'l'
+type IconSize = 'xs' | 's' | 'sm' | 'm' | 'ml' | 'l'
 type LogoVariant = 'white-red' | 'white-white' | 'primary-primary' | 'black-red' | 'black-black' | 'primary-red'
 
 /** Props we pass when cloning icon elements (SVG). Keeps cloneElement type-safe. */
@@ -18,10 +18,10 @@ type IconCloneProps = {
 const sizeMap: Record<IconSize, number> = {
   xs: 8,
   s: 12,
+  sm: 14,
   m: 16,
   ml: 20,
   l: 24,
-
 }
 
 const logoVariantClasses: Record<LogoVariant, string> = {

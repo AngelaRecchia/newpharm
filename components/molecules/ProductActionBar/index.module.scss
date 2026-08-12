@@ -8,44 +8,35 @@
   display: flex;
   align-items: center;
   gap: $s-16;
-  min-height: 3.5rem;
-  padding: $s-16 $s-24;
-  padding-inline-end: calc(#{$s-24} + 2.75rem);
+  padding: $s-24;
+  padding-top: $s-40;
   color: $c-white;
   border-top: 1px solid rgba($c-white, 0.15);
+
+  @include md {
+    padding-inline: $s-40;
+
+    padding-block: $s-32;
+  }
 
   &.download {
     background-color: $c-primary;
 
     &.multiLine {
-      min-height: 4.5rem;
-
       @include mobile {
         flex-wrap: wrap;
         align-items: flex-start;
-        min-height: 6.5rem;
-        padding-block: $s-16;
-        padding-inline-end: calc(#{$s-24} + 2.75rem);
       }
     }
   }
 
   &.compare {
     background-color: $c-black;
-    min-height: 4.5rem;
 
     @include mobile {
       flex-wrap: wrap;
       align-items: flex-start;
-      min-height: 6.5rem;
-      padding-block: $s-16;
-      padding-inline-end: calc(#{$s-24} + 2.75rem);
     }
-  }
-
-  @include md {
-    padding-inline: $s-40;
-    padding-inline-end: calc(#{$s-40} + 2.75rem);
   }
 }
 
@@ -56,14 +47,14 @@
 
 .close {
   position: absolute;
-  inset-inline-end: $s-16;
+  inset-inline-end: $s-24;
   top: 50%;
   transform: translateY(-50%);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.75rem;
-  height: 2.75rem;
+  width: $s-24;
+  height: $s-24;
   padding: 0;
   border: none;
   background: transparent;
@@ -79,12 +70,9 @@
     inset-inline-end: $s-40;
   }
 
-  .compare &,
-  .download.multiLine & {
-    @include mobile {
-      top: auto;
-      bottom: $s-16;
-      transform: none;
-    }
+  @include mobile {
+    top: auto;
+    bottom: 1.75rem;
+    transform: none;
   }
 }

@@ -8,12 +8,16 @@
 
 .inner {
   position: relative;
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: space-between;
   gap: $s-16;
   padding-block: $s-16;
   overflow: visible;
+
+  @include md {
+    display: flex;
+  }
 }
 
 .toolbar {
@@ -282,52 +286,90 @@
   cursor: pointer;
   color: $c-black;
   flex-shrink: 0;
-  @include transition(background-color, $td-200);
+  transition:
+    background-color $td-200 ease,
+    color $td-200 ease;
 
-  &:hover {
-    background: rgb(240, 240, 240);
-  }
-
+  &:hover,
+  &:focus-visible,
   &.active {
     background: $c-black;
     color: $c-white;
   }
 }
 
-.mobileNav {
-  display: flex;
-  align-items: center;
-  gap: $s-8;
-  flex: 1;
-  min-width: 0;
+.mobileNavFixed {
+  position: fixed;
+  inset-inline: 0;
+  bottom: calc(var(--products-bar-offset, 0px) + env(safe-area-inset-bottom, 0px));
+  z-index: 10030;
+  background-color: $c-white;
+  padding-inline: $s-24;
+  max-width: 100vw;
 
   @include md {
     display: none;
   }
 }
 
+.mobileShell {
+  display: flex;
+  flex-direction: column;
+  gap: $s-24;
+  width: 100%;
+  padding-block: $s-16;
+}
+
+.mobilePanelExpand {
+  overflow: hidden;
+  border-top: 1px solid $c-border-dark;
+}
+
+.mobilePanelViewport {
+  position: relative;
+  width: 100%;
+  max-height: min(16.4375rem, 50dvh);
+  overflow: hidden;
+}
+
+.mobilePanelStage {
+  width: 100%;
+}
+
+.mobileInner {
+  display: flex;
+  flex-direction: column;
+  gap: $s-8;
+  width: 100%;
+}
+
+.mobileNavRow {
+  display: flex;
+  align-items: center;
+  gap: $s-8;
+  width: 100%;
+}
+
 .mobileTab {
   flex: 1;
   min-width: 0;
-  background: $c-surface;
-  padding: $s-16;
 }
 
-.mobileTabInner {
+.mobileNavTab {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: $s-8;
   width: 100%;
-  padding: 0;
+  padding: $s-16;
   border: none;
-  background: transparent;
+  background: $c-surface;
   cursor: pointer;
   color: inherit;
   text-align: start;
 }
 
-.mobileTitle {
+.mobileNavTabLabel {
   @include t-body;
   margin: 0;
   white-space: nowrap;
@@ -335,33 +377,128 @@
   text-overflow: ellipsis;
 }
 
-.mobileChevron {
+.mobileNavTabIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background-color: $c-white;
+  flex-shrink: 0;
+}
+
+.mobileNavTabChevron {
   flex-shrink: 0;
   @include transition(transform, $td-200);
 
-  &.open {
+  &.down.expanded {
     transform: rotate(180deg);
   }
 }
 
-.mobilePanel {
-  border-top: 1px solid $c-border-dark;
-  padding-block: $s-24;
+.mobileSubPanel {
   display: flex;
   flex-direction: column;
   gap: $s-16;
+  width: 100%;
+  min-height: 0;
 }
 
-.mobileGroup {
+.mobileSubPanelBack {
+  @include t-body;
+  display: inline-flex;
+  align-items: center;
+  gap: $s-8;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: $c-black;
+  flex-shrink: 0;
+}
+
+.mobileScrollArea {
+  position: relative;
+  z-index: 0;
+  display: flex;
+  align-items: stretch;
+  max-height: min(16.4375rem, 45dvh);
+  min-height: 0;
+  flex: 1;
+  padding: $s-16;
+  margin-inline: -#{$s-16};
+}
+
+.mobileScroll {
   display: flex;
   flex-direction: column;
-  gap: $s-8;
+  gap: $s-16;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+
+  &.compact {
+    gap: $s-8;
+  }
+
+  &::-webkit-scrollbar {
+    width: 2px;
+  }
+
+  &::-webkit-scrollbar-button {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: $c-primary;
+    border-radius: 0;
+  }
+
+  @supports not selector(::-webkit-scrollbar) {
+    scrollbar-width: thin;
+    scrollbar-color: $c-primary transparent;
+  }
 }
 
-.mobileGroupLabel {
-  @include t-help;
-  margin: 0;
-  color: $c-gray-600;
+.mobileScrollFade {
+  position: absolute;
+  inset-inline-start: 0;
+  inset-inline-end: calc(#{$s-16} + 2px);
+  height: 2.8125rem;
+  pointer-events: none;
+  z-index: 2;
+
+  &.top {
+    top: 0;
+    background: linear-gradient(
+      180deg,
+      $c-white 0,
+      $c-white $s-16,
+      rgba($c-white, 0) 100%
+    );
+  }
+
+  &.bottom {
+    bottom: 0;
+    background: linear-gradient(
+      0deg,
+      $c-white 0,
+      $c-white $s-16,
+      rgba($c-white, 0) 100%
+    );
+  }
 }
 
 .mobileOption {

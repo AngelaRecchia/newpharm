@@ -28,6 +28,7 @@ import {
   type ProductBarItem,
 } from '@/lib/products/productBarTypes'
 import { downloadAllSafetySheets } from '@/lib/products/downloadAllSafetySheets'
+import { getLinkUrl } from '@/lib/api/utils/links'
 import type { ProductsStoryblok } from '@/types/storyblok'
 import styles from './index.module.scss'
 
@@ -46,8 +47,14 @@ function ProductsInner({ blok }: { blok?: ProductsStoryblok }) {
   const gridRef = useRef<HTMLDivElement>(null)
   const reduceMotion = useReducedMotion()
   const { filters, setFilters, currentPage, setCurrentPage } = useProductsFilterUrl()
+  const prevViewRef = useRef(filters.view)
+  const deferListActions = prevViewRef.current === 'grid' && filters.view === 'list'
 
   const resolvedItems = blok?.resolved_items ?? []
+  const comparisonPageUrl = useMemo(
+    () => getLinkUrl(blok?.products_comparison_page ?? null),
+    [blok?.products_comparison_page],
+  )
   const [filtersStuck, setFiltersStuck] = useState(false)
   const [compareItems, setCompareItems] = useState<ProductBarItem[]>([])
   const [downloadItems, setDownloadItems] = useState<ProductBarItem[]>([])
@@ -105,6 +112,12 @@ function ProductsInner({ blok }: { blok?: ProductsStoryblok }) {
   }, [lenis])
 
   useEffect(() => {
+    console.log('[Products] blok', blok)
+    console.log('[Products] products_comparison_page', blok?.products_comparison_page)
+    console.log('[Products] comparisonPageUrl', comparisonPageUrl)
+  }, [blok, comparisonPageUrl])
+
+  useEffect(() => {
     const sentinel = filtersSentinelRef.current
     if (!sentinel) return
 
@@ -115,6 +128,10 @@ function ProductsInner({ blok }: { blok?: ProductsStoryblok }) {
     observer.observe(sentinel)
     return () => observer.disconnect()
   }, [])
+
+  useEffect(() => {
+    prevViewRef.current = filters.view
+  }, [filters.view])
 
   useEffect(() => {
     if (skipScrollRefresh.current) {
@@ -263,6 +280,7 @@ function ProductsInner({ blok }: { blok?: ProductsStoryblok }) {
             onApplicationAreaChange={handleApplicationAreaChange}
             onSortChange={(sort) => setFilters((prev) => ({ ...prev, sort }))}
             onViewChange={(view) => setFilters((prev) => ({ ...prev, view }))}
+            barOffset={barOffset}
           />
 
           <ProductFilters
@@ -340,6 +358,7 @@ function ProductsInner({ blok }: { blok?: ProductsStoryblok }) {
                     <CardListingProduct
                       {...card}
                       layout={filters.view}
+                      deferListActions={deferListActions}
                       isInCompare={isInCompare}
                       compareDisabled={compareFull && !isInCompare}
                       isInDownloadSelection={isInDownloadSelection}
@@ -395,6 +414,7 @@ function ProductsInner({ blok }: { blok?: ProductsStoryblok }) {
       <ProductCompareBar
         open={activeBar === 'compare'}
         items={compareItems}
+        comparisonPageUrl={comparisonPageUrl}
         onClose={closeCompareBar}
         onRemove={handleCompareRemove}
       />
