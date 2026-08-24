@@ -2,6 +2,8 @@ export type ListingVariantSlug = 'prodotto' | 'progetto' | 'insetto' | 'catalogo
 
 export type ListingContentComponent = 'product' | 'project' | 'insect' | 'catalog'
 
+export type ListingImageRatio = 'square' | 'portrait'
+
 /** prodotto: manual | dynamic — altre varianti: all | manual */
 export type ListingSelectionMode = 'manual' | 'dynamic' | 'all'
 
@@ -18,6 +20,8 @@ export type ListingVariantValue = {
   bestseller?: boolean
   /** prodotto manual: UUID inclusi — altre varianti all: UUID esclusi */
   items: string[]
+  /** Solo listing editorial: square (1:1, dark) | portrait (259/340, light) */
+  image_ratio?: ListingImageRatio
 }
 
 export const EMPTY_VARIANT_VALUE: ListingVariantValue = {
@@ -28,6 +32,7 @@ export const EMPTY_VARIANT_VALUE: ListingVariantValue = {
   application_area: '',
   bestseller: false,
   items: [],
+  image_ratio: 'portrait',
 }
 
 export const VARIANT_TO_COMPONENT: Record<ListingVariantSlug, ListingContentComponent> = {

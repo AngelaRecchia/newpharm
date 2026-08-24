@@ -15,8 +15,16 @@ import VideoYt from '@/components/organisms/VideoYt'
 import { StoryblokComponent } from '@storyblok/react'
 import { hasRichTextContent } from '@/lib/api/utils/richtext'
 import { getProductCategorySlug } from '@/lib/product-filtri'
+import { mapTargetPests, type TargetPestView } from '@/lib/products/mapTargetPests'
+import TargetPests from '@/components/molecules/TargetPests'
 
 const cn = classNames.bind(styles)
+
+type AccordionItemData = {
+  label: string
+  content: unknown
+  type: 'richtext' | 'text' | 'file' | 'pests'
+}
 
 const Product = ({ blok }: { blok: ProductStoryblok }) => {
   const t = useTranslations('')
@@ -42,6 +50,8 @@ const Product = ({ blok }: { blok: ProductStoryblok }) => {
     related_projects
   } = blok as any
 
+  const targetPests = mapTargetPests(blok.target_pests)
+
   const categorySlug = getProductCategorySlug(product_filtri, category)
 
   // Immagine principale = primo asset, secondarie = resto dell'array
@@ -53,13 +63,15 @@ const Product = ({ blok }: { blok: ProductStoryblok }) => {
     { label: t('products'), href: '/' + t('products').toLowerCase() },
     { label: title },
   ]
-  // Renderizza il contenuto di un accordion in base al tipo
-  const renderAccordionContent = (item: { content: any; type: 'richtext' | 'text' | 'file' }) => {
+
+  const renderAccordionContent = (item: AccordionItemData) => {
     switch (item.type) {
       case 'richtext':
-        return <RichText content={item.content} raw />
+        return <RichText content={item.content as any} raw />
       case 'text':
         return <p>{item.content as string}</p>
+      case 'pests':
+        return <TargetPests items={item.content as TargetPestView[]} />
       case 'file':
         return (
           <SmartLink
@@ -75,9 +87,11 @@ const Product = ({ blok }: { blok: ProductStoryblok }) => {
     }
   }
 
-  // Verifica se un contenuto è effettivamente valorizzato
-  const hasContent = (content: any, type: string): boolean => {
+  const hasContent = (content: unknown, type: AccordionItemData['type']): boolean => {
     if (!content) return false
+    if (type === 'pests') {
+      return Array.isArray(content) && content.length > 0
+    }
     if (type === 'richtext' && typeof content === 'object') {
       return hasRichTextContent(content)
     }
@@ -87,17 +101,16 @@ const Product = ({ blok }: { blok: ProductStoryblok }) => {
     return !!content
   }
 
-  // Accordion items — solo quelli con contenuto
-  const accordionItems = [
+  const accordionItems: AccordionItemData[] = [
     { label: t('product_application-areas'), content: application_areas_text, type: 'richtext' as const },
     { label: t('product_composition'), content: composition, type: 'richtext' as const },
-    { label: t('product_target-pests'), content: null, type: 'text' as const },
+    { label: t('product_target-pests'), content: targetPests, type: 'pests' as const },
     { label: t('product_dosage'), content: dosage_and_application, type: 'richtext' as const },
     { label: t('product_usage'), content: usage, type: 'richtext' as const },
     { label: t('product_dimensions'), content: dimensions, type: 'richtext' as const },
     { label: t('product_units-per-carton'), content: units_per_carton, type: 'richtext' as const },
     { label: t('product_download'), content: safety_data_sheet, type: 'file' as const },
-  ].filter(item => hasContent(item.content, item.type))
+  ].filter((item) => hasContent(item.content, item.type))
 
   return (
     <section className={cn('wrapper')}>

@@ -1,4 +1,5 @@
 import classNames from 'classnames/bind'
+import type { CSSProperties } from 'react'
 import styles from './index.module.scss'
 import { Icon_text_highlightStoryblok } from '@/types/storyblok'
 import Asset from '@/components/atoms/Asset'
@@ -9,6 +10,8 @@ const cn = classNames.bind(styles)
 
 const IconTextHighlight = ({ blok }: { blok: Icon_text_highlightStoryblok }) => {
   const { title, description, items } = blok
+  const cols = Math.min(items?.length || 1, 4)
+
   return (
     <div className={cn('wrapper')} id={getStoryblokAnchorId(blok.anchor_id)} {...storyblokEditable(blok as any)}>
       <div className={cn('container')}>
@@ -17,7 +20,7 @@ const IconTextHighlight = ({ blok }: { blok: Icon_text_highlightStoryblok }) => 
           <p className={cn('description')}>{description}</p>
         </div>
 
-        <div className={cn('items')}>
+        <div className={cn('items')} style={{ '--cols': cols } as CSSProperties}>
           {items?.map((item) => (
             <div key={item._uid} className={cn('item')}>
               <div className={cn('item-image')}>

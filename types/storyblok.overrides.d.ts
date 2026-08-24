@@ -11,8 +11,9 @@
  */
 
 import type * as Generated from "./storyblok.generated";
-import type { StoryblokLink } from "@/lib/api/utils/links";
 import type { AssetStoryblok, LinkStoryblok } from "./storyblok.generated";
+import type { StoryblokLink } from "@/lib/api/utils/links";
+import type { StoryblokAsset } from '@/components/atoms/Asset'
 import type { ISbRichtext } from "@storyblok/react";
 
 /** Catalog — campi CMS oltre al generato */
@@ -20,11 +21,30 @@ export interface CatalogStoryblok extends Generated.CatalogStoryblok {
   short_description?: string | null;
 }
 
+/** Story Insect risolta da CDN (resolve_relations su target_pest_item.insect) */
+export interface InsectStoryResolved {
+  uuid: string;
+  name: string;
+  slug: string;
+  full_slug: string;
+  content: Generated.InsectStoryblok;
+  [key: string]: unknown;
+}
+
+/** target_pest_item — insetto catalogo + testo custom sul prodotto */
+export interface Target_pest_itemStoryblok extends Omit<
+  Generated.Target_pest_itemStoryblok,
+  "insect"
+> {
+  insect?: string | Generated.InsectStoryblok | InsectStoryResolved | null;
+}
+
 /** product — composition come richtext in CMS */
 export interface ProductStoryblok extends Generated.ProductStoryblok {
   composition?: ISbRichtext | null;
   bestseller?: boolean | null;
   resources?: LinkStoryblok[] | null;
+  target_pests?: Target_pest_itemStoryblok[] | null;
 }
 
 /** full_banner — title richtext + asset come bloks Asset[] */
@@ -131,18 +151,23 @@ export interface SettingsStoryblok {
 
 /** card_listing_editorial — nested card for listing editorial type */
 export interface Card_listing_editorialStoryblok {
-  image?: import("./storyblok.generated").AssetStoryblok[] | null;
+  /** Bloks Asset[] (mobile/desktop) oppure asset nativo Storyblok */
+  image?:
+    | AssetStoryblok[]
+    | AssetStoryblok
+    | StoryblokAsset
+    | null;
   title?: string | null;
   subtitle?: string | null;
   description?: string | null;
-  link?: LinkStoryblok[] | null;
+  link?: StoryblokLink | null;
   _uid: string;
   component: string;
   _editable?: string;
 }
 
 export type ListingType = "editorial" | "hub" | "highlight";
-export type ListingEditorialVariant = "team" | "courses";
+export type ListingImageRatio = "square" | "portrait";
 export type ListingVariantSlug =
   | "prodotto"
   | "progetto"
@@ -162,6 +187,7 @@ export type ListingVariantValue = {
   application_area?: string;
   bestseller?: boolean;
   items: string[];
+  image_ratio?: ListingImageRatio;
 };
 
 export interface ListingStoryResolved {
@@ -170,6 +196,7 @@ export interface ListingStoryResolved {
   slug: string;
   full_slug: string;
   published_at?: string | null;
+  first_published_at?: string | null;
   content: Record<string, unknown>;
 }
 
@@ -182,8 +209,6 @@ export interface ListingStoryblok {
   variant?: ListingVariantValue | null;
   /** @deprecated use variant */
   listing_items?: ListingVariantValue | null;
-  editorial_variant?: ListingEditorialVariant | null;
-  empty_message?: string | null;
   cards?: Card_listing_editorialStoryblok[] | null;
   resolved_items?: ListingStoryResolved[] | null;
   anchor_id?: string | null;
@@ -214,6 +239,36 @@ export interface ProductsStoryblok {
  */
 export interface CompareStoryblok {
   /** Popolato SSR da enrichListingBloks — non editabile in CMS */
+  resolved_items?: ListingStoryResolved[] | null;
+  anchor_id?: string | null;
+  _uid: string;
+  component: string;
+  _editable?: string;
+}
+
+export type CarouselVariantSlug = "story" | "prodotto" | "editorial";
+export type CarouselStoryMode = "dynamic" | "tag" | "manual";
+
+export type CarouselVariantValue = {
+  variant: CarouselVariantSlug;
+  selection_mode: CarouselStoryMode;
+  tag?: string;
+  items: string[];
+  vista?: ListingProductVista;
+  category?: string;
+  subcategory?: string;
+  application_area?: string;
+  bestseller?: boolean;
+};
+
+/** carousel — slide auto (story/product) o card editorial */
+export interface CarouselStoryblok {
+  title?: string | null;
+  subtitle?: string | null;
+  link?: LinkStoryblok[] | StoryblokLink | null;
+  /** Plugin: story | prodotto | editorial + filtri/selezione */
+  variant?: CarouselVariantValue | null;
+  cards?: Card_listing_editorialStoryblok[] | null;
   resolved_items?: ListingStoryResolved[] | null;
   anchor_id?: string | null;
   _uid: string;

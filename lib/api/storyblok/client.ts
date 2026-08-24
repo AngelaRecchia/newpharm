@@ -48,8 +48,20 @@ async function getWithRetry<T>(
   throw lastError
 }
 
-function shouldUseFsCache(): boolean {
-  return process.env.STORYBLOK_DISABLE_FS_CACHE !== 'true'
+function isSingleStoryEndpoint(endpoint: string): boolean {
+  return endpoint.startsWith('cdn/stories/') && endpoint !== 'cdn/stories/'
+}
+
+function shouldUseFsCache(endpoint: string): boolean {
+  if (process.env.STORYBLOK_DISABLE_FS_CACHE === 'true') return false
+  // In draft il GET della story singola resta fresco (Visual Editor / campo body nuovo)
+  if (
+    process.env.NEXT_PUBLIC_STORYBLOK_VERSION !== 'published' &&
+    isSingleStoryEndpoint(endpoint)
+  ) {
+    return false
+  }
+  return true
 }
 
 export function getStoryblokApi() {
@@ -63,7 +75,7 @@ export function getStoryblokApi() {
   const originalGet = client.get.bind(client)
 
   client.get = async (endpoint: string, params: Record<string, unknown> = {}) => {
-    if (!shouldUseFsCache()) {
+    if (!shouldUseFsCache(endpoint)) {
       return getWithRetry(originalGet, endpoint, params)
     }
 

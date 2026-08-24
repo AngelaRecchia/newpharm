@@ -4,6 +4,7 @@ import type { ProductFiltriValue } from '@/lib/product-filtri'
 import type { ListingStoryResolved } from '@/lib/listing/types'
 import type { AssetStoryblok, LinkStoryblok, ProductStoryblok } from '@/types/storyblok'
 import type { ISbRichtext } from '@storyblok/react'
+import { mapTargetPests, type TargetPestView } from '@/lib/products/mapTargetPests'
 
 export type CompareProductView = {
   uuid: string
@@ -14,6 +15,7 @@ export type CompareProductView = {
   category: string | null
   applicationAreasText?: ISbRichtext
   composition?: ISbRichtext
+  targetPests: TargetPestView[]
   dosage?: ISbRichtext
   unitsPerCarton?: ISbRichtext
   safetySheetHref?: string
@@ -45,6 +47,7 @@ export function mapProductStoryToCompare(story: ListingStoryResolved): ComparePr
     category: getProductCategorySlug(content.product_filtri, content.category) ?? null,
     applicationAreasText: content.application_areas_text as ISbRichtext | undefined,
     composition: content.composition ?? undefined,
+    targetPests: mapTargetPests(content.target_pests),
     dosage: content.dosage_and_application as ISbRichtext | undefined,
     unitsPerCarton: content.units_per_carton as ISbRichtext | undefined,
     safetySheetHref: safetySheet?.filename || undefined,
@@ -56,6 +59,10 @@ export function mapProductStoriesToCompare(
   stories: ListingStoryResolved[],
 ): CompareProductView[] {
   return stories.map(mapProductStoryToCompare)
+}
+
+export function hasCompareTargetPests(product: CompareProductView): boolean {
+  return product.targetPests.length > 0
 }
 
 export function hasCompareResources(product: CompareProductView): boolean {

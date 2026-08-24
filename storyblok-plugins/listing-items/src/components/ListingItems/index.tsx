@@ -9,25 +9,34 @@ import {
   getSubfiltersForCategory,
 } from '../../lib/filtri'
 import { getVariantLabel, searchStories, sortStoryOptions } from '../../lib/stories'
+import { getListingBlokType, getParentBlokComponent } from '../../lib/blokType'
 import { validateContent } from '../../lib/validateContent'
+import { CarouselItems } from '../CarouselItems'
 import type {
   ApplicationAreaEntry,
   FiltriEntry,
+  ListingImageRatio,
   ListingProductVista,
   ListingVariantSlug,
-  ListingVariantValue,
+  PluginVariantSlug,
+  PluginVariantValue,
   StoryOption,
 } from '../../types'
 import './listing-items.css'
 
-const VARIANTS: ListingVariantSlug[] = ['prodotto', 'catalogo', 'progetto', 'insetto']
+const VARIANTS: ListingVariantSlug[] = ['prodotto', 'catalogo', 'progetto']
+
+const IMAGE_RATIOS: { value: ListingImageRatio; label: string }[] = [
+  { value: 'portrait', label: 'Rettangolare' },
+  { value: 'square', label: 'Quadrata' },
+]
 
 const VISTAS: { value: ListingProductVista; label: string }[] = [
   { value: 'categoria', label: 'Categoria' },
   { value: 'application_area', label: 'Application area' },
 ]
 
-const DEFAULT_PRODOTTO: ListingVariantValue = {
+const DEFAULT_PRODOTTO: PluginVariantValue = {
   variant: 'prodotto',
   selection_mode: 'dynamic',
   category: '',
@@ -35,23 +44,25 @@ const DEFAULT_PRODOTTO: ListingVariantValue = {
   application_area: '',
   bestseller: false,
   items: [],
+  image_ratio: 'portrait',
 }
 
-const DEFAULT_REF: ListingVariantValue = {
+const DEFAULT_REF: PluginVariantValue = {
   variant: 'catalogo',
   selection_mode: 'all',
   items: [],
+  image_ratio: 'portrait',
 }
 
-function isProdotto(variant: ListingVariantSlug): boolean {
+function isProdotto(variant: PluginVariantSlug): boolean {
   return variant === 'prodotto'
 }
 
-function isRefAllMode(value: ListingVariantValue): boolean {
+function isRefAllMode(value: PluginVariantValue): boolean {
   return !isProdotto(value.variant) && value.selection_mode === 'all'
 }
 
-function isStorySelected(value: ListingVariantValue, uuid: string): boolean {
+function isStorySelected(value: PluginVariantValue, uuid: string): boolean {
   if (isProdotto(value.variant)) {
     return value.selection_mode === 'manual' && value.items.includes(uuid)
   }
@@ -62,7 +73,7 @@ function isStorySelected(value: ListingVariantValue, uuid: string): boolean {
 }
 
 export function ListingItems() {
-  const plugin = useFieldPlugin<ListingVariantValue>({ validateContent })
+  const plugin = useFieldPlugin<PluginVariantValue>({ validateContent })
   const [search, setSearch] = useState('')
   const [results, setResults] = useState<StoryOption[]>([])
   const [categories, setCategories] = useState<FiltriEntry[]>([])
@@ -74,17 +85,24 @@ export function ListingItems() {
   const cdnToken = options.cdn_token || import.meta.env.VITE_STORYBLOK_CDN_TOKEN || ''
   const datasourceSlug = options.datasource_slug || 'filtri'
   const value = plugin.data?.content ?? DEFAULT_PRODOTTO
+  const listingType = getListingBlokType(plugin.data?.story, plugin.data?.blockUid)
+  const parentComponent = getParentBlokComponent(plugin.data?.story, plugin.data?.blockUid)
+  const isCarousel =
+    parentComponent === 'carousel' || options.context === 'carousel'
+  const isEditorial = listingType === 'editorial'
+  const variantOptions =
+    value.variant === 'insetto' ? [...VARIANTS, 'insetto' as const] : VARIANTS
 
   const applicationAreaOptions = applicationAreas as ApplicationAreaEntry[]
 
   const setContent = useCallback(
-    (next: ListingVariantValue) => {
+    (next: PluginVariantValue) => {
       plugin.actions?.setContent(next)
     },
     [plugin.actions],
   )
 
-  const updateOptions = (patch: Partial<ListingVariantValue>) => {
+  const updateOptions = (patch: Partial<PluginVariantValue>) => {
     setContent({ ...value, ...patch })
   }
 
@@ -96,7 +114,7 @@ export function ListingItems() {
       )
       if (!confirmed) return
     }
-    setContent(isProdotto(variant) ? { ...DEFAULT_PRODOTTO, variant } : { ...DEFAULT_REF, variant })
+    setContent(isProdotto(variant) ? { ...DEFAULT_PRODOTTO, variant, image_ratio: value.image_ratio } : { ...DEFAULT_REF, variant, image_ratio: value.image_ratio })
     setResults([])
     setSearch('')
   }
@@ -156,12 +174,14 @@ export function ListingItems() {
   }, [value.category, filtriEntries])
 
   const showPicker =
-    (isProdotto(value.variant) && value.selection_mode === 'manual') ||
-    (!isProdotto(value.variant) &&
-      (value.selection_mode === 'all' || value.selection_mode === 'manual'))
+    !isCarousel &&
+    !isEditorial &&
+    ((isProdotto(value.variant) && value.selection_mode === 'manual') ||
+      (!isProdotto(value.variant) &&
+        (value.selection_mode === 'all' || value.selection_mode === 'manual')))
 
   useEffect(() => {
-    if (plugin.type !== 'loaded' || !isProdotto(value.variant)) return
+    if (plugin.type !== 'loaded' || isCarousel || isEditorial || !isProdotto(value.variant)) return
 
     let cancelled = false
     Promise.all([
@@ -184,7 +204,7 @@ export function ListingItems() {
     return () => {
       cancelled = true
     }
-  }, [plugin.type, value.variant, datasourceSlug, cdnToken])
+  }, [plugin.type, isCarousel, isEditorial, value.variant, datasourceSlug, cdnToken])
 
   useEffect(() => {
     if (plugin.type !== 'loaded' || !showPicker) {
@@ -197,7 +217,11 @@ export function ListingItems() {
       setLoading(true)
       setError(null)
       try {
-        const stories = await searchStories(value.variant, cdnToken, search)
+        const stories = await searchStories(
+          value.variant === 'story' ? 'story' : (value.variant as ListingVariantSlug),
+          cdnToken,
+          search,
+        )
         if (!cancelled) {
           setResults(sortStoryOptions(stories))
         }
@@ -218,6 +242,36 @@ export function ListingItems() {
 
   if (plugin.type !== 'loaded') {
     return <p className="listing-items__loading">Caricamento editor...</p>
+  }
+
+  if (isCarousel) {
+    return <CarouselItems plugin={plugin} />
+  }
+
+  if (isEditorial) {
+    return (
+      <div className="listing-items">
+        <div className="listing-items__field">
+          <label className="listing-items__label" htmlFor="listing-image-ratio">
+            Formato immagine
+          </label>
+          <select
+            id="listing-image-ratio"
+            className="listing-items__select"
+            value={value.image_ratio ?? 'portrait'}
+            onChange={(e) =>
+              updateOptions({ image_ratio: e.target.value as ListingImageRatio })
+            }
+          >
+            {IMAGE_RATIOS.map((ratio) => (
+              <option key={ratio.value} value={ratio.value}>
+                {ratio.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+    )
   }
 
   if (!cdnToken) {
@@ -245,7 +299,7 @@ export function ListingItems() {
           value={value.variant}
           onChange={(e) => handleVariantChange(e.target.value as ListingVariantSlug)}
         >
-          {VARIANTS.map((variant) => (
+          {variantOptions.map((variant) => (
             <option key={variant} value={variant}>
               {getVariantLabel(variant)}
             </option>
@@ -255,11 +309,6 @@ export function ListingItems() {
 
       {isProdotto(value.variant) && (
         <>
-          <p className="listing-items__info">
-            Hub e Highlight: titolo e sottotitolo nel blok listing (senza filtri sticky).
-            Per filtri completi usa il blok <strong>Products</strong>.
-          </p>
-
           <fieldset className="listing-items__fieldset">
             <legend className="listing-items__label">Modalità</legend>
             <label className="listing-items__radio">
@@ -462,16 +511,6 @@ export function ListingItems() {
             )
           })}
         </div>
-      )}
-
-      {(isDynamic || showPicker) && (
-        <p className="listing-items__hint">
-          {isDynamic
-            ? 'Dinamica: bestseller e/o vista filtrano i prodotti lato server.'
-            : isRefAllMode(value)
-              ? 'Tutti selezionati di default: clicca per escludere.'
-              : 'Clicca un risultato per selezionarlo o deselezionarlo.'}
-        </p>
       )}
     </div>
   )

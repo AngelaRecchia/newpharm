@@ -1,5 +1,6 @@
 import type {
   ListingContentComponent,
+  ListingImageRatio,
   ListingProductVista,
   ListingVariantSlug,
   ListingVariantValue,
@@ -54,6 +55,10 @@ function normalizeVista(raw: unknown, legacyCategory: string): ListingProductVis
   return legacyCategory ? 'categoria' : undefined
 }
 
+function normalizeImageRatio(raw: unknown): ListingImageRatio {
+  return raw === 'square' ? 'square' : 'portrait'
+}
+
 export function parseListingVariant(raw: unknown): ListingVariantValue {
   if (raw == null || raw === '') {
     return { ...EMPTY_VARIANT_VALUE }
@@ -82,6 +87,7 @@ export function parseListingVariant(raw: unknown): ListingVariantValue {
           typeof value.application_area === 'string' ? value.application_area : '',
         bestseller: Boolean(value.bestseller) || legacyBestsellerVista,
         items: selection_mode === 'manual' ? items : [],
+        image_ratio: normalizeImageRatio(value.image_ratio),
       }
     }
 
@@ -90,6 +96,7 @@ export function parseListingVariant(raw: unknown): ListingVariantValue {
       variant,
       selection_mode,
       items,
+      image_ratio: normalizeImageRatio(value.image_ratio),
     }
   }
 

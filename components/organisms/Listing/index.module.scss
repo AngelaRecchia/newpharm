@@ -47,6 +47,11 @@
   background-color: rgba($c-white, 0.06);
   border-radius: $s-8;
   max-width: 672px;
+
+  .wrapper:not(.dark) & {
+    background-color: $c-surface;
+    color: $c-black;
+  }
 }
 
 .grid {

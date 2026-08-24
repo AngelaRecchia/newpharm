@@ -1,5 +1,6 @@
 import { getAllStories, getStory, getRelatedStoriesByTags, getRelatedProjectsByProduct } from '@/lib/api/storyblok/stories'
 import { enrichListingBloks } from '@/lib/listing/resolveListingItems'
+import { enrichCarouselBloks } from '@/lib/carousel/resolveCarouselItems'
 import StoryblokRenderer from '@/components/StoryblokRenderer'
 import { setRequestLocale } from 'next-intl/server'
 import { notFound } from 'next/navigation'
@@ -110,7 +111,10 @@ export default async function WithLayoutPage({ params }: PageProps) {
     }
   }
 
-  await enrichListingBloks(story.content, locale)
+  await Promise.all([
+    enrichListingBloks(story.content, locale),
+    enrichCarouselBloks(story.content, locale),
+  ])
 
   return (
     <>

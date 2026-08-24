@@ -1,14 +1,16 @@
-import type { ListingVariantSlug, StoryOption } from '../types'
+import type { PluginVariantSlug, StoryOption } from '../types'
 import { VARIANT_TO_COMPONENT } from '../types'
 
-const VARIANT_LABELS: Record<ListingVariantSlug, string> = {
+const VARIANT_LABELS: Record<PluginVariantSlug, string> = {
   prodotto: 'Prodotto',
   progetto: 'Progetto',
   insetto: 'Insetto',
   catalogo: 'Catalogo',
+  story: 'Story',
+  editorial: 'Editorial',
 }
 
-export function getVariantLabel(variant: ListingVariantSlug): string {
+export function getVariantLabel(variant: PluginVariantSlug): string {
   return VARIANT_LABELS[variant]
 }
 
@@ -23,7 +25,7 @@ type RawStory = {
 }
 
 export async function searchStories(
-  variant: ListingVariantSlug,
+  variant: keyof typeof VARIANT_TO_COMPONENT,
   token: string,
   search: string,
 ): Promise<StoryOption[]> {

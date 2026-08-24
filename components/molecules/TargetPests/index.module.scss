@@ -1,0 +1,38 @@
+@use "../../../styles" as *;
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: $s-16;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.row {
+  display: flex;
+  align-items: flex-start;
+  gap: $s-8;
+}
+
+.icon {
+  position: relative;
+  flex-shrink: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.copy {
+  @include t-body;
+  margin: 0;
+  min-width: 0;
+}
+
+.title {
+  font-weight: 400;
+}
+
+.text {
+  font-style: italic;
+  white-space: pre-wrap;
+}

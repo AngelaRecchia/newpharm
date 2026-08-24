@@ -38,6 +38,7 @@ import CatalogsDownload from '@/components/organisms/CatalogsDownload'
 import Listing from '@/components/organisms/Listing'
 import Products from '@/components/organisms/Products'
 import Compare from '@/components/organisms/Compare'
+import Divider from '@/components/organisms/Divider'
 // Heavy components (GSAP / Swiper / WebGL) — dynamic imports for bundle splitting
 const Header = dynamic(() => import('@/components/organisms/Header'))
 const Footer = dynamic(() => import('@/components/organisms/Footer'))
@@ -76,6 +77,7 @@ const components = {
   listing: Listing,
   products: Products,
   compare: Compare,
+  divider: Divider,
 
   // Atoms
   asset: Asset,

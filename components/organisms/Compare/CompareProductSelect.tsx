@@ -112,7 +112,7 @@ export default function CompareProductSelect({
     <div className={cn('root', { open })} ref={rootRef}>
       <button
         type="button"
-        className={cn('trigger', { open })}
+        className={cn('trigger', { open, hasValue: !isPlaceholder })}
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-controls={listboxId}
@@ -122,7 +122,7 @@ export default function CompareProductSelect({
         <span className={cn('chevronWrap')} aria-hidden>
           <Icon
             type="chevron-down"
-            size="sm"
+            size="m"
             weight="bold"
             className={cn('chevron', { open })}
           />

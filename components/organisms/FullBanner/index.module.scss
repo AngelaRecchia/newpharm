@@ -77,8 +77,8 @@
         left: 0;
         right: 0;
         width: 100%;
-        height: calc(100% + var(--parallax-shift, 0px) * 2);
-        top: calc(var(--parallax-shift, 0px) * -1);
+        height: 100%;
+        top: 0;
       }
     }
 
@@ -114,8 +114,8 @@
         left: 0;
         right: 0;
         width: 100%;
-        height: calc(100% + var(--parallax-shift, 0px) * 2);
-        top: calc(var(--parallax-shift, 0px) * -1);
+        height: 100%;
+        top: 0;
       }
 
       img,

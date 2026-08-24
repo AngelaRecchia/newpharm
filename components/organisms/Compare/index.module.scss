@@ -14,6 +14,16 @@
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   padding-inline: $s-24;
+  overscroll-behavior-x: contain;
+
+  @include mobile {
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
 
   @include md {
     overflow: visible;
@@ -26,7 +36,12 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   column-gap: $s-8;
   align-items: stretch;
-  min-width: min(100%, 36.5rem);
+
+  @include mobile {
+    $col-min: 18.75rem; // 300px
+    min-width: calc(#{$col-min} * 2 + #{$s-8});
+    grid-template-columns: repeat(2, minmax($col-min, 1fr));
+  }
 
   @include md {
     column-gap: $s-16;
@@ -55,11 +70,15 @@
 }
 
 .cell--select {
-  padding-top: $s-24;
-
-  @include md {
-    padding-top: $s-40;
+  @include mobile {
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
   }
+}
+
+.cell--emptySlot {
+  align-self: stretch;
+  min-height: 100%;
 }
 
 .cell--image {
@@ -122,16 +141,18 @@
   }
 
   &.empty {
-    width: 12.5rem;
-    height: 12.5rem;
-    max-width: 100%;
-    margin-inline: auto;
+    aspect-ratio: 1;
+    width: 100%;
     border: 1px solid $c-border-dark;
     background-color: transparent;
+    transition: border-color $td-200 ease;
 
-    @include md {
-      width: 20.375rem;
-      height: 20.375rem;
+    &:hover {
+      border-color: $c-black;
+
+      .placeholderIcon {
+        background-color: $c-black;
+      }
     }
   }
 }
@@ -162,6 +183,7 @@
   border-radius: 50%;
   background-color: $c-primary;
   color: $c-white;
+  transition: background-color $td-200 ease;
 
   @include md {
     width: $s-48;
@@ -273,8 +295,13 @@
   background: none;
   font: inherit;
   color: $c-black;
-  text-decoration: underline;
+  text-decoration: none;
   @include t-body;
   width: fit-content;
   cursor: pointer;
+}
+
+.sheetLinkLabel {
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
 }

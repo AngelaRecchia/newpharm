@@ -76,8 +76,9 @@
   font: inherit;
 }
 
-.listing-items__result:hover {
-  background: #f3f3f3;
+.listing-items__result:disabled {
+  opacity: 0.5;
+  cursor: default;
 }
 
 .listing-items__result--selected {

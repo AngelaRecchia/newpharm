@@ -7,6 +7,10 @@
     {
       "name": "datasource_slug",
       "value": "filtri"
+    },
+    {
+      "name": "context",
+      "value": ""
     }
   ]
 }

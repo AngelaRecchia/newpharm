@@ -6,9 +6,7 @@ import { storyblokEditable } from '@storyblok/react'
 import { useTranslations } from 'next-intl'
 import Button from '@/components/atoms/Button'
 import Container from '@/components/atoms/Container'
-import CardListingTeam from '@/components/molecules/CardListingTeam'
-import CardListingCourse from '@/components/molecules/CardListingCourse'
-import CardListingProduct, { CardListingRef } from '@/components/molecules/CardListingProduct'
+import CardListing from '@/components/molecules/CardListing'
 import PaginationNumbers from '@/components/molecules/PaginationNumbers'
 import { getStoryblokAnchorId } from '@/lib/storyblok/anchor'
 import { useRefreshPageScroll } from '@/lib/context/smooth-scroll-context'
@@ -41,14 +39,15 @@ function RefCard({
   image?: import('@/types/storyblok').AssetStoryblok | null
   href?: string
 }) {
-  switch (variant) {
-    case 'catalogo':
-    case 'progetto':
-    case 'insetto':
-      return <CardListingRef {...props} />
-    default:
-      return <CardListingProduct {...props} />
-  }
+  return (
+    <CardListing
+      title={props.title}
+      description={props.description}
+      image={props.image}
+      href={props.href}
+      showDownload={variant === 'catalogo'}
+    />
+  )
 }
 
 export default function Listing({ blok }: { blok?: ListingStoryblok }) {
@@ -57,12 +56,14 @@ export default function Listing({ blok }: { blok?: ListingStoryblok }) {
   const skipScrollRefresh = useRef(true)
 
   const listingType = blok?.type ?? 'editorial'
-  const isDark = listingType === 'editorial'
+  const listingVariant = parseListingVariant(blok?.variant ?? blok?.listing_items)
+  const imageRatio = listingVariant.image_ratio ?? 'portrait'
+  const isEditorial = listingType === 'editorial'
+  const isDark = isEditorial && imageRatio === 'square'
   const isHub = listingType === 'hub'
   const isHighlight = listingType === 'highlight'
 
   const editorialCards = (blok?.cards ?? []) as Card_listing_editorialStoryblok[]
-  const listingVariant = parseListingVariant(blok?.variant ?? blok?.listing_items)
   const contentComponent = variantToComponent(listingVariant.variant)
   const resolvedItems = blok?.resolved_items ?? []
 
@@ -113,11 +114,8 @@ export default function Listing({ blok }: { blok?: ListingStoryblok }) {
 
   if (!blok) return null
 
-  const showEmptyCourses =
-    listingType === 'editorial' &&
-    blok.editorial_variant === 'courses' &&
-    editorialCards.length === 0 &&
-    blok.empty_message
+  const showEmptyEditorial =
+    listingType === 'editorial' && editorialCards.length === 0
 
   const gridCols = listingType === 'editorial' ? 'cols-3' : 'cols-4'
 
@@ -137,33 +135,24 @@ export default function Listing({ blok }: { blok?: ListingStoryblok }) {
           </header>
         )}
 
-        {showEmptyCourses && (
-          <p className={cn('empty-message')}>{blok.empty_message}</p>
+        {showEmptyEditorial && (
+          <p className={cn('empty-message')}>{t('no_events')}</p>
         )}
 
         {listingType === 'editorial' && editorialVisible.length > 0 && (
           <div className={cn('grid', gridCols)}>
-            {editorialVisible.map((card) =>
-              blok.editorial_variant === 'courses' ? (
-                <CardListingCourse
-                  key={card._uid}
-                  title={card.title}
-                  subtitle={card.subtitle}
-                  description={card.description}
-                  image={card.image}
-                  link={card.link}
-                />
-              ) : (
-                <CardListingTeam
-                  key={card._uid}
-                  title={card.title}
-                  subtitle={card.subtitle}
-                  description={card.description}
-                  image={card.image}
-                  dark
-                />
-              ),
-            )}
+            {editorialVisible.map((card) => (
+              <CardListing
+                key={card._uid}
+                title={card.title}
+                subtitle={card.subtitle}
+                description={card.description}
+                image={card.image}
+                link={card.link}
+                dark={isDark}
+                imageRatio={imageRatio}
+              />
+            ))}
           </div>
         )}
 

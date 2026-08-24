@@ -23,6 +23,10 @@
   cursor: pointer;
   text-align: start;
 
+  &.hasValue {
+    border-bottom-color: $c-black;
+  }
+
   @include mobile {
     padding: $s-16 0;
   }
@@ -42,8 +46,8 @@
   }
 
   @include mobile {
-    @include t-body;
     font-size: 1.125rem;
+    line-height: 1.4;
     letter-spacing: -0.02em;
   }
 }
@@ -53,8 +57,8 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  width: 1.5rem;
-  height: 1.5rem;
+  width: $s-24;
+  height: $s-24;
   border-radius: 50%;
   background-color: $c-black;
   color: $c-white;

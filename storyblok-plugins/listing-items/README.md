@@ -1,19 +1,32 @@
 # listing-items (Storyblok field plugin)
 
-Plugin per il blok **listing** (hub / highlight) soltanto.
+Plugin per il campo `variant` dei blok **listing** e **carousel**. L’UI dipende dal componente padre.
 
-Il blok **Products** ha solo titolo, sottotitolo e anchor ID — **non** usa questo plugin: tutti i prodotti vengono fetchati SSR.
+## Listing
 
-## Listing Hub / Highlight — prodotto
+### Editorial
 
-- **Titolo e sottotitolo** nel blok listing (nessun filtri sticky)
-- **Dinamica**: checkbox Bestseller + vista opzionale (Categoria + sottocategoria, Application area)
-- **Manuale**: ricerca e toggle prodotti
+- Select **Formato immagine**: Rettangolare (`portrait`, 259/340, tema light) o Quadrata (`square`, 1:1, tema dark)
+- Le card sono `card_listing_editorial` (campo `cards` del blok)
 
-## Catalogo / Progetto / Insetto
+### Hub / Highlight
 
-- **Tutti** (default): tutti selezionati, clic per escludere
-- **Manuale**: solo gli UUID scelti
+- Variante: prodotto, catalogo, progetto
+- Prodotto dinamica: bestseller + vista opzionale (categoria / application area)
+- Prodotto manuale / altre varianti: ricerca e toggle stories
+
+## Carousel
+
+- Variante: story, prodotto, editorial
+- **Story automatica**: ultime 8 news
+- **Story per tag**: ultime 8 news con il tag selezionato
+- **Story manuale**: fino a 8 story scelte in CMS (ordine di selezione)
+- **Prodotto**: ultimi 8 prodotti, con filtri opzionali bestseller / categoria / application area
+- **Editorial**: card nested nel campo `cards` del blok
+
+Sul campo plugin del blok carousel, opzione `context` = `carousel` (fallback se il parent non viene rilevato).
+
+Il blok **Products** non usa questo plugin.
 
 ## Deploy
 

@@ -29,14 +29,15 @@ export type {
   Card_divisionStoryblok,
   Card_highlightStoryblok,
   Card_icon_textStoryblok,
-  CarouselStoryblok,
   Cta_boxStoryblok,
+  DividerStoryblok,
   Division_boxStoryblok,
   FaqsStoryblok,
   FooterStoryblok,
   GalleryStoryblok,
   HeaderStoryblok,
   Icon_text_highlightStoryblok,
+  InsectStoryblok,
   Logo_itemStoryblok,
   MilestoneStoryblok,
   Milestone_itemStoryblok,
@@ -61,6 +62,8 @@ export type {
   CatalogsDownloadStoryblok,
   CatalogStoryResolved,
   CatalogStoryblok,
+  InsectStoryResolved,
+  Target_pest_itemStoryblok,
   ProductStoryblok,
   Full_bannerStoryblok,
   HeroStoryblok,
@@ -74,6 +77,10 @@ export type {
   ListingStoryResolved,
   ListingVariantValue,
   ListingVariantSlug,
+  ListingImageRatio,
+  CarouselStoryblok,
+  CarouselVariantValue,
+  CarouselVariantSlug,
 } from "./storyblok.overrides";
 
 /**
@@ -92,8 +99,9 @@ export type StoryblokComponent =
   | Generated.Card_divisionStoryblok
   | Generated.Card_highlightStoryblok
   | Generated.Card_icon_textStoryblok
-  | Generated.CarouselStoryblok
+  | Overrides.CarouselStoryblok
   | Generated.Cta_boxStoryblok
+  | Generated.DividerStoryblok
   | Generated.Division_boxStoryblok
   | Generated.FaqsStoryblok
   | Generated.FooterStoryblok
@@ -102,6 +110,7 @@ export type StoryblokComponent =
   | Generated.HeaderStoryblok
   | Overrides.HeroStoryblok
   | Generated.Icon_text_highlightStoryblok
+  | Generated.InsectStoryblok
   | Overrides.LinkStoryblok
   | Generated.Logo_itemStoryblok
   | Generated.MilestoneStoryblok
@@ -126,7 +135,8 @@ export type StoryblokComponent =
   | Overrides.ListingStoryblok
   | Overrides.ProductsStoryblok
   | Overrides.CompareStoryblok
-  | Overrides.Card_listing_editorialStoryblok;
+  | Overrides.Card_listing_editorialStoryblok
+  | Overrides.Target_pest_itemStoryblok;
 
 /**
  * Helper type per il prop 'blok' nei componenti Storyblok

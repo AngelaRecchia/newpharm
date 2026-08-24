@@ -25,6 +25,10 @@
   }
 }
 
+.wrapper:where(a):not(.listLayout) .image > * {
+  @include image-zoom-prepare(1.05);
+}
+
 .footer {
   display: flex;
   padding-block: $s-16;
@@ -32,20 +36,17 @@
 }
 
 .dot {
+  display: none;
+}
+
+.wrapper:where(a) .dot {
+  display: block;
   @include hover-circle-dot;
   padding-inline-end: $s-8;
   transform: translateY(7px) scale(0);
 
   @include mobile {
     transform: translateY(7px) scale(1);
-  }
-
-  @include md {
-    .wrapper:not(.listLayout):hover &,
-    .wrapper:not(.listLayout):focus-within & {
-      opacity: 1;
-      transform: translateY(7px) scale(1);
-    }
   }
 }
 
@@ -58,8 +59,10 @@
   flex: 1;
   transition: transform 300ms $ease-smooth;
 
-  @include mobile {
-    transform: translateX($s-8);
+  .wrapper:where(a) & {
+    @include mobile {
+      transform: translateX($s-8);
+    }
   }
 
   .title {
@@ -165,10 +168,15 @@
 }
 
 @include md {
-  .wrapper:not(.listLayout):hover,
-  .wrapper:not(.listLayout):focus-within {
+  .wrapper:where(a):not(.listLayout):hover,
+  .wrapper:where(a):not(.listLayout):focus-within {
     .image > * {
-      transform: scale(1.05);
+      @include image-zoom-active;
+    }
+
+    .dot {
+      opacity: 1;
+      transform: translateY(7px) scale(1);
     }
 
     .content {

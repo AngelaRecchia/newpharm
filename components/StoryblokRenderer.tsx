@@ -14,7 +14,22 @@ function preserveSsrEnrichment(source: unknown, target: unknown): unknown {
 
   if (Array.isArray(target)) {
     const sourceArr = Array.isArray(source) ? source : []
-    return target.map((item, index) => preserveSsrEnrichment(sourceArr[index], item))
+    return target.map((item, index) => {
+      const uid =
+        item && typeof item === 'object'
+          ? (item as { _uid?: string })._uid
+          : undefined
+      const byUid =
+        uid
+          ? sourceArr.find(
+              (sourceItem) =>
+                sourceItem &&
+                typeof sourceItem === 'object' &&
+                (sourceItem as { _uid?: string })._uid === uid,
+            )
+          : undefined
+      return preserveSsrEnrichment(byUid ?? sourceArr[index], item)
+    })
   }
 
   const sourceRecord = source as Record<string, unknown>

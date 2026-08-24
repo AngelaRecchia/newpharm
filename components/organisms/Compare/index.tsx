@@ -15,11 +15,13 @@ import {
   getCompareOptionsForSlot,
   hasCompareResources,
   hasCompareRichtext,
+  hasCompareTargetPests,
   mapProductStoriesToCompare,
   type CompareProductView,
 } from '@/lib/products/mapProductToCompare'
 import { useCompareProductsUrl } from '@/lib/products/useCompareProductsUrl'
 import type { CompareStoryblok } from '@/types/storyblok'
+import TargetPests from '@/components/molecules/TargetPests'
 import styles from './index.module.scss'
 
 const cn = classNames.bind(styles)
@@ -119,6 +121,12 @@ function CompareInner({ blok }: { blok?: CompareStoryblok }) {
         render: (product) => <RichText content={product.composition} raw />,
       },
       {
+        id: 'pests',
+        labelKey: 'product_target-pests',
+        hasContent: (product) => hasCompareTargetPests(product),
+        render: (product) => <TargetPests items={product.targetPests} />,
+      },
+      {
         id: 'dosage',
         labelKey: 'product_dosage',
         hasContent: (product) => hasCompareRichtext(product.dosage),
@@ -163,14 +171,18 @@ function CompareInner({ blok }: { blok?: CompareStoryblok }) {
     slotIndex: SlotIndex,
     className: string,
     content: React.ReactNode,
+    cellKey: string,
   ) => (
     <div
-      key={`${className}-${slotIndex}`}
+      key={cellKey}
       className={cn('cell', slotIndex === 0 ? 'cell--left' : 'cell--right', className)}
     >
       {content}
     </div>
   )
+
+  const renderEmptySlot = (slotIndex: SlotIndex, rowKey: string) =>
+    renderCell(slotIndex, 'cell--emptySlot', null, `${rowKey}-${slotIndex}`)
 
   return (
     <section
@@ -178,7 +190,7 @@ function CompareInner({ blok }: { blok?: CompareStoryblok }) {
       id={getStoryblokAnchorId(blok?.anchor_id)}
       {...storyblokEditable(blok as any)}
     >
-      <div className={cn('scroll')}>
+      <div className={cn('scroll')} data-lenis-prevent>
         <div className={cn('board')}>
           {([0, 1] as const).map((slotIndex) =>
             renderCell(
@@ -190,6 +202,7 @@ function CompareInner({ blok }: { blok?: CompareStoryblok }) {
                 placeholder={selectPlaceholder}
                 onChange={(uuid) => handleSlotChange(slotIndex, uuid)}
               />,
+              `select-${slotIndex}`,
             ),
           )}
 
@@ -201,7 +214,7 @@ function CompareInner({ blok }: { blok?: CompareStoryblok }) {
               !product ? (
                 <div className={cn('imageFrame', 'empty')} aria-hidden>
                   <span className={cn('placeholderIcon')}>
-                    <Icon type="more" size="m" weight="bold" />
+                    <Icon type="more" size="l" weight="bold" />
                   </span>
                 </div>
               ) : (
@@ -213,45 +226,50 @@ function CompareInner({ blok }: { blok?: CompareStoryblok }) {
                   ) : null}
                 </div>
               ),
+              `image-${slotIndex}`,
             )
           })}
 
           {([0, 1] as const).map((slotIndex) => {
             const product = selected[slotIndex]
-            return renderCell(
-              slotIndex,
-              'cell--intro',
-              product ? (
-                <div className={cn('intro')}>
-                  {product.shortDescription ? (
-                    <p className={cn('description')}>{product.shortDescription}</p>
-                  ) : null}
-                  <Button
-                    variant="secondary"
-                    size="small"
-                    label={discoverMoreLabel}
-                    href={product.href}
-                  />
-                </div>
-              ) : null,
-            )
+            return product
+              ? renderCell(
+                  slotIndex,
+                  'cell--intro',
+                  <div className={cn('intro')}>
+                    {product.shortDescription ? (
+                      <p className={cn('description')}>{product.shortDescription}</p>
+                    ) : null}
+                    <Button
+                      variant="secondary"
+                      size="small"
+                      label={discoverMoreLabel}
+                      href={product.href}
+                    />
+                  </div>,
+                  `intro-${slotIndex}`,
+                )
+              : renderEmptySlot(slotIndex, 'intro')
           })}
 
           {visibleSections.map((section) => (
             <div key={section.id} className={cn('rowGroup')}>
               {([0, 1] as const).map((slotIndex) => {
                 const product = selected[slotIndex]
+                if (!product) {
+                  return renderEmptySlot(slotIndex, `section-${section.id}`)
+                }
+
                 return renderCell(
                   slotIndex,
                   'cell--section',
                   <>
                     <h3 className={cn('sectionLabel')}>{t(section.labelKey)}</h3>
                     <div className={cn('sectionContent')}>
-                      {product && section.hasContent(product)
-                        ? section.render(product)
-                        : null}
+                      {section.hasContent(product) ? section.render(product) : null}
                     </div>
                   </>,
+                  `${section.id}-${slotIndex}`,
                 )
               })}
             </div>
@@ -261,28 +279,30 @@ function CompareInner({ blok }: { blok?: CompareStoryblok }) {
             <div className={cn('rowGroup')}>
               {([0, 1] as const).map((slotIndex) => {
                 const product = selected[slotIndex]
+                if (!product) {
+                  return renderEmptySlot(slotIndex, 'footer')
+                }
+
                 return renderCell(
                   slotIndex,
                   'cell--footer',
                   <div className={cn('footer')}>
                     <div className={cn('sheetLinks')}>
-                      {product ? (
-                        <button
-                          type="button"
-                          className={cn('sheetLink')}
-                          onClick={() => void handleTechnicalSheetDownload(product.uuid)}
-                        >
-                          <span>{technicalLabel}</span>
-                          <Icon type="external" size="s" weight="normal" />
-                        </button>
-                      ) : null}
-                      {product?.safetySheetHref ? (
+                      <button
+                        type="button"
+                        className={cn('sheetLink')}
+                        onClick={() => void handleTechnicalSheetDownload(product.uuid)}
+                      >
+                        <span className={cn('sheetLinkLabel')}>{technicalLabel}</span>
+                        <Icon type="external" size="s" weight="normal" />
+                      </button>
+                      {product.safetySheetHref ? (
                         <SmartLink
                           href={product.safetySheetHref}
                           className={cn('sheetLink')}
                           target="_blank"
                         >
-                          <span>{safetyLabel}</span>
+                          <span className={cn('sheetLinkLabel')}>{safetyLabel}</span>
                           <Icon type="external" size="s" weight="normal" />
                         </SmartLink>
                       ) : null}
@@ -291,10 +311,10 @@ function CompareInner({ blok }: { blok?: CompareStoryblok }) {
                       variant="secondary"
                       size="small"
                       label={discoverMoreLabel}
-                      href={product?.href}
-                      disabled={!product}
+                      href={product.href}
                     />
                   </div>,
+                  `footer-${slotIndex}`,
                 )
               })}
             </div>
