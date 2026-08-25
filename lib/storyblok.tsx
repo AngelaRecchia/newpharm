@@ -41,6 +41,7 @@ import Projects from '@/components/organisms/Projects'
 import Stories from '@/components/organisms/Stories'
 import Compare from '@/components/organisms/Compare'
 import Divider from '@/components/organisms/Divider'
+import ArticleBody from '@/components/organisms/ArticleBody'
 // Heavy components (GSAP / Swiper / WebGL) — dynamic imports for bundle splitting
 const Header = dynamic(() => import('@/components/organisms/Header'))
 const Footer = dynamic(() => import('@/components/organisms/Footer'))
@@ -82,6 +83,7 @@ const components = {
   stories: Stories,
   compare: Compare,
   divider: Divider,
+  article_body: ArticleBody,
 
   // Atoms
   asset: Asset,

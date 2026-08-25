@@ -1,0 +1,23 @@
+@use "../../../styles" as *;
+
+.article {
+  @include lg {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+
+    > * {
+      grid-column: 4 / span 6;
+    }
+  }
+}
+
+.share {
+  padding-inline: $s-24;
+  padding-block-start: $s-8;
+  padding-block-end: $s-40;
+
+  @include lg {
+    padding-inline: $s-40;
+    padding-block-end: $s-64;
+  }
+}

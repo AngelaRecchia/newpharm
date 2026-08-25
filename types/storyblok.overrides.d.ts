@@ -274,6 +274,14 @@ export interface StoriesStoryblok {
   _editable?: string;
 }
 
+/** article_body — rich text in colonna stretta, duplica story.article */
+export interface Article_bodyStoryblok {
+  article?: ISbRichtext | null;
+  _uid: string;
+  component: string;
+  _editable?: string;
+}
+
 /**
  * compare — pagina confronto prodotti side-by-side.
  * Tutti i prodotti fetchati SSR per le select.
