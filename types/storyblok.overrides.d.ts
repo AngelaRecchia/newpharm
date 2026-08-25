@@ -277,6 +277,7 @@ export interface StoriesStoryblok {
 /** article_body — rich text in colonna stretta, duplica story.article */
 export interface Article_bodyStoryblok {
   article?: ISbRichtext | null;
+  show_copy_button?: boolean | null;
   _uid: string;
   component: string;
   _editable?: string;

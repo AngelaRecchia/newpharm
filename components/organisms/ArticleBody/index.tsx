@@ -11,7 +11,7 @@ import styles from './index.module.scss'
 
 const cn = classNames.bind(styles)
 
-const ArticleBody = ({ blok }: { blok?: Article_bodyStoryblok }) => {
+const CopyLinkButton = () => {
   const t = useTranslations('')
   const [copied, setCopied] = useState(false)
   const copiedTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -34,21 +34,29 @@ const ArticleBody = ({ blok }: { blok?: Article_bodyStoryblok }) => {
     }
   }, [])
 
+  return (
+    <Button
+      icon="url"
+      label={copied ? t('link_copied') : t('copy_link')}
+      variant="secondary"
+      size="small"
+      onClick={copyPageLink}
+      aria-label={t('copy_link')}
+    />
+  )
+}
+
+const ArticleBody = ({ blok }: { blok?: Article_bodyStoryblok }) => {
   if (!blok) return null
 
   return (
     <div className={cn('article')} {...storyblokEditable(blok as never)}>
       <RichText content={blok.article} />
-      <div className={cn('share')}>
-        <Button
-          icon="url"
-          label={copied ? t('link_copied') : t('copy_link')}
-          variant="secondary"
-          size="small"
-          onClick={copyPageLink}
-          aria-label={t('copy_link')}
-        />
-      </div>
+      {blok.show_copy_button ? (
+        <div className={cn('share')}>
+          <CopyLinkButton />
+        </div>
+      ) : null}
     </div>
   )
 }
