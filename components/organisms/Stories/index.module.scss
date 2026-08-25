@@ -45,72 +45,72 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: $s-16;
+  align-items: start;
+  position: relative;
 
-  @include lg {
+  @include md {
     grid-template-columns: repeat(12, minmax(0, 1fr));
-    grid-auto-rows: minmax(20rem, auto);
   }
 }
 
 .cell {
   min-width: 0;
-  min-height: 0;
-  display: flex;
-  height: 100%;
+
+  @include md {
+    &.span-3 {
+      grid-column: span 3;
+    }
+
+    &.span-6 {
+      grid-column: span 6;
+    }
+
+    &.span-12 {
+      grid-column: span 12;
+    }
+
+    &.row-span-2 {
+      grid-row: span 2;
+    }
+  }
 
   @include lg {
-    grid-column: span 3;
-
-    &:nth-child(15n + 1) {
-      grid-column: span 8;
-    }
-
-    &:nth-child(15n + 2) {
-      grid-column: span 4;
-    }
-
-    &:nth-child(15n + 3) {
-      grid-column: span 6;
-    }
-
-    &:nth-child(15n + 4),
-    &:nth-child(15n + 5) {
+    &.desktop-span-3 {
       grid-column: span 3;
     }
 
-    &:nth-child(15n + 6) {
-      grid-column: span 4;
-      grid-row: span 2;
-    }
-
-    &:nth-child(15n + 7),
-    &:nth-child(15n + 8) {
-      grid-column: span 8;
-    }
-
-    &:nth-child(15n + 9),
-    &:nth-child(15n + 11) {
-      grid-column: span 8;
-    }
-
-    &:nth-child(15n + 10) {
-      grid-column: span 4;
-      grid-row: span 2;
-    }
-
-    &:nth-child(15n + 12),
-    &:nth-child(15n + 13),
-    &:nth-child(15n + 14),
-    &:nth-child(15n + 15) {
-      grid-column: span 3;
-    }
-
-    &:nth-child(15n + 1):last-child {
+    &.desktop-span-6 {
       grid-column: span 6;
     }
 
-    &:nth-child(15n + 3):last-child {
-      grid-column: span 6;
+    &.desktop-span-12 {
+      grid-column: span 12;
+    }
+  }
+}
+
+// 2fr 1fr 1fr: larghezze esatte 2:1:1, così 3/2 e 3/4 hanno la stessa altezza (i gap 12-col la rompono).
+.row2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $s-16;
+  align-items: start;
+  min-width: 0;
+
+  @include md {
+    grid-column: 1 / -1;
+    grid-template-columns: 1fr 1fr;
+
+    .row2-wide {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @include lg {
+    grid-template-columns: 2fr 1fr 1fr;
+
+    .row2-wide {
+      grid-column: auto;
     }
   }
 }

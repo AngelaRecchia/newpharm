@@ -7,9 +7,7 @@
   width: 100%;
   position: relative;
 
-  &.fill {
-    height: 100%;
-
+  &.mosaic {
     .subtitle {
       text-transform: uppercase;
     }
@@ -21,16 +19,27 @@
   position: relative;
   overflow: hidden;
   background-color: $c-surface;
+  width: 100%;
 
-  .fill & {
-    flex: 1 1 auto;
-    min-height: 12.5rem;
-    aspect-ratio: 16 / 10;
+  .mosaic & {
+    aspect-ratio: 3 / 2;
+  }
 
-    @include lg {
-      aspect-ratio: auto;
+  @include md {
+    &.ratio-3-2 {
+      aspect-ratio: 3 / 2;
     }
 
+    &.ratio-3-4 {
+      aspect-ratio: 3 / 4;
+    }
+
+    &.ratio-13-9 {
+      aspect-ratio: 13 / 9;
+    }
+  }
+
+  .mosaic & {
     :global([data-asset]),
     :global(img),
     :global(video) {
@@ -48,11 +57,6 @@
       transform: scale(1.02);
     }
   }
-
-  // Easing for the image good for products
-  //   > * {
-  //     transition: transform 500ms cubic-bezier(0.16, 1, 0.3, 1);
-  //   }
 
   > * {
     transition: transform 500ms cubic-bezier(0.4, 0, 0.2, 1);

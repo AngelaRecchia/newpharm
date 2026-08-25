@@ -3,7 +3,7 @@
 import { useCallback } from 'react'
 import classNames from 'classnames/bind'
 import { useTranslations } from 'next-intl'
-import FilterChip from '@/components/atoms/FilterChip'
+import FilterChip, { type FilterChipSize } from '@/components/atoms/FilterChip'
 import styles from './index.module.scss'
 
 const cn = classNames.bind(styles)
@@ -14,6 +14,7 @@ export type FilterChipsProps<T extends string> = {
   onChange: (value: T[]) => void
   className?: string
   dark?: boolean
+  size?: FilterChipSize
   ariaLabel?: string
 }
 
@@ -23,6 +24,7 @@ export default function FilterChips<T extends string>({
   onChange,
   className,
   dark = false,
+  size = 'large',
   ariaLabel,
 }: FilterChipsProps<T>) {
   const t = useTranslations('')
@@ -55,22 +57,25 @@ export default function FilterChips<T extends string>({
             <FilterChip
               label={t('all')}
               selected={allSelected}
-              size="large"
+              size={size}
               dark={dark}
               onClick={handleAll}
             />
           </div>
-          {items.map((item) => (
+          {items.map((item) => {
+            const key: string = item
+            return (
             <div key={item} className={cn('trackItem')}>
               <FilterChip
-                label={t(item)}
+                label={t(key)}
                 selected={value.includes(item)}
-                size="large"
+                size={size}
                 dark={dark}
                 onClick={() => handleToggle(item)}
               />
             </div>
-          ))}
+            )
+          })}
         </div>
       </div>
     </div>
