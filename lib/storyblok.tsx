@@ -37,6 +37,8 @@ import Slideshow from '@/components/organisms/Slideshow'
 import CatalogsDownload from '@/components/organisms/CatalogsDownload'
 import Listing from '@/components/organisms/Listing'
 import Products from '@/components/organisms/Products'
+import Projects from '@/components/organisms/Projects'
+import Stories from '@/components/organisms/Stories'
 import Compare from '@/components/organisms/Compare'
 import Divider from '@/components/organisms/Divider'
 // Heavy components (GSAP / Swiper / WebGL) — dynamic imports for bundle splitting
@@ -76,6 +78,8 @@ const components = {
   catalogs_download: CatalogsDownload,
   listing: Listing,
   products: Products,
+  projects: Projects,
+  stories: Stories,
   compare: Compare,
   divider: Divider,
 

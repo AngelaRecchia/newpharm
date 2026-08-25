@@ -17,6 +17,7 @@ import { hasRichTextContent } from '@/lib/api/utils/richtext'
 import { getProductCategorySlug } from '@/lib/product-filtri'
 import { mapTargetPests, type TargetPestView } from '@/lib/products/mapTargetPests'
 import TargetPests from '@/components/molecules/TargetPests'
+import Carousel from '@/components/organisms/Carousel'
 
 const cn = classNames.bind(styles)
 
@@ -47,7 +48,9 @@ const Product = ({ blok }: { blok: ProductStoryblok }) => {
     safety_data_sheet,
     video,
     body,
-    related_projects
+    related_projects,
+    related_category_products,
+    related_category_parent_slug,
   } = blok as any
 
   const targetPests = mapTargetPests(blok.target_pests)
@@ -211,6 +214,16 @@ const Product = ({ blok }: { blok: ProductStoryblok }) => {
             ))}
           </div>
         </div>
+      )}
+
+      {related_category_products && related_category_products.length > 0 && (
+        <Carousel
+          variant="prodotto"
+          title={t('prodotti_correlati')}
+          productItems={related_category_products}
+          ctaHref={related_category_parent_slug || undefined}
+          ctaLabel={t('see_all')}
+        />
       )}
     </section>
   )

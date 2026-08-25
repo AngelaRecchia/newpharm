@@ -8,7 +8,7 @@ import Header from '@/components/organisms/Header'
 
 /**
  * Determina la variante dell'header in base al primo blocco nel body della page
- * Se il primo blocco è hero primary, hero secondary, division_box o full_banner,
+ * Se il primo blocco è hero primary/secondary, division_box, full_banner o projects,
  * l'header è transparent, altrimenti è white
  */
 function getHeaderVariant(firstBlock: any): 'transparent' | 'white' {
@@ -24,13 +24,11 @@ function getHeaderVariant(firstBlock: any): 'transparent' | 'white' {
     }
   }
 
-  // Controlla se è un division_box
-  if (firstBlock.component === 'division_box') {
-    return 'transparent'
-  }
-
-  // Controlla se è un full_banner
-  if (firstBlock.component === 'full_banner') {
+  if (
+    firstBlock.component === 'division_box' ||
+    firstBlock.component === 'full_banner' ||
+    firstBlock.component === 'projects'
+  ) {
     return 'transparent'
   }
 

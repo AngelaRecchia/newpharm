@@ -9,17 +9,17 @@ import Tag from '@/components/atoms/Tag';
 import { useTranslations } from 'next-intl';
 const cn = classNames.bind(styles);
 
-const CardNews = ({ title, subtitle, image, href, tags }: {
+const CardNews = ({ title, subtitle, image, href, tags, fill = false }: {
     title: string, subtitle: string, image: AssetStoryblok | null,
-    href: string, tags: string[]
+    href: string, tags: string[], fill?: boolean
 }) => {
 
     const t = useTranslations('');
 
-    return <SmartLink href={href} className={cn('wrapper')}>
+    return <SmartLink href={href} className={cn('wrapper', { fill })}>
 
         <div className={cn('image')}>
-            <Asset asset={image} size='s' overlay />
+            <Asset asset={image} size={fill ? 'm' : 's'} overlay />
         </div>
 
         {tags.length > 0 && (

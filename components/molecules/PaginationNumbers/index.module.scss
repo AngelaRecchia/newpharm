@@ -57,3 +57,22 @@
   align-items: center;
   justify-content: center;
 }
+
+.dark {
+  .page {
+    color: $c-white;
+
+    &:hover:not(:disabled) {
+      background-color: rgba($c-white, 0.12);
+    }
+
+    &.active {
+      background-color: $c-white;
+      color: $c-black;
+    }
+  }
+
+  .ellipsis {
+    color: $c-white;
+  }
+}

@@ -72,7 +72,10 @@ export type {
   SettingsStoryblok,
   Card_listing_editorialStoryblok,
   ListingStoryblok,
+  ProjectStoryblok,
   ProductsStoryblok,
+  ProjectsStoryblok,
+  StoriesStoryblok,
   CompareStoryblok,
   ListingStoryResolved,
   ListingVariantValue,
@@ -133,7 +136,10 @@ export type StoryblokComponent =
   | Overrides.Card_slideshowStoryblok
   | Overrides.CatalogsDownloadStoryblok
   | Overrides.ListingStoryblok
+  | Overrides.ProjectStoryblok
   | Overrides.ProductsStoryblok
+  | Overrides.ProjectsStoryblok
+  | Overrides.StoriesStoryblok
   | Overrides.CompareStoryblok
   | Overrides.Card_listing_editorialStoryblok
   | Overrides.Target_pest_itemStoryblok;

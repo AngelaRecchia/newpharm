@@ -1,6 +1,6 @@
 import React from 'react'
 import { StoryStoryblok } from '@/types/storyblok'
-import { storyblokEditable } from '@storyblok/react'
+import { StoryblokComponent, storyblokEditable } from '@storyblok/react'
 
 import styles from './index.module.scss';
 import classNames from 'classnames/bind';
@@ -63,6 +63,10 @@ const Story = ({ blok, relatedStories }: StoryProps) => {
             <div className={cn('article')}>
                 <RichText content={article} />
             </div>
+
+            {body?.map((nestedBlok: any, index: number) => (
+                <StoryblokComponent blok={nestedBlok} key={`${nestedBlok._uid}-${index}`} />
+            ))}
 
             {/* Renderizza le story correlate se presenti */}
             {related_stories && related_stories.length > 0 && (

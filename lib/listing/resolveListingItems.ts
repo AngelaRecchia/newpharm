@@ -17,6 +17,7 @@ import {
   getStoriesByUuids,
   type Story,
 } from '@/lib/api/storyblok/stories'
+import { sortStoriesByDate } from '@/lib/carousel/mapStoryToNewsCard'
 import type { ListingStoryResolved } from './types'
 
 export function mapStoryToListingResolved(story: Story): ListingStoryResolved {
@@ -52,6 +53,19 @@ export async function resolveProductStories(
   locale?: string,
 ): Promise<ListingStoryResolved[]> {
   return resolveStoriesByComponent('product', locale)
+}
+
+export async function resolveProjectStories(
+  locale?: string,
+): Promise<ListingStoryResolved[]> {
+  return resolveStoriesByComponent('project', locale)
+}
+
+export async function resolveStoryStories(
+  locale?: string,
+): Promise<ListingStoryResolved[]> {
+  const stories = await getStoriesByComponent('story', locale)
+  return stories.map(mapStoryToListingResolved)
 }
 
 export async function resolveListingProductItems(
@@ -126,6 +140,8 @@ export async function enrichListingBloks(
     if (
       blok.component === 'listing' ||
       blok.component === 'products' ||
+      blok.component === 'projects' ||
+      blok.component === 'stories' ||
       blok.component === 'compare'
     ) {
       listingBloks.push(blok)
@@ -146,6 +162,18 @@ export async function enrichListingBloks(
         blok.resolved_items = sortResolvedListingStories(resolved)
         delete blok.variant
         delete blok.listing_items
+        return
+      }
+
+      if (blok.component === 'projects') {
+        const resolved = await resolveProjectStories(locale)
+        blok.resolved_items = sortResolvedListingStories(resolved)
+        return
+      }
+
+      if (blok.component === 'stories') {
+        const resolved = await resolveStoryStories(locale)
+        blok.resolved_items = sortStoriesByDate(resolved)
         return
       }
 

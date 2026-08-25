@@ -15,6 +15,7 @@ import type { AssetStoryblok, LinkStoryblok } from "./storyblok.generated";
 import type { StoryblokLink } from "@/lib/api/utils/links";
 import type { StoryblokAsset } from '@/components/atoms/Asset'
 import type { ISbRichtext } from "@storyblok/react";
+import type { ProjectDivision } from "@/lib/projects/divisions";
 
 /** Catalog — campi CMS oltre al generato */
 export interface CatalogStoryblok extends Generated.CatalogStoryblok {
@@ -45,6 +46,8 @@ export interface ProductStoryblok extends Generated.ProductStoryblok {
   bestseller?: boolean | null;
   resources?: LinkStoryblok[] | null;
   target_pests?: Target_pest_itemStoryblok[] | null;
+  related_category_products?: ListingStoryResolved[] | null;
+  related_category_parent_slug?: string | null;
 }
 
 /** full_banner — title richtext + asset come bloks Asset[] */
@@ -217,6 +220,14 @@ export interface ListingStoryblok {
   _editable?: string;
 }
 
+/** project — content type con divisioni multi-select */
+export interface ProjectStoryblok extends Omit<
+  Generated.ProjectStoryblok,
+  "divisions"
+> {
+  divisions?: ProjectDivision[] | null;
+}
+
 /**
  * products — catalogo completo con filtri sticky.
  * Titolo/subtitle nel blok; tutti i prodotti fetchati SSR (nessuna selezione CMS).
@@ -225,6 +236,36 @@ export interface ProductsStoryblok {
   title?: string | null;
   subtitle?: string | null;
   products_comparison_page?: StoryblokLink | null;
+  /** Popolato SSR da enrichListingBloks — non editabile in CMS */
+  resolved_items?: ListingStoryResolved[] | null;
+  anchor_id?: string | null;
+  _uid: string;
+  component: string;
+  _editable?: string;
+}
+
+/**
+ * projects — catalogo completo con chips divisioni.
+ * Titolo/subtitle nel blok; tutti i progetti fetchati SSR (nessuna selezione CMS).
+ */
+export interface ProjectsStoryblok {
+  title?: string | null;
+  subtitle?: string | null;
+  /** Popolato SSR da enrichListingBloks — non editabile in CMS */
+  resolved_items?: ListingStoryResolved[] | null;
+  anchor_id?: string | null;
+  _uid: string;
+  component: string;
+  _editable?: string;
+}
+
+/**
+ * stories — catalogo news con chips tag e griglia a mosaico.
+ * Titolo/subtitle nel blok; tutte le story fetchate SSR (nessuna selezione CMS).
+ */
+export interface StoriesStoryblok {
+  title?: string | null;
+  subtitle?: string | null;
   /** Popolato SSR da enrichListingBloks — non editabile in CMS */
   resolved_items?: ListingStoryResolved[] | null;
   anchor_id?: string | null;
@@ -246,19 +287,16 @@ export interface CompareStoryblok {
   _editable?: string;
 }
 
-export type CarouselVariantSlug = "story" | "prodotto" | "editorial";
-export type CarouselStoryMode = "dynamic" | "tag" | "manual";
+import type {
+  CarouselStoryMode,
+  CarouselVariantSlug,
+  CarouselVariantValue,
+} from "@/lib/carousel/types";
 
-export type CarouselVariantValue = {
-  variant: CarouselVariantSlug;
-  selection_mode: CarouselStoryMode;
-  tag?: string;
-  items: string[];
-  vista?: ListingProductVista;
-  category?: string;
-  subcategory?: string;
-  application_area?: string;
-  bestseller?: boolean;
+export type {
+  CarouselStoryMode,
+  CarouselVariantSlug,
+  CarouselVariantValue,
 };
 
 /** carousel — slide auto (story/product) o card editorial */

@@ -1,37 +1,12 @@
-import {
-  getStoriesByComponent,
-  getStoriesByUuids,
-  type Story,
-} from '@/lib/api/storyblok/stories'
+import { getStoriesByComponent, getStoriesByUuids } from '@/lib/api/storyblok/stories'
 import { filterListingByVista } from '@/lib/listing/filterListingByVista'
+import { mapStoryToListingResolved } from '@/lib/listing/resolveListingItems'
 import type { ListingStoryResolved } from '@/lib/listing/types'
 import { sortProductStories } from '@/lib/products/filterProducts'
 import { parseCarouselVariant } from './parseCarouselVariant'
 import { sortStoriesByDate, storyHasTag } from './mapStoryToNewsCard'
 import type { CarouselVariantValue } from './types'
 import { CAROUSEL_LIMIT } from './types'
-
-function mapStoryToListingResolved(story: Story): ListingStoryResolved {
-  return {
-    uuid: story.uuid,
-    name: story.name,
-    slug: story.slug,
-    full_slug: story.full_slug,
-    published_at: story.published_at ?? null,
-    first_published_at: story.first_published_at ?? null,
-    content: (story.content ?? {}) as Record<string, unknown>,
-  }
-}
-
-function orderByUuids(
-  stories: ListingStoryResolved[],
-  uuids: string[],
-): ListingStoryResolved[] {
-  const index = new Map(uuids.map((uuid, i) => [uuid, i]))
-  return [...stories].sort(
-    (a, b) => (index.get(a.uuid) ?? Number.MAX_SAFE_INTEGER) - (index.get(b.uuid) ?? Number.MAX_SAFE_INTEGER),
-  )
-}
 
 type BlokRecord = Record<string, unknown> & {
   component?: string
@@ -70,11 +45,8 @@ export async function resolveCarouselItems(
   if (parsed.variant === 'story') {
     if (parsed.selection_mode === 'manual') {
       if (parsed.items.length === 0) return []
-      const stories = await getStoriesByUuids(parsed.items, locale)
-      return orderByUuids(stories.map(mapStoryToListingResolved), parsed.items).slice(
-        0,
-        CAROUSEL_LIMIT,
-      )
+      const stories = await getStoriesByUuids(parsed.items.slice(0, CAROUSEL_LIMIT), locale)
+      return stories.map(mapStoryToListingResolved)
     }
 
     const allStories = (await getStoriesByComponent('story', locale)).map(
@@ -82,8 +54,9 @@ export async function resolveCarouselItems(
     )
 
     if (parsed.selection_mode === 'tag') {
-      if (!parsed.tag) return []
-      const tagged = allStories.filter((story) => storyHasTag(story, parsed.tag as string))
+      const tag = parsed.tag
+      if (!tag) return []
+      const tagged = allStories.filter((story) => storyHasTag(story, tag))
       return sortStoriesByDate(tagged).slice(0, CAROUSEL_LIMIT)
     }
 

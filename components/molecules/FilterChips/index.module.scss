@@ -1,0 +1,40 @@
+@use "../../../styles" as *;
+
+.wrapper {
+  width: 100%;
+  padding-block: 0;
+  overflow: visible;
+}
+
+.track {
+  overflow-x: auto;
+  overflow-y: hidden;
+  width: calc(100% + 48px);
+  margin-inline-start: -24px;
+  padding-inline-start: 24px;
+  overscroll-behavior-x: contain;
+  overscroll-behavior-y: none;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.trackInner {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: $s-12;
+  min-width: min-content;
+
+  @include md {
+    gap: $s-16;
+  }
+}
+
+.trackItem {
+  flex-shrink: 0;
+}

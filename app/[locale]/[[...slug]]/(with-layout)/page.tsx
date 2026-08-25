@@ -1,6 +1,10 @@
 import { getAllStories, getStory, getRelatedStoriesByTags, getRelatedProjectsByProduct } from '@/lib/api/storyblok/stories'
-import { enrichListingBloks } from '@/lib/listing/resolveListingItems'
+import { enrichListingBloks, resolveProductStories } from '@/lib/listing/resolveListingItems'
 import { enrichCarouselBloks } from '@/lib/carousel/resolveCarouselItems'
+import {
+  getParentFullSlug,
+  getRelatedCategoryProducts,
+} from '@/lib/products/relatedCategoryProducts'
 import StoryblokRenderer from '@/components/StoryblokRenderer'
 import { setRequestLocale } from 'next-intl/server'
 import { notFound } from 'next/navigation'
@@ -97,21 +101,36 @@ export default async function WithLayoutPage({ params }: PageProps) {
   }
 
   // Se il content è un Product, fetcha i progetti correlati (query inversa)
-  if (story.content?.component === 'product') {
-    const relatedProjects = await getRelatedProjectsByProduct(
-      story.uuid,
-      locale
-    )
+  // e i prodotti della stessa categoria per il carousel in fondo pagina.
+  const attachProductRelations =
+    story.content?.component === 'product'
+      ? (async () => {
+          const [relatedProjects, allProducts] = await Promise.all([
+            getRelatedProjectsByProduct(story.uuid, locale),
+            resolveProductStories(locale),
+          ])
 
-    if (relatedProjects.length > 0) {
-      story.content = {
-        ...story.content,
-        related_projects: relatedProjects
-      }
-    }
-  }
+          if (relatedProjects.length > 0) {
+            story.content.related_projects = relatedProjects
+          }
+
+          const relatedCategoryProducts = getRelatedCategoryProducts(
+            allProducts,
+            story.uuid,
+            story.content,
+          )
+
+          if (relatedCategoryProducts.length > 0) {
+            story.content.related_category_products = relatedCategoryProducts
+            story.content.related_category_parent_slug = getParentFullSlug(
+              story.full_slug,
+            )
+          }
+        })()
+      : Promise.resolve()
 
   await Promise.all([
+    attachProductRelations,
     enrichListingBloks(story.content, locale),
     enrichCarouselBloks(story.content, locale),
   ])

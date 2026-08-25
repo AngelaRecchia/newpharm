@@ -9,8 +9,8 @@ import 'swiper/css/navigation';
 import CardNews from '@/components/molecules/CardNews';
 import CardListing from '@/components/molecules/CardListing';
 import { RelatedStory } from '@/lib/api/storyblok/stories';
-import { useFormatter, useLocale, useTranslations } from 'next-intl';
-import { useEffect, useMemo, useState } from 'react';
+import { useFormatter, useTranslations } from 'next-intl';
+import { useMemo } from 'react';
 import Button from '@/components/atoms/Button';
 import { isEmpty, isLinkEmpty, type StoryblokLink } from '@/lib/api/utils/links';
 import {
@@ -19,7 +19,6 @@ import {
 } from '@/types/storyblok';
 import { getStoryblokAnchorId } from '@/lib/storyblok/anchor';
 import { storyblokEditable } from '@storyblok/react';
-import { resolveCarouselItemsAction } from '@/lib/carousel/actions';
 import { parseCarouselVariant } from '@/lib/carousel/parseCarouselVariant';
 import { mapStoryToNewsCard } from '@/lib/carousel/mapStoryToNewsCard';
 import { mapProductStoryToCard } from '@/lib/listing/mapProductToCard';
@@ -33,7 +32,10 @@ interface CarouselProps {
     subtitle?: string;
     link?: CarouselStoryblok['link'];
     items?: RelatedStory[];
-    variant?: 'news';
+    productItems?: ListingStoryResolved[];
+    variant?: 'news' | 'prodotto';
+    ctaHref?: string;
+    ctaLabel?: string;
     anchor_id?: string | null;
 }
 
@@ -60,42 +62,31 @@ function getCarouselDestination(
     return isLinkEmpty(link as StoryblokLink) ? null : (link as StoryblokLink)
 }
 
-const Carousel = ({ blok, title, subtitle, link, items = [], variant, anchor_id }: CarouselProps) => {
+const Carousel = ({
+    blok,
+    title,
+    subtitle,
+    link,
+    items = [],
+    productItems,
+    variant,
+    ctaHref,
+    ctaLabel,
+    anchor_id,
+}: CarouselProps) => {
     const resolvedTitle = title ?? blok?.title ?? undefined;
     const resolvedSubtitle = subtitle ?? blok?.subtitle ?? undefined;
     const resolvedLink = link ?? blok?.link ?? undefined;
     const resolvedAnchorId = getStoryblokAnchorId(anchor_id ?? blok?.anchor_id);
     const format = useFormatter();
     const t = useTranslations('');
-    const locale = useLocale();
     const isRelatedNews = variant === 'news';
-    const parsedVariant = isRelatedNews ? null : parseCarouselVariant(blok?.variant);
-    const navId = blok?._uid ?? 'related';
-    const hasSsrItems = Array.isArray(blok?.resolved_items);
-    const [fallbackItems, setFallbackItems] = useState<ListingStoryResolved[] | null>(null);
-    const resolvedItems = (hasSsrItems ? blok?.resolved_items : fallbackItems) ?? [];
-    const variantKey = JSON.stringify(blok?.variant ?? null);
+    const isRelatedProducts = variant === 'prodotto';
+    const parsedVariant = isRelatedNews || isRelatedProducts ? null : parseCarouselVariant(blok?.variant);
+    const navId = blok?._uid ?? (isRelatedProducts ? 'related-products' : 'related');
+    const resolvedItems = blok?.resolved_items ?? [];
 
-    useEffect(() => {
-        if (isRelatedNews || hasSsrItems) return;
-        if (parsedVariant?.variant === 'editorial') return;
-
-        let cancelled = false;
-        resolveCarouselItemsAction(variantKey === 'null' ? null : JSON.parse(variantKey), locale).then((items) => {
-            if (!cancelled) setFallbackItems(items);
-        });
-
-        return () => {
-            cancelled = true;
-        };
-    }, [isRelatedNews, hasSsrItems, parsedVariant?.variant, variantKey, locale]);
-
-    const computedTitle = useMemo(() => {
-        if (isRelatedNews) {
-            return t('news');
-        }
-        return resolvedTitle;
-    }, [isRelatedNews, resolvedTitle, t]);
+    const computedTitle = isRelatedNews ? t('news') : resolvedTitle;
 
     const computedRelatedHref = useMemo(() => {
         if (!isRelatedNews || items.length === 0) return undefined;
@@ -113,11 +104,13 @@ const Carousel = ({ blok, title, subtitle, link, items = [], variant, anchor_id 
     }, [isRelatedNews, items, parsedVariant?.variant, resolvedItems]);
 
     const productCards = useMemo(() => {
-        if (parsedVariant?.variant !== 'prodotto') return [];
-        return resolvedItems.map((story: ListingStoryResolved) =>
-            mapProductStoryToCard(story),
-        );
-    }, [parsedVariant?.variant, resolvedItems]);
+        const source = isRelatedProducts
+            ? (productItems ?? [])
+            : parsedVariant?.variant === 'prodotto'
+                ? resolvedItems
+                : [];
+        return source.map(mapProductStoryToCard);
+    }, [isRelatedProducts, productItems, parsedVariant?.variant, resolvedItems]);
 
     const editorialCards = (
         parsedVariant?.variant === 'editorial'
@@ -132,7 +125,8 @@ const Carousel = ({ blok, title, subtitle, link, items = [], variant, anchor_id 
         return null;
     }
 
-    const carouselDestination = isRelatedNews ? null : getCarouselDestination(resolvedLink);
+    const carouselDestination = isRelatedNews || isRelatedProducts ? null : getCarouselDestination(resolvedLink);
+    const showInjectedCta = Boolean(ctaHref);
     const showBlokCta = Boolean(carouselDestination);
     const showRelatedCta = isRelatedNews && Boolean(computedRelatedHref);
 
@@ -150,6 +144,9 @@ const Carousel = ({ blok, title, subtitle, link, items = [], variant, anchor_id 
 
                         {showRelatedCta && (
                             <Button href={computedRelatedHref} label={computedTitle} />
+                        )}
+                        {showInjectedCta && (
+                            <Button href={ctaHref} label={ctaLabel ?? t('see_all')} />
                         )}
                         {showBlokCta && (
                             <Button link={carouselDestination} label={t('load_more')} />

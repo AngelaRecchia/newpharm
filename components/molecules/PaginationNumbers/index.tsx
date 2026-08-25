@@ -33,10 +33,12 @@ export default function PaginationNumbers({
   currentPage,
   totalPages,
   onPageChange,
+  dark = false,
 }: {
   currentPage: number
   totalPages: number
   onPageChange: (page: number) => void
+  dark?: boolean
 }) {
   const items = useMemo(
     () => buildPageItems(currentPage, totalPages),
@@ -46,7 +48,7 @@ export default function PaginationNumbers({
   if (totalPages <= 1) return null
 
   return (
-    <nav className={cn('wrapper')} aria-label="Pagination">
+    <nav className={cn('wrapper', { dark })} aria-label="Pagination">
       <div className={cn('nav')}>
         <Button
           icon="chevron-left"

@@ -38,14 +38,35 @@ function preserveSsrEnrichment(source: unknown, target: unknown): unknown {
 
   if (
     typeof merged.component === 'string' &&
-    merged.component === sourceRecord.component &&
-    Array.isArray(sourceRecord.resolved_items)
+    merged.component === sourceRecord.component
   ) {
-    merged.resolved_items = sourceRecord.resolved_items
+    if (Array.isArray(sourceRecord.resolved_items)) {
+      merged.resolved_items = sourceRecord.resolved_items
+    }
+    if (Array.isArray(sourceRecord.related_projects)) {
+      merged.related_projects = sourceRecord.related_projects
+    }
+    if (Array.isArray(sourceRecord.related_category_products)) {
+      merged.related_category_products = sourceRecord.related_category_products
+    }
+    if (typeof sourceRecord.related_category_parent_slug === 'string') {
+      merged.related_category_parent_slug = sourceRecord.related_category_parent_slug
+    }
+    if (Array.isArray(sourceRecord.related_stories)) {
+      merged.related_stories = sourceRecord.related_stories
+    }
   }
 
   for (const key of Object.keys(merged)) {
-    if (key === 'resolved_items') continue
+    if (
+      key === 'resolved_items' ||
+      key === 'related_projects' ||
+      key === 'related_category_products' ||
+      key === 'related_category_parent_slug' ||
+      key === 'related_stories'
+    ) {
+      continue
+    }
     if (key in sourceRecord) {
       merged[key] = preserveSsrEnrichment(sourceRecord[key], merged[key])
     }

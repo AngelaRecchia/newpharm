@@ -1,11 +1,9 @@
 import type { ListingProductVista } from '@/lib/listing/types'
 import {
   EMPTY_CAROUSEL_VARIANT,
-  STORY_TAGS,
   type CarouselStoryMode,
   type CarouselVariantSlug,
   type CarouselVariantValue,
-  type StoryTag,
 } from './types'
 
 const VALID_VARIANTS: CarouselVariantSlug[] = ['story', 'prodotto', 'editorial']
@@ -39,9 +37,7 @@ function normalizeVista(raw: unknown, legacyCategory: string): ListingProductVis
 }
 
 function normalizeTag(raw: unknown): string {
-  if (typeof raw !== 'string' || !raw) return ''
-  if (STORY_TAGS.includes(raw as StoryTag)) return raw
-  return raw
+  return typeof raw === 'string' ? raw : ''
 }
 
 export function parseCarouselVariant(raw: unknown): CarouselVariantValue {

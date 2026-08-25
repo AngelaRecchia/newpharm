@@ -32,16 +32,31 @@
     border-color: $c-black;
   }
 
-  &.large {
-    width: 8.5625rem; // 137px mobile
-    height: 8.5625rem;
-    @include t-note;
+  &.dark {
+    background-color: #1a1a1a;
+    color: $c-white;
 
-    @include md {
-      width: 11.5rem; // 184px desktop
-      height: 11.5rem;
-      @include t-h6;
+    @media (hover: hover) and (pointer: fine) {
+      &:hover:not(:disabled):not(.selected) {
+        background-color: #2a2a2a;
+      }
     }
+
+    &:focus-visible {
+      outline-color: $c-white;
+    }
+
+    &.selected {
+      background-color: $c-white;
+      color: $c-black;
+      border-color: $c-white;
+    }
+  }
+
+  &.large {
+    width: 11.5rem; // 184px
+    height: 11.5rem;
+    @include t-h6;
   }
 
   &.small {

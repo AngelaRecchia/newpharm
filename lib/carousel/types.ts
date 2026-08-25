@@ -6,20 +6,6 @@ export type CarouselVariantSlug = 'story' | 'prodotto' | 'editorial'
 
 export type CarouselStoryMode = 'dynamic' | 'tag' | 'manual'
 
-export const STORY_TAGS = [
-  'company',
-  'r&d',
-  'events',
-  'people',
-  'academy',
-  'professional_pest_control',
-  'cereals_storage',
-  'zootech',
-  'home&garden',
-] as const
-
-export type StoryTag = (typeof STORY_TAGS)[number]
-
 export type CarouselVariantValue = {
   variant: CarouselVariantSlug
   selection_mode: CarouselStoryMode

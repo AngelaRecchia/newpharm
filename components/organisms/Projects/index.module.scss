@@ -1,0 +1,59 @@
+@use "../../../styles" as *;
+
+.wrapper {
+  width: 100%;
+  background-color: $c-black;
+  color: $c-white;
+  padding-block-end: $s-80;
+  overflow: visible;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: $s-64;
+}
+
+.head {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $s-24;
+  padding-top: 5.625rem;
+
+  @include lg {
+    grid-template-columns: 1fr 1fr;
+    gap: $s-64;
+    padding-top: 13.5rem;
+  }
+}
+
+.title {
+  @include t-h1;
+  margin: 0;
+}
+
+.subtitle {
+  @include t-h6;
+  margin: 0;
+
+  @include lg {
+    padding-inline-end: $s-40;
+  }
+}
+
+.grid {
+  display: grid;
+  gap: $s-16;
+  @include listing-grid-columns(3);
+}
+
+.empty {
+  @include t-body;
+  padding-block: $s-40;
+  color: rgba($c-white, 0.64);
+}
+
+.footer {
+  display: flex;
+  justify-content: center;
+}
