@@ -26,6 +26,20 @@ function isPopupId(value: unknown): value is LinkPopupId {
 
 export function parseLinkAction(raw: unknown): LinkActionValue {
   if (isActionType(raw)) return { type: raw, popup: null }
+
+  if (typeof raw === 'string') {
+    const trimmed = raw.trim()
+    if (!trimmed) return { ...EMPTY_LINK_ACTION }
+    if (trimmed.startsWith('{')) {
+      try {
+        return parseLinkAction(JSON.parse(trimmed) as unknown)
+      } catch {
+        return { ...EMPTY_LINK_ACTION }
+      }
+    }
+    return { ...EMPTY_LINK_ACTION }
+  }
+
   if (!raw || typeof raw !== 'object') return { ...EMPTY_LINK_ACTION }
 
   const value = raw as Partial<LinkActionValue> & { action?: unknown }

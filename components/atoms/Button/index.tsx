@@ -39,9 +39,12 @@ export interface ButtonProps {
     iconRotate?: boolean
     'aria-label'?: string
     blok?: LinkStoryblok
+    /** Copia/share del link della pagina, come l’azione CMS `copy` */
+    pageAction?: 'copy'
 }
 
-function resolveLinkAction(link: ButtonProps['link'], blok?: LinkStoryblok): LinkActionValue {
+function resolveLinkAction(link: ButtonProps['link'], blok?: LinkStoryblok, pageAction?: ButtonProps['pageAction']): LinkActionValue {
+    if (pageAction === 'copy') return { type: 'copy', popup: null }
     if (blok) return parseLinkAction(blok.action)
     if (Array.isArray(link)) {
         const firstValid = getFirstValidLink(link)
@@ -51,10 +54,10 @@ function resolveLinkAction(link: ButtonProps['link'], blok?: LinkStoryblok): Lin
     return parseLinkAction(undefined)
 }
 
-const Button = forwardRef<HTMLButtonElement | HTMLDivElement, ButtonProps>(({ icon = 'right-small', label: labelProp, onClick, onFocus, className, href, target, link, variant = 'primary', size = 'medium', weight = 'bold', animated = false, inert = false, iconAlwaysVisible = false, iconPlain = false, iconRotate = false, 'aria-label': ariaLabel, blok, type, disabled, ...props }, ref) => {
+const Button = forwardRef<HTMLButtonElement | HTMLDivElement, ButtonProps>(({ icon = 'right-small', label: labelProp, onClick, onFocus, className, href, target, link, variant = 'primary', size = 'medium', weight = 'bold', animated = false, inert = false, iconAlwaysVisible = false, iconPlain = false, iconRotate = false, 'aria-label': ariaLabel, blok, pageAction, type, disabled, ...props }, ref) => {
     const t = useTranslations('')
     const { copied, copyPageLink } = useCopyPageLink()
-    const action = resolveLinkAction(link, blok)
+    const action = resolveLinkAction(link, blok, pageAction)
 
     const editableProps = blok ? storyblokEditable(blok as any) : {}
 
@@ -185,7 +188,7 @@ const Button = forwardRef<HTMLButtonElement | HTMLDivElement, ButtonProps>(({ ic
     return (
         <button
             ref={ref as React.Ref<HTMLButtonElement>}
-            type={type}
+            type={type ?? 'button'}
             disabled={disabled}
             onClick={handleClick}
             {...sharedProps}

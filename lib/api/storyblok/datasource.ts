@@ -4,6 +4,7 @@
  * Functions for fetching and transforming datasource entries from Storyblok.
  */
 
+import localeConfig from '@/i18n/locales.json'
 import { getStoryblokApi } from './client'
 import { getStoryblokVersion, getCacheVersion } from './config'
 
@@ -27,12 +28,12 @@ export interface DatasourceEntries {
  * @returns Array of datasource entries
  *
  * @example
- * // Get all translations for Italian
- * const entries = await getDatasourceEntries('translations', 'it')
+ * // Get default (Italian) values
+ * const entries = await getDatasourceEntries('labels')
  *
  * @example
- * // Get all entries without filtering by dimension
- * const entries = await getDatasourceEntries('translations')
+ * // Get English dimension values
+ * const entries = await getDatasourceEntries('labels', 'en')
  */
 export async function getDatasourceEntries(
   datasource: string,
@@ -119,7 +120,7 @@ export function transformDatasourceToMessages(
 
   for (const entry of entries) {
     const keys = entry.name.split(".")
-    const value = entry.value || entry.name
+    const value = entry.dimension_value || entry.value || entry.name
 
     let current = messages
 
@@ -155,7 +156,9 @@ export async function getMessagesFromDatasource(
   datasource: string = "labels",
   locale: string
 ): Promise<Record<string, any>> {
-  const entries = await getDatasourceEntries(datasource, locale)
+  const dimension =
+    locale === localeConfig.defaultLocale ? undefined : locale
+  const entries = await getDatasourceEntries(datasource, dimension)
 
   if (entries.length === 0) {
     console.warn(
