@@ -88,14 +88,14 @@
     // il margine negativo toglie l'altezza extra dal flusso
     .scene {
       position: relative;
-      height: 200dvh;
-      margin-block-end: -100dvh;
+      height: 200svh;
+      margin-block-end: -100svh;
     }
 
     .background {
       position: sticky;
       top: 0;
-      height: 100dvh;
+      height: 100svh;
       z-index: 0;
 
       // Altezza extra consumata dalla traslazione del parallasse.
@@ -111,8 +111,8 @@
       z-index: 2;
       display: flex;
       flex-direction: column;
-      min-height: 100dvh;
-      margin-top: -100dvh;
+      min-height: 100svh;
+      margin-top: -100svh;
       pointer-events: none;
 
       .container,
@@ -143,7 +143,7 @@
     }
 
     .container {
-      min-height: 100dvh;
+      min-height: 100svh;
     }
 
     .swiper {

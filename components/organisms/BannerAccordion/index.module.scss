@@ -7,14 +7,14 @@
 .wrapper {
   position: relative;
   z-index: 2;
-  min-height: 100dvh;
+  min-height: 100svh;
   overflow: clip;
   background-color: $c-black;
   isolation: isolate;
 
   .container {
     position: relative;
-    min-height: 100dvh;
+    min-height: 100svh;
   }
 
   .image {

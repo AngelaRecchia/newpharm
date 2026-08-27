@@ -21,7 +21,7 @@ const CardNews = ({ title, subtitle, image, href, tags, imageRatio }: {
     return <SmartLink href={href} className={cn('wrapper', { mosaic })}>
 
         <div className={cn('image', imageRatio ? mosaicRatioClass(imageRatio) : null)}>
-            <Asset asset={image} size={mosaic ? 'm' : 's'} overlay />
+            <Asset asset={image} size="m" overlay />
         </div>
 
         {tags.length > 0 && (

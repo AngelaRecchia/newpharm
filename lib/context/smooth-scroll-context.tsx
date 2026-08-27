@@ -68,8 +68,9 @@ export function refreshPageScroll(lenis: Lenis | null) {
   requestAnimationFrame(() => {
     lenis?.resize()
     ScrollTrigger.refresh()
+    const viewportHeight = document.documentElement.clientHeight
     const limit =
-      lenis?.limit ?? Math.max(0, document.documentElement.scrollHeight - window.innerHeight)
+      lenis?.limit ?? Math.max(0, document.documentElement.scrollHeight - viewportHeight)
     const current = lenis?.scroll ?? window.scrollY
     if (current > limit) {
       if (lenis) {
@@ -79,6 +80,11 @@ export function refreshPageScroll(lenis: Lenis | null) {
       }
     }
   })
+}
+
+/** True se il resize è solo la chrome mobile (stessa larghezza). */
+export function isViewportWidthUnchanged(previousWidth: number) {
+  return window.innerWidth === previousWidth
 }
 
 export function useRefreshPageScroll() {
@@ -114,13 +120,14 @@ export function SmoothScrollProvider({ children }: { children: ReactNode }) {
     // Cache delle dimensioni della viewport per evitare forced reflows
     let cachedViewport = {
       width: window.innerWidth,
-      height: window.innerHeight,
+      height: document.documentElement.clientHeight,
     }
 
-    // Aggiorna il cache solo quando necessario (resize)
     const updateViewportCache = () => {
-      cachedViewport.width = window.innerWidth
-      cachedViewport.height = window.innerHeight
+      const width = window.innerWidth
+      if (width === cachedViewport.width) return
+      cachedViewport.width = width
+      cachedViewport.height = document.documentElement.clientHeight
     }
 
     window.addEventListener('resize', updateViewportCache, { passive: true })

@@ -10,7 +10,7 @@ import RichText from '../RichText'
 import Asset, { getAssetSrc } from '@/components/atoms/Asset'
 import HalftoneOverlay from './HalftoneOverlay'
 import { useViewport } from '@/lib/context/viewport-context'
-import { SmoothScrollContext } from '@/lib/context/smooth-scroll-context'
+import { SmoothScrollContext, isViewportWidthUnchanged } from '@/lib/context/smooth-scroll-context'
 import { getStoryblokAnchorId } from '@/lib/storyblok/anchor'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -86,10 +86,13 @@ const StickyImage = ({ blok }: { blok: Sticky_imageStoryblok }) => {
     }
   }, [refreshScroll])
 
-  // Su resize finestra aggiorna solo Lenis — ScrollTrigger.refresh() qui duplicava i nested blok
+  // Su resize reale (non barra browser mobile) aggiorna solo Lenis
   useEffect(() => {
     let debounceId: ReturnType<typeof setTimeout> | null = null
+    let lastWidth = window.innerWidth
     const handleResize = () => {
+      if (isViewportWidthUnchanged(lastWidth)) return
+      lastWidth = window.innerWidth
       if (debounceId) clearTimeout(debounceId)
       debounceId = setTimeout(() => lenis?.resize(), 100)
     }

@@ -11,7 +11,7 @@
 .sticky-section {
   display: grid;
   grid-template-columns: 1fr;
-  min-height: 100vh;
+  min-height: 100svh;
 
   @include lg {
     grid-template-columns: 1fr 1fr;
@@ -27,12 +27,12 @@
   align-items: center;
   justify-content: center;
   padding: $s-80 $s-40;
-  min-height: 60vh;
+  min-height: 60svh;
 
   @include lg {
     position: sticky;
     top: 0;
-    height: 100vh;
+    height: 100svh;
     padding: $s-40;
   }
 }

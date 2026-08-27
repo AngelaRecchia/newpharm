@@ -10,6 +10,7 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { BREAKPOINT_MD_PX } from '@/lib/breakpoints'
 import { getStoryblokAnchorId } from '@/lib/storyblok/anchor'
+import { isViewportWidthUnchanged } from '@/lib/context/smooth-scroll-context'
 import { useViewport } from '@/lib/context/viewport-context'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -109,7 +110,7 @@ const Banneraccordion = ({ blok }: { blok?: Banner_accordionStoryblok }) => {
       gsap.set(content, { x: 0, force3D: true })
 
       // Scroll extra dopo l'ultima card: il modulo resta pinnato senza muovere il contenuto
-      const holdDistance = Math.round(window.innerHeight * 0.25)
+      const holdDistance = Math.round(document.documentElement.clientHeight * 0.25)
       const totalPinDistance = scrollDistance + holdDistance
 
       // Crea la timeline per animare le card
@@ -161,7 +162,10 @@ const Banneraccordion = ({ blok }: { blok?: Banner_accordionStoryblok }) => {
 
     // Gestisci il resize
     let resizeTimeout: NodeJS.Timeout
+    let lastWidth = window.innerWidth
     const handleResize = () => {
+      if (isViewportWidthUnchanged(lastWidth)) return
+      lastWidth = window.innerWidth
       clearTimeout(resizeTimeout)
       resizeTimeout = setTimeout(() => {
         setupAnimation()
