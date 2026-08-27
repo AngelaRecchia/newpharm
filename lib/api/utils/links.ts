@@ -5,6 +5,7 @@
  */
 
 import localeConfig from "@/i18n/locales.json";
+import { parseLinkAction } from "@/lib/link-action";
 
 export interface StoryblokLink {
   id?: string;
@@ -179,47 +180,63 @@ export function buildStoryblokNavigationHref(
   return query ? `${normalized}?${query}` : normalized;
 }
 
+type LinkStoryblokLike = {
+  label?: string | null
+  link?: StoryblokLink | null
+  action?: unknown
+}
+
 /**
- * Verifica se un LinkStoryblok è valido (ha label non vuota e link non vuoto)
- *
- * @param linkStoryblok - Il link Storyblok con label
- * @returns true se il link è valido, false altrimenti
+ * Verifica se un oggetto è un blok Link (ha label, link e _uid)
+ */
+export function isLinkStoryblokBlok(
+  value: unknown,
+): value is LinkStoryblokLike & { _uid: string } {
+  if (!value || typeof value !== "object" || !("_uid" in value)) {
+    return false;
+  }
+
+  const blok = value as { component?: string; label?: unknown };
+  if (blok.component === "link") return true;
+  return "label" in value && "link" in value;
+}
+
+/**
+ * Verifica se un LinkStoryblok è valido
+ * - link: label + URL
+ * - copy: solo label
+ * - popup: label + popup selezionato
  */
 export function isLinkStoryblokValid(
-  linkStoryblok?: { label?: string | null; link?: StoryblokLink | null } | null
+  linkStoryblok?: LinkStoryblokLike | null
 ): boolean {
   if (!linkStoryblok) {
     return false;
   }
 
-  // Verifica che la label esista e non sia vuota
   if (isEmpty(linkStoryblok.label)) {
     return false;
   }
 
-  // Verifica che il link esista e non sia vuoto
+  const action = parseLinkAction(linkStoryblok.action);
+  if (action.type === "copy") return true;
+  if (action.type === "popup") return Boolean(action.popup);
   return !isLinkEmpty(linkStoryblok.link);
 }
 
 /**
- * Ottiene il primo link valido da un array di LinkStoryblok
- *
- * @param links - Array di LinkStoryblok
- * @returns Il primo link valido o null se nessuno è valido
+ * Ottiene il primo LinkStoryblok valido da un array
  */
-export function getFirstValidLink(
-  links?: Array<{ label?: string | null; link?: StoryblokLink | null }> | null
-): { label: string; link: StoryblokLink } | null {
+export function getFirstValidLink<T extends LinkStoryblokLike>(
+  links?: T[] | null
+): T | null {
   if (!links || links.length === 0) {
     return null;
   }
 
   const firstLink = links[0];
   if (isLinkStoryblokValid(firstLink)) {
-    return {
-      label: firstLink.label!,
-      link: firstLink.link!,
-    };
+    return firstLink;
   }
 
   return null;

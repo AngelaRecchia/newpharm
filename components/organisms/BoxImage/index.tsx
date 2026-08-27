@@ -11,6 +11,7 @@ import { AssetStoryblok, LinkStoryblok } from '@/types/storyblok'
 import { isEmpty, isLinkEmpty } from '@/lib/api/utils/links'
 import { getStoryblokAnchorId } from '@/lib/storyblok/anchor'
 import { useViewport } from '@/lib/context/viewport-context'
+import GlossaryText from '@/components/atoms/GlossaryText'
 
 const cn = classNames.bind(styles)
 
@@ -117,8 +118,16 @@ const BoxImage = ({
                     {hasLink ? (
                         <SmartLink link={linkBlok}>
                             <div className={cn('content')}>
-                                {hasTitle && <h2 className={cn('title')}>{title}</h2>}
-                                {hasSubtitle && <p className={cn('subtitle')}>{subtitle}</p>}
+                                {hasTitle && (
+                                    <h2 className={cn('title')}>
+                                        {variant === 'carousel' ? title : <GlossaryText text={title} />}
+                                    </h2>
+                                )}
+                                {hasSubtitle && (
+                                    <p className={cn('subtitle')}>
+                                        <GlossaryText text={subtitle} />
+                                    </p>
+                                )}
                                 <div className={cn('link-wrapper')}>
                                     <Button
                                         blok={linkBlok}
@@ -131,8 +140,16 @@ const BoxImage = ({
                         </SmartLink>
                     ) : (
                         <div className={cn('content')}>
-                            {hasTitle && <h2 className={cn('title')}>{title}</h2>}
-                            {hasSubtitle && <p className={cn('subtitle')}>{subtitle}</p>}
+                            {hasTitle && (
+                                <h2 className={cn('title')}>
+                                    {variant === 'carousel' ? title : <GlossaryText text={title} />}
+                                </h2>
+                            )}
+                            {hasSubtitle && (
+                                <p className={cn('subtitle')}>
+                                    <GlossaryText text={subtitle} />
+                                </p>
+                            )}
                         </div>
                     )}
                 </div>

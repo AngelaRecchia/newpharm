@@ -116,7 +116,7 @@ const Tabs = ({ blok }: { blok: TabsStoryblok }) => {
                       bgColor="white"
                       defaultOpen={index === 0}
                     >
-                      <RichText content={item.text} raw />
+                      <RichText content={item.text} raw enableGlossary />
                     </AccordionItem>
                   </div>
                 ))}

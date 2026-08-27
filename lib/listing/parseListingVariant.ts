@@ -2,11 +2,16 @@ import type {
   ListingContentComponent,
   ListingImageRatio,
   ListingProductVista,
+  ListingSelectionMode,
   ListingVariantSlug,
   ListingVariantValue,
   ListingStoryResolved,
 } from './types'
-import { EMPTY_VARIANT_VALUE, VARIANT_TO_COMPONENT } from './types'
+import {
+  EMPTY_PROJECTS_HIGHLIGHT_VALUE,
+  EMPTY_VARIANT_VALUE,
+  VARIANT_TO_COMPONENT,
+} from './types'
 
 const VALID_VARIANTS: ListingVariantSlug[] = [
   'prodotto',
@@ -41,9 +46,22 @@ function normalizeProdottoSelectionMode(
   return items.length > 0 ? 'manual' : 'dynamic'
 }
 
-function normalizeRefSelectionMode(raw: unknown, items: string[]): 'all' | 'manual' {
+function normalizeTag(raw: unknown): string {
+  return typeof raw === 'string' ? raw : ''
+}
+
+function normalizeRefSelectionMode(
+  raw: unknown,
+  items: string[],
+  tag: string,
+  allowTag: boolean,
+): 'all' | 'manual' | 'tag' {
+  if (raw === 'tag' && allowTag) return 'tag'
   if (raw === 'all' || raw === 'manual') return raw
-  if (raw === 'automatic' || raw === 'dynamic') return items.length > 0 ? 'manual' : 'all'
+  if (raw === 'automatic' || raw === 'dynamic') {
+    return items.length > 0 ? 'manual' : allowTag && tag ? 'tag' : 'all'
+  }
+  if (allowTag && tag) return 'tag'
   return items.length > 0 ? 'manual' : 'all'
 }
 
@@ -72,6 +90,7 @@ export function parseListingVariant(raw: unknown): ListingVariantValue {
       ? value.items.filter((id): id is string => typeof id === 'string' && id.length > 0)
       : []
     const category = typeof value.category === 'string' ? value.category : ''
+    const tag = normalizeTag(value.tag)
     const legacyBestsellerVista = value.vista === 'bestseller'
 
     if (variant === 'prodotto') {
@@ -86,16 +105,24 @@ export function parseListingVariant(raw: unknown): ListingVariantValue {
         application_area:
           typeof value.application_area === 'string' ? value.application_area : '',
         bestseller: Boolean(value.bestseller) || legacyBestsellerVista,
+        tag: '',
         items: selection_mode === 'manual' ? items : [],
         image_ratio: normalizeImageRatio(value.image_ratio),
       }
     }
 
-    const selection_mode = normalizeRefSelectionMode(value.selection_mode, items)
+    const allowTag = variant === 'progetto'
+    const selection_mode = normalizeRefSelectionMode(
+      value.selection_mode,
+      items,
+      tag,
+      allowTag,
+    )
     return {
       variant,
       selection_mode,
-      items,
+      tag: selection_mode === 'tag' ? tag : '',
+      items: selection_mode === 'tag' ? [] : items,
       image_ratio: normalizeImageRatio(value.image_ratio),
     }
   }
@@ -107,8 +134,50 @@ export function variantToComponent(variant: ListingVariantSlug): ListingContentC
   return VARIANT_TO_COMPONENT[variant]
 }
 
+function getLastAddedTimestamp(story: ListingStoryResolved): number {
+  const raw =
+    story.first_published_at ?? story.published_at ?? story.created_at ?? null
+  return raw ? Date.parse(raw) : 0
+}
+
 export function sortResolvedListingStories(
   stories: ListingStoryResolved[],
 ): ListingStoryResolved[] {
-  return [...stories]
+  return [...stories].sort(
+    (a, b) => getLastAddedTimestamp(b) - getLastAddedTimestamp(a),
+  )
+}
+
+function asPluginObject(raw: unknown): Record<string, unknown> | null {
+  if (raw && typeof raw === 'object') return raw as Record<string, unknown>
+  if (typeof raw !== 'string' || !raw.trim()) return null
+  try {
+    const parsed = JSON.parse(raw) as unknown
+    return parsed && typeof parsed === 'object' ? (parsed as Record<string, unknown>) : null
+  } catch {
+    return null
+  }
+}
+
+export function parseProjectsHighlightVariant(raw: unknown): ListingVariantValue {
+  if (raw == null || raw === '') {
+    return { ...EMPTY_PROJECTS_HIGHLIGHT_VALUE }
+  }
+
+  const objectValue = asPluginObject(raw)
+  const parsed = parseListingVariant(
+    objectValue ? { ...objectValue, variant: 'progetto' } : raw,
+  )
+
+  const selection_mode: ListingSelectionMode =
+    parsed.selection_mode === 'tag' || parsed.selection_mode === 'manual'
+      ? parsed.selection_mode
+      : 'all'
+
+  return {
+    variant: 'progetto',
+    selection_mode,
+    tag: selection_mode === 'tag' ? parsed.tag ?? '' : '',
+    items: selection_mode === 'manual' ? parsed.items : [],
+  }
 }

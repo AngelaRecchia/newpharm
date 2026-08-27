@@ -43,7 +43,6 @@ export type {
   Milestone_itemStoryblok,
   Nav_itemStoryblok,
   PageStoryblok,
-  Projects_highlightStoryblok,
   Social_itemStoryblok,
   Spec_tableStoryblok,
   Split_bannerStoryblok,
@@ -75,9 +74,12 @@ export type {
   ProjectStoryblok,
   ProductsStoryblok,
   ProjectsStoryblok,
+  Projects_highlightStoryblok,
   StoriesStoryblok,
   Article_bodyStoryblok,
   CompareStoryblok,
+  Glossary_itemStoryblok,
+  GlossaryStoryblok,
   ListingStoryResolved,
   ListingVariantValue,
   ListingVariantSlug,
@@ -122,7 +124,7 @@ export type StoryblokComponent =
   | Generated.Nav_itemStoryblok
   | Generated.PageStoryblok
   | Overrides.ProductStoryblok
-  | Generated.Projects_highlightStoryblok
+  | Overrides.Projects_highlightStoryblok
   | Generated.Social_itemStoryblok
   | Generated.Spec_tableStoryblok
   | Generated.Split_bannerStoryblok
@@ -143,6 +145,8 @@ export type StoryblokComponent =
   | Overrides.StoriesStoryblok
   | Overrides.Article_bodyStoryblok
   | Overrides.CompareStoryblok
+  | Overrides.Glossary_itemStoryblok
+  | Overrides.GlossaryStoryblok
   | Overrides.Card_listing_editorialStoryblok
   | Overrides.Target_pest_itemStoryblok;
 

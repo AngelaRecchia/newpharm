@@ -1,13 +1,15 @@
 import {
   parseListingVariant,
+  parseProjectsHighlightVariant,
   sortResolvedListingStories,
   variantToComponent,
 } from './parseListingVariant'
 import { filterListingByVista } from './filterListingByVista'
-import type { ListingContentComponent, ListingVariantValue } from './types'
+import type { ListingVariantValue, ListingContentComponent } from './types'
 
 export {
   parseListingVariant,
+  parseProjectsHighlightVariant,
   sortResolvedListingStories,
   variantToComponent,
 } from './parseListingVariant'
@@ -18,6 +20,8 @@ import {
   type Story,
 } from '@/lib/api/storyblok/stories'
 import { sortStoriesByDate } from '@/lib/carousel/mapStoryToNewsCard'
+import { filterProjectsByDivisions } from '@/lib/projects/filterProjects'
+import { parseProjectDivisions } from '@/lib/projects/divisions'
 import type { ListingStoryResolved } from './types'
 
 export function mapStoryToListingResolved(story: Story): ListingStoryResolved {
@@ -26,6 +30,7 @@ export function mapStoryToListingResolved(story: Story): ListingStoryResolved {
     name: story.name,
     slug: story.slug,
     full_slug: story.full_slug,
+    created_at: story.created_at ?? null,
     published_at: story.published_at ?? null,
     first_published_at: story.first_published_at ?? null,
     content: (story.content ?? {}) as Record<string, unknown>,
@@ -95,6 +100,16 @@ export async function resolveListingRefItems(
     return sortResolvedListingStories(allStories.filter((story) => included.has(story.uuid)))
   }
 
+  if (parsed.selection_mode === 'tag') {
+    const tag = parsed.tag
+    if (!tag) return []
+    const tagged =
+      parsed.variant === 'progetto'
+        ? filterProjectsByDivisions(allStories, parseProjectDivisions(tag))
+        : allStories
+    return sortResolvedListingStories(tagged)
+  }
+
   const excluded = new Set(parsed.items)
   return sortResolvedListingStories(allStories.filter((story) => !excluded.has(story.uuid)))
 }
@@ -142,7 +157,8 @@ export async function enrichListingBloks(
       blok.component === 'products' ||
       blok.component === 'projects' ||
       blok.component === 'stories' ||
-      blok.component === 'compare'
+      blok.component === 'compare' ||
+      blok.component === 'projects_highlight'
     ) {
       listingBloks.push(blok)
     }
@@ -166,6 +182,16 @@ export async function enrichListingBloks(
       }
 
       if (blok.component === 'projects') {
+        const resolved = await resolveProjectStories(locale)
+        blok.resolved_items = sortResolvedListingStories(resolved)
+        return
+      }
+
+      if (blok.component === 'projects_highlight') {
+        const parsed = parseProjectsHighlightVariant(blok.variant)
+        blok.variant = parsed
+        delete blok.cards
+        // Pool completo: il componente filtra in base a variant (serve anche al visual editor).
         const resolved = await resolveProjectStories(locale)
         blok.resolved_items = sortResolvedListingStories(resolved)
         return

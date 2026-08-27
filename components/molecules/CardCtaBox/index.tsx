@@ -6,6 +6,7 @@ import Button from '@/components/atoms/Button';
 import SmartLink from '@/components/atoms/SmartLink';
 import Asset from '@/components/atoms/Asset';
 import { isEmpty, getFirstValidLink } from '@/lib/api/utils/links';
+import { parseLinkAction } from '@/lib/link-action';
 
 const cn = classNames.bind(styles);
 
@@ -15,10 +16,12 @@ const CardCtaBox = ({ blok }: { blok?: Card_cta_boxStoryblok }) => {
 
     const { title, link, image, color } = blok;
     const validLink = getFirstValidLink(link);
+    const action = parseLinkAction(validLink?.action);
+    const isHref = Boolean(validLink && action.type === 'link');
     const hasImage = image && !isEmpty(image.filename);
 
-    const Tag = validLink ? SmartLink : 'div';
-    const props = validLink ? { link: validLink.link } : {};
+    const Tag = isHref ? SmartLink : 'div';
+    const props = isHref && validLink ? { link: validLink.link } : {};
     return (
         <Tag className={cn('wrapper', color, { hasImage })} {...storyblokEditable(blok as any)} {...props}>
 
@@ -26,7 +29,13 @@ const CardCtaBox = ({ blok }: { blok?: Card_cta_boxStoryblok }) => {
 
             <div className={cn('content')}>
                 {!isEmpty(title) && <h2 className={cn('title')}>{title}</h2>}
-                {validLink && <Button inert label={validLink.label} variant={color === 'black' ? 'primary' : 'secondary'} />}
+                {validLink && (
+                    <Button
+                        link={validLink}
+                        inert={isHref}
+                        variant={color === 'black' ? 'primary' : 'secondary'}
+                    />
+                )}
             </div>
         </Tag>
     )

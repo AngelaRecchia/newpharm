@@ -1,7 +1,10 @@
+'use client'
+
 import { forwardRef } from 'react'
 import classNames from 'classnames/bind';
 import styles from './index.module.scss';
 import { storyblokEditable } from '@storyblok/react'
+import { useTranslations } from 'next-intl'
 import { LinkStoryblok } from '@/types/storyblok'
 
 const cn = classNames.bind(styles);
@@ -9,7 +12,9 @@ const cn = classNames.bind(styles);
 import { icons } from '../Icon/icons'
 import Icon from '../Icon'
 import SmartLink from '../SmartLink'
-import { StoryblokLink, getFirstValidLink, isLinkStoryblokValid } from '@/lib/api/utils/links'
+import { StoryblokLink, getFirstValidLink, isLinkStoryblokBlok, isLinkStoryblokValid } from '@/lib/api/utils/links'
+import { openPopup, parseLinkAction, type LinkActionValue } from '@/lib/link-action'
+import { useCopyPageLink } from '@/lib/use-copy-page-link'
 
 export interface ButtonProps {
     icon?: keyof typeof icons
@@ -30,60 +35,73 @@ export interface ButtonProps {
     inert?: boolean
     /** Icona nel cerchio sempre visibile (no animazione hover desktop) */
     iconAlwaysVisible?: boolean
-    /** Icona flat senza cerchio, colore primary (14px) */
     iconPlain?: boolean
-    /** Ruota l'icona di 45° (plus → cross) */
     iconRotate?: boolean
     'aria-label'?: string
-    /** Blok Storyblok completo (opzionale, per storyblokEditable) */
     blok?: LinkStoryblok
 }
+
+function resolveLinkAction(link: ButtonProps['link'], blok?: LinkStoryblok): LinkActionValue {
+    if (blok) return parseLinkAction(blok.action)
+    if (Array.isArray(link)) {
+        const firstValid = getFirstValidLink(link)
+        return parseLinkAction(firstValid?.action)
+    }
+    if (isLinkStoryblokBlok(link)) return parseLinkAction(link.action)
+    return parseLinkAction(undefined)
+}
+
 const Button = forwardRef<HTMLButtonElement | HTMLDivElement, ButtonProps>(({ icon = 'right-small', label: labelProp, onClick, onFocus, className, href, target, link, variant = 'primary', size = 'medium', weight = 'bold', animated = false, inert = false, iconAlwaysVisible = false, iconPlain = false, iconRotate = false, 'aria-label': ariaLabel, blok, type, disabled, ...props }, ref) => {
-    // Se blok è presente, applica storyblokEditable
+    const t = useTranslations('')
+    const { copied, copyPageLink } = useCopyPageLink()
+    const action = resolveLinkAction(link, blok)
+
     const editableProps = blok ? storyblokEditable(blok as any) : {}
 
-    // Estrae label e link da link prop se è LinkStoryblok o array
     let extractedLabel: string | undefined = labelProp
     let extractedLink: (StoryblokLink & { anchor?: string }) | null = null
 
     if (link) {
-        // Se è un array di LinkStoryblok
         if (Array.isArray(link)) {
             const firstValid = getFirstValidLink(link)
             if (firstValid) {
-                extractedLabel = extractedLabel || firstValid.label
+                extractedLabel = extractedLabel || firstValid.label || undefined
                 extractedLink = firstValid.link as StoryblokLink & { anchor?: string }
             }
         }
-        // Se è un singolo LinkStoryblok
-        else if ('label' in link && 'link' in link) {
+        else if (isLinkStoryblokBlok(link)) {
             if (isLinkStoryblokValid(link)) {
                 extractedLabel = extractedLabel || link.label || undefined
                 extractedLink = link.link as StoryblokLink & { anchor?: string }
             }
         }
-        // Se è un StoryblokLink diretto (compatibilità retroattiva)
         else {
             extractedLink = link as StoryblokLink & { anchor?: string }
         }
     }
 
+    const isCopy = action.type === 'copy'
+    const isPopup = action.type === 'popup'
+    const isActionButton = isCopy || isPopup
+
+    if (isCopy) {
+        extractedLabel = copied ? t('link_copied') : (extractedLabel || t('copy_link'))
+    }
+
+    const resolvedIcon = isCopy && icon === 'right-small' ? 'url' : icon
+
     const hasLabel = extractedLabel && extractedLabel.length > 0
-    const hasIcon = icon && icon.length > 0 && icons[icon]
+    const hasIcon = resolvedIcon && resolvedIcon.length > 0 && icons[resolvedIcon]
     const onlyIcon = hasIcon && !hasLabel
 
-    // Verifica se il link è esterno
     const isExternalLink = extractedLink
         ? (extractedLink.linktype === 'url' || extractedLink.linktype === 'external')
         : (href && (href.match(/^https?:\/\//i) || href.match(/^www\./i)))
 
     const linkTarget = extractedLink?.linktype === 'url' || extractedLink?.linktype === 'external' ? target || '_blank' : target
 
-    // Rileva se l'icona è una freccia sinistra (per animazione inversa)
-    const isLeftIcon = icon === 'chevron-left'
-
-    // Rileva se l'icona è una freccia (right, right-small) per rotazione su link esterni
-    const isArrowIcon = icon === 'right' || icon === 'right-small'
+    const isLeftIcon = resolvedIcon === 'chevron-left'
+    const isArrowIcon = resolvedIcon === 'right' || resolvedIcon === 'right-small'
 
     const buttonClasses = cn('button', {
         buttonPrimary: variant === 'primary',
@@ -98,8 +116,8 @@ const Button = forwardRef<HTMLButtonElement | HTMLDivElement, ButtonProps>(({ ic
         iconAlwaysVisible,
         iconPlain,
         iconRotate,
-        'button-left': animated && isLeftIcon, // Classe per animazione verso sinistra
-        'button-external': onlyIcon && isArrowIcon && isExternalLink, // Classe per rotazione icona su link esterni
+        'button-left': animated && isLeftIcon,
+        'button-external': onlyIcon && isArrowIcon && isExternalLink,
     }, className)
 
     const children = (
@@ -107,31 +125,41 @@ const Button = forwardRef<HTMLButtonElement | HTMLDivElement, ButtonProps>(({ ic
             {hasLabel && <span>{extractedLabel}</span>}
             {onlyIcon && (
                 <Icon
-                    type={icon}
-                    size={icon === 'hamburger' ? 'l' : 'm'}
+                    type={resolvedIcon}
+                    size={resolvedIcon === 'hamburger' ? 'l' : 'm'}
                     weight={weight}
-                    className={icon === 'hamburger' ? undefined : cn('iconOnly')}
+                    className={resolvedIcon === 'hamburger' ? undefined : cn('iconOnly')}
                 />
             )}
             {hasLabel && hasIcon && (
                 <div className={cn('buttonIcon')}>
-                    <Icon type={icon} size="s" weight={weight} />
+                    <Icon type={resolvedIcon} size="s" weight={weight} />
                 </div>
             )}
         </>
     )
 
-    /** Attributi DOM comuni a div / link / button (ordine: editable Storyblok poi resto) */
+    const handleClick = () => {
+        if (isCopy) {
+            void copyPageLink()
+            return
+        }
+        if (isPopup && action.popup) {
+            openPopup(action.popup)
+            return
+        }
+        onClick?.()
+    }
+
     const sharedProps = {
         className: buttonClasses,
-        'aria-label': ariaLabel,
+        'aria-label': ariaLabel || (isCopy ? t('copy_link') : undefined),
         'data-button': true,
         onFocus,
         ...editableProps,
         ...props,
     }
 
-    // Se inert è true, renderizza come div (solo visuale, non cliccabile)
     if (inert) {
         return (
             <div ref={ref as React.Ref<HTMLDivElement>} {...sharedProps}>
@@ -140,8 +168,7 @@ const Button = forwardRef<HTMLButtonElement | HTMLDivElement, ButtonProps>(({ ic
         )
     }
 
-    // Renderizza come SmartLink se c'è un link o href, altrimenti come button
-    if (extractedLink || href) {
+    if (!isActionButton && (extractedLink || href)) {
         return (
             <SmartLink
                 ref={ref as React.Ref<HTMLAnchorElement | HTMLDivElement>}
@@ -160,7 +187,7 @@ const Button = forwardRef<HTMLButtonElement | HTMLDivElement, ButtonProps>(({ ic
             ref={ref as React.Ref<HTMLButtonElement>}
             type={type}
             disabled={disabled}
-            onClick={onClick}
+            onClick={handleClick}
             {...sharedProps}
         >
             {children}

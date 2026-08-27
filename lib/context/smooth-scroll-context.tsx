@@ -68,6 +68,16 @@ export function refreshPageScroll(lenis: Lenis | null) {
   requestAnimationFrame(() => {
     lenis?.resize()
     ScrollTrigger.refresh()
+    const limit =
+      lenis?.limit ?? Math.max(0, document.documentElement.scrollHeight - window.innerHeight)
+    const current = lenis?.scroll ?? window.scrollY
+    if (current > limit) {
+      if (lenis) {
+        lenis.scrollTo(limit, { immediate: true })
+      } else {
+        window.scrollTo(0, limit)
+      }
+    }
   })
 }
 

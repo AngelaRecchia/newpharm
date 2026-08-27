@@ -6,13 +6,15 @@ export type PluginVariantSlug = ListingVariantSlug | CarouselVariantSlug
 
 export type ListingImageRatio = 'square' | 'portrait'
 
-export type ListingSelectionMode = 'manual' | 'dynamic' | 'all'
+export type ListingSelectionMode = 'manual' | 'dynamic' | 'all' | 'tag'
 
 export type CarouselStoryMode = 'dynamic' | 'tag' | 'manual'
 
 export type PluginSelectionMode = ListingSelectionMode | CarouselStoryMode
 
 export type ListingProductVista = 'categoria' | 'application_area'
+
+export type PluginContext = 'carousel' | 'projects_highlight'
 
 export const CAROUSEL_LIMIT = 8
 
@@ -42,6 +44,24 @@ export const STORY_TAG_LABELS: Record<StoryTag, string> = {
   'home&garden': 'Home & Garden',
 }
 
+export const PROJECT_DIVISIONS = [
+  'cereals-storage',
+  'pest-control',
+  'zootech',
+  'home-garden',
+  'medical',
+] as const
+
+export type ProjectDivision = (typeof PROJECT_DIVISIONS)[number]
+
+export const PROJECT_DIVISION_LABELS: Record<ProjectDivision, string> = {
+  'cereals-storage': 'Cereals Storage',
+  'pest-control': 'Pest Control',
+  zootech: 'Zootech',
+  'home-garden': 'Home & Garden',
+  medical: 'Medical',
+}
+
 export type PluginVariantValue = {
   variant: PluginVariantSlug
   selection_mode: PluginSelectionMode
@@ -53,7 +73,7 @@ export type PluginVariantValue = {
   tag?: string
   items: string[]
   image_ratio?: ListingImageRatio
-  context?: 'carousel'
+  context?: PluginContext
 }
 
 export type ListingVariantValue = PluginVariantValue & {
@@ -68,8 +88,17 @@ export const EMPTY_VALUE: ListingVariantValue = {
   subcategory: '',
   application_area: '',
   bestseller: false,
+  tag: '',
   items: [],
   image_ratio: 'portrait',
+}
+
+export const EMPTY_PROJECTS_HIGHLIGHT_VALUE: PluginVariantValue = {
+  variant: 'progetto',
+  selection_mode: 'all',
+  tag: '',
+  items: [],
+  context: 'projects_highlight',
 }
 
 export const EMPTY_CAROUSEL_VALUE: PluginVariantValue = {

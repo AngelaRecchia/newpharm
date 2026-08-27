@@ -40,6 +40,20 @@ export function shouldEnableBridge(): boolean {
   return getStoryblokMode() === "draft";
 }
 
+/** Visual Editor Storyblok: iframe o query `_storyblok`. */
+export function isInsideStoryblokEditor(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    return (
+      window.location !== window.parent.location ||
+      window.location.search.includes("_storyblok") ||
+      window.location.search.includes("_storyblok_tk")
+    );
+  } catch {
+    return true;
+  }
+}
+
 // ============================================
 // Cache Version Management
 // ============================================

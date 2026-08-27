@@ -14,6 +14,7 @@ import SmartLink from '@/components/atoms/SmartLink'
 import { SlideshowStoryblok, Card_slideshowStoryblok } from '@/types/storyblok'
 import { isLinkEmpty } from '@/lib/api/utils/links'
 import { getStoryblokAnchorId } from '@/lib/storyblok/anchor'
+import GlossaryText from '@/components/atoms/GlossaryText'
 
 const cn = classNames.bind(styles)
 
@@ -94,7 +95,7 @@ export default function Slideshow({ blok }: { blok?: SlideshowStoryblok }) {
                                         )}
                                         {card.text && (
                                             <p className={cn('card-text')}>
-                                                {card.text}
+                                                <GlossaryText text={card.text} />
 
                                                 {card.link && card.link.length > 0 && !isLinkEmpty(card.link[0]?.link) && (
                                                     <div className={cn('card-link')}>

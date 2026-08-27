@@ -95,11 +95,11 @@ export async function getStory(
 
 /**
  * Recupera tutte le stories da Storyblok per generateStaticParams
- * Esclude automaticamente le stories in 'layout-components'
+ * Esclude automaticamente le stories in 'layout-components' e 'glossary'
  *
  * @param options - Opzioni per la richiesta
  * @param options.version - Versione da usare (default: basata su ambiente)
- * @param options.excludePaths - Path da escludere (default: ['layout-components'])
+ * @param options.excludePaths - Path da escludere (default: ['layout-components', 'glossary'])
  * @param options.perPage - Numero di stories per pagina (default: 100)
  * @returns Array di stories
  *
@@ -116,7 +116,7 @@ export async function getAllStories(
 ): Promise<Story[]> {
   const {
     version = getStoryblokVersion(),
-    excludePaths = ["layout-components"],
+    excludePaths = ["layout-components", "glossary"],
     perPage = 100,
   } = options;
 

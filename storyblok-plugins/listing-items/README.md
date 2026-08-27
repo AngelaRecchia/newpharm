@@ -14,6 +14,16 @@ Plugin per il campo `variant` dei blok **listing** e **carousel**. L’UI dipend
 - Variante: prodotto, catalogo, progetto
 - Prodotto dinamica: bestseller + vista opzionale (categoria / application area)
 - Prodotto manuale / altre varianti: ricerca e toggle stories
+- **Progetto per tag**: filtra per divisione, ordinato per ultimi aggiunti
+
+## Projects Highlight
+
+- Nessuna card editoriale
+- **Tutti**: tutti i progetti, ultimi aggiunti
+- **Per tag**: progetti della divisione scelta, ultimi aggiunti
+- **Manuale**: progetti referenziati, comunque ordinati per ultimi aggiunti
+
+Sul campo plugin, opzione `context` = `projects_highlight` (fallback se il parent non viene rilevato).
 
 ## Carousel
 

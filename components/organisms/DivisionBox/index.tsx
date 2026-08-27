@@ -32,7 +32,7 @@ const DivisionBox = ({ blok }: { blok?: Division_boxStoryblok }) => {
             <div className={cn('container')}>
                 <div className={cn('head')}>
                     {hasTitle && <h2 className={cn('title')}>{title}</h2>}
-                    {validLink && <Button link={validLink.link} label={validLink.label} />}
+                    {validLink && <Button link={validLink} />}
                 </div>
 
                 <div className={cn('carousel-wrapper')}>

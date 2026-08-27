@@ -97,8 +97,8 @@ const CardBox = ({ blok, isOpen: controlledIsOpen, onToggle }: CardBoxProps) => 
             </div>
 
             <div inert={!isOpen} className={cn('primary-link', { 'primary-link-closed': !isOpen })}>
-                {link?.map((link) => (
-                    <Button key={link._uid} link={link.link} label={link.label} variant='primary' />
+                {link?.map((item) => (
+                    <Button key={item._uid} link={item} variant='primary' />
                 ))}
 
             </div>

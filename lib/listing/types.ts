@@ -4,8 +4,8 @@ export type ListingContentComponent = 'product' | 'project' | 'insect' | 'catalo
 
 export type ListingImageRatio = 'square' | 'portrait'
 
-/** prodotto: manual | dynamic — altre varianti: all | manual */
-export type ListingSelectionMode = 'manual' | 'dynamic' | 'all'
+/** prodotto: manual | dynamic — progetto: all | tag | manual — altre: all | manual */
+export type ListingSelectionMode = 'manual' | 'dynamic' | 'all' | 'tag'
 
 export type ListingProductVista = 'categoria' | 'application_area'
 
@@ -18,7 +18,9 @@ export type ListingVariantValue = {
   application_area?: string
   /** Solo prodotto dynamic: filtra prodotti flaggati bestseller */
   bestseller?: boolean
-  /** prodotto manual: UUID inclusi — altre varianti all: UUID esclusi */
+  /** progetto tag: slug divisione */
+  tag?: string
+  /** prodotto/progetto manual: UUID inclusi — altre varianti all: UUID esclusi */
   items: string[]
   /** Solo listing editorial: square (1:1, dark) | portrait (259/340, light) */
   image_ratio?: ListingImageRatio
@@ -31,8 +33,16 @@ export const EMPTY_VARIANT_VALUE: ListingVariantValue = {
   subcategory: '',
   application_area: '',
   bestseller: false,
+  tag: '',
   items: [],
   image_ratio: 'portrait',
+}
+
+export const EMPTY_PROJECTS_HIGHLIGHT_VALUE: ListingVariantValue = {
+  variant: 'progetto',
+  selection_mode: 'all',
+  tag: '',
+  items: [],
 }
 
 export const VARIANT_TO_COMPONENT: Record<ListingVariantSlug, ListingContentComponent> = {
@@ -56,6 +66,7 @@ export type ListingStoryResolved = {
   name: string
   slug: string
   full_slug: string
+  created_at?: string | null
   published_at?: string | null
   first_published_at?: string | null
   content: Record<string, unknown>
@@ -69,4 +80,8 @@ export function isProdottoSelectionMode(
 
 export function isRefAllSelectionMode(mode: ListingSelectionMode): mode is 'all' {
   return mode === 'all'
+}
+
+export function isRefTagSelectionMode(mode: ListingSelectionMode): mode is 'tag' {
+  return mode === 'tag'
 }

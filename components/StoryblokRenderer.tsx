@@ -4,6 +4,7 @@ import { StoryblokComponent, useStoryblok } from '@storyblok/react'
 import { useEffect, useState } from 'react'
 import { getStoryblokVersion } from '@/lib/api/storyblok/config'
 import { STORYBLOK_RESOLVE_RELATIONS } from '@/lib/api/storyblok/resolveRelations'
+import { isInsideStoryblokEditor } from '@/lib/api/storyblok/config'
 
 /**
  * Copia `resolved_items` (e altri campi SSR) dal contenuto statico al live editor.
@@ -63,7 +64,9 @@ function preserveSsrEnrichment(source: unknown, target: unknown): unknown {
       key === 'related_projects' ||
       key === 'related_category_products' ||
       key === 'related_category_parent_slug' ||
-      key === 'related_stories'
+      key === 'related_stories' ||
+      key === 'variant' ||
+      key === 'listing_items'
     ) {
       continue
     }
@@ -80,21 +83,15 @@ interface StoryblokRendererProps {
   story?: any
 }
 
-/**
- * Detect if we're inside the Storyblok Visual Editor (iframe or _storyblok param)
- */
-function isInsideStoryblokEditor(): boolean {
-  if (typeof window === 'undefined') return false
-  try {
-    return (
-      window.location !== window.parent.location ||
-      window.location.search.includes('_storyblok') ||
-      window.location.search.includes('_storyblok_tk')
-    )
-  } catch {
-    // Cross-origin iframe access throws — assume we're in the editor
-    return true
-  }
+const STORYBLOK_CDN_PARAMS = {
+  version: getStoryblokVersion(),
+  resolve_relations: STORYBLOK_RESOLVE_RELATIONS,
+  resolve_links: 'url' as const,
+}
+
+const STORYBLOK_BRIDGE_PARAMS = {
+  resolveRelations: STORYBLOK_RESOLVE_RELATIONS,
+  resolveLinks: 'url' as const,
 }
 
 /**
@@ -114,21 +111,10 @@ export default function StoryblokRenderer({ blok, story }: StoryblokRendererProp
   // useStoryblok fa comunque GET /v2/cdn/stories/{slug} e 'stories/_' → 404.
   const storySlug = (story?.full_slug || '').trim()
 
-  // Opzioni CDN (2° arg): vanno qui — solo questo oggetto è passato a `api.get('cdn/stories/{slug}', r)`.
-  // Il 3° arg serve al bridge live; se `resolve_relations` è solo lì, la prima fetch non risolve le relazioni.
-  const cdnParams = {
-    version: getStoryblokVersion(),
-    resolve_relations: STORYBLOK_RESOLVE_RELATIONS,
-    resolve_links: 'url' as const,
-  }
-
   const liveStory = useStoryblok(
     storySlug || '_',
-    cdnParams,
-    {
-      resolveRelations: STORYBLOK_RESOLVE_RELATIONS,
-      resolveLinks: 'url',
-    }
+    STORYBLOK_CDN_PARAMS,
+    STORYBLOK_BRIDGE_PARAMS,
   )
 
   if (!blok || !blok.component) return null

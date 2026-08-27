@@ -16,6 +16,7 @@ import type { StoryblokLink } from "@/lib/api/utils/links";
 import type { StoryblokAsset } from '@/components/atoms/Asset'
 import type { ISbRichtext } from "@storyblok/react";
 import type { ProjectDivision } from "@/lib/projects/divisions";
+import type { LinkActionValue } from "@/lib/link-action";
 
 /** Catalog — campi CMS oltre al generato */
 export interface CatalogStoryblok extends Generated.CatalogStoryblok {
@@ -90,9 +91,10 @@ export interface CatalogsDownloadStoryblok {
   _editable?: string;
 }
 
-/** link — variant blue | black */
+/** link — variant visiva blue | black, action funzionale dal plugin link-action */
 export interface LinkStoryblok extends Generated.LinkStoryblok {
   variant?: "blue" | "black" | null;
+  action?: LinkActionValue | null;
 }
 
 /**
@@ -177,7 +179,7 @@ export type ListingVariantSlug =
   | "insetto"
   | "catalogo";
 
-export type ListingSelectionMode = "manual" | "dynamic" | "all";
+export type ListingSelectionMode = "manual" | "dynamic" | "all" | "tag";
 
 export type ListingProductVista = "categoria" | "application_area";
 
@@ -189,6 +191,7 @@ export type ListingVariantValue = {
   subcategory?: string;
   application_area?: string;
   bestseller?: boolean;
+  tag?: string;
   items: string[];
   image_ratio?: ListingImageRatio;
 };
@@ -198,6 +201,7 @@ export interface ListingStoryResolved {
   name: string;
   slug: string;
   full_slug: string;
+  created_at?: string | null;
   published_at?: string | null;
   first_published_at?: string | null;
   content: Record<string, unknown>;
@@ -260,6 +264,23 @@ export interface ProjectsStoryblok {
 }
 
 /**
+ * projects_highlight — stack sticky di progetti referenziati (nessuna card editoriale).
+ * Plugin listing-items: tutti | per tag (divisione) | manuale, sempre ultimi aggiunti.
+ */
+export interface Projects_highlightStoryblok {
+  title?: string | null;
+  link?: LinkStoryblok[] | StoryblokLink | null;
+  /** Plugin: all | tag | manual su content type project */
+  variant?: ListingVariantValue | null;
+  /** Popolato SSR da enrichListingBloks — non editabile in CMS */
+  resolved_items?: ListingStoryResolved[] | null;
+  anchor_id?: string | null;
+  _uid: string;
+  component: string;
+  _editable?: string;
+}
+
+/**
  * stories — catalogo news con chips tag e griglia a mosaico.
  * Titolo/subtitle nel blok; tutte le story fetchate SSR (nessuna selezione CMS).
  */
@@ -274,7 +295,7 @@ export interface StoriesStoryblok {
   _editable?: string;
 }
 
-/** article_body — rich text in colonna stretta, duplica story.article */
+/** article_body — rich text in colonna stretta nel body della story */
 export interface Article_bodyStoryblok {
   article?: ISbRichtext | null;
   show_copy_button?: boolean | null;
@@ -291,6 +312,24 @@ export interface CompareStoryblok {
   /** Popolato SSR da enrichListingBloks — non editabile in CMS */
   resolved_items?: ListingStoryResolved[] | null;
   anchor_id?: string | null;
+  _uid: string;
+  component: string;
+  _editable?: string;
+}
+
+/** glossary_item — voce nell’archivio glossario */
+export interface Glossary_itemStoryblok {
+  term?: string | null;
+  aliases?: string | null;
+  definition?: ISbRichtext | null;
+  _uid: string;
+  component: string;
+  _editable?: string;
+}
+
+/** glossary — una story per locale, non routabile */
+export interface GlossaryStoryblok {
+  items?: Glossary_itemStoryblok[] | null;
   _uid: string;
   component: string;
   _editable?: string;

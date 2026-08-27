@@ -3,7 +3,7 @@
 import { storyblokInit, apiPlugin, loadStoryblokBridge } from '@storyblok/react'
 import { ReactNode, useEffect } from 'react'
 import dynamic from 'next/dynamic'
-import { shouldEnableBridge } from './api/storyblok/config'
+import { shouldEnableBridge, isInsideStoryblokEditor } from './api/storyblok/config'
 
 // Lightweight components — static imports
 import Page from '@/components/storyblok/Page'
@@ -96,23 +96,6 @@ const components = {
   story: Story,
   header: Header,
   footer: Footer,
-}
-
-/**
- * Detect if we're inside the Storyblok Visual Editor (iframe or _storyblok param)
- */
-function isInsideStoryblokEditor(): boolean {
-  if (typeof window === 'undefined') return false
-  try {
-    return (
-      window.location !== window.parent.location ||
-      window.location.search.includes('_storyblok') ||
-      window.location.search.includes('_storyblok_tk')
-    )
-  } catch {
-    // Cross-origin iframe access throws — assume we're in the editor
-    return true
-  }
 }
 
 // Initialize Storyblok at module level (runs once when module loads)

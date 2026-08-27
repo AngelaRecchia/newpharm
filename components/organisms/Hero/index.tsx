@@ -10,6 +10,7 @@ import Button from '@/components/atoms/Button'
 import { storyblokEditable } from '@storyblok/react'
 import { getStoryblokAnchorId } from '@/lib/storyblok/anchor'
 import { useStickyParallax } from '@/lib/animation/useStickyParallax'
+import GlossaryText from '@/components/atoms/GlossaryText'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import 'swiper/css'
 
@@ -31,7 +32,7 @@ export default function HeroComponent({ blok }: { blok?: HeroStoryblok }) {
         const { links, variant } = blok
         if (variant === 'primary') {
             return links?.map((link) => (
-                <Button key={link._uid} link={link.link} label={link.label} variant='secondary' />
+                <Button key={link._uid} link={link} variant='secondary' />
             ))
         }
 
@@ -67,7 +68,11 @@ export default function HeroComponent({ blok }: { blok?: HeroStoryblok }) {
         <>
             <div className={cn('content')}>
                 <h1 className={cn('title')}>{title}</h1>
-                {subtitle ? <p className={cn('subtitle')}>{subtitle}</p> : null}
+                {subtitle ? (
+                    <p className={cn('subtitle')}>
+                        {variant === 'tertiary' ? <GlossaryText text={subtitle} /> : subtitle}
+                    </p>
+                ) : null}
             </div>
 
             {links && links.length > 0 ? <div className={cn('links')}>{renderLinks}</div> : null}

@@ -157,7 +157,7 @@ const StickyImage = ({ blok }: { blok: Sticky_imageStoryblok }) => {
         </div>
 
         <div ref={rightRef} className={cn('right')}>
-          <RichText content={content} raw className={cn('rt-wrapper')} />
+          <RichText content={content} raw enableGlossary className={cn('rt-wrapper')} />
         </div>
       </div>
     </section>

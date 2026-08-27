@@ -29,7 +29,7 @@ const Faqs = ({ blok }: { blok: FaqsStoryblok }) => {
           <div className={cn('items')}>
             {items.map((item: any) => (
               <AccordionItem key={item._uid} label={item.title || ''} variant="secondary">
-                <RichText content={item.text} raw />
+                <RichText content={item.text} raw enableGlossary />
               </AccordionItem>
             ))}
           </div>

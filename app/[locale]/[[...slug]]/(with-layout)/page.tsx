@@ -77,7 +77,7 @@ export default async function WithLayoutPage({ params }: PageProps) {
   // Usa la funzione centralizzata per recuperare la story
   const story = await getStory(storySlug, locale)
 
-  if (!story) {
+  if (!story || story.content?.component === 'glossary') {
     notFound()
   }
 
@@ -152,6 +152,10 @@ export async function generateMetadata({ params }: PageProps) {
 
   const storySlug = slug && slug.length > 0 ? slug.join('/') : ''
   const story = await getStory(storySlug, locale)
+
+  if (story?.content?.component === 'glossary') {
+    notFound()
+  }
 
   const title = story?.name
     ? `${story.name} | Newpharm`

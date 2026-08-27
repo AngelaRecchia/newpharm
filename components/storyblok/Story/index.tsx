@@ -8,7 +8,6 @@ import Tag from '@/components/atoms/Tag';
 import { useMemo } from 'react';
 import { useFormatter, useTranslations } from 'next-intl';
 import FullBanner from '@/components/organisms/FullBanner';
-import RichText from '@/components/organisms/RichText';
 import { RelatedStory } from '@/lib/api/storyblok/stories';
 import { isEmpty } from '@/lib/api/utils/links';
 
@@ -25,7 +24,7 @@ interface StoryProps {
 const Story = ({ blok, relatedStories }: StoryProps) => {
 
     const t = useTranslations('');
-    const { title, author, reading_time, date, tag, asset, article, body, related_stories } = blok;
+    const { title, author, reading_time, date, tag, asset, body, related_stories } = blok;
     const format = useFormatter();
     const dateTime = date ? new Date(date) : null;
     const formattedDate = dateTime ? format.dateTime(dateTime, { dateStyle: 'medium' }) : null;
@@ -59,10 +58,6 @@ const Story = ({ blok, relatedStories }: StoryProps) => {
                 <FullBanner blok={{ asset, _uid: '1', component: 'full_banner', variant: 'padding' }} />
             )}
 
-
-            <div className={cn('article')}>
-                <RichText content={article} />
-            </div>
 
             {body?.map((nestedBlok: any, index: number) => (
                 <StoryblokComponent blok={nestedBlok} key={`${nestedBlok._uid}-${index}`} />

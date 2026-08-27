@@ -12,6 +12,7 @@ import { getVariantLabel, searchStories, sortStoryOptions } from '../../lib/stor
 import { getListingBlokType, getParentBlokComponent } from '../../lib/blokType'
 import { validateContent } from '../../lib/validateContent'
 import { CarouselItems } from '../CarouselItems'
+import { ProjectsHighlightItems } from '../ProjectsHighlightItems'
 import type {
   ApplicationAreaEntry,
   FiltriEntry,
@@ -20,7 +21,12 @@ import type {
   ListingVariantSlug,
   PluginVariantSlug,
   PluginVariantValue,
+  ProjectDivision,
   StoryOption,
+} from '../../types'
+import {
+  PROJECT_DIVISION_LABELS,
+  PROJECT_DIVISIONS,
 } from '../../types'
 import './listing-items.css'
 
@@ -50,6 +56,7 @@ const DEFAULT_PRODOTTO: PluginVariantValue = {
 const DEFAULT_REF: PluginVariantValue = {
   variant: 'catalogo',
   selection_mode: 'all',
+  tag: '',
   items: [],
   image_ratio: 'portrait',
 }
@@ -63,13 +70,14 @@ function isRefAllMode(value: PluginVariantValue): boolean {
 }
 
 function isStorySelected(value: PluginVariantValue, uuid: string): boolean {
+  const items = Array.isArray(value.items) ? value.items : []
   if (isProdotto(value.variant)) {
-    return value.selection_mode === 'manual' && value.items.includes(uuid)
+    return value.selection_mode === 'manual' && items.includes(uuid)
   }
   if (value.selection_mode === 'manual') {
-    return value.items.includes(uuid)
+    return items.includes(uuid)
   }
-  return !value.items.includes(uuid)
+  return !items.includes(uuid)
 }
 
 export function ListingItems() {
@@ -89,6 +97,10 @@ export function ListingItems() {
   const parentComponent = getParentBlokComponent(plugin.data?.story, plugin.data?.blockUid)
   const isCarousel =
     parentComponent === 'carousel' || options.context === 'carousel'
+  const isProjectsHighlight =
+    parentComponent === 'projects_highlight' ||
+    options.context === 'projects_highlight' ||
+    value.context === 'projects_highlight'
   const isEditorial = listingType === 'editorial'
   const variantOptions =
     value.variant === 'insetto' ? [...VARIANTS, 'insetto' as const] : VARIANTS
@@ -97,9 +109,11 @@ export function ListingItems() {
 
   const setContent = useCallback(
     (next: PluginVariantValue) => {
+      const serialized = JSON.stringify(next)
+      if (serialized === JSON.stringify(value)) return
       plugin.actions?.setContent(next)
     },
-    [plugin.actions],
+    [plugin.actions, value],
   )
 
   const updateOptions = (patch: Partial<PluginVariantValue>) => {
@@ -108,7 +122,7 @@ export function ListingItems() {
 
   const handleVariantChange = (variant: ListingVariantSlug) => {
     if (variant === value.variant) return
-    if (value.items.length > 0) {
+    if ((value.items?.length ?? 0) > 0) {
       const confirmed = window.confirm(
         'Cambiando variante verranno resettate le selezioni. Continuare?',
       )
@@ -141,9 +155,14 @@ export function ListingItems() {
     })
   }
 
-  const handleRefModeChange = (selection_mode: 'all' | 'manual') => {
+  const handleRefModeChange = (selection_mode: 'all' | 'manual' | 'tag') => {
     if (selection_mode === value.selection_mode) return
-    setContent({ ...value, selection_mode, items: [] })
+    setContent({
+      ...value,
+      selection_mode,
+      tag: selection_mode === 'tag' ? value.tag ?? '' : '',
+      items: [],
+    })
   }
 
   const toggleItem = (story: StoryOption) => {
@@ -175,13 +194,15 @@ export function ListingItems() {
 
   const showPicker =
     !isCarousel &&
+    !isProjectsHighlight &&
     !isEditorial &&
     ((isProdotto(value.variant) && value.selection_mode === 'manual') ||
       (!isProdotto(value.variant) &&
+        value.selection_mode !== 'tag' &&
         (value.selection_mode === 'all' || value.selection_mode === 'manual')))
 
   useEffect(() => {
-    if (plugin.type !== 'loaded' || isCarousel || isEditorial || !isProdotto(value.variant)) return
+    if (plugin.type !== 'loaded' || isCarousel || isProjectsHighlight || isEditorial || !isProdotto(value.variant)) return
 
     let cancelled = false
     Promise.all([
@@ -204,7 +225,7 @@ export function ListingItems() {
     return () => {
       cancelled = true
     }
-  }, [plugin.type, isCarousel, isEditorial, value.variant, datasourceSlug, cdnToken])
+  }, [plugin.type, isCarousel, isProjectsHighlight, isEditorial, value.variant, datasourceSlug, cdnToken])
 
   useEffect(() => {
     if (plugin.type !== 'loaded' || !showPicker) {
@@ -246,6 +267,10 @@ export function ListingItems() {
 
   if (isCarousel) {
     return <CarouselItems plugin={plugin} />
+  }
+
+  if (isProjectsHighlight) {
+    return <ProjectsHighlightItems plugin={plugin} />
   }
 
   if (isEditorial) {
@@ -453,6 +478,17 @@ export function ListingItems() {
             />
             Tutti (deseleziona quelli da escludere)
           </label>
+          {value.variant === 'progetto' && (
+            <label className="listing-items__radio">
+              <input
+                type="radio"
+                name="listing-ref-mode"
+                checked={value.selection_mode === 'tag'}
+                onChange={() => handleRefModeChange('tag')}
+              />
+              Per tag
+            </label>
+          )}
           <label className="listing-items__radio">
             <input
               type="radio"
@@ -462,7 +498,35 @@ export function ListingItems() {
             />
             Solo selezionati manualmente
           </label>
+          {value.variant === 'progetto' && (
+            <p className="listing-items__hint">
+              I progetti sono sempre ordinati per ultimi aggiunti.
+            </p>
+          )}
         </fieldset>
+      )}
+
+      {value.variant === 'progetto' && value.selection_mode === 'tag' && (
+        <div className="listing-items__field">
+          <label className="listing-items__label" htmlFor="listing-project-tag">
+            Tag / divisione
+          </label>
+          <select
+            id="listing-project-tag"
+            className="listing-items__select"
+            value={value.tag ?? ''}
+            onChange={(e) =>
+              updateOptions({ tag: e.target.value as ProjectDivision | '' })
+            }
+          >
+            <option value="">Seleziona un tag</option>
+            {PROJECT_DIVISIONS.map((division) => (
+              <option key={division} value={division}>
+                {PROJECT_DIVISION_LABELS[division]}
+              </option>
+            ))}
+          </select>
+        </div>
       )}
 
       {showPicker && (
