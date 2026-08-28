@@ -8,7 +8,12 @@ import {
   getSubfilterLabel,
   getSubfiltersForCategory,
 } from '../../lib/filtri'
-import { getVariantLabel, searchStories, sortStoryOptions } from '../../lib/stories'
+import {
+  getVariantLabel,
+  localeFromPluginStory,
+  searchStories,
+  sortStoryOptions,
+} from '../../lib/stories'
 import { getListingBlokType, getParentBlokComponent } from '../../lib/blokType'
 import { validateContent } from '../../lib/validateContent'
 import { CarouselItems } from '../CarouselItems'
@@ -95,6 +100,7 @@ export function ListingItems() {
   const value = plugin.data?.content ?? DEFAULT_PRODOTTO
   const listingType = getListingBlokType(plugin.data?.story, plugin.data?.blockUid)
   const parentComponent = getParentBlokComponent(plugin.data?.story, plugin.data?.blockUid)
+  const locale = localeFromPluginStory(plugin.data?.story)
   const isCarousel =
     parentComponent === 'carousel' || options.context === 'carousel'
   const isProjectsHighlight =
@@ -242,6 +248,7 @@ export function ListingItems() {
           value.variant === 'story' ? 'story' : (value.variant as ListingVariantSlug),
           cdnToken,
           search,
+          locale,
         )
         if (!cancelled) {
           setResults(sortStoryOptions(stories))
@@ -259,7 +266,7 @@ export function ListingItems() {
       cancelled = true
       window.clearTimeout(timeout)
     }
-  }, [plugin.type, value.variant, showPicker, cdnToken, search])
+  }, [plugin.type, value.variant, showPicker, cdnToken, search, locale])
 
   if (plugin.type !== 'loaded') {
     return <p className="listing-items__loading">Caricamento editor...</p>

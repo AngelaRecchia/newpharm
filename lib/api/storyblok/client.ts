@@ -6,6 +6,7 @@
  * - Throttling + retry on 429 (Storyblok CDN: 6 req/s)
  *
  * Cache lives in .cache/storyblok/ — delete it to force a refresh.
+ * In draft the stories endpoints skip this cache so listing/picker stay fresh.
  * Set STORYBLOK_DISABLE_FS_CACHE=true to disable filesystem cache.
  */
 
@@ -48,16 +49,16 @@ async function getWithRetry<T>(
   throw lastError
 }
 
-function isSingleStoryEndpoint(endpoint: string): boolean {
-  return endpoint.startsWith('cdn/stories/') && endpoint !== 'cdn/stories/'
+function isStoriesEndpoint(endpoint: string): boolean {
+  return endpoint === 'cdn/stories' || endpoint.startsWith('cdn/stories/')
 }
 
 function shouldUseFsCache(endpoint: string): boolean {
   if (process.env.STORYBLOK_DISABLE_FS_CACHE === 'true') return false
-  // In draft il GET della story singola resta fresco (Visual Editor / campo body nuovo)
+  // In draft listing/picker e Visual Editor devono vedere stories appena create.
   if (
     process.env.NEXT_PUBLIC_STORYBLOK_VERSION !== 'published' &&
-    isSingleStoryEndpoint(endpoint)
+    isStoriesEndpoint(endpoint)
   ) {
     return false
   }

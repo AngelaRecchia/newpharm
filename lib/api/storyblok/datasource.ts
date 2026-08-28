@@ -54,7 +54,7 @@ export async function getDatasourceEntries(
       params.dimension = dimension
     }
 
-    // Add cv parameter if available (omitted in dev to encourage caching)
+    // Add cv parameter if available
     if (cv !== undefined) {
       params.cv = cv
     }

@@ -224,12 +224,15 @@ export interface ListingStoryblok {
   _editable?: string;
 }
 
-/** project — content type con divisioni multi-select */
+/** project — content type con divisioni multi-select, hero e body */
 export interface ProjectStoryblok extends Omit<
   Generated.ProjectStoryblok,
-  "divisions"
+  "divisions" | "image"
 > {
   divisions?: ProjectDivision[] | null;
+  /** Multi-asset: campo CMS `image` (e alias `asset`) */
+  image?: AssetStoryblok[] | null;
+  asset?: AssetStoryblok[] | null;
 }
 
 /**

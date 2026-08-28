@@ -6,7 +6,7 @@
  * 
  * Per rigenerare: npm run generate:types
  * 
- * Generato il: 2026-08-27T10:49:55.710Z
+ * Generato il: 2026-08-28T13:43:28.222Z
  */
 
 
@@ -460,9 +460,10 @@ export interface ProductsStoryblok {
 
 export interface ProjectStoryblok {
   title: string
-  image?: { id: number; alt: string; name: string; focus: string; title: string; filename: string; copyright: string; fieldtype: string; } | null // Optional
+  image?: any[] | null // Optional
   short_description?: string | null // Optional
   divisions?: 'cereals-storage' | 'pest-control' | 'zootech' | 'home-garden' | 'medical' | null // Optional
+  body?: any[] | null // Optional
   _uid: string
   component: string
   _editable?: string

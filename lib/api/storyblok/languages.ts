@@ -236,7 +236,7 @@ export async function getLangs(
           excluding_fields: "body", // Exclude content to speed up
         };
 
-        // Add cv parameter if available (omitted in dev to encourage caching)
+        // Add cv parameter if available
         if (cv !== undefined) {
           params.cv = cv;
         }

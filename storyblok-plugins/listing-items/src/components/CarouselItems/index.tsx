@@ -8,7 +8,12 @@ import {
   getSubfilterLabel,
   getSubfiltersForCategory,
 } from '../../lib/filtri'
-import { getVariantLabel, searchStories, sortStoryOptions } from '../../lib/stories'
+import {
+  getVariantLabel,
+  localeFromPluginStory,
+  searchStories,
+  sortStoryOptions,
+} from '../../lib/stories'
 import type {
   ApplicationAreaEntry,
   CarouselStoryMode,
@@ -93,6 +98,7 @@ export function CarouselItems({ plugin }: CarouselItemsProps) {
   const cdnToken = options.cdn_token || import.meta.env.VITE_STORYBLOK_CDN_TOKEN || ''
   const datasourceSlug = options.datasource_slug || 'filtri'
   const value = plugin.data?.content ?? DEFAULT_STORY
+  const locale = localeFromPluginStory(plugin.data?.story)
   const applicationAreaOptions = applicationAreas as ApplicationAreaEntry[]
 
   const didInit = useRef(false)
@@ -218,7 +224,7 @@ export function CarouselItems({ plugin }: CarouselItemsProps) {
       setLoading(true)
       setError(null)
       try {
-        const stories = await searchStories('story', cdnToken, search)
+        const stories = await searchStories('story', cdnToken, search, locale)
         if (!cancelled) {
           setResults(sortStoryOptions(stories))
         }
@@ -235,7 +241,7 @@ export function CarouselItems({ plugin }: CarouselItemsProps) {
       cancelled = true
       window.clearTimeout(timeout)
     }
-  }, [plugin.type, showPicker, cdnToken, search])
+  }, [plugin.type, showPicker, cdnToken, search, locale])
 
   if (plugin.type !== 'loaded') {
     return <p className="listing-items__loading">Caricamento editor...</p>

@@ -13,6 +13,7 @@ import { AssetStoryblok } from '@/types/storyblok'
 import Link from '@/components/storyblok/Link'
 import Story from '@/components/storyblok/Story'
 import Product from '@/components/storyblok/Product'
+import Project from '@/components/storyblok/Project'
 
 // Wrapper inline per Asset - passa il blok direttamente all'atom
 const Asset = ({ blok, ...props }: { blok?: AssetStoryblok } & any) => {
@@ -91,6 +92,7 @@ const components = {
 
   // Templates
   product: Product,
+  project: Project,
   page: Page,
   settings: Settings,
   story: Story,

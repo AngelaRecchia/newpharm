@@ -72,7 +72,7 @@ export async function getStory(
       ...options,
     };
 
-    // Add cv parameter if available (omitted in dev to encourage caching)
+    // Add cv parameter if available
     if (cv !== undefined) {
       params.cv = cv;
     }
@@ -136,7 +136,7 @@ export async function getAllStories(
         excluding_fields: "content", // Exclude large fields to speed up fetch
       };
 
-      // Add cv parameter if available (omitted in dev to encourage caching)
+      // Add cv parameter if available
       if (cv !== undefined) {
         params.cv = cv;
       }
@@ -252,6 +252,10 @@ export async function getStoriesByUuids(
 
 const storiesByComponentCache = new Map<string, Promise<Story[]>>()
 
+export function clearStoriesByComponentCache() {
+  storiesByComponentCache.clear()
+}
+
 /**
  * Recupera tutte le stories di un content type nel locale corrente (prefetch paginato).
  */
@@ -260,7 +264,13 @@ export async function getStoriesByComponent(
   locale?: string,
   options: GetStoryOptions = {},
 ): Promise<Story[]> {
-  const cacheKey = `${component}:${options.version || getStoryblokVersion()}:${locale ?? '__all__'}`
+  const version = options.version || getStoryblokVersion()
+  if (version === 'draft') {
+    return fetchStoriesByComponent(component, locale, options)
+  }
+
+  const cv = await getCacheVersion()
+  const cacheKey = `${component}:${version}:${locale ?? '__all__'}:${cv ?? 'nocv'}`
   const cached = storiesByComponentCache.get(cacheKey)
   if (cached) return cached
 
@@ -547,11 +557,24 @@ function extractProductUuids(relatedProducts: unknown): string[] {
   return [];
 }
 
+function asAssetArray(value: unknown): AssetStoryblok[] {
+  if (Array.isArray(value)) {
+    return value.filter(
+      (item): item is AssetStoryblok =>
+        !!item && typeof item === "object" && "filename" in item,
+    );
+  }
+  if (value && typeof value === "object" && "filename" in value) {
+    return [value as AssetStoryblok];
+  }
+  return [];
+}
+
 function toRelatedProject(story: Story): RelatedProject {
   return {
     full_slug: story.full_slug,
     title: story.content?.title || story.name,
-    asset: story.content?.asset || [],
+    asset: asAssetArray(story.content?.asset ?? story.content?.image),
   };
 }
 

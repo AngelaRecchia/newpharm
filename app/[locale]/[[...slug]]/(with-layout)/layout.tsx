@@ -9,7 +9,7 @@ import Header from '@/components/organisms/Header'
 /**
  * Determina la variante dell'header in base al primo blocco nel body della page
  * Se il primo blocco è hero primary/secondary, division_box, full_banner o projects,
- * l'header è transparent, altrimenti è white
+ * oppure il content type è project (hero primary in testa), l'header è transparent.
  */
 function getHeaderVariant(firstBlock: any): 'transparent' | 'white' {
   if (!firstBlock) {
@@ -63,12 +63,15 @@ export default async function LocaleLayout({
   let headerVariant: 'transparent' | 'white' = 'white'
 
   if (story?.content) {
-    const pageContent = story.content as PageStoryblok
+    if (story.content.component === 'project') {
+      headerVariant = 'transparent'
+    } else {
+      const pageContent = story.content as PageStoryblok
 
-    // Controlla il primo blocco nel body
-    if (pageContent.body && pageContent.body.length > 0) {
-      const firstBlock = pageContent.body[0]
-      headerVariant = getHeaderVariant(firstBlock)
+      if (pageContent.body && pageContent.body.length > 0) {
+        const firstBlock = pageContent.body[0]
+        headerVariant = getHeaderVariant(firstBlock)
+      }
     }
   }
 

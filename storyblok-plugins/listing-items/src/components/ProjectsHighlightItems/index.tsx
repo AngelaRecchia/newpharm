@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useFieldPlugin } from '@storyblok/field-plugin/react'
-import { searchStories, sortStoryOptions } from '../../lib/stories'
+import { localeFromPluginStory, searchStories, sortStoryOptions } from '../../lib/stories'
 import type { PluginVariantValue, ProjectDivision, StoryOption } from '../../types'
 import {
   EMPTY_PROJECTS_HIGHLIGHT_VALUE,
@@ -54,6 +54,7 @@ export function ProjectsHighlightItems({ plugin }: ProjectsHighlightItemsProps) 
 
   const options = plugin.data?.options ?? {}
   const cdnToken = options.cdn_token || import.meta.env.VITE_STORYBLOK_CDN_TOKEN || ''
+  const locale = localeFromPluginStory(plugin.data?.story)
   const value = draft ?? remote
   const items = asItems(value.items)
   const selectionMode = highlightMode(value.selection_mode)
@@ -117,7 +118,7 @@ export function ProjectsHighlightItems({ plugin }: ProjectsHighlightItemsProps) 
       setLoading(true)
       setError(null)
       try {
-        const stories = await searchStories('progetto', cdnToken, search)
+        const stories = await searchStories('progetto', cdnToken, search, locale)
         if (!cancelled) {
           setResults(sortStoryOptions(stories))
         }
@@ -134,7 +135,7 @@ export function ProjectsHighlightItems({ plugin }: ProjectsHighlightItemsProps) 
       cancelled = true
       window.clearTimeout(timeout)
     }
-  }, [plugin.type, showPicker, cdnToken, search])
+  }, [plugin.type, showPicker, cdnToken, search, locale])
 
   if (!cdnToken) {
     return (

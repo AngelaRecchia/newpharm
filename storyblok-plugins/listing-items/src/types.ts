@@ -126,6 +126,7 @@ export type StoryOption = {
   name: string
   full_slug: string
   published_at?: string | null
+  created_at?: string | null
 }
 
 export type FiltriEntry = {

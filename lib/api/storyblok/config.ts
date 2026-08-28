@@ -60,56 +60,62 @@ export function isInsideStoryblokEditor(): boolean {
 
 let cachedCv: number | null = null;
 let cvFetchTime: number = 0;
-const CV_CACHE_TTL = 60000; // 1 minute cache for cv in production
+const CV_CACHE_TTL_PUBLISHED = 60000;
+const CV_CACHE_TTL_DRAFT = 5000;
+
+function cacheTtlMs(): number {
+  return isProduction() ? CV_CACHE_TTL_PUBLISHED : CV_CACHE_TTL_DRAFT;
+}
+
+function parseCacheVersion(data: unknown): number | undefined {
+  if (!data || typeof data !== "object") return undefined;
+  const record = data as Record<string, unknown>;
+  const space =
+    record.space && typeof record.space === "object"
+      ? (record.space as Record<string, unknown>)
+      : undefined;
+  const raw =
+    space?.version ??
+    space?.cache_version ??
+    space?.cv ??
+    record.cache_version ??
+    record.cv;
+  if (typeof raw === "number" && Number.isFinite(raw)) return raw;
+  if (typeof raw === "string" && raw.trim()) {
+    const parsed = Number(raw);
+    if (Number.isFinite(parsed)) return parsed;
+  }
+  return undefined;
+}
 
 /**
- * Get cache version for Storyblok CDN requests
- *
- * Development/Preview: Returns undefined to omit cv parameter, encouraging CDN caching
- * Production: Fetches current cv from /spaces/me and caches it for 1 minute
- *
- * @returns Cache version number or undefined to omit cv parameter
+ * Cache version for Storyblok CDN requests (`cv`).
+ * Draft: TTL breve così listing/picker vedono le stories appena create.
+ * Published: TTL 1 minuto.
  */
 export async function getCacheVersion(): Promise<number | undefined> {
-  // In draft mode: omit cv parameter to encourage caching
-  if (!isProduction()) {
-    // Return undefined to omit cv parameter, allowing Storyblok CDN to cache
-    return undefined;
-  }
-
-  // In production: fetch current cv from /spaces/me
   const now = Date.now();
 
-  // Return cached cv if still valid
-  if (cachedCv !== null && now - cvFetchTime < CV_CACHE_TTL) {
+  if (cachedCv !== null && now - cvFetchTime < cacheTtlMs()) {
     return cachedCv;
   }
 
   try {
     const storyblokApi = getStoryblokApi();
-    const { data } = await storyblokApi.get("spaces/me");
+    const { data } = await storyblokApi.get("cdn/spaces/me");
+    const cv = parseCacheVersion(data);
 
-    // Extract cv from space data
-    // Storyblok returns cv in different possible locations
-    const cv =
-      data?.space?.cache_version ||
-      data?.space?.cv ||
-      data?.cache_version ||
-      data?.cv;
-
-    if (cv) {
+    if (cv !== undefined) {
       cachedCv = cv;
       cvFetchTime = now;
       return cv;
     }
-  } catch (error) {
-    // If fetch fails, return cached value if available, otherwise undefined
+  } catch {
     if (cachedCv !== null) {
       return cachedCv;
     }
   }
 
-  // Return undefined if we can't get cv (Storyblok will handle it)
   return undefined;
 }
 

@@ -3,7 +3,8 @@ import type { ListingCardData, ListingStoryResolved } from './types'
 
 type StubContent = {
   title?: string | null
-  image?: AssetStoryblok[] | null
+  image?: AssetStoryblok[] | AssetStoryblok | null
+  asset?: AssetStoryblok[] | null
   short_description?: string | null
 }
 
@@ -30,7 +31,7 @@ export function mapStubStoryToCard(story: ListingStoryResolved): ListingCardData
     uuid: story.uuid,
     title: content.title || story.name,
     description: content.short_description || undefined,
-    image: firstImage(content.image),
+    image: firstImage(content.asset ?? content.image),
     href: story.full_slug,
   }
 }
