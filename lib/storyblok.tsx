@@ -28,6 +28,7 @@ import SpecTable from '@/components/organisms/SpecTable'
 import IconTextHighlight from '@/components/organisms/IconTextHighlight'
 import Tabs from '@/components/organisms/Tabs'
 import Faqs from '@/components/organisms/Faqs'
+import AlphabeticalAccordion from '@/components/organisms/AlphabeticalAccordion'
 import BoxImage from '@/components/organisms/BoxImage'
 import BoxImageCarousel from '@/components/organisms/BoxImageCarousel'
 import FullBanner from '@/components/organisms/FullBanner'
@@ -70,6 +71,7 @@ const components = {
   icon_text_highlight: IconTextHighlight,
   tabs: Tabs,
   faqs: Faqs,
+  alphabetical_accordion: AlphabeticalAccordion,
   gallery: Gallery,
   box_image: BoxImage,
   box_image_carousel: BoxImageCarousel,

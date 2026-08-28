@@ -62,6 +62,16 @@ function getCarouselDestination(
     return isLinkEmpty(link as StoryblokLink) ? null : (link as StoryblokLink)
 }
 
+function getCarouselLinkLabel(link: CarouselStoryblok['link']): string | undefined {
+    if (!link) return undefined
+
+    const source = Array.isArray(link) ? link[0] : link
+    if (!source || typeof source !== 'object' || !('label' in source)) return undefined
+
+    const label = (source as { label?: string | null }).label
+    return isEmpty(label) ? undefined : (label ?? undefined)
+}
+
 const Carousel = ({
     blok,
     title,
@@ -126,6 +136,7 @@ const Carousel = ({
     }
 
     const carouselDestination = isRelatedNews || isRelatedProducts ? null : getCarouselDestination(resolvedLink);
+    const carouselLinkLabel = isRelatedNews || isRelatedProducts ? undefined : getCarouselLinkLabel(resolvedLink);
     const showInjectedCta = Boolean(ctaHref);
     const showBlokCta = Boolean(carouselDestination);
     const showRelatedCta = isRelatedNews && Boolean(computedRelatedHref);
@@ -149,7 +160,7 @@ const Carousel = ({
                             <Button href={ctaHref} label={ctaLabel ?? t('see_all')} />
                         )}
                         {showBlokCta && (
-                            <Button link={carouselDestination} label={t('load_more')} />
+                            <Button link={carouselDestination} label={carouselLinkLabel ?? t('load_more')} />
                         )}
                     </div>
 

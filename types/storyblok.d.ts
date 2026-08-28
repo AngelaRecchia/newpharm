@@ -19,6 +19,7 @@ import type * as Overrides from "./storyblok.overrides";
 // Re-exporta tutti i tipi generati
 export type {
   Accordion_itemStoryblok,
+  Alphabetical_accordionStoryblok,
   Anchor_linkStoryblok,
   AssetStoryblok,
   Banner_accordionStoryblok,
@@ -95,6 +96,7 @@ export type {
  */
 export type StoryblokComponent =
   | Generated.Accordion_itemStoryblok
+  | Generated.Alphabetical_accordionStoryblok
   | Generated.Anchor_linkStoryblok
   | Generated.AssetStoryblok
   | Generated.Banner_accordionStoryblok

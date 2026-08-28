@@ -565,7 +565,7 @@ function asAssetArray(value: unknown): AssetStoryblok[] {
     );
   }
   if (value && typeof value === "object" && "filename" in value) {
-    return [value as AssetStoryblok];
+    return [value as unknown as AssetStoryblok];
   }
   return [];
 }
