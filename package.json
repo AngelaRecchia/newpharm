@@ -12,6 +12,7 @@
     "lint": "next lint",
     "generate:types": "tsx scripts/generate-storyblok-types.ts",
     "create:job-components": "tsx scripts/create-job-components.ts",
+    "seed:job-modal-labels": "tsx scripts/seed-job-modal-labels.ts",
     "generate:component": "tsx scripts/generate-component.ts"
   },
   "dependencies": {

@@ -7,16 +7,22 @@
 
 .panel {
   max-width: 56rem;
+  border-radius: 0;
+  padding: $s-40 $s-24;
+
+  @include md {
+    padding: $s-40;
+  }
 }
 
 .head {
   display: grid;
-  gap: $s-24;
-  margin-bottom: $s-32;
+  row-gap: $s-40;
+  column-gap: $s-40;
+  margin-bottom: $s-40;
 
   @include md {
     grid-template-columns: 1fr 1fr;
-    gap: $s-40;
     align-items: start;
   }
 }
@@ -26,10 +32,10 @@
 }
 
 .title {
-  @include t-h6;
+  @include t-h3;
   margin: 0;
   padding-right: $s-40;
-  font-weight: $font-weight-semibold;
+  font-weight: 400;
   color: $c-white;
 }
 
@@ -42,23 +48,23 @@
 .form {
   display: flex;
   flex-direction: column;
-  gap: $s-24;
+  gap: $s-40;
 }
 
 .columns {
   display: grid;
-  gap: $s-24;
+  row-gap: $s-40;
+  column-gap: $s-40;
 
   @include md {
     grid-template-columns: 1fr 1fr;
-    gap: $s-40;
   }
 }
 
 .column {
   display: flex;
   flex-direction: column;
-  gap: $s-24;
+  gap: $s-40;
 }
 
 .textareaField {
@@ -74,23 +80,25 @@
 
 .textarea {
   width: 100%;
-  min-height: 8rem;
+  min-height: calc(#{$s-12} * 2 + 1.2em);
   padding: $s-12 0;
   border: none;
-  border-bottom: 1px solid white-alpha(0.6);
+  border-bottom: 1px solid white-alpha(0.2);
   background: transparent;
   color: $c-white;
   resize: vertical;
   @include t-note;
   font-family: inherit;
   border-radius: 0;
+  line-height: 1.2;
 
   @include md {
     padding: $s-12 $s-16;
   }
 
   &::placeholder {
-    color: white-alpha(0.6);
+    color: $c-white;
+    opacity: 0.6;
   }
 
   &:hover,
@@ -104,6 +112,10 @@
   @include t-note;
   margin: (-$s-8) 0 0;
   color: $c-alert;
+}
+
+.recaptchaPlaceholder {
+  min-height: 4.75rem;
 }
 
 .actions {

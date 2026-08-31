@@ -22,7 +22,7 @@
   width: 100%;
   padding: $s-12 0;
   border: none;
-  border-bottom: 1px solid white-alpha(0.6);
+  border-bottom: 1px solid white-alpha(0.2);
   background: transparent;
   color: $c-white;
   @include t-note;
@@ -34,7 +34,8 @@
   }
 
   &::placeholder {
-    color: white-alpha(0.6);
+    color: $c-white;
+    opacity: 0.6;
   }
 
   &:hover,

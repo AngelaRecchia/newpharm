@@ -89,3 +89,7 @@ p {
   // Layout wrapper - no overflow needed with Lenis
   // Lenis handles smooth scrolling on the document body
 }
+
+html[data-scroll-lock='true'] body {
+  overscroll-behavior: none;
+}

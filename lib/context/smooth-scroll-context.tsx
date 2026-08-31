@@ -30,30 +30,62 @@ export const SmoothScrollContext = React.createContext<SmoothScrollContextType>(
 })
 
 let scrollLockCount = 0
+let savedScrollY = 0
 
-function lockPageScroll(lenis: Lenis) {
+function applyNativeScrollLock(scrollY: number) {
+  if (typeof document === 'undefined') return
+
+  document.documentElement.dataset.scrollLock = 'true'
+  document.body.style.position = 'fixed'
+  document.body.style.top = `-${scrollY}px`
+  document.body.style.left = '0'
+  document.body.style.right = '0'
+  document.body.style.width = '100%'
+}
+
+function releaseNativeScrollLock() {
+  if (typeof document === 'undefined') return
+
+  delete document.documentElement.dataset.scrollLock
+  document.body.style.position = ''
+  document.body.style.top = ''
+  document.body.style.left = ''
+  document.body.style.right = ''
+  document.body.style.width = ''
+}
+
+function lockPageScroll(lenis: Lenis | null) {
   if (scrollLockCount === 0) {
-    lenis.stop()
+    savedScrollY = lenis?.scroll ?? window.scrollY
+    applyNativeScrollLock(savedScrollY)
+    lenis?.stop()
   }
   scrollLockCount += 1
 }
 
-function unlockPageScroll(lenis: Lenis) {
+function unlockPageScroll(lenis: Lenis | null) {
   scrollLockCount = Math.max(0, scrollLockCount - 1)
   if (scrollLockCount === 0) {
-    lenis.start()
+    const scrollY = savedScrollY
+    releaseNativeScrollLock()
+    lenis?.start()
+    if (lenis) {
+      lenis.scrollTo(scrollY, { immediate: true })
+    } else {
+      window.scrollTo(0, scrollY)
+    }
   }
 }
 
 /**
- * Blocca lo scroll della pagina tramite Lenis (contatore per overlay multipli).
+ * Blocca lo scroll della pagina tramite Lenis + overflow nativo (contatore per overlay multipli).
  * Per aree scrollabili interne (menu mobile, modale) usare `data-lenis-prevent`.
  */
 export function useScrollLock(locked: boolean) {
   const { lenis } = useContext(SmoothScrollContext)
 
   useEffect(() => {
-    if (!locked || !lenis) return
+    if (!locked) return
 
     lockPageScroll(lenis)
 
@@ -117,6 +149,12 @@ export function SmoothScrollProvider({ children }: { children: ReactNode }) {
     lenisRef.current = lenisInstance
     setLenis(lenisInstance)
 
+    if (scrollLockCount > 0) {
+      savedScrollY = lenisInstance.scroll
+      applyNativeScrollLock(savedScrollY)
+      lenisInstance.stop()
+    }
+
     // Cache delle dimensioni della viewport per evitare forced reflows
     let cachedViewport = {
       width: window.innerWidth,
@@ -172,7 +210,9 @@ export function SmoothScrollProvider({ children }: { children: ReactNode }) {
       }
       window.removeEventListener('resize', updateViewportCache)
       if (scrollLockCount > 0) {
+        releaseNativeScrollLock()
         lenisInstance.start()
+        lenisInstance.scrollTo(savedScrollY, { immediate: true })
         scrollLockCount = 0
       }
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill())

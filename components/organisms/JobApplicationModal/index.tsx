@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useId, useRef, useState } from 'react'
+import { useCallback, useEffect, useId, useRef, useState } from 'react'
 import type ReCAPTCHA from 'react-google-recaptcha'
 import classNames from 'classnames/bind'
 import Button from '@/components/atoms/Button'
@@ -9,7 +9,7 @@ import RecaptchaSlot from '@/components/atoms/RecaptchaSlot'
 import TextField from '@/components/atoms/TextField'
 import Modal from '@/components/molecules/Modal'
 import SmartLink from '@/components/atoms/SmartLink'
-import FileUploadField from './FileUploadField'
+import FileUpload from '@/components/molecules/FileUpload'
 import styles from './index.module.scss'
 import { useLocale, useTranslations } from 'next-intl'
 
@@ -41,10 +41,21 @@ export default function JobApplicationModal({
   const [submitting, setSubmitting] = useState(false)
   const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null)
   const [recaptchaError, setRecaptchaError] = useState(false)
+  const [recaptchaReady, setRecaptchaReady] = useState(false)
 
   const recaptchaEnabled = Boolean(
     process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY?.trim(),
   )
+
+  useEffect(() => {
+    if (!open) {
+      setRecaptchaReady(false)
+      return
+    }
+
+    const timer = window.setTimeout(() => setRecaptchaReady(true), 280)
+    return () => window.clearTimeout(timer)
+  }, [open])
 
   const resetForm = useCallback(() => {
     setNome('')
@@ -135,9 +146,9 @@ export default function JobApplicationModal({
     >
       <header className={cn('head')}>
         <div className={cn('headMain')}>
-          <h2 id={titleId} className={cn('title')}>
+          <h3 id={titleId} className={cn('title')}>
             Candidatura spontanea
-          </h2>
+          </h3>
         </div>
         <p className={cn('intro')}>
           Il nostro team valuta con attenzione ogni candidatura spontanea.
@@ -171,11 +182,16 @@ export default function JobApplicationModal({
               onChange={(e) => setEmail(e.target.value)}
               required
             />
-            <FileUploadField
+            <FileUpload
               label="Curriculum*"
               value={curriculum}
               onChange={setCurriculum}
               required
+              hint={t.rich('upload_file_hint', {
+                browse: (chunks) => (
+                  <span className="browse">{chunks}</span>
+                ),
+              })}
             />
           </div>
 
@@ -184,7 +200,7 @@ export default function JobApplicationModal({
               label="Cognome*"
               name="cognome"
               autoComplete="family-name"
-              placeholder="Il tuo cognome qui"
+              placeholder={t('your_surname_here')}
               value={cognome}
               onChange={(e) => setCognome(e.target.value)}
               required
@@ -194,7 +210,7 @@ export default function JobApplicationModal({
               type="tel"
               name="telefono"
               autoComplete="tel"
-              placeholder="+00 333 00 222 50"
+              placeholder={t('phone_placeholder')}
               value={telefono}
               onChange={(e) => setTelefono(e.target.value)}
               required
@@ -204,24 +220,29 @@ export default function JobApplicationModal({
               <textarea
                 className={cn('textarea')}
                 name="messaggio"
-                placeholder="Scrivi qui il tuo messaggio"
+                placeholder={t('message_placeholder')}
                 value={messaggio}
                 onChange={(e) => setMessaggio(e.target.value)}
-                rows={5}
+                rows={1}
                 required
               />
             </label>
           </div>
         </div>
 
-        <RecaptchaSlot
-          ref={recaptchaRef}
-          locale={locale}
-          onTokenChange={(token) => {
-            setRecaptchaToken(token)
-            if (token) setRecaptchaError(false)
-          }}
-        />
+        {recaptchaEnabled && recaptchaReady ? (
+          <RecaptchaSlot
+            key="job-application-recaptcha"
+            ref={recaptchaRef}
+            locale={locale}
+            onTokenChange={(token) => {
+              setRecaptchaToken(token)
+              if (token) setRecaptchaError(false)
+            }}
+          />
+        ) : recaptchaEnabled ? (
+          <div className={cn('recaptchaPlaceholder')} aria-hidden />
+        ) : null}
         {recaptchaError ? (
           <p className={cn('recaptchaError')} role="alert">
             {t('recaptcha_error')}

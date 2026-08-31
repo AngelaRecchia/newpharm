@@ -9,6 +9,7 @@ import {
 } from 'react'
 import { createPortal } from 'react-dom'
 import classNames from 'classnames/bind'
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import Icon from '@/components/atoms/Icon'
 import { useBodyScrollLock } from '@/lib/use-body-scroll-lock'
 import styles from './index.module.scss'
@@ -46,12 +47,18 @@ export default function Modal({
 }: ModalProps) {
   const panelRef = useRef<HTMLDivElement>(null)
   const [mounted, setMounted] = useState(false)
+  const [present, setPresent] = useState(false)
+  const reduceMotion = useReducedMotion()
 
   useEffect(() => {
     setMounted(true)
   }, [])
 
-  useBodyScrollLock(open)
+  useEffect(() => {
+    if (open) setPresent(true)
+  }, [open])
+
+  useBodyScrollLock(open || present)
 
   useEffect(() => {
     if (!open) return
@@ -76,40 +83,57 @@ export default function Modal({
     return () => window.clearTimeout(t)
   }, [open, initialFocusSelector])
 
-  if (!mounted || !open) return null
+  if (!mounted) return null
+
+  const fadeTransition = {
+    duration: reduceMotion ? 0.01 : 0.25,
+    ease: [0.4, 0, 0.2, 1] as const,
+  }
 
   return createPortal(
-    <div
-      className={cn('backdrop')}
-      role="presentation"
-      data-lenis-prevent
-      style={style}
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose()
-      }}
-    >
-      <div
-        ref={panelRef}
-        className={cn('panel', panelClassName)}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={ariaLabelledBy}
-        aria-label={ariaLabelledBy ? undefined : ariaLabel}
-        tabIndex={-1}
-      >
-        {!hideCloseButton && (
-          <button
-            type="button"
-            className={cn('close')}
-            onClick={onClose}
-            aria-label={closeLabel}
+    <AnimatePresence onExitComplete={() => setPresent(false)}>
+      {open ? (
+        <motion.div
+          className={cn('backdrop')}
+          role="presentation"
+          data-lenis-prevent
+          style={style}
+          initial={reduceMotion ? false : { opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={fadeTransition}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) onClose()
+          }}
+        >
+          <motion.div
+            ref={panelRef}
+            className={cn('panel', panelClassName)}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={ariaLabelledBy}
+            aria-label={ariaLabelledBy ? undefined : ariaLabel}
+            tabIndex={-1}
+            initial={reduceMotion ? false : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={fadeTransition}
           >
-            <Icon type="close" size="l" weight="normal" />
-          </button>
-        )}
-        {children}
-      </div>
-    </div>,
-    document.body
+            {!hideCloseButton && (
+              <button
+                type="button"
+                className={cn('close')}
+                onClick={onClose}
+                aria-label={closeLabel}
+              >
+                <Icon type="close" size="l" weight="normal" />
+              </button>
+            )}
+            {children}
+          </motion.div>
+        </motion.div>
+      ) : null}
+    </AnimatePresence>,
+    document.body,
   )
 }
