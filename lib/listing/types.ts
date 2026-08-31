@@ -1,6 +1,6 @@
 export type ListingVariantSlug = 'prodotto' | 'progetto' | 'insetto' | 'catalogo'
 
-export type ListingContentComponent = 'product' | 'project' | 'insect' | 'catalog'
+export type ListingContentComponent = 'product' | 'project' | 'insect' | 'catalog' | 'job'
 
 export type ListingImageRatio = 'square' | 'portrait'
 

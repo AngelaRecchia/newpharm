@@ -77,6 +77,8 @@ export type {
   ProjectsStoryblok,
   Projects_highlightStoryblok,
   StoriesStoryblok,
+  JobStoryblok,
+  Job_listStoryblok,
   Article_bodyStoryblok,
   CompareStoryblok,
   Glossary_itemStoryblok,
@@ -145,6 +147,8 @@ export type StoryblokComponent =
   | Overrides.ProductsStoryblok
   | Overrides.ProjectsStoryblok
   | Overrides.StoriesStoryblok
+  | Overrides.JobStoryblok
+  | Overrides.Job_listStoryblok
   | Overrides.Article_bodyStoryblok
   | Overrides.CompareStoryblok
   | Overrides.Glossary_itemStoryblok

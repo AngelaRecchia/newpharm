@@ -17,6 +17,7 @@ import type { StoryblokAsset } from '@/components/atoms/Asset'
 import type { ISbRichtext } from "@storyblok/react";
 import type { ProjectDivision } from "@/lib/projects/divisions";
 import type { LinkActionValue } from "@/lib/link-action";
+import type { RelatedStory } from "@/lib/api/storyblok/stories";
 
 /** Catalog — campi CMS oltre al generato */
 export interface CatalogStoryblok extends Generated.CatalogStoryblok {
@@ -296,6 +297,36 @@ export interface StoriesStoryblok {
   _uid: string;
   component: string;
   _editable?: string;
+}
+
+/** job — content type posizione lavorativa */
+export interface JobStoryblok extends Omit<
+  Generated.JobStoryblok,
+  "esperienza" | "body" | "description"
+> {
+  description?: Article_bodyStoryblok[] | null;
+  esperienza?: "stage" | "junior" | "middle" | "senior" | null;
+  /** Popolato SSR — ultime news */
+  latest_stories?: RelatedStory[] | null;
+  body?:
+    | Article_bodyStoryblok[]
+    | Generated.FaqsStoryblok[]
+    | Generated.Cta_boxStoryblok[]
+    | LinkStoryblok[]
+    | Generated.DividerStoryblok[]
+    | HeroStoryblok[]
+    | null;
+}
+
+/**
+ * job_list — elenco posizioni aperte fetchate SSR.
+ */
+export interface Job_listStoryblok extends Omit<
+  Generated.Job_listStoryblok,
+  never
+> {
+  /** Popolato SSR da enrichListingBloks — non editabile in CMS */
+  resolved_items?: ListingStoryResolved[] | null;
 }
 
 /** article_body — rich text in colonna stretta nel body della story */

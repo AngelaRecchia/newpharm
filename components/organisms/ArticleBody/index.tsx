@@ -14,7 +14,7 @@ const ArticleBody = ({ blok }: { blok?: Article_bodyStoryblok }) => {
 
   return (
     <div className={cn('article')} {...storyblokEditable(blok as never)}>
-      <RichText content={blok.article} enableGlossary />
+      <RichText content={blok.article} enableGlossary container={false} />
       {blok.show_copy_button ? (
         <div className={cn('share')}>
           <Button

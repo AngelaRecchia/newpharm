@@ -12,10 +12,14 @@ import classNames from 'classnames/bind'
 import { GlossaryTermButton } from '@/components/atoms/GlossaryText'
 import { useGlossary } from '@/lib/glossary/context'
 import { buildGlossaryMatcher } from '@/lib/glossary/match'
+import { applyRichTextMarks } from '@/lib/richtext/applyRichTextMarks'
+import { renderTextWithBreaks } from '@/lib/richtext/renderTextWithBreaks'
 import styles from './index.module.scss'
 
 
 const cn = classNames.bind(styles)
+
+type RichTextContainer = 'lg' | 'narrow' | false
 
 interface RichTextProps {
     content?: ISbRichtext | string | null
@@ -23,10 +27,18 @@ interface RichTextProps {
     blok?: any
     raw?: boolean
     enableGlossary?: boolean
+    container?: RichTextContainer
 }
 
 
-export default function RichText({ content, className, blok, raw = false, enableGlossary = false }: RichTextProps) {
+export default function RichText({
+    content,
+    className,
+    blok,
+    raw = false,
+    enableGlossary = false,
+    container = 'lg',
+}: RichTextProps) {
     const blokKeyCounter = useRef(0)
     blokKeyCounter.current = 0
     const glossary = useGlossary()
@@ -45,9 +57,10 @@ export default function RichText({ content, className, blok, raw = false, enable
             const style = textAlign ? { textAlign } : undefined
             return React.createElement('p', { ...safeAttrs, style }, node.children)
         },
-        ...(matcher && openGlossary
+        hard_break: () => React.createElement('br'),
+        ...(enableGlossary
             ? {
-                text: (node: any, context: any) => {
+                text: (node: any) => {
                     const text = node?.text || ''
                     const marks = node?.marks || []
                     const insideLink = marks.some(
@@ -55,8 +68,8 @@ export default function RichText({ content, className, blok, raw = false, enable
                             mark.type === 'link' || mark.type === 'anchor',
                     )
 
-                    let inner: React.ReactNode = text
-                    if (text && !insideLink) {
+                    let inner: React.ReactNode = renderTextWithBreaks(text)
+                    if (text && !insideLink && matcher && openGlossary) {
                         const hits = matcher(text)
                         if (
                             hits.length > 1 ||
@@ -67,7 +80,7 @@ export default function RichText({ content, className, blok, raw = false, enable
                                     {hits.map((hit, index) =>
                                         hit.type === 'text' ? (
                                             <React.Fragment key={`text-${index}`}>
-                                                {hit.value}
+                                                {renderTextWithBreaks(hit.value)}
                                             </React.Fragment>
                                         ) : (
                                             <GlossaryTermButton
@@ -83,14 +96,7 @@ export default function RichText({ content, className, blok, raw = false, enable
                         }
                     }
 
-                    return marks.reduce(
-                        (current: React.ReactNode, mark: { type: string }) => {
-                            const resolver = context?.mergedResolvers?.get(mark.type)
-                            if (!resolver) return current
-                            return resolver({ ...mark, text: current }, context)
-                        },
-                        inner,
-                    )
+                    return applyRichTextMarks(marks, inner) as React.ReactElement
                 },
             }
             : {}),
@@ -138,7 +144,7 @@ export default function RichText({ content, className, blok, raw = false, enable
                 })
             )
         },
-    }), [matcher, openGlossary])
+    }), [enableGlossary, matcher, openGlossary])
 
     if (!content || typeof content !== 'object') {
         return <></>
@@ -146,7 +152,15 @@ export default function RichText({ content, className, blok, raw = false, enable
 
     return (
         <div
-            className={cn('richtext', className, { raw })}
+            className={cn(
+                'richtext',
+                {
+                    raw,
+                    'container-lg': !raw && container === 'lg',
+                    'container-narrow': !raw && container === 'narrow',
+                },
+                className,
+            )}
             {...(blok ? storyblokEditable(blok) : {})}
         >
             <StoryblokRichText

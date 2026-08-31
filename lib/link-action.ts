@@ -55,7 +55,17 @@ export function parseLinkAction(raw: unknown): LinkActionValue {
   }
 }
 
-export function openPopup(id: LinkPopupId) {
+export type PopupDetail = {
+  popup: LinkPopupId
+  jobTitle?: string
+}
+
+export function openPopup(id: LinkPopupId, options?: { jobTitle?: string }) {
   if (typeof window === 'undefined') return
-  window.dispatchEvent(new CustomEvent('newpharm:popup', { detail: { popup: id } }))
+  const detail: PopupDetail = { popup: id, jobTitle: options?.jobTitle }
+  window.dispatchEvent(new CustomEvent('newpharm:popup', { detail }))
+}
+
+export function openJobApplication(options?: { jobTitle?: string }) {
+  openPopup('job', options)
 }

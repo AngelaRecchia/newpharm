@@ -1,0 +1,67 @@
+@use "../../../styles" as *;
+
+.wrapper {
+  width: 100%;
+  background-color: $c-surface;
+  padding-block: $s-80;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: $s-64;
+}
+
+.head {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $s-24;
+
+  @include lg {
+    grid-template-columns: 1fr 1fr;
+    gap: $s-64;
+  }
+}
+
+.title {
+  @include t-h3;
+  margin: 0;
+}
+
+.subtitle {
+  @include t-body;
+  margin: 0;
+
+  @include lg {
+    padding-inline-end: $s-40;
+  }
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: $s-16;
+}
+
+.empty {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $s-24;
+  padding: $s-24;
+  background-color: $c-white;
+
+  @include lg {
+    padding: $s-32 $s-40;
+  }
+}
+
+.empty-text {
+  @include t-body;
+  margin: 0;
+}
+
+.empty-icon {
+  flex-shrink: 0;
+  color: $c-primary;
+}

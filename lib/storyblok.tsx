@@ -14,6 +14,7 @@ import Link from '@/components/storyblok/Link'
 import Story from '@/components/storyblok/Story'
 import Product from '@/components/storyblok/Product'
 import Project from '@/components/storyblok/Project'
+import Job from '@/components/storyblok/Job'
 
 // Wrapper inline per Asset - passa il blok direttamente all'atom
 const Asset = ({ blok, ...props }: { blok?: AssetStoryblok } & any) => {
@@ -42,6 +43,7 @@ import Products from '@/components/organisms/Products'
 import Projects from '@/components/organisms/Projects'
 import Stories from '@/components/organisms/Stories'
 import Compare from '@/components/organisms/Compare'
+import JobList from '@/components/organisms/JobList'
 import Divider from '@/components/organisms/Divider'
 import ArticleBody from '@/components/organisms/ArticleBody'
 // Heavy components (GSAP / Swiper / WebGL) — dynamic imports for bundle splitting
@@ -85,6 +87,7 @@ const components = {
   projects: Projects,
   stories: Stories,
   compare: Compare,
+  job_list: JobList,
   divider: Divider,
   article_body: ArticleBody,
 
@@ -95,6 +98,7 @@ const components = {
   // Templates
   product: Product,
   project: Project,
+  job: Job,
   page: Page,
   settings: Settings,
   story: Story,

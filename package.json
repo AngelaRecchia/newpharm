@@ -11,6 +11,7 @@
     "start": "next start",
     "lint": "next lint",
     "generate:types": "tsx scripts/generate-storyblok-types.ts",
+    "create:job-components": "tsx scripts/create-job-components.ts",
     "generate:component": "tsx scripts/generate-component.ts"
   },
   "dependencies": {

@@ -1,0 +1,65 @@
+@use "../../../styles" as *;
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: $s-24;
+  padding: $s-24;
+  background-color: $c-white;
+  border-radius: 0.25rem;
+
+  @include lg {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: $s-40;
+    padding: $s-32 $s-40;
+  }
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: $s-24;
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  @include t-h6;
+  margin: 0;
+}
+
+.meta {
+  display: flex;
+  flex-direction: column;
+  gap: $s-16;
+
+  @include lg {
+    flex-direction: row;
+    gap: $s-64;
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: $s-4;
+}
+
+.label {
+  @include t-note;
+}
+
+.value {
+  @include t-body;
+}
+
+.link {
+  @include t-note;
+  color: $c-black;
+  text-decoration: underline;
+  flex-shrink: 0;
+  align-self: flex-end;
+  margin-top: auto;
+}

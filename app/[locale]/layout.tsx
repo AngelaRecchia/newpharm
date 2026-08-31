@@ -10,6 +10,7 @@ import { notFound } from 'next/navigation'
 import localeConfig from '@/i18n/locales.json'
 import { getGlossary } from '@/lib/api/storyblok/glossary'
 import GlossaryRoot from '@/components/organisms/GlossaryRoot'
+import PopupRoot from '@/components/organisms/PopupRoot'
 
 // Load Inter font with support for Latin and Arabic
 const inter = Inter({
@@ -60,7 +61,10 @@ export default async function RootLayout({ children, params }: Props) {
           <IntlProvider locale={locale} messages={messages}>
             <ViewportProvider>
               <SmoothScrollProvider>
-                <GlossaryRoot items={glossaryItems}>{children}</GlossaryRoot>
+                <GlossaryRoot items={glossaryItems}>
+                  {children}
+                  <PopupRoot />
+                </GlossaryRoot>
               </SmoothScrollProvider>
             </ViewportProvider>
           </IntlProvider>

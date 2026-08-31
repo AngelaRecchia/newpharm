@@ -1,6 +1,7 @@
 import { getAllStories, getStory, getRelatedStoriesByTags, getRelatedProjectsByProduct } from '@/lib/api/storyblok/stories'
-import { enrichListingBloks, resolveProductStories } from '@/lib/listing/resolveListingItems'
+import { enrichListingBloks, resolveProductStories, resolveStoryStories } from '@/lib/listing/resolveListingItems'
 import { enrichCarouselBloks } from '@/lib/carousel/resolveCarouselItems'
+import { mapStoryToNewsCard, sortStoriesByDate } from '@/lib/carousel/mapStoryToNewsCard'
 import {
   getParentFullSlug,
   getRelatedCategoryProducts,
@@ -8,7 +9,7 @@ import {
 import StoryblokRenderer from '@/components/StoryblokRenderer'
 import { setRequestLocale } from 'next-intl/server'
 import { notFound } from 'next/navigation'
-import { PageStoryblok, StoryStoryblok } from '@/types/storyblok'
+import { PageStoryblok, StoryStoryblok, JobStoryblok } from '@/types/storyblok'
 import localeConfig from '@/i18n/locales.json'
 
 interface PageProps {
@@ -97,6 +98,17 @@ export default async function WithLayoutPage({ params }: PageProps) {
         ...storyContent,
         related_stories: relatedStories
       }
+    }
+  }
+
+  // Se il content è un Job, fetcha le ultime news
+  if (story.content?.component === 'job') {
+    const stories = await resolveStoryStories(locale)
+    story.content = {
+      ...(story.content as JobStoryblok),
+      latest_stories: sortStoriesByDate(stories)
+        .slice(0, 8)
+        .map(mapStoryToNewsCard),
     }
   }
 

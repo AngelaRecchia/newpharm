@@ -317,6 +317,17 @@ $fluid-type-scales: (
   }
 }
 
+@mixin container-narrow {
+  width: 100%;
+  max-width: $container-narrow-max-width;
+  margin-inline: auto;
+  padding-inline: $s-24;
+
+  @include lg {
+    padding-inline: $s-40;
+  }
+}
+
 // Hover circle dot effect mixin
 // Crea un cerchio che appare in hover davanti al contenuto
 // Usa questo mixin sull'elemento cerchio, poi aggiungi lo stato hover sul parent

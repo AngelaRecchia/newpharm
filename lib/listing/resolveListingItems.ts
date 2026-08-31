@@ -73,6 +73,12 @@ export async function resolveStoryStories(
   return stories.map(mapStoryToListingResolved)
 }
 
+export async function resolveJobStories(
+  locale?: string,
+): Promise<ListingStoryResolved[]> {
+  return resolveStoriesByComponent('job', locale)
+}
+
 export async function resolveListingProductItems(
   parsed: ListingVariantValue,
   locale?: string,
@@ -158,7 +164,8 @@ export async function enrichListingBloks(
       blok.component === 'projects' ||
       blok.component === 'stories' ||
       blok.component === 'compare' ||
-      blok.component === 'projects_highlight'
+      blok.component === 'projects_highlight' ||
+      blok.component === 'job_list'
     ) {
       listingBloks.push(blok)
     }
@@ -200,6 +207,12 @@ export async function enrichListingBloks(
       if (blok.component === 'stories') {
         const resolved = await resolveStoryStories(locale)
         blok.resolved_items = sortStoriesByDate(resolved)
+        return
+      }
+
+      if (blok.component === 'job_list') {
+        const resolved = await resolveJobStories(locale)
+        blok.resolved_items = sortResolvedListingStories(resolved)
         return
       }
 

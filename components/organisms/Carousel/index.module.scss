@@ -66,6 +66,10 @@
 .swiper {
   width: 100%;
   overflow: visible;
+
+  :global(.swiper-wrapper) {
+    overflow: visible;
+  }
 }
 
 .swiper-slide {

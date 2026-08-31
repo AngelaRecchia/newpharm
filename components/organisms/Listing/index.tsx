@@ -200,7 +200,7 @@ export default function Listing({ blok }: { blok?: ListingStoryblok }) {
             <Button
               icon="chevron-down"
               label={t('load_more')}
-              variant="secondary"
+              variant={isDark ? 'tertiary' : 'secondary'}
               size="small"
               onClick={loadMore}
             />
