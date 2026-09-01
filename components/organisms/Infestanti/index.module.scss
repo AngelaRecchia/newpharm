@@ -20,6 +20,10 @@
   @include listing-grid-columns(4);
 }
 
+.gridItem {
+  min-width: 0;
+}
+
 .banner {
   grid-column: 1 / -1;
 }

@@ -28,6 +28,10 @@
   @include listing-grid-columns(3);
 }
 
+.gridItem {
+  min-width: 0;
+}
+
 .empty {
   @include t-body;
   padding-block: $s-40;

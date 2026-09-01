@@ -12,6 +12,7 @@ import CardNews from '@/components/molecules/CardNews'
 import FilterChips from '@/components/molecules/FilterChips'
 import { getStoryblokAnchorId } from '@/lib/storyblok/anchor'
 import { useRefreshPageScroll } from '@/lib/context/smooth-scroll-context'
+import { getEmptyMotion, getGridMotion } from '@/lib/animation/gridPresence'
 import { mapStoryToNewsCard, sortStoriesByDate } from '@/lib/carousel/mapStoryToNewsCard'
 import { filterStoriesByTags } from '@/lib/stories/filterStories'
 import { STORY_TAGS, type StoryTag } from '@/lib/stories/tags'
@@ -24,40 +25,6 @@ import styles from './index.module.scss'
 const cn = classNames.bind(styles)
 const INITIAL_COUNT = MOSAIC_CYCLE
 const LOAD_MORE_STEP = MOSAIC_CYCLE
-const GRID_EASE = [0.4, 0, 0.2, 1] as const
-const GRID_STAGGER = 0.04
-
-function getGridMotion(index: number, reduceMotion: boolean | null) {
-  const delay = reduceMotion ? 0 : (index % MOSAIC_CYCLE) * GRID_STAGGER
-  const duration = reduceMotion ? 0.01 : 0.35
-
-  return {
-    layout: !reduceMotion,
-    initial: reduceMotion ? false : { opacity: 0, y: 12 },
-    animate: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        opacity: { duration, ease: GRID_EASE, delay },
-        y: { duration, ease: GRID_EASE, delay },
-      },
-    },
-    exit: {
-      opacity: 0,
-      y: reduceMotion ? 0 : -8,
-      transition: {
-        duration: reduceMotion ? 0.01 : 0.2,
-        ease: GRID_EASE,
-      },
-    },
-    transition: {
-      layout: {
-        duration: reduceMotion ? 0.01 : 0.4,
-        ease: GRID_EASE,
-      },
-    },
-  } as const
-}
 
 function StoryNewsCard({
   item,
@@ -155,7 +122,7 @@ function StoriesInner({ blok }: { blok?: StoriesStoryblok }) {
     <motion.div
       key={item.full_slug}
       className={cellClassName}
-      {...getGridMotion(index, reduceMotion)}
+      {...getGridMotion(index % MOSAIC_CYCLE, reduceMotion)}
     >
       <StoryNewsCard item={item} slot={slot} date={formatCardDate(item.date)} />
     </motion.div>
@@ -197,7 +164,7 @@ function StoriesInner({ blok }: { blok?: StoriesStoryblok }) {
                     <motion.div
                       key={group.items.map(({ item }) => item.full_slug).join('|')}
                       className={cn('row2')}
-                      {...getGridMotion(group.items[0].index, reduceMotion)}
+                      {...getGridMotion(group.items[0].index % MOSAIC_CYCLE, reduceMotion)}
                     >
                       {group.items.map(({ item, slot }, offset) => (
                         <div
@@ -235,13 +202,7 @@ function StoriesInner({ blok }: { blok?: StoriesStoryblok }) {
             <motion.p
               key="empty"
               className={cn('empty')}
-              initial={reduceMotion ? false : { opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -8 }}
-              transition={{
-                duration: reduceMotion ? 0.01 : 0.3,
-                ease: GRID_EASE,
-              }}
+              {...getEmptyMotion(reduceMotion)}
             >
               Nessuna storia trovata con i filtri selezionati.
             </motion.p>

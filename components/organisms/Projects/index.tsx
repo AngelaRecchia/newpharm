@@ -2,6 +2,7 @@
 
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import classNames from 'classnames/bind'
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { storyblokEditable } from '@storyblok/react'
 import { useTranslations } from 'next-intl'
 import Button from '@/components/atoms/Button'
@@ -11,6 +12,7 @@ import CardListing from '@/components/molecules/CardListing'
 import DivisionFilters from '@/components/molecules/DivisionFilters'
 import { getStoryblokAnchorId } from '@/lib/storyblok/anchor'
 import { useRefreshPageScroll } from '@/lib/context/smooth-scroll-context'
+import { getEmptyMotion, getGridMotion } from '@/lib/animation/gridPresence'
 import { mapStoryToCard } from '@/lib/listing/mapStoryToCard'
 import { filterProjectsByDivisions } from '@/lib/projects/filterProjects'
 import { useProjectDivisionFilterUrl } from '@/lib/projects/useProjectDivisionFilterUrl'
@@ -26,6 +28,7 @@ function ProjectsInner({ blok }: { blok?: ProjectsStoryblok }) {
   const t = useTranslations('')
   const refreshPageScroll = useRefreshPageScroll()
   const skipScrollRefresh = useRef(true)
+  const reduceMotion = useReducedMotion()
   const { divisions, setDivisions } = useProjectDivisionFilterUrl()
   const [visibleCount, setVisibleCount] = useState(INITIAL_COUNT)
   const divisionsKey = divisions.join(',')
@@ -68,6 +71,10 @@ function ProjectsInner({ blok }: { blok?: ProjectsStoryblok }) {
     [setDivisions],
   )
 
+  const handleGridExitComplete = useCallback(() => {
+    refreshPageScroll()
+  }, [refreshPageScroll])
+
   if (!blok) return null
 
   return (
@@ -91,22 +98,39 @@ function ProjectsInner({ blok }: { blok?: ProjectsStoryblok }) {
 
         {visibleItems.length > 0 ? (
           <div className={cn('grid')}>
-            {visibleItems.map((card, index) => (
-              <CardListing
-                key={`${card.href ?? card.title}-${index}`}
-                title={card.title}
-                description={card.description}
-                image={card.image}
-                href={card.href}
-                dark
-                imageRatio="square"
-              />
-            ))}
+            <AnimatePresence
+              mode="popLayout"
+              initial={false}
+              onExitComplete={handleGridExitComplete}
+            >
+              {visibleItems.map((card, index) => (
+                <motion.div
+                  key={card.uuid ?? card.href ?? card.title}
+                  className={cn('gridItem')}
+                  {...getGridMotion(index, reduceMotion)}
+                >
+                  <CardListing
+                    title={card.title}
+                    description={card.description}
+                    image={card.image}
+                    href={card.href}
+                    dark
+                    imageRatio="square"
+                  />
+                </motion.div>
+              ))}
+            </AnimatePresence>
           </div>
         ) : (
-          <p className={cn('empty')}>
-            Nessun progetto trovato con i filtri selezionati.
-          </p>
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.p
+              key="empty"
+              className={cn('empty')}
+              {...getEmptyMotion(reduceMotion)}
+            >
+              Nessun progetto trovato con i filtri selezionati.
+            </motion.p>
+          </AnimatePresence>
         )}
 
         {hasMore ? (

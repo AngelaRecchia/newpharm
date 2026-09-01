@@ -30,13 +30,12 @@ import {
 } from '@/lib/products/productBarTypes'
 import { downloadAllSafetySheets } from '@/lib/products/downloadAllSafetySheets'
 import { getLinkUrl } from '@/lib/api/utils/links'
+import { getEmptyMotion, getGridMotion } from '@/lib/animation/gridPresence'
 import type { ProductsStoryblok } from '@/types/storyblok'
 import styles from './index.module.scss'
 
 const cn = classNames.bind(styles)
 const PAGE_SIZE = 16
-const GRID_EASE = [0.4, 0, 0.2, 1] as const
-const GRID_STAGGER = 0.04
 
 function ProductsInner({ blok }: { blok?: ProductsStoryblok }) {
   const refreshPageScroll = useRefreshPageScroll()
@@ -320,40 +319,7 @@ function ProductsInner({ blok }: { blok?: ProductsStoryblok }) {
                   <motion.div
                     key={story.uuid}
                     className={cn('gridItem')}
-                    layout={!reduceMotion}
-                    initial={
-                      reduceMotion ? false : { opacity: 0, y: 12 }
-                    }
-                    animate={{
-                      opacity: 1,
-                      y: 0,
-                      transition: {
-                        opacity: {
-                          duration: reduceMotion ? 0.01 : 0.35,
-                          ease: GRID_EASE,
-                          delay: reduceMotion ? 0 : index * GRID_STAGGER,
-                        },
-                        y: {
-                          duration: reduceMotion ? 0.01 : 0.35,
-                          ease: GRID_EASE,
-                          delay: reduceMotion ? 0 : index * GRID_STAGGER,
-                        },
-                      },
-                    }}
-                    exit={{
-                      opacity: 0,
-                      y: reduceMotion ? 0 : -8,
-                      transition: {
-                        duration: reduceMotion ? 0.01 : 0.2,
-                        ease: GRID_EASE,
-                      },
-                    }}
-                    transition={{
-                      layout: {
-                        duration: reduceMotion ? 0.01 : 0.4,
-                        ease: GRID_EASE,
-                      },
-                    }}
+                    {...getGridMotion(index, reduceMotion)}
                   >
                     <CardListingProduct
                       {...card}
@@ -378,13 +344,7 @@ function ProductsInner({ blok }: { blok?: ProductsStoryblok }) {
             <motion.p
               key="empty"
               className={cn('empty')}
-              initial={reduceMotion ? false : { opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -8 }}
-              transition={{
-                duration: reduceMotion ? 0.01 : 0.3,
-                ease: GRID_EASE,
-              }}
+              {...getEmptyMotion(reduceMotion)}
             >
               Nessun prodotto trovato con i filtri selezionati.
             </motion.p>

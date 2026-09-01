@@ -2,6 +2,7 @@
 
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import classNames from 'classnames/bind'
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { storyblokEditable } from '@storyblok/react'
 import Container from '@/components/atoms/Container'
 import HeroTertiary from '@/components/molecules/HeroTertiary'
@@ -12,6 +13,7 @@ import PaginationNumbers from '@/components/molecules/PaginationNumbers'
 import FullBanner from '@/components/organisms/FullBanner'
 import { getStoryblokAnchorId } from '@/lib/storyblok/anchor'
 import { useRefreshPageScroll } from '@/lib/context/smooth-scroll-context'
+import { getEmptyMotion, getGridMotion } from '@/lib/animation/gridPresence'
 import { insectOverlayImages } from '@/lib/listing/mapInsectToCard'
 import { mapStoryToCard } from '@/lib/listing/mapStoryToCard'
 import { INSECT_CATEGORIES, type InsectCategory } from '@/lib/insects/categories'
@@ -31,6 +33,7 @@ const cn = classNames.bind(styles)
 function InfestantiInner({ blok }: { blok?: InfestantiStoryblok }) {
   const refreshPageScroll = useRefreshPageScroll()
   const skipScrollRefresh = useRef(true)
+  const reduceMotion = useReducedMotion()
   const { categories, setCategories, currentPage, setCurrentPage } =
     useInsectCategoryFilterUrl()
   const [openInsect, setOpenInsect] = useState<ListingCardData | null>(null)
@@ -83,6 +86,10 @@ function InfestantiInner({ blok }: { blok?: InfestantiStoryblok }) {
     [setCategories],
   )
 
+  const handleGridExitComplete = useCallback(() => {
+    refreshPageScroll()
+  }, [refreshPageScroll])
+
   if (!blok) return null
 
   return (
@@ -104,26 +111,49 @@ function InfestantiInner({ blok }: { blok?: InfestantiStoryblok }) {
 
         {gridItems.length > 0 ? (
           <div className={cn('grid')}>
-            {gridItems.map((item) => {
-              if (item.type === 'banner') {
-                return (
-                  <div key={item.banner._uid} className={cn('banner')}>
-                    <FullBanner blok={item.banner} />
-                  </div>
-                )
-              }
+            <AnimatePresence
+              mode="popLayout"
+              initial={false}
+              onExitComplete={handleGridExitComplete}
+            >
+              {gridItems.map((item, index) => {
+                if (item.type === 'banner') {
+                  return (
+                    <motion.div
+                      key={item.banner._uid}
+                      className={cn('gridItem', 'banner')}
+                      {...getGridMotion(index, reduceMotion)}
+                    >
+                      <FullBanner blok={item.banner} />
+                    </motion.div>
+                  )
+                }
 
-              return (
-                <CardInsect
-                  key={`${item.card.uuid ?? item.card.title}-${item.index}`}
-                  {...item.card}
-                  onOpen={() => setOpenInsect(item.card)}
-                />
-              )
-            })}
+                return (
+                  <motion.div
+                    key={item.card.uuid ?? item.card.title}
+                    className={cn('gridItem')}
+                    {...getGridMotion(index, reduceMotion)}
+                  >
+                    <CardInsect
+                      {...item.card}
+                      onOpen={() => setOpenInsect(item.card)}
+                    />
+                  </motion.div>
+                )
+              })}
+            </AnimatePresence>
           </div>
         ) : (
-          <p className={cn('empty')}>Nessun infestante trovato con i filtri selezionati.</p>
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.p
+              key="empty"
+              className={cn('empty')}
+              {...getEmptyMotion(reduceMotion)}
+            >
+              Nessun infestante trovato con i filtri selezionati.
+            </motion.p>
+          </AnimatePresence>
         )}
 
         {totalPages > 1 ? (
