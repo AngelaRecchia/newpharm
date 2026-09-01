@@ -1,11 +1,11 @@
-import type { AssetStoryblok } from '@/types/storyblok'
+import type { StoryblokAsset } from '@/components/atoms/Asset'
 
 export const COMPARE_MAX = 2
 
 export type ProductBarItem = {
   uuid: string
   title: string
-  image: AssetStoryblok | null
+  image: StoryblokAsset | null
   href?: string
   safetySheetHref?: string
 }

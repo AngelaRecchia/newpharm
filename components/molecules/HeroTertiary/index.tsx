@@ -7,8 +7,8 @@ import styles from './index.module.scss'
 const cn = classNames.bind(styles)
 
 export type HeroTertiaryProps = {
-  title?: string
-  subtitle?: string
+  title?: string | null
+  subtitle?: string | null
   as?: 'h1' | 'h2'
   className?: string
 }

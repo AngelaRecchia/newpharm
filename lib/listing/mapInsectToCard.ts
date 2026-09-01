@@ -1,38 +1,38 @@
-import type { AssetStoryblok } from '@/types/storyblok'
+import type { StoryblokAsset } from '@/components/atoms/Asset'
 import type { ListingCardData, ListingStoryResolved } from './types'
 
 type InsectContent = {
   title?: string | null
   short_description?: string | null
-  image?: AssetStoryblok[] | AssetStoryblok | null
-  image_hover?: AssetStoryblok[] | AssetStoryblok | null
-  gallery?: AssetStoryblok[] | null
+  image?: StoryblokAsset[] | StoryblokAsset | null
+  image_hover?: StoryblokAsset[] | StoryblokAsset | null
+  gallery?: StoryblokAsset[] | null
 }
 
-function firstImage(images: unknown): AssetStoryblok | null {
+function firstImage(images: unknown): StoryblokAsset | null {
   if (Array.isArray(images)) {
     if (images.length === 0) return null
     const first = images[0]
     if (first && typeof first === 'object' && 'filename' in first) {
-      return first as AssetStoryblok
+      return first as StoryblokAsset
     }
     return null
   }
 
   if (images && typeof images === 'object' && 'filename' in images) {
-    return images as unknown as AssetStoryblok
+    return images as unknown as StoryblokAsset
   }
 
   return null
 }
 
-function asGallery(images: unknown): AssetStoryblok[] {
+function asGallery(images: unknown): StoryblokAsset[] {
   if (!Array.isArray(images)) {
     const single = firstImage(images)
     return single ? [single] : []
   }
   return images.filter(
-    (image): image is AssetStoryblok =>
+    (image): image is StoryblokAsset =>
       !!image && typeof image === 'object' && 'filename' in image,
   )
 }
@@ -53,9 +53,9 @@ export function mapInsectStoryToCard(story: ListingStoryResolved): ListingCardDa
   }
 }
 
-export function insectOverlayImages(card: ListingCardData): AssetStoryblok[] {
+export function insectOverlayImages(card: ListingCardData): StoryblokAsset[] {
   if (card.gallery && card.gallery.length > 0) return card.gallery
   return [card.image, card.imageHover ?? null].filter(
-    (image): image is AssetStoryblok => image !== null,
+    (image): image is StoryblokAsset => image !== null,
   )
 }

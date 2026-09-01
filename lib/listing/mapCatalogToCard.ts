@@ -1,11 +1,12 @@
-import type { AssetStoryblok, CatalogStoryblok } from '@/types/storyblok'
+import type { StoryblokAsset } from '@/components/atoms/Asset'
+import type { CatalogStoryblok } from '@/types/storyblok'
 import type { ListingCardData, ListingStoryResolved } from './types'
 
-function firstImage(images: unknown): AssetStoryblok | null {
+function firstImage(images: unknown): StoryblokAsset | null {
   if (!Array.isArray(images) || images.length === 0) return null
   const first = images[0]
   if (first && typeof first === 'object' && 'filename' in first) {
-    return first as AssetStoryblok
+    return first as StoryblokAsset
   }
   return null
 }

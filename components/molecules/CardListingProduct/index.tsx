@@ -4,10 +4,9 @@ import classNames from 'classnames/bind'
 import { useReducedMotion } from 'motion/react'
 import { useTranslations } from 'next-intl'
 import styles from './index.module.scss'
-import Asset from '@/components/atoms/Asset'
+import Asset, { type StoryblokAsset } from '@/components/atoms/Asset'
 import Button from '@/components/atoms/Button'
 import SmartLink from '@/components/atoms/SmartLink'
-import { AssetStoryblok } from '@/types/storyblok'
 
 const cn = classNames.bind(styles)
 
@@ -15,7 +14,7 @@ export type CardListingRefProps = {
   uuid?: string
   title: string
   description?: string
-  image?: AssetStoryblok | null
+  image?: StoryblokAsset | null
   href?: string
   safetySheetHref?: string
   layout?: 'grid' | 'list'

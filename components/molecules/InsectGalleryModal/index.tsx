@@ -5,7 +5,7 @@ import classNames from 'classnames/bind'
 import { useTranslations } from 'next-intl'
 import Button from '@/components/atoms/Button'
 import Modal from '@/components/molecules/Modal'
-import type { AssetStoryblok } from '@/types/storyblok'
+import type { StoryblokAsset } from '@/components/atoms/Asset'
 import styles from './index.module.scss'
 
 const cn = classNames.bind(styles)
@@ -25,7 +25,7 @@ type InsectGalleryModalProps = {
   open: boolean
   onClose: () => void
   title: string
-  images: AssetStoryblok[]
+  images: StoryblokAsset[]
 }
 
 export default function InsectGalleryModal({

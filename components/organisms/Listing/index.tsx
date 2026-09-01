@@ -43,7 +43,7 @@ function RefCard({
   dark?: boolean
   title: string
   description?: string
-  image?: import('@/types/storyblok').AssetStoryblok | null
+  image?: import('@/components/atoms/Asset').StoryblokAsset | null
   href?: string
 }) {
   return (

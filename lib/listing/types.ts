@@ -56,9 +56,9 @@ export type ListingCardData = {
   uuid?: string
   title: string
   description?: string
-  image: import('@/types/storyblok').AssetStoryblok | null
-  imageHover?: import('@/types/storyblok').AssetStoryblok | null
-  gallery?: import('@/types/storyblok').AssetStoryblok[]
+  image: import('@/components/atoms/Asset').StoryblokAsset | null
+  imageHover?: import('@/components/atoms/Asset').StoryblokAsset | null
+  gallery?: import('@/components/atoms/Asset').StoryblokAsset[]
   href?: string
   safetySheetHref?: string
 }
