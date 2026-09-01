@@ -1,6 +1,6 @@
 export type ListingVariantSlug = 'prodotto' | 'progetto' | 'insetto' | 'catalogo'
 
-export type CarouselVariantSlug = 'story' | 'prodotto' | 'editorial'
+export type CarouselVariantSlug = 'story' | 'prodotto' | 'editorial' | 'insetto'
 
 export type PluginVariantSlug = ListingVariantSlug | CarouselVariantSlug
 
@@ -9,6 +9,8 @@ export type ListingImageRatio = 'square' | 'portrait'
 export type ListingSelectionMode = 'manual' | 'dynamic' | 'all' | 'tag'
 
 export type CarouselStoryMode = 'dynamic' | 'tag' | 'manual'
+
+export type CarouselInsectMode = 'all' | 'manual'
 
 export type PluginSelectionMode = ListingSelectionMode | CarouselStoryMode
 

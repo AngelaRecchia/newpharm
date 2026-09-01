@@ -176,6 +176,32 @@ function normalizeCarouselStory(value: Record<string, unknown>, items: string[])
   }
 }
 
+function normalizeCarouselInsetto(
+  value: Record<string, unknown>,
+  items: string[],
+): PluginVariantValue {
+  const rawMode = value.selection_mode
+  const selection_mode =
+    rawMode === 'all' || rawMode === 'manual'
+      ? rawMode
+      : items.length > 0
+        ? 'manual'
+        : 'all'
+
+  return {
+    variant: 'insetto',
+    selection_mode,
+    tag: '',
+    items,
+    category: '',
+    subcategory: '',
+    application_area: '',
+    bestseller: false,
+    image_ratio: normalizeImageRatio(value.image_ratio),
+    context: 'carousel',
+  }
+}
+
 export function normalizeContent(content: unknown): PluginVariantValue {
   const coerced = coercePluginContent(content)
 
@@ -207,6 +233,9 @@ export function normalizeContent(content: unknown): PluginVariantValue {
     }
     if (raw === 'prodotto' || raw === 'product') {
       return normalizeCarouselProdotto(value, items)
+    }
+    if (raw === 'insetto' || raw === 'insect') {
+      return normalizeCarouselInsetto(value, items)
     }
     return normalizeCarouselStory(value, items)
   }

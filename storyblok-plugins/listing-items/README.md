@@ -27,11 +27,12 @@ Sul campo plugin, opzione `context` = `projects_highlight` (fallback se il paren
 
 ## Carousel
 
-- Variante: story, prodotto, editorial
+- Variante: story, prodotto, editorial, insetto
 - **Story automatica**: ultime 8 news
 - **Story per tag**: ultime 8 news con il tag selezionato
 - **Story manuale**: fino a 8 story scelte in CMS (ordine di selezione)
 - **Prodotto**: ultimi 8 prodotti, con filtri opzionali bestseller / categoria / application area
+- **Insetto**: stessa selezione del listing — tutti (deseleziona da escludere) o solo selezionati manualmente
 - **Editorial**: card nested nel campo `cards` del blok
 
 Sul campo plugin del blok carousel, opzione `context` = `carousel` (fallback se il parent non viene rilevato).

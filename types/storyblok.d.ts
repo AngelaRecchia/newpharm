@@ -94,6 +94,8 @@ export type {
   CarouselStoryblok,
   CarouselVariantValue,
   CarouselVariantSlug,
+  CarouselInsectMode,
+  CarouselSelectionMode,
 } from "./storyblok.overrides";
 
 /**

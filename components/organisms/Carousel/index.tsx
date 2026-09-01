@@ -8,9 +8,11 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import CardNews from '@/components/molecules/CardNews';
 import CardListing from '@/components/molecules/CardListing';
+import CardInsect from '@/components/molecules/CardInsect';
+import InsectGalleryModal from '@/components/molecules/InsectGalleryModal';
 import { RelatedStory } from '@/lib/api/storyblok/stories';
 import { useFormatter, useTranslations } from 'next-intl';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import Button from '@/components/atoms/Button';
 import { isEmpty, isLinkEmpty, type StoryblokLink } from '@/lib/api/utils/links';
 import {
@@ -21,8 +23,9 @@ import { getStoryblokAnchorId } from '@/lib/storyblok/anchor';
 import { storyblokEditable } from '@storyblok/react';
 import { parseCarouselVariant } from '@/lib/carousel/parseCarouselVariant';
 import { mapStoryToNewsCard } from '@/lib/carousel/mapStoryToNewsCard';
+import { insectOverlayImages, mapInsectStoryToCard } from '@/lib/listing/mapInsectToCard';
 import { mapProductStoryToCard } from '@/lib/listing/mapProductToCard';
-import type { ListingStoryResolved } from '@/lib/listing/types';
+import type { ListingCardData, ListingStoryResolved } from '@/lib/listing/types';
 
 const cn = classNames.bind(styles);
 
@@ -90,6 +93,7 @@ const Carousel = ({
     const resolvedAnchorId = getStoryblokAnchorId(anchor_id ?? blok?.anchor_id);
     const format = useFormatter();
     const t = useTranslations('');
+    const [openInsect, setOpenInsect] = useState<ListingCardData | null>(null);
     const isRelatedNews = variant === 'news';
     const isRelatedProducts = variant === 'prodotto';
     const parsedVariant = isRelatedNews || isRelatedProducts ? null : parseCarouselVariant(blok?.variant);
@@ -122,6 +126,11 @@ const Carousel = ({
         return source.map(mapProductStoryToCard);
     }, [isRelatedProducts, productItems, parsedVariant?.variant, resolvedItems]);
 
+    const insectCards = useMemo(() => {
+        if (parsedVariant?.variant !== 'insetto') return [];
+        return resolvedItems.map(mapInsectStoryToCard);
+    }, [parsedVariant?.variant, resolvedItems]);
+
     const editorialCards = (
         parsedVariant?.variant === 'editorial'
             ? (blok?.cards ?? [])
@@ -129,7 +138,10 @@ const Carousel = ({
     ) as Card_listing_editorialStoryblok[];
 
     const hasSlides =
-        newsCards.length > 0 || productCards.length > 0 || editorialCards.length > 0;
+        newsCards.length > 0 ||
+        productCards.length > 0 ||
+        insectCards.length > 0 ||
+        editorialCards.length > 0;
 
     if (!hasSlides) {
         return null;
@@ -228,6 +240,15 @@ const Carousel = ({
                             </SwiperSlide>
                         ))}
 
+                        {insectCards.map((card, index) => (
+                            <SwiperSlide key={card.uuid ?? `${card.title}-${index}`} className={cn('swiper-slide')}>
+                                <CardInsect
+                                    {...card}
+                                    onOpen={() => setOpenInsect(card)}
+                                />
+                            </SwiperSlide>
+                        ))}
+
                         {editorialCards.map((card) => (
                             <SwiperSlide key={card._uid} className={cn('swiper-slide')}>
                                 <CardListing
@@ -242,6 +263,15 @@ const Carousel = ({
                     </Swiper>
                 </div>
             </div>
+
+            {parsedVariant?.variant === 'insetto' ? (
+                <InsectGalleryModal
+                    open={Boolean(openInsect)}
+                    onClose={() => setOpenInsect(null)}
+                    title={openInsect?.title ?? ''}
+                    images={openInsect ? insectOverlayImages(openInsect) : []}
+                />
+            ) : null}
         </section>
     );
 };

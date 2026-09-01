@@ -440,23 +440,27 @@ export interface GlossaryStoryblok {
 }
 
 import type {
+  CarouselInsectMode,
+  CarouselSelectionMode,
   CarouselStoryMode,
   CarouselVariantSlug,
   CarouselVariantValue,
 } from "@/lib/carousel/types";
 
 export type {
+  CarouselInsectMode,
+  CarouselSelectionMode,
   CarouselStoryMode,
   CarouselVariantSlug,
   CarouselVariantValue,
 };
 
-/** carousel — slide auto (story/product) o card editorial */
+/** carousel — slide auto (story/product/insect) o card editorial */
 export interface CarouselStoryblok {
   title?: string | null;
   subtitle?: string | null;
   link?: LinkStoryblok[] | StoryblokLink | null;
-  /** Plugin: story | prodotto | editorial + filtri/selezione */
+  /** Plugin: story | prodotto | editorial | insetto + filtri/selezione */
   variant?: CarouselVariantValue | null;
   cards?: Card_listing_editorialStoryblok[] | null;
   resolved_items?: ListingStoryResolved[] | null;

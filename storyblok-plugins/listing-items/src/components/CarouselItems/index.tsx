@@ -16,6 +16,7 @@ import {
 } from '../../lib/stories'
 import type {
   ApplicationAreaEntry,
+  CarouselInsectMode,
   CarouselStoryMode,
   CarouselVariantSlug,
   FiltriEntry,
@@ -31,7 +32,7 @@ import {
 } from '../../types'
 import '../ListingItems/listing-items.css'
 
-const CAROUSEL_VARIANTS: CarouselVariantSlug[] = ['story', 'prodotto', 'editorial']
+const CAROUSEL_VARIANTS: CarouselVariantSlug[] = ['story', 'prodotto', 'editorial', 'insetto']
 
 const VISTAS: { value: ListingProductVista; label: string }[] = [
   { value: 'categoria', label: 'Categoria' },
@@ -70,14 +71,38 @@ const DEFAULT_EDITORIAL: PluginVariantValue = {
   context: 'carousel',
 }
 
+const DEFAULT_INSECT: PluginVariantValue = {
+  variant: 'insetto',
+  selection_mode: 'all',
+  category: '',
+  subcategory: '',
+  application_area: '',
+  bestseller: false,
+  tag: '',
+  items: [],
+  context: 'carousel',
+}
+
 function defaultForVariant(variant: CarouselVariantSlug): PluginVariantValue {
   if (variant === 'prodotto') return { ...DEFAULT_PRODUCT }
   if (variant === 'editorial') return { ...DEFAULT_EDITORIAL }
+  if (variant === 'insetto') return { ...DEFAULT_INSECT }
   return { ...DEFAULT_STORY }
 }
 
 function isCarouselVariant(variant: PluginVariantValue['variant']): variant is CarouselVariantSlug {
-  return variant === 'story' || variant === 'prodotto' || variant === 'editorial'
+  return (
+    variant === 'story' ||
+    variant === 'prodotto' ||
+    variant === 'editorial' ||
+    variant === 'insetto'
+  )
+}
+
+function isInsectSelected(value: PluginVariantValue, uuid: string): boolean {
+  const items = Array.isArray(value.items) ? value.items : []
+  if (value.selection_mode === 'manual') return items.includes(uuid)
+  return !items.includes(uuid)
 }
 
 type CarouselPlugin = ReturnType<typeof useFieldPlugin<PluginVariantValue>>
@@ -120,7 +145,7 @@ export function CarouselItems({ plugin }: CarouselItemsProps) {
 
     if (value.context === 'carousel' && isCarouselVariant(value.variant)) return
 
-    if (value.variant === 'story' || value.variant === 'editorial') {
+    if (value.variant === 'story' || value.variant === 'editorial' || value.variant === 'insetto') {
       setContent({ ...value, context: 'carousel' })
       return
     }
@@ -166,7 +191,34 @@ export function CarouselItems({ plugin }: CarouselItemsProps) {
     setSearch('')
   }
 
+  const handleInsectModeChange = (selection_mode: CarouselInsectMode) => {
+    if (selection_mode === value.selection_mode) return
+    setContent({
+      ...value,
+      selection_mode,
+      tag: '',
+      items: [],
+    })
+    setResults([])
+    setSearch('')
+  }
+
   const toggleItem = (story: StoryOption) => {
+    if (value.variant === 'insetto') {
+      const selected = isInsectSelected(value, story.uuid)
+      const items =
+        value.selection_mode === 'manual'
+          ? selected
+            ? value.items.filter((id) => id !== story.uuid)
+            : [...value.items, story.uuid]
+          : selected
+            ? [...value.items, story.uuid]
+            : value.items.filter((id) => id !== story.uuid)
+
+      setContent({ ...value, items })
+      return
+    }
+
     const selected = value.items.includes(story.uuid)
     if (!selected && value.items.length >= CAROUSEL_LIMIT) return
 
@@ -185,7 +237,11 @@ export function CarouselItems({ plugin }: CarouselItemsProps) {
   const isProduct = value.variant === 'prodotto'
   const isStory = value.variant === 'story'
   const isEditorial = value.variant === 'editorial'
-  const showPicker = isStory && value.selection_mode === 'manual'
+  const isInsect = value.variant === 'insetto'
+  const isInsectAllMode = isInsect && value.selection_mode === 'all'
+  const showPicker =
+    (isStory && value.selection_mode === 'manual') ||
+    (isInsect && (value.selection_mode === 'all' || value.selection_mode === 'manual'))
 
   useEffect(() => {
     if (plugin.type !== 'loaded' || !isProduct) return
@@ -224,7 +280,12 @@ export function CarouselItems({ plugin }: CarouselItemsProps) {
       setLoading(true)
       setError(null)
       try {
-        const stories = await searchStories('story', cdnToken, search, locale)
+        const stories = await searchStories(
+          isInsect ? 'insetto' : 'story',
+          cdnToken,
+          search,
+          locale,
+        )
         if (!cancelled) {
           setResults(sortStoryOptions(stories))
         }
@@ -241,7 +302,7 @@ export function CarouselItems({ plugin }: CarouselItemsProps) {
       cancelled = true
       window.clearTimeout(timeout)
     }
-  }, [plugin.type, showPicker, cdnToken, search, locale])
+  }, [plugin.type, showPicker, isInsect, cdnToken, search, locale])
 
   if (plugin.type !== 'loaded') {
     return <p className="listing-items__loading">Caricamento editor...</p>
@@ -346,6 +407,30 @@ export function CarouselItems({ plugin }: CarouselItemsProps) {
             </div>
           )}
         </>
+      )}
+
+      {isInsect && (
+        <fieldset className="listing-items__fieldset">
+          <legend className="listing-items__label">Modalità</legend>
+          <label className="listing-items__radio">
+            <input
+              type="radio"
+              name="carousel-insect-mode"
+              checked={value.selection_mode === 'all'}
+              onChange={() => handleInsectModeChange('all')}
+            />
+            Tutti (deseleziona quelli da escludere)
+          </label>
+          <label className="listing-items__radio">
+            <input
+              type="radio"
+              name="carousel-insect-mode"
+              checked={value.selection_mode === 'manual'}
+              onChange={() => handleInsectModeChange('manual')}
+            />
+            Solo selezionati manualmente
+          </label>
+        </fieldset>
       )}
 
       {isProduct && (
@@ -463,7 +548,7 @@ export function CarouselItems({ plugin }: CarouselItemsProps) {
         <>
           <div className="listing-items__field">
             <label className="listing-items__label" htmlFor="carousel-search">
-              Cerca story
+              Cerca {isInsect ? getVariantLabel('insetto').toLowerCase() : 'story'}
             </label>
             <input
               id="carousel-search"
@@ -473,9 +558,15 @@ export function CarouselItems({ plugin }: CarouselItemsProps) {
               placeholder="Nome story..."
             />
           </div>
-          <p className="listing-items__count">
-            {value.items.length} di {CAROUSEL_LIMIT} selezionati
-          </p>
+          {(isInsect ? results.length > 0 : true) && (
+            <p className="listing-items__count">
+              {isInsectAllMode
+                ? `${results.length - value.items.length} di ${results.length} selezionati`
+                : isInsect
+                  ? `${value.items.length} selezionati`
+                  : `${value.items.length} di ${CAROUSEL_LIMIT} selezionati`}
+            </p>
+          )}
         </>
       )}
 
@@ -485,8 +576,11 @@ export function CarouselItems({ plugin }: CarouselItemsProps) {
       {showPicker && results.length > 0 && (
         <div className="listing-items__results">
           {results.map((story) => {
-            const selected = value.items.includes(story.uuid)
-            const disabled = !selected && value.items.length >= CAROUSEL_LIMIT
+            const selected = isInsect
+              ? isInsectSelected(value, story.uuid)
+              : value.items.includes(story.uuid)
+            const disabled =
+              !isInsect && !selected && value.items.length >= CAROUSEL_LIMIT
             return (
               <button
                 key={story.uuid}
