@@ -42,6 +42,7 @@ import Listing from '@/components/organisms/Listing'
 import Products from '@/components/organisms/Products'
 import Projects from '@/components/organisms/Projects'
 import Stories from '@/components/organisms/Stories'
+import Infestanti from '@/components/organisms/Infestanti'
 import Compare from '@/components/organisms/Compare'
 import JobList from '@/components/organisms/JobList'
 import Divider from '@/components/organisms/Divider'
@@ -86,6 +87,7 @@ const components = {
   products: Products,
   projects: Projects,
   stories: Stories,
+  infestanti: Infestanti,
   compare: Compare,
   job_list: JobList,
   divider: Divider,

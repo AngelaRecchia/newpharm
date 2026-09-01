@@ -19,28 +19,6 @@
   gap: $s-64;
 }
 
-.head {
-  display: flex;
-  flex-direction: column;
-  gap: $s-16;
-
-  @include lg {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: $s-24;
-  }
-}
-
-.title {
-  @include t-h2;
-  margin: 0;
-}
-
-.subtitle {
-  @include t-h3;
-  margin: 0;
-}
-
 .empty-message {
   @include t-body;
   padding: $s-24;

@@ -75,6 +75,15 @@ export async function resolveStoryStories(
   return stories.map(mapStoryToListingResolved)
 }
 
+export async function resolveInsectStories(
+  locale?: string,
+): Promise<ListingStoryResolved[]> {
+  const stories = await resolveStoriesByComponent('insect', locale)
+  return sortResolvedListingStories(
+    stories.filter((story) => isListingVisible(story.content.visibility)),
+  )
+}
+
 export async function resolveJobStories(
   locale?: string,
 ): Promise<ListingStoryResolved[]> {
@@ -171,7 +180,8 @@ export async function enrichListingBloks(
       blok.component === 'stories' ||
       blok.component === 'compare' ||
       blok.component === 'projects_highlight' ||
-      blok.component === 'job_list'
+      blok.component === 'job_list' ||
+      blok.component === 'infestanti'
     ) {
       listingBloks.push(blok)
     }
@@ -222,6 +232,11 @@ export async function enrichListingBloks(
       if (blok.component === 'job_list') {
         const resolved = await resolveJobStories(locale)
         blok.resolved_items = sortResolvedListingStories(resolved)
+        return
+      }
+
+      if (blok.component === 'infestanti') {
+        blok.resolved_items = await resolveInsectStories(locale)
         return
       }
 

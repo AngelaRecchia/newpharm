@@ -189,21 +189,5 @@
         padding-block: 13.5rem 5rem;
       }
     }
-
-    .content {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: $s-24;
-      @include lg {
-        grid-template-columns: 1fr 1fr;
-        gap: $s-64;
-      }
-    }
-
-    .subtitle {
-      @include lg {
-        padding-inline-end: $s-40;
-      }
-    }
   }
 }

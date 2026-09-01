@@ -2,9 +2,9 @@
 
 .wrapper {
   width: 100%;
-  background-color: $c-black;
-  color: $c-white;
-  padding-block-end: $s-80;
+  background-color: $c-white;
+  color: $c-black;
+  padding-block: $s-40 $s-80;
   overflow: visible;
 }
 
@@ -14,24 +14,20 @@
   gap: $s-64;
 }
 
-.head {
-  padding-top: 5.625rem;
-
-  @include lg {
-    padding-top: 13.5rem;
-  }
-}
-
 .grid {
   display: grid;
   gap: $s-16;
-  @include listing-grid-columns(3);
+  @include listing-grid-columns(4);
+}
+
+.banner {
+  grid-column: 1 / -1;
 }
 
 .empty {
   @include t-body;
   padding-block: $s-40;
-  color: rgba($c-white, 0.64);
+  color: $c-gray-600;
 }
 
 .footer {

@@ -56,21 +56,7 @@
 }
 
 .head {
-  display: flex;
-  flex-direction: column;
-  gap: $s-24;
-  max-width: 42rem;
   padding-block-start: $s-40;
-}
-
-.title {
-  @include t-h2;
-  margin: 0;
-}
-
-.subtitle {
-  @include t-h3;
-  margin: 0;
 }
 
 .filters {

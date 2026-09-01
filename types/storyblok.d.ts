@@ -78,6 +78,7 @@ export type {
   ProjectsStoryblok,
   Projects_highlightStoryblok,
   StoriesStoryblok,
+  InfestantiStoryblok,
   JobStoryblok,
   Job_listStoryblok,
   Article_bodyStoryblok,
@@ -89,6 +90,7 @@ export type {
   ListingVariantSlug,
   ListingImageRatio,
   ListingTheme,
+  InsectCategory,
   CarouselStoryblok,
   CarouselVariantValue,
   CarouselVariantSlug,
@@ -149,6 +151,7 @@ export type StoryblokComponent =
   | Overrides.ProductsStoryblok
   | Overrides.ProjectsStoryblok
   | Overrides.StoriesStoryblok
+  | Overrides.InfestantiStoryblok
   | Overrides.JobStoryblok
   | Overrides.Job_listStoryblok
   | Overrides.Article_bodyStoryblok

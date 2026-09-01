@@ -10,7 +10,7 @@ import Button from '@/components/atoms/Button'
 import { storyblokEditable } from '@storyblok/react'
 import { getStoryblokAnchorId } from '@/lib/storyblok/anchor'
 import { useStickyParallax } from '@/lib/animation/useStickyParallax'
-import GlossaryText from '@/components/atoms/GlossaryText'
+import HeroTertiary from '@/components/molecules/HeroTertiary'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import 'swiper/css'
 
@@ -66,14 +66,14 @@ export default function HeroComponent({ blok }: { blok?: HeroStoryblok }) {
 
     const content = (
         <>
-            <div className={cn('content')}>
-                <h1 className={cn('title')}>{title}</h1>
-                {subtitle ? (
-                    <p className={cn('subtitle')}>
-                        {variant === 'tertiary' ? <GlossaryText text={subtitle} /> : subtitle}
-                    </p>
-                ) : null}
-            </div>
+            {variant === 'tertiary' ? (
+                <HeroTertiary title={title} subtitle={subtitle} as="h1" />
+            ) : (
+                <div className={cn('content')}>
+                    <h1 className={cn('title')}>{title}</h1>
+                    {subtitle ? <p className={cn('subtitle')}>{subtitle}</p> : null}
+                </div>
+            )}
 
             {links && links.length > 0 ? <div className={cn('links')}>{renderLinks}</div> : null}
         </>

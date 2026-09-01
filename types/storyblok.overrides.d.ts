@@ -25,6 +25,13 @@ export interface CatalogStoryblok extends Generated.CatalogStoryblok {
 }
 
 export type InsectVisibility = "product" | "listing" | "both";
+export type InsectCategory =
+  | "volanti"
+  | "striscianti"
+  | "insetti_delle_derrate"
+  | "rettili_e_anfibi"
+  | "volatili"
+  | "roditori";
 
 export type TargetPestsPluginValue = {
   items: Array<{ uuid: string; text?: string }>;
@@ -43,6 +50,7 @@ export interface InsectStoryblok extends Generated.InsectStoryblok {
   image_hover?: AssetStoryblok | null;
   gallery?: AssetStoryblok[] | null;
   visibility?: InsectVisibility | null;
+  category?: InsectCategory | null;
 }
 
 /** Story Insect risolta da CDN */
@@ -337,6 +345,22 @@ export interface Projects_highlightStoryblok {
 export interface StoriesStoryblok {
   title?: string | null;
   subtitle?: string | null;
+  /** Popolato SSR da enrichListingBloks — non editabile in CMS */
+  resolved_items?: ListingStoryResolved[] | null;
+  anchor_id?: string | null;
+  _uid: string;
+  component: string;
+  _editable?: string;
+}
+
+/**
+ * infestanti — catalogo insetti con chips categoria, overlay e banner interleaved.
+ * Titolo/subtitle nel blok; insetti listing/both fetchati SSR.
+ */
+export interface InfestantiStoryblok {
+  title?: string | null;
+  subtitle?: string | null;
+  banners?: Full_bannerStoryblok[] | null;
   /** Popolato SSR da enrichListingBloks — non editabile in CMS */
   resolved_items?: ListingStoryResolved[] | null;
   anchor_id?: string | null;

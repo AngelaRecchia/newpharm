@@ -15,29 +15,10 @@
 }
 
 .head {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: $s-24;
   padding-top: 5.625rem;
 
   @include lg {
-    grid-template-columns: 1fr 1fr;
-    gap: $s-64;
     padding-top: 13.5rem;
-  }
-}
-
-.title {
-  @include t-h1;
-  margin: 0;
-}
-
-.subtitle {
-  @include t-h6;
-  margin: 0;
-
-  @include lg {
-    padding-inline-end: $s-40;
   }
 }
 

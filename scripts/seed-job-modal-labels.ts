@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 /**
- * Crea/aggiorna le label modale candidatura nel datasource Storyblok `labels`
- * con traduzioni IT (value), EN e AR (dimension_value).
+ * Crea/aggiorna le label mancanti nel datasource Storyblok `labels`
+ * (modale candidatura + categorie infestanti) con traduzioni IT, EN e AR.
  *
  * Uso: npm run seed:job-modal-labels
  */
@@ -77,6 +77,42 @@ const JOB_MODAL_LABELS: LabelSeed[] = [
     en: 'Close card',
     ar: 'إغلاق البطاقة',
   },
+  {
+    name: 'volanti',
+    it: 'Volanti',
+    en: 'Flying insects',
+    ar: 'حشرات طائرة',
+  },
+  {
+    name: 'striscianti',
+    it: 'Striscianti',
+    en: 'Crawling insects',
+    ar: 'حشرات زاحفة',
+  },
+  {
+    name: 'insetti_delle_derrate',
+    it: 'Insetti delle derrate',
+    en: 'Stored product insects',
+    ar: 'حشرات المواد المخزنة',
+  },
+  {
+    name: 'rettili_e_anfibi',
+    it: 'Rettili e anfibi',
+    en: 'Reptiles and amphibians',
+    ar: 'زواحف وبرمائيات',
+  },
+  {
+    name: 'volatili',
+    it: 'Volatili',
+    en: 'Birds',
+    ar: 'طيور',
+  },
+  {
+    name: 'roditori',
+    it: 'Roditori',
+    en: 'Rodents',
+    ar: 'قوارض',
+  },
 ]
 
 type DatasourceRecord = {
@@ -124,18 +160,29 @@ async function getLabelsDatasource(): Promise<{
 async function getExistingEntries(
   datasourceId: number,
 ): Promise<Map<string, DatasourceEntryRecord>> {
-  const response = await storyblok.get(
-    `spaces/${SPACE_ID}/datasource_entries`,
-    { datasource_id: datasourceId, per_page: 100 } as never,
-  )
-
-  const entries = (response as unknown as { data: { datasource_entries: DatasourceEntryRecord[] } })
-    .data.datasource_entries
-
   const map = new Map<string, DatasourceEntryRecord>()
-  for (const entry of entries) {
-    map.set(entry.name, entry)
+  let page = 1
+
+  while (true) {
+    const response = await storyblok.get(
+      `spaces/${SPACE_ID}/datasource_entries`,
+      { datasource_id: datasourceId, per_page: 100, page } as never,
+    )
+
+    const entries = (
+      response as unknown as { data: { datasource_entries: DatasourceEntryRecord[] } }
+    ).data.datasource_entries
+
+    if (!entries?.length) break
+
+    for (const entry of entries) {
+      map.set(entry.name, entry)
+    }
+
+    if (entries.length < 100) break
+    page += 1
   }
+
   return map
 }
 
@@ -190,7 +237,7 @@ async function main() {
     process.exit(1)
   }
 
-  console.log('🚀 Seed label modale candidatura su Storyblok...\n')
+  console.log('🚀 Seed label mancanti su Storyblok...\n')
 
   const { datasourceId, dimensionIds } = await getLabelsDatasource()
   const existingEntries = await getExistingEntries(datasourceId)

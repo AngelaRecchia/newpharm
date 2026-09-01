@@ -6,6 +6,7 @@ import { storyblokEditable } from '@storyblok/react'
 import { useTranslations } from 'next-intl'
 import Button from '@/components/atoms/Button'
 import Container from '@/components/atoms/Container'
+import HeroTertiary from '@/components/molecules/HeroTertiary'
 import CardInsect from '@/components/molecules/CardInsect'
 import CardListing from '@/components/molecules/CardListing'
 import InsectGalleryModal from '@/components/molecules/InsectGalleryModal'
@@ -155,14 +156,10 @@ export default function Listing({ blok }: { blok?: ListingStoryblok }) {
       {...storyblokEditable(blok as any)}
     >
       <Container className={cn('content')} flushBlock>
-        {(blok.title || blok.subtitle) && (
-          <header className={cn('head')}>
-            {blok.title && <h2 className={cn('title')}>{blok.title}</h2>}
-            {blok.subtitle && !isDark && (
-              <p className={cn('subtitle')}>{blok.subtitle}</p>
-            )}
-          </header>
-        )}
+        <HeroTertiary
+          title={blok.title}
+          subtitle={!isDark ? blok.subtitle : undefined}
+        />
 
         {showEmptyEditorial && (
           <p className={cn('empty-message')}>{t('no_events')}</p>

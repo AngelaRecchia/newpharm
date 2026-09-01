@@ -5,6 +5,7 @@ import classNames from 'classnames/bind'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { storyblokEditable } from '@storyblok/react'
 import Container from '@/components/atoms/Container'
+import HeroTertiary from '@/components/molecules/HeroTertiary'
 import CardListingProduct from '@/components/molecules/CardListingProduct'
 import PaginationNumbers from '@/components/molecules/PaginationNumbers'
 import ProductFilters, { type ProductFiltersValue } from '@/components/molecules/ProductFilters'
@@ -292,12 +293,11 @@ function ProductsInner({ blok }: { blok?: ProductsStoryblok }) {
       </div>
 
       <Container className={cn('content')} flushBlock>
-        {(blok.title || blok.subtitle) && (
-          <header className={cn('head')}>
-            {blok.title ? <h2 className={cn('title')}>{blok.title}</h2> : null}
-            {blok.subtitle ? <p className={cn('subtitle')}>{blok.subtitle}</p> : null}
-          </header>
-        )}
+        {(blok.title || blok.subtitle) ? (
+          <div className={cn('head')}>
+            <HeroTertiary title={blok.title} subtitle={blok.subtitle} />
+          </div>
+        ) : null}
 
         {pageItems.length > 0 ? (
           <div

@@ -6,6 +6,7 @@ import { storyblokEditable } from '@storyblok/react'
 import { useTranslations } from 'next-intl'
 import Button from '@/components/atoms/Button'
 import Container from '@/components/atoms/Container'
+import HeroTertiary from '@/components/molecules/HeroTertiary'
 import CardListing from '@/components/molecules/CardListing'
 import DivisionFilters from '@/components/molecules/DivisionFilters'
 import { getStoryblokAnchorId } from '@/lib/storyblok/anchor'
@@ -77,10 +78,9 @@ function ProjectsInner({ blok }: { blok?: ProjectsStoryblok }) {
     >
       <Container className={cn('content')} flushBlock>
         {(blok.title || blok.subtitle) ? (
-          <header className={cn('head')}>
-            {blok.title ? <h1 className={cn('title')}>{blok.title}</h1> : null}
-            {blok.subtitle ? <p className={cn('subtitle')}>{blok.subtitle}</p> : null}
-          </header>
+          <div className={cn('head')}>
+            <HeroTertiary title={blok.title} subtitle={blok.subtitle} as="h1" />
+          </div>
         ) : null}
 
         <DivisionFilters

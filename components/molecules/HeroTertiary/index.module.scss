@@ -1,0 +1,26 @@
+@use "../../../styles" as *;
+
+.wrapper {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $s-24;
+
+  @include lg {
+    grid-template-columns: 1fr 1fr;
+    gap: $s-64;
+  }
+}
+
+.title {
+  @include t-h1;
+  margin: 0;
+}
+
+.subtitle {
+  @include t-h6;
+  margin: 0;
+
+  @include lg {
+    padding-inline-end: $s-40;
+  }
+}
