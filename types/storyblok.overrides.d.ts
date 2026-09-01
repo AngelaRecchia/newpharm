@@ -24,22 +24,43 @@ export interface CatalogStoryblok extends Generated.CatalogStoryblok {
   short_description?: string | null;
 }
 
-/** Story Insect risolta da CDN (resolve_relations su target_pest_item.insect) */
+export type InsectVisibility = "product" | "listing" | "both";
+
+export type TargetPestsPluginValue = {
+  items: Array<{ uuid: string; text?: string }>;
+};
+
+export type TargetPestView = {
+  uid: string;
+  title: string;
+  image: AssetStoryblok | null;
+  text?: string;
+};
+
+/** insect — icona prodotto + media listing */
+export interface InsectStoryblok extends Generated.InsectStoryblok {
+  icon?: AssetStoryblok | null;
+  image_hover?: AssetStoryblok | null;
+  gallery?: AssetStoryblok[] | null;
+  visibility?: InsectVisibility | null;
+}
+
+/** Story Insect risolta da CDN */
 export interface InsectStoryResolved {
   uuid: string;
   name: string;
   slug: string;
   full_slug: string;
-  content: Generated.InsectStoryblok;
+  content: InsectStoryblok;
   [key: string]: unknown;
 }
 
-/** target_pest_item — insetto catalogo + testo custom sul prodotto */
+/** target_pest_item — insetto catalogo + testo custom sul prodotto (legacy) */
 export interface Target_pest_itemStoryblok extends Omit<
   Generated.Target_pest_itemStoryblok,
   "insect"
 > {
-  insect?: string | Generated.InsectStoryblok | InsectStoryResolved | null;
+  insect?: string | InsectStoryblok | InsectStoryResolved | null;
 }
 
 /** product — composition come richtext in CMS */
@@ -47,7 +68,8 @@ export interface ProductStoryblok extends Generated.ProductStoryblok {
   composition?: ISbRichtext | null;
   bestseller?: boolean | null;
   resources?: LinkStoryblok[] | null;
-  target_pests?: Target_pest_itemStoryblok[] | null;
+  target_pests?: TargetPestsPluginValue | Target_pest_itemStoryblok[] | null;
+  resolved_target_pests?: TargetPestView[] | null;
   related_category_products?: ListingStoryResolved[] | null;
   related_category_parent_slug?: string | null;
 }
@@ -90,6 +112,28 @@ export interface CatalogsDownloadStoryblok {
   _uid: string;
   component: string;
   _editable?: string;
+}
+
+/** Story prodotto/progetto risolta da CDN (resolve_relations su box_image.product / box_image.project) */
+export interface BoxImageStoryResolved {
+  uuid: string;
+  name: string;
+  slug: string;
+  full_slug: string;
+  content: Record<string, unknown>;
+  [key: string]: unknown;
+}
+
+/** box_image — editoriale oppure riferimento a prodotto/progetto */
+export interface Box_imageStoryblok extends Omit<
+  Generated.Box_imageStoryblok,
+  "product" | "project" | "asset" | "link" | "image_alignment"
+> {
+  product?: string | BoxImageStoryResolved | null;
+  project?: string | BoxImageStoryResolved | null;
+  asset?: AssetStoryblok[] | null;
+  link?: LinkStoryblok[] | null;
+  image_alignment?: "left" | "right" | null;
 }
 
 /** link — variant visiva blue | black, action funzionale dal plugin link-action */
@@ -174,6 +218,7 @@ export interface Card_listing_editorialStoryblok {
 
 export type ListingType = "editorial" | "hub" | "highlight";
 export type ListingImageRatio = "square" | "portrait";
+export type ListingTheme = "light" | "dark";
 export type ListingVariantSlug =
   | "prodotto"
   | "progetto"
@@ -211,6 +256,7 @@ export interface ListingStoryResolved {
 /** listing — griglia card editorial / hub / highlight */
 export interface ListingStoryblok {
   type?: ListingType | null;
+  theme?: ListingTheme | null;
   title?: string | null;
   subtitle?: string | null;
   /** Plugin hub/highlight: variant + UUID story */

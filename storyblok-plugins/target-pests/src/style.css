@@ -1,0 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+html {
+  overflow: auto;
+  height: 100%;
+}
+
+:root {
+  font-family: 'Inter', sans-serif;
+  font-style: normal;
+  line-height: 1.5;
+  font-weight: 400;
+  font-size: 1rem;
+}
+
+#app {
+  width: 100%;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+}

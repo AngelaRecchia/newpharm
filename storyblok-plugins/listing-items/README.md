@@ -6,7 +6,7 @@ Plugin per il campo `variant` dei blok **listing** e **carousel**. L’UI dipend
 
 ### Editorial
 
-- Select **Formato immagine**: Rettangolare (`portrait`, 259/340, tema light) o Quadrata (`square`, 1:1, tema dark)
+- Select **Formato immagine**: Rettangolare (`portrait`, 259/340) o Quadrata (`square`, 1:1)
 - Le card sono `card_listing_editorial` (campo `cards` del blok)
 
 ### Hub / Highlight

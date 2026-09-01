@@ -28,6 +28,14 @@ export interface ModalProps {
   closeLabel?: string
   /** Classe aggiuntiva sul pannello (es. max-width) */
   panelClassName?: string
+  /** Classe aggiuntiva sul backdrop */
+  backdropClassName?: string
+  /** Pannello senza chrome (lightbox) */
+  plain?: boolean
+  /** Centra il pannello in verticale */
+  centered?: boolean
+  /** Overlay multiply 0.7, contenuto isolato */
+  multiply?: boolean
   /** Selettore del primo elemento da mettere a fuoco all’apertura (es. `input`) */
   initialFocusSelector?: string | false
   style?: CSSProperties
@@ -42,6 +50,10 @@ export default function Modal({
   hideCloseButton = false,
   closeLabel = 'Chiudi',
   panelClassName,
+  backdropClassName,
+  plain = false,
+  centered = false,
+  multiply = false,
   initialFocusSelector = false,
   style,
 }: ModalProps) {
@@ -86,15 +98,27 @@ export default function Modal({
   if (!mounted) return null
 
   const fadeTransition = {
-    duration: reduceMotion ? 0.01 : 0.25,
+    duration: reduceMotion ? 0.01 : 0.3,
     ease: [0.4, 0, 0.2, 1] as const,
   }
 
   return createPortal(
     <AnimatePresence onExitComplete={() => setPresent(false)}>
+      {open && multiply ? (
+        <motion.div
+          key="modal-dim"
+          className={cn('dim')}
+          aria-hidden
+          initial={reduceMotion ? { opacity: 0.7 } : { opacity: 0 }}
+          animate={{ opacity: 0.7 }}
+          exit={{ opacity: 0 }}
+          transition={fadeTransition}
+        />
+      ) : null}
       {open ? (
         <motion.div
-          className={cn('backdrop')}
+          key="modal-backdrop"
+          className={cn('backdrop', { centered, multiply }, backdropClassName)}
           role="presentation"
           data-lenis-prevent
           style={style}
@@ -106,18 +130,14 @@ export default function Modal({
             if (e.target === e.currentTarget) onClose()
           }}
         >
-          <motion.div
+          <div
             ref={panelRef}
-            className={cn('panel', panelClassName)}
+            className={cn('panel', { plain }, panelClassName)}
             role="dialog"
             aria-modal="true"
             aria-labelledby={ariaLabelledBy}
             aria-label={ariaLabelledBy ? undefined : ariaLabel}
             tabIndex={-1}
-            initial={reduceMotion ? false : { opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={fadeTransition}
           >
             {!hideCloseButton && (
               <button
@@ -130,7 +150,7 @@ export default function Modal({
               </button>
             )}
             {children}
-          </motion.div>
+          </div>
         </motion.div>
       ) : null}
     </AnimatePresence>,

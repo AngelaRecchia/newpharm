@@ -50,10 +50,6 @@
   gap: $s-24;
   padding: $s-24;
   background-color: $c-white;
-
-  @include lg {
-    padding: $s-32 $s-40;
-  }
 }
 
 .empty-text {

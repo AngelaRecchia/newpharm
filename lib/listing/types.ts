@@ -22,7 +22,7 @@ export type ListingVariantValue = {
   tag?: string
   /** prodotto/progetto manual: UUID inclusi — altre varianti all: UUID esclusi */
   items: string[]
-  /** Solo listing editorial: square (1:1, dark) | portrait (259/340, light) */
+  /** Solo listing editorial: square (1:1) | portrait (259/340) */
   image_ratio?: ListingImageRatio
 }
 
@@ -57,6 +57,8 @@ export type ListingCardData = {
   title: string
   description?: string
   image: import('@/types/storyblok').AssetStoryblok | null
+  imageHover?: import('@/types/storyblok').AssetStoryblok | null
+  gallery?: import('@/types/storyblok').AssetStoryblok[]
   href?: string
   safetySheetHref?: string
 }

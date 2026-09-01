@@ -1,0 +1,88 @@
+@use "../../../styles" as *;
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: $s-8;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: $c-black;
+  text-align: start;
+  cursor: pointer;
+}
+
+.image {
+  aspect-ratio: 259 / 340;
+  position: relative;
+  overflow: hidden;
+  background-color: $c-surface;
+}
+
+.layer {
+  display: block;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+
+  &.hover {
+    opacity: 0;
+    z-index: 1;
+    transition: opacity 400ms $ease-out;
+  }
+}
+
+.content-wrapper {
+  position: relative;
+  padding-block: $s-16;
+}
+
+.content-wrapper::before {
+  content: "";
+  display: block;
+  @include hover-circle-dot($color: currentColor);
+  position: absolute;
+  inset-inline-start: 0;
+  top: $s-24;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: $s-8;
+  padding-inline-end: $s-24;
+  min-width: 0;
+  @include hover-text-shift;
+}
+
+.title {
+  @include t-body;
+}
+
+.description {
+  @include t-note;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@include md {
+  .wrapper:hover,
+  .wrapper:focus-visible {
+    &.hoverable .layer.hover {
+      opacity: 1;
+    }
+
+    .content-wrapper::before {
+      transform: scale(1);
+      opacity: 1;
+    }
+
+    .content {
+      transform: translateX($s-16);
+    }
+  }
+}

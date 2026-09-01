@@ -95,7 +95,7 @@ export async function getStory(
 
 /**
  * Recupera tutte le stories da Storyblok per generateStaticParams
- * Esclude automaticamente le stories in 'layout-components' e 'glossary'
+ * Esclude automaticamente le stories in 'layout-components', 'glossary', 'insetti' e 'infestanti'
  *
  * @param options - Opzioni per la richiesta
  * @param options.version - Versione da usare (default: basata su ambiente)
@@ -116,7 +116,7 @@ export async function getAllStories(
 ): Promise<Story[]> {
   const {
     version = getStoryblokVersion(),
-    excludePaths = ["layout-components", "glossary"],
+    excludePaths = ["layout-components", "glossary", "insetti", "infestanti"],
     perPage = 100,
   } = options;
 
@@ -158,19 +158,12 @@ export async function getAllStories(
         }
 
         // Check if story is in excluded path
-        const segments = fullSlug.split("/");
-
-        // Check first segment (e.g., 'layout-components')
-        if (excludePaths.includes(segments[0])) {
-          return false;
+        const segments = fullSlug.split("/").filter(Boolean)
+        if (segments.some((segment) => excludePaths.includes(segment))) {
+          return false
         }
 
-        // Check second segment (e.g., 'en/layout-components')
-        if (segments.length > 1 && excludePaths.includes(segments[1])) {
-          return false;
-        }
-
-        return true;
+        return true
       });
 
       allStories.push(...filteredStories);

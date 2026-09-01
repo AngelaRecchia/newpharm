@@ -12,6 +12,8 @@
     "lint": "next lint",
     "generate:types": "tsx scripts/generate-storyblok-types.ts",
     "create:job-components": "tsx scripts/create-job-components.ts",
+    "update:insect-components": "tsx scripts/update-insect-components.ts",
+    "update:box-image-component": "tsx scripts/update-box-image-component.ts",
     "seed:job-modal-labels": "tsx scripts/seed-job-modal-labels.ts",
     "generate:component": "tsx scripts/generate-component.ts"
   },

@@ -24,6 +24,12 @@ type LabelSeed = {
 
 const JOB_MODAL_LABELS: LabelSeed[] = [
   {
+    name: 'open_position',
+    it: 'Posizione aperta',
+    en: 'Open position',
+    ar: 'وظيفة شاغرة',
+  },
+  {
     name: 'your_name_here',
     it: 'Il tuo nome qui',
     en: 'Your name here',
@@ -64,6 +70,12 @@ const JOB_MODAL_LABELS: LabelSeed[] = [
     it: "Ho letto e accetto i <a>termini e condizioni</a>",
     en: 'I have read and accept the <a>terms and conditions</a>',
     ar: 'لقد قرأت وأوافق على <a>الشروط والأحكام</a>',
+  },
+  {
+    name: 'close_overlay',
+    it: 'Chiudi scheda',
+    en: 'Close card',
+    ar: 'إغلاق البطاقة',
   },
 ]
 

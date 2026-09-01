@@ -110,41 +110,38 @@
 
 .link-wrapper {
   margin-top: $s-8;
+}
 
-  @include md {
-    @include transition(transform, $td-300);
-  }
+.module-link {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  cursor: pointer;
 }
 
 // ==============================================
-// Hover (solo desktop, con link)
+// Hover (modulo intero cliccabile)
 // ==============================================
-.wrapper.has-link {
+.wrapper.has-module-link {
+  position: relative;
+  cursor: pointer;
   --button-hover: 0;
 
-  .asset-wrapper > * {
-    @include md {
-      @include transition(transform, $td-300);
+  .asset-wrapper {
+    z-index: 3;
+    pointer-events: none;
+
+    [data-video-controls] {
+      pointer-events: auto;
     }
   }
 
   @include md {
-    &:hover,
-    &.is-hovered {
+    &:hover {
       --button-hover: 1;
-    }
-  }
 
-  &.is-hovered {
-    .link-wrapper {
-      @include md {
-        transform: translateX($s-24);
-      }
-    }
-
-    .asset-wrapper img,
-    .asset-wrapper video {
-      @include md {
+      .asset-wrapper img,
+      .asset-wrapper video {
         transform: scale(1.03);
       }
     }

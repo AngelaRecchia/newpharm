@@ -17,13 +17,18 @@
   gap: $s-24;
 }
 
+.tags {
+  display: flex;
+  gap: $s-8;
+}
+
 .title {
   @include t-h1;
   margin: 0;
 }
 
 .info {
-  @include t-h6;
+  @include t-body;
   margin-top: $s-16;
   display: flex;
   align-items: center;

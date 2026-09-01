@@ -56,6 +56,9 @@ function preserveSsrEnrichment(source: unknown, target: unknown): unknown {
     if (Array.isArray(sourceRecord.related_stories)) {
       merged.related_stories = sourceRecord.related_stories
     }
+    if (Array.isArray(sourceRecord.resolved_target_pests)) {
+      merged.resolved_target_pests = sourceRecord.resolved_target_pests
+    }
   }
 
   for (const key of Object.keys(merged)) {
@@ -65,6 +68,7 @@ function preserveSsrEnrichment(source: unknown, target: unknown): unknown {
       key === 'related_category_products' ||
       key === 'related_category_parent_slug' ||
       key === 'related_stories' ||
+      key === 'resolved_target_pests' ||
       key === 'variant' ||
       key === 'listing_items'
     ) {

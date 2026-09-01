@@ -22,6 +22,8 @@ import {
 import { sortStoriesByDate } from '@/lib/carousel/mapStoryToNewsCard'
 import { filterProjectsByDivisions } from '@/lib/projects/filterProjects'
 import { parseProjectDivisions } from '@/lib/projects/divisions'
+import { isListingVisible } from '@/lib/insects/visibility'
+import { enrichProductsTargetPests } from '@/lib/products/targetPests'
 import type { ListingStoryResolved } from './types'
 
 export function mapStoryToListingResolved(story: Story): ListingStoryResolved {
@@ -99,11 +101,15 @@ export async function resolveListingRefItems(
 ): Promise<ListingStoryResolved[]> {
   const component = variantToComponent(parsed.variant)
   const allStories = await resolveStoriesByComponent(component, locale)
+  const visibleStories =
+    parsed.variant === 'insetto'
+      ? allStories.filter((story) => isListingVisible(story.content.visibility))
+      : allStories
 
   if (parsed.selection_mode === 'manual') {
     if (parsed.items.length === 0) return []
     const included = new Set(parsed.items)
-    return sortResolvedListingStories(allStories.filter((story) => included.has(story.uuid)))
+    return sortResolvedListingStories(visibleStories.filter((story) => included.has(story.uuid)))
   }
 
   if (parsed.selection_mode === 'tag') {
@@ -111,13 +117,13 @@ export async function resolveListingRefItems(
     if (!tag) return []
     const tagged =
       parsed.variant === 'progetto'
-        ? filterProjectsByDivisions(allStories, parseProjectDivisions(tag))
-        : allStories
+        ? filterProjectsByDivisions(visibleStories, parseProjectDivisions(tag))
+        : visibleStories
     return sortResolvedListingStories(tagged)
   }
 
   const excluded = new Set(parsed.items)
-  return sortResolvedListingStories(allStories.filter((story) => !excluded.has(story.uuid)))
+  return sortResolvedListingStories(visibleStories.filter((story) => !excluded.has(story.uuid)))
 }
 
 type BlokRecord = Record<string, unknown> & {
@@ -182,6 +188,9 @@ export async function enrichListingBloks(
           )
         }
         const resolved = await resolveProductStories(locale)
+        if (blok.component === 'compare') {
+          await enrichProductsTargetPests(resolved, locale)
+        }
         blok.resolved_items = sortResolvedListingStories(resolved)
         delete blok.variant
         delete blok.listing_items

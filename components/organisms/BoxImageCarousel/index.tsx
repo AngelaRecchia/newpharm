@@ -32,7 +32,7 @@ const BoxImageCarousel = ({ blok }: { blok?: Box_image_carouselStoryblok }) => {
       )}
 
       {boxImages.map((item) => (
-        <BoxImage key={item._uid} blok={item as any} variant="carousel" />
+        <BoxImage key={item._uid} blok={item} variant="carousel" />
       ))}
     </div>
   )

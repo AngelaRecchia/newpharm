@@ -1,5 +1,6 @@
 import type { ListingContentComponent, ListingStoryResolved } from './types'
 import { mapCatalogStoryToCard } from './mapCatalogToCard'
+import { mapInsectStoryToCard } from './mapInsectToCard'
 import { mapProductStoryToCard } from './mapProductToCard'
 import { mapStubStoryToCard } from './mapStubToCard'
 
@@ -12,8 +13,9 @@ export function mapStoryToCard(
       return mapProductStoryToCard(story)
     case 'catalog':
       return mapCatalogStoryToCard(story)
-    case 'project':
     case 'insect':
+      return mapInsectStoryToCard(story)
+    case 'project':
       return mapStubStoryToCard(story)
     default:
       return mapStubStoryToCard(story)

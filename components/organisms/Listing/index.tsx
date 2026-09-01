@@ -6,15 +6,19 @@ import { storyblokEditable } from '@storyblok/react'
 import { useTranslations } from 'next-intl'
 import Button from '@/components/atoms/Button'
 import Container from '@/components/atoms/Container'
+import CardInsect from '@/components/molecules/CardInsect'
 import CardListing from '@/components/molecules/CardListing'
+import InsectGalleryModal from '@/components/molecules/InsectGalleryModal'
 import PaginationNumbers from '@/components/molecules/PaginationNumbers'
 import { getStoryblokAnchorId } from '@/lib/storyblok/anchor'
 import { useRefreshPageScroll } from '@/lib/context/smooth-scroll-context'
+import { insectOverlayImages } from '@/lib/listing/mapInsectToCard'
 import { mapStoryToCard } from '@/lib/listing/mapStoryToCard'
 import {
   parseListingVariant,
   variantToComponent,
 } from '@/lib/listing/resolveListingItems'
+import type { ListingCardData } from '@/lib/listing/types'
 import type {
   Card_listing_editorialStoryblok,
   ListingStoryblok,
@@ -31,9 +35,11 @@ const HIGHLIGHT_STEP = 16
 
 function RefCard({
   variant,
+  dark,
   ...props
 }: {
   variant: string
+  dark?: boolean
   title: string
   description?: string
   image?: import('@/types/storyblok').AssetStoryblok | null
@@ -46,6 +52,7 @@ function RefCard({
       image={props.image}
       href={props.href}
       showDownload={variant === 'catalogo'}
+      dark={dark}
     />
   )
 }
@@ -58,10 +65,10 @@ export default function Listing({ blok }: { blok?: ListingStoryblok }) {
   const listingType = blok?.type ?? 'editorial'
   const listingVariant = parseListingVariant(blok?.variant ?? blok?.listing_items)
   const imageRatio = listingVariant.image_ratio ?? 'portrait'
-  const isEditorial = listingType === 'editorial'
-  const isDark = isEditorial && imageRatio === 'square'
+  const isDark = blok?.theme === 'dark'
   const isHub = listingType === 'hub'
   const isHighlight = listingType === 'highlight'
+  const isInsect = listingVariant.variant === 'insetto'
 
   const editorialCards = (blok?.cards ?? []) as Card_listing_editorialStoryblok[]
   const contentComponent = variantToComponent(listingVariant.variant)
@@ -76,6 +83,7 @@ export default function Listing({ blok }: { blok?: ListingStoryblok }) {
     isHub ? HUB_PAGE_SIZE : isHighlight ? HIGHLIGHT_INITIAL : EDITORIAL_INITIAL,
   )
   const [currentPage, setCurrentPage] = useState(1)
+  const [openInsect, setOpenInsect] = useState<ListingCardData | null>(null)
 
   useEffect(() => {
     setVisibleCount(
@@ -119,6 +127,27 @@ export default function Listing({ blok }: { blok?: ListingStoryblok }) {
 
   const gridCols = listingType === 'editorial' ? 'cols-3' : 'cols-4'
 
+  const renderRefCard = (card: ListingCardData, index: number) => {
+    if (isInsect) {
+      return (
+        <CardInsect
+          key={`${card.uuid ?? card.title}-${index}`}
+          {...card}
+          onOpen={() => setOpenInsect(card)}
+        />
+      )
+    }
+
+    return (
+      <RefCard
+        key={`${card.href ?? card.title}-${index}`}
+        variant={listingVariant.variant}
+        {...card}
+        dark={isDark}
+      />
+    )
+  }
+
   return (
     <section
       className={cn('wrapper', { dark: isDark })}
@@ -158,13 +187,7 @@ export default function Listing({ blok }: { blok?: ListingStoryblok }) {
 
         {isHub && hubPageItems.length > 0 && (
           <div className={cn('grid', gridCols)}>
-            {hubPageItems.map((card, index) => (
-              <RefCard
-                key={`${card.href ?? card.title}-${index}`}
-                variant={listingVariant.variant}
-                {...card}
-              />
-            ))}
+            {hubPageItems.map((card, index) => renderRefCard(card, index))}
           </div>
         )}
 
@@ -174,13 +197,7 @@ export default function Listing({ blok }: { blok?: ListingStoryblok }) {
 
         {isHighlight && highlightVisible.length > 0 && (
           <div className={cn('grid', gridCols)}>
-            {highlightVisible.map((card, index) => (
-              <RefCard
-                key={`${card.href ?? card.title}-${index}`}
-                variant={listingVariant.variant}
-                {...card}
-              />
-            ))}
+            {highlightVisible.map((card, index) => renderRefCard(card, index))}
           </div>
         )}
 
@@ -207,6 +224,15 @@ export default function Listing({ blok }: { blok?: ListingStoryblok }) {
           </div>
         )}
       </Container>
+
+      {isInsect ? (
+        <InsectGalleryModal
+          open={Boolean(openInsect)}
+          onClose={() => setOpenInsect(null)}
+          title={openInsect?.title ?? ''}
+          images={openInsect ? insectOverlayImages(openInsect) : []}
+        />
+      ) : null}
     </section>
   )
 }

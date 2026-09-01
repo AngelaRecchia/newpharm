@@ -6,6 +6,7 @@ import {
   getParentFullSlug,
   getRelatedCategoryProducts,
 } from '@/lib/products/relatedCategoryProducts'
+import { enrichProductTargetPests } from '@/lib/products/targetPests'
 import StoryblokRenderer from '@/components/StoryblokRenderer'
 import { setRequestLocale } from 'next-intl/server'
 import { notFound } from 'next/navigation'
@@ -78,7 +79,7 @@ export default async function WithLayoutPage({ params }: PageProps) {
   // Usa la funzione centralizzata per recuperare la story
   const story = await getStory(storySlug, locale)
 
-  if (!story || story.content?.component === 'glossary') {
+  if (!story || story.content?.component === 'glossary' || story.content?.component === 'insect') {
     notFound()
   }
 
@@ -120,6 +121,7 @@ export default async function WithLayoutPage({ params }: PageProps) {
           const [relatedProjects, allProducts] = await Promise.all([
             getRelatedProjectsByProduct(story.uuid, locale),
             resolveProductStories(locale),
+            enrichProductTargetPests(story.content, locale),
           ])
 
           if (relatedProjects.length > 0) {
@@ -165,7 +167,7 @@ export async function generateMetadata({ params }: PageProps) {
   const storySlug = slug && slug.length > 0 ? slug.join('/') : ''
   const story = await getStory(storySlug, locale)
 
-  if (story?.content?.component === 'glossary') {
+  if (story?.content?.component === 'glossary' || story?.content?.component === 'insect') {
     notFound()
   }
 

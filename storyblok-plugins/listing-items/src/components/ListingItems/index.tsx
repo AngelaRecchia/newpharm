@@ -35,7 +35,7 @@ import {
 } from '../../types'
 import './listing-items.css'
 
-const VARIANTS: ListingVariantSlug[] = ['prodotto', 'catalogo', 'progetto']
+const VARIANTS: ListingVariantSlug[] = ['prodotto', 'catalogo', 'progetto', 'insetto']
 
 const IMAGE_RATIOS: { value: ListingImageRatio; label: string }[] = [
   { value: 'portrait', label: 'Rettangolare' },
@@ -108,8 +108,7 @@ export function ListingItems() {
     options.context === 'projects_highlight' ||
     value.context === 'projects_highlight'
   const isEditorial = listingType === 'editorial'
-  const variantOptions =
-    value.variant === 'insetto' ? [...VARIANTS, 'insetto' as const] : VARIANTS
+  const variantOptions = VARIANTS
 
   const applicationAreaOptions = applicationAreas as ApplicationAreaEntry[]
 

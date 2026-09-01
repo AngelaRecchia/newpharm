@@ -7,4 +7,4 @@
  * @see https://www.storyblok.com/docs/api/content-delivery/v2#parameters/resolve_relations
  */
 export const STORYBLOK_RESOLVE_RELATIONS =
-  "catalogs_download.items,target_pest_item.insect" as const;
+  "catalogs_download.items,box_image.product,box_image.project" as const;

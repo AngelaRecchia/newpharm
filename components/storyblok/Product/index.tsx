@@ -53,7 +53,7 @@ const Product = ({ blok }: { blok: ProductStoryblok }) => {
     related_category_parent_slug,
   } = blok as any
 
-  const targetPests = mapTargetPests(blok.target_pests)
+  const targetPests = blok.resolved_target_pests ?? mapTargetPests(blok.target_pests)
 
   const categorySlug = getProductCategorySlug(product_filtri, category)
 

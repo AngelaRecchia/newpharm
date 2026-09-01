@@ -3,7 +3,9 @@
 import dynamic from 'next/dynamic'
 import classNames from 'classnames/bind'
 import { StoryblokComponent, storyblokEditable } from '@storyblok/react'
+import { useTranslations } from 'next-intl'
 import Button from '@/components/atoms/Button'
+import Tag from '@/components/atoms/Tag'
 import ArticleBody from '@/components/organisms/ArticleBody'
 import CtaBox from '@/components/organisms/CtaBox'
 import Divider from '@/components/organisms/Divider'
@@ -20,6 +22,7 @@ const Carousel = dynamic(() => import('@/components/organisms/Carousel'))
 const cn = classNames.bind(styles)
 
 export default function Job({ blok }: { blok: JobStoryblok }) {
+  const t = useTranslations('')
   const { title, short_description, area, esperienza, description, body, latest_stories } =
     blok
   const experienceLabel = getJobExperienceLabel(esperienza)
@@ -35,6 +38,9 @@ export default function Job({ blok }: { blok: JobStoryblok }) {
     <div {...storyblokEditable(blok as never)}>
       <div className={cn('hero-text')}>
         <div className={cn('content')}>
+          <div className={cn('tags')}>
+            <Tag tag={t('open_position')} variant="secondary" />
+          </div>
           {hasTitle ? <h1 className={cn('title')}>{title}</h1> : null}
 
           {metaItems.length > 0 ? (

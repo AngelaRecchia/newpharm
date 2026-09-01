@@ -23,7 +23,6 @@ export type {
   Anchor_linkStoryblok,
   AssetStoryblok,
   Banner_accordionStoryblok,
-  Box_imageStoryblok,
   Box_image_carouselStoryblok,
   Card_boxStoryblok,
   Card_cta_boxStoryblok,
@@ -38,7 +37,6 @@ export type {
   GalleryStoryblok,
   HeaderStoryblok,
   Icon_text_highlightStoryblok,
-  InsectStoryblok,
   Logo_itemStoryblok,
   MilestoneStoryblok,
   Milestone_itemStoryblok,
@@ -62,6 +60,9 @@ export type {
   CatalogsDownloadStoryblok,
   CatalogStoryResolved,
   CatalogStoryblok,
+  Box_imageStoryblok,
+  BoxImageStoryResolved,
+  InsectStoryblok,
   InsectStoryResolved,
   Target_pest_itemStoryblok,
   ProductStoryblok,
@@ -87,6 +88,7 @@ export type {
   ListingVariantValue,
   ListingVariantSlug,
   ListingImageRatio,
+  ListingTheme,
   CarouselStoryblok,
   CarouselVariantValue,
   CarouselVariantSlug,
@@ -102,7 +104,7 @@ export type StoryblokComponent =
   | Generated.Anchor_linkStoryblok
   | Generated.AssetStoryblok
   | Generated.Banner_accordionStoryblok
-  | Generated.Box_imageStoryblok
+  | Overrides.Box_imageStoryblok
   | Generated.Box_image_carouselStoryblok
   | Generated.Card_boxStoryblok
   | Generated.Card_cta_boxStoryblok
@@ -120,7 +122,7 @@ export type StoryblokComponent =
   | Generated.HeaderStoryblok
   | Overrides.HeroStoryblok
   | Generated.Icon_text_highlightStoryblok
-  | Generated.InsectStoryblok
+  | Overrides.InsectStoryblok
   | Overrides.LinkStoryblok
   | Generated.Logo_itemStoryblok
   | Generated.MilestoneStoryblok

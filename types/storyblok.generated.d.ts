@@ -6,7 +6,7 @@
  * 
  * Per rigenerare: npm run generate:types
  * 
- * Generato il: 2026-08-31T09:57:17.420Z
+ * Generato il: 2026-08-31T22:21:48.977Z
  */
 
 
@@ -67,6 +67,8 @@ export interface Banner_accordionStoryblok {
 
 
 export interface Box_imageStoryblok {
+  product?: any | null // Optional
+  project?: any | null // Optional
   title?: string | null // Optional
   subtitle?: string | null // Optional
   asset?: any[] | null // Optional
@@ -332,7 +334,11 @@ export interface Icon_text_highlightStoryblok {
 export interface InsectStoryblok {
   title: string
   image?: { id: number; alt: string; name: string; focus: string; title: string; filename: string; copyright: string; fieldtype: string; } | null // Optional
+  icon?: { id: number; alt: string; name: string; focus: string; title: string; filename: string; copyright: string; fieldtype: string; } | null // Optional
   short_description?: string | null // Optional
+  visibility?: any | null // Optional
+  image_hover?: { id: number; alt: string; name: string; focus: string; title: string; filename: string; copyright: string; fieldtype: string; } | null // Optional
+  gallery?: any | null // Optional
   _uid: string
   component: string
   _editable?: string
@@ -376,6 +382,7 @@ export interface LinkStoryblok {
 
 export interface ListingStoryblok {
   type?: any | null // Optional
+  theme?: any | null // Optional
   title?: string | null // Optional
   subtitle?: string | null // Optional
   variant?: any | null // Optional
@@ -450,7 +457,7 @@ export interface ProductStoryblok {
   composition?: string | null // Optional
   dosage_and_application?: string | null // Optional
   usage?: string | null // Optional
-  target_pests?: any[] | null // Optional
+  target_pests?: any | null // Optional
   units_per_carton?: string | null // Optional
   dimensions?: string | null // Optional
   registration?: string | null // Optional
