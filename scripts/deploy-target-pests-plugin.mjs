@@ -90,4 +90,3 @@ if (!saved.ok) {
 
 const id = saved.data?.field_type?.id ?? existing?.id
 console.log(`Deploy completato (id ${id}). Plugin assegnato allo space ${spaceId || '(n/d)'}.`)
-console.log('Prossimo passo: npm run update:insect-components')

@@ -35,4 +35,4 @@ npm run build
 node scripts/deploy-target-pests-plugin.mjs
 ```
 
-Poi in Storyblok: **Settings → Field Plugins → Install → target-pests** sul campo `target_pests` del content type `product` (lo script `update:insect-components` può impostare il campo).
+Poi in Storyblok: **Settings → Field Plugins → Install → target-pests** sul campo `target_pests` del content type `product`.
