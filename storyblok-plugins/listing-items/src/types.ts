@@ -119,6 +119,7 @@ export const VARIANT_TO_COMPONENT: Record<ListingVariantSlug | 'story', string> 
   prodotto: 'product',
   progetto: 'project',
   insetto: 'insect',
+  /** Search catalogo: content_type catalog + downloadable kind=catalog */
   catalogo: 'catalog',
   story: 'story',
 }

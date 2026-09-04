@@ -1,5 +1,6 @@
 import classNames from 'classnames/bind'
-import Asset from '@/components/atoms/Asset'
+import Icon from '@/components/atoms/Icon'
+import { PEST_FAMILY_ICON } from '@/lib/insects/families'
 import type { TargetPestView } from '@/lib/products/mapTargetPests'
 import styles from './index.module.scss'
 
@@ -16,9 +17,9 @@ export default function TargetPests({ items }: TargetPestsProps) {
     <ul className={cn('list')}>
       {items.map((item) => (
         <li key={item.uid} className={cn('row')}>
-          {item.image ? (
+          {item.family ? (
             <span className={cn('icon')}>
-              <Asset asset={item.image} size="s" mode="fit" />
+              <Icon type={PEST_FAMILY_ICON[item.family]} size="l" />
             </span>
           ) : null}
           <p className={cn('copy')}>

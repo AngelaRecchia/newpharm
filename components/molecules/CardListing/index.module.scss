@@ -9,8 +9,19 @@
   text-decoration: none;
   cursor: default;
 
-  &:where(a) {
+  &:where(a),
+  &:where(button) {
     cursor: pointer;
+  }
+
+  &:where(button) {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    font: inherit;
+    color: inherit;
+    text-align: start;
   }
 }
 

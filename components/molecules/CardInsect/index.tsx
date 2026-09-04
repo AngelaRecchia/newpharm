@@ -8,7 +8,7 @@ import styles from './index.module.scss'
 const cn = classNames.bind(styles)
 
 type CardInsectProps = ListingCardData & {
-  onOpen: () => void
+  onOpen?: () => void
 }
 
 export default function CardInsect({
@@ -19,13 +19,11 @@ export default function CardInsect({
   onOpen,
 }: CardInsectProps) {
   const hasHover = Boolean(imageHover)
+  const isInteractive = Boolean(onOpen)
+  const className = cn('wrapper', { hoverable: hasHover, interactive: isInteractive })
 
-  return (
-    <button
-      type="button"
-      className={cn('wrapper', { hoverable: hasHover })}
-      onClick={onOpen}
-    >
+  const inner = (
+    <>
       <span className={cn('image')}>
         {image ? (
           <span className={cn('layer', 'primary')}>
@@ -44,6 +42,16 @@ export default function CardInsect({
           {description ? <span className={cn('description')}>{description}</span> : null}
         </span>
       </span>
-    </button>
+    </>
   )
+
+  if (isInteractive) {
+    return (
+      <button type="button" className={className} onClick={onOpen}>
+        {inner}
+      </button>
+    )
+  }
+
+  return <div className={className}>{inner}</div>
 }

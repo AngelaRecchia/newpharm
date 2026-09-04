@@ -1,6 +1,6 @@
 # Target Pests — Storyblok Field Plugin
 
-Field plugin per il content type **product**: selezione infestanti dal catalogo `insect`, filtrati per `visibility` *Infestante prodotto* o *Entrambi*.
+Field plugin per il content type **product**: selezione infestanti dal catalogo `insect`.
 
 ## Valore salvato
 

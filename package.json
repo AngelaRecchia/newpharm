@@ -12,6 +12,8 @@
     "lint": "next lint",
     "generate:types": "tsx scripts/generate-storyblok-types.ts",
     "create:job-components": "tsx scripts/create-job-components.ts",
+    "create:downloadable-components": "tsx scripts/create-downloadable-components.ts",
+    "patch:insect-component": "tsx scripts/patch-insect-component.ts",
     "seed:job-modal-labels": "tsx scripts/seed-job-modal-labels.ts",
     "generate:component": "tsx scripts/generate-component.ts"
   },

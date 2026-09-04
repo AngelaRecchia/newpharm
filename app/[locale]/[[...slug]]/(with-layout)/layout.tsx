@@ -49,15 +49,11 @@ export default async function LocaleLayout({
 }: LocaleLayoutProps) {
   const { locale, slug } = await params
 
+  const storySlug = slug && slug.length > 0 ? slug.join('/') : ''
+  const story = await getStory(storySlug, locale)
 
   // Carica i global settings una volta per locale (con caching)
   const settings = await getGlobalSettings(locale)
-
-  // Costruisce lo slug per Storyblok (senza locale)
-  const storySlug = slug && slug.length > 0 ? slug.join('/') : ''
-
-  // Usa la funzione centralizzata per recuperare la story
-  const story = await getStory(storySlug, locale)
 
   // Determina la variante dell'header in base al primo blocco del body
   let headerVariant: 'transparent' | 'white' = 'white'

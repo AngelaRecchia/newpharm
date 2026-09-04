@@ -16,15 +16,16 @@ import type { StoryblokLink } from "@/lib/api/utils/links";
 import type { StoryblokAsset } from '@/components/atoms/Asset'
 import type { ISbRichtext } from "@storyblok/react";
 import type { ProjectDivision } from "@/lib/projects/divisions";
+import type { PestFamily } from "@/lib/insects/families";
 import type { LinkActionValue } from "@/lib/link-action";
 import type { RelatedStory } from "@/lib/api/storyblok/stories";
 
 /** Catalog — campi CMS oltre al generato */
-export interface CatalogStoryblok extends Generated.CatalogStoryblok {
+export interface CatalogStoryblok extends Omit<Generated.CatalogStoryblok, "year"> {
   short_description?: string | null;
+  year?: number | string | null;
 }
 
-export type InsectVisibility = "product" | "listing" | "both";
 export type InsectCategory =
   | "volanti"
   | "striscianti"
@@ -40,17 +41,19 @@ export type TargetPestsPluginValue = {
 export type TargetPestView = {
   uid: string;
   title: string;
-  image: AssetStoryblok | null;
+  family: PestFamily | null;
   text?: string;
 };
 
-/** insect — icona prodotto + media listing */
-export interface InsectStoryblok extends Generated.InsectStoryblok {
-  icon?: AssetStoryblok | null;
+/** insect — famiglia per icone SVG + media listing */
+export interface InsectStoryblok extends Omit<
+  Generated.InsectStoryblok,
+  "icon" | "visibility" | "famiglia" | "category"
+> {
   image_hover?: AssetStoryblok | null;
   gallery?: AssetStoryblok[] | null;
-  visibility?: InsectVisibility | null;
   category?: InsectCategory | null;
+  famiglia?: PestFamily | null;
 }
 
 /** Story Insect risolta da CDN */
@@ -99,13 +102,13 @@ export interface HeroStoryblok extends Omit<
   background?: AssetStoryblok[] | null;
 }
 
-/** Story Catalog risolta da CDN (resolve_relations su catalogs_download.items) */
+/** Story catalogo risolta da CDN (catalog legacy o downloadable kind=catalog) */
 export interface CatalogStoryResolved {
   uuid: string;
   name: string;
   slug: string;
   full_slug: string;
-  content: CatalogStoryblok;
+  content: CatalogStoryblok | DownloadableStoryblok;
   [key: string]: unknown;
 }
 
@@ -115,11 +118,53 @@ export interface CatalogStoryResolved {
 export interface CatalogsDownloadStoryblok {
   title?: string | null;
   /** UUID non risolti, oppure oggetti story dopo resolve_relations */
-  items?: (CatalogStoryblok | CatalogStoryResolved | string)[] | null;
+  items?: Array<
+    | string
+    | CatalogStoryblok
+    | DownloadableStoryblok
+    | CatalogStoryResolved
+    | ListingStoryResolved
+  > | null;
   anchor_id?: string | null;
   _uid: string;
   component: string;
   _editable?: string;
+}
+
+export type DownloadableKind = "catalog" | "brochure" | "app" | "other";
+
+/** downloadable — catalogo, brochure, app store o materiale altro */
+export interface DownloadableStoryblok extends Omit<
+  Generated.DownloadableStoryblok,
+  | "kind"
+  | "image"
+  | "division"
+  | "ios_url"
+  | "android_url"
+  | "date"
+  | "year"
+  | "require_download_form"
+  | "component"
+> {
+  kind?: DownloadableKind | null;
+  image?: StoryblokAsset | StoryblokAsset[] | null;
+  division?: ProjectDivision | ProjectDivision[] | string | null;
+  ios_url?: StoryblokLink | null;
+  android_url?: StoryblokLink | null;
+  year?: number | string | null;
+  require_download_form?: boolean | null;
+  component: "downloadable";
+}
+
+export interface DownloadableResourcesStoryblok extends Omit<
+  Generated.Downloadable_resourcesStoryblok,
+  "image"
+> {
+  image?: AssetStoryblok[] | null;
+  /** Popolato SSR da enrichListingBloks — cataloghi */
+  resolved_catalogs?: ListingStoryResolved[] | null;
+  /** Popolato SSR da enrichListingBloks — brochure / app / altro */
+  resolved_downloadables?: ListingStoryResolved[] | null;
 }
 
 /** Story prodotto/progetto risolta da CDN (resolve_relations su box_image.product / box_image.project) */

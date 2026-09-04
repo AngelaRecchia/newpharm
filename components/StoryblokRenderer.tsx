@@ -44,6 +44,12 @@ function preserveSsrEnrichment(source: unknown, target: unknown): unknown {
     if (Array.isArray(sourceRecord.resolved_items)) {
       merged.resolved_items = sourceRecord.resolved_items
     }
+    if (Array.isArray(sourceRecord.resolved_catalogs)) {
+      merged.resolved_catalogs = sourceRecord.resolved_catalogs
+    }
+    if (Array.isArray(sourceRecord.resolved_downloadables)) {
+      merged.resolved_downloadables = sourceRecord.resolved_downloadables
+    }
     if (Array.isArray(sourceRecord.related_projects)) {
       merged.related_projects = sourceRecord.related_projects
     }
@@ -64,6 +70,8 @@ function preserveSsrEnrichment(source: unknown, target: unknown): unknown {
   for (const key of Object.keys(merged)) {
     if (
       key === 'resolved_items' ||
+      key === 'resolved_catalogs' ||
+      key === 'resolved_downloadables' ||
       key === 'related_projects' ||
       key === 'related_category_products' ||
       key === 'related_category_parent_slug' ||

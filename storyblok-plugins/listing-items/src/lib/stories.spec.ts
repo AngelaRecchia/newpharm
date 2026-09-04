@@ -156,6 +156,42 @@ describe('searchStories', () => {
 
     await expect(searchStories('catalogo', 'token', '')).rejects.toThrow('CDN 500')
   })
+
+  it('per catalogo unisce catalog e downloadable kind=catalog', async () => {
+    const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+      const url = requestUrl(input)
+      if (url.includes('/spaces/me')) {
+        return jsonResponse({ space: { version: 1 } })
+      }
+      const parsed = new URL(url)
+      if (parsed.searchParams.get('content_type') === 'downloadable') {
+        return jsonResponse({
+          stories: [
+            { uuid: 'dl-1', name: 'Catalogo nuovo', full_slug: 'it/c-new', published_at: null },
+            { uuid: 'same', name: 'Duplicata', full_slug: 'it/dup', published_at: null },
+          ],
+        })
+      }
+      return jsonResponse({
+        stories: [
+          { uuid: 'same', name: 'Catalogo legacy', full_slug: 'it/c-old', published_at: null },
+        ],
+      })
+    })
+    vi.stubGlobal('fetch', fetchMock)
+
+    const result = await searchStories('catalogo', 'token', '')
+    expect(result.map((story) => story.uuid)).toEqual(['same', 'dl-1'])
+    expect(result[0].name).toBe('Catalogo legacy')
+
+    const storyCalls = storyRequestUrls(fetchMock)
+    const types = storyCalls.map((url) => url.searchParams.get('content_type')).sort()
+    expect(types).toEqual(['catalog', 'downloadable'])
+    const downloadableCall = storyCalls.find(
+      (url) => url.searchParams.get('content_type') === 'downloadable',
+    )
+    expect(downloadableCall?.searchParams.get('filter_query[kind][in]')).toBe('catalog')
+  })
 })
 
 describe('sortStoryOptions', () => {

@@ -60,6 +60,9 @@ export type {
   CatalogsDownloadStoryblok,
   CatalogStoryResolved,
   CatalogStoryblok,
+  DownloadableStoryblok,
+  DownloadableResourcesStoryblok,
+  DownloadableKind,
   Box_imageStoryblok,
   BoxImageStoryResolved,
   InsectStoryblok,
@@ -144,6 +147,8 @@ export type StoryblokComponent =
   | Generated.TeaserStoryblok
   | Generated.Text_revealStoryblok
   | Overrides.CatalogStoryblok
+  | Overrides.DownloadableStoryblok
+  | Overrides.DownloadableResourcesStoryblok
   | Overrides.PartnersStoryblok
   | Overrides.SlideshowStoryblok
   | Overrides.Card_slideshowStoryblok

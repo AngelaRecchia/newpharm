@@ -22,8 +22,9 @@ import {
 import { sortStoriesByDate } from '@/lib/carousel/mapStoryToNewsCard'
 import { filterProjectsByDivisions } from '@/lib/projects/filterProjects'
 import { parseProjectDivisions } from '@/lib/projects/divisions'
-import { isListingVisible } from '@/lib/insects/visibility'
 import { enrichProductsTargetPests } from '@/lib/products/targetPests'
+import { mergeListingStoriesByUuid } from '@/lib/downloadable/map'
+import { parseDownloadableKind } from '@/lib/downloadable/parse'
 import type { ListingStoryResolved } from './types'
 
 export function mapStoryToListingResolved(story: Story): ListingStoryResolved {
@@ -79,9 +80,7 @@ export async function resolveInsectStories(
   locale?: string,
 ): Promise<ListingStoryResolved[]> {
   const stories = await resolveStoriesByComponent('insect', locale)
-  return sortResolvedListingStories(
-    stories.filter((story) => isListingVisible(story.content.visibility)),
-  )
+  return sortResolvedListingStories(stories)
 }
 
 export async function resolveJobStories(
@@ -104,21 +103,37 @@ export async function resolveListingProductItems(
   return sortResolvedListingStories(filtered)
 }
 
+export async function resolveCatalogListingStories(
+  locale?: string,
+): Promise<ListingStoryResolved[]> {
+  const [catalogs, downloadables] = await Promise.all([
+    getStoriesByComponent('catalog', locale),
+    getStoriesByComponent('downloadable', locale),
+  ])
+  const catalogDownloadables = downloadables.filter(
+    (story) => parseDownloadableKind(story.content?.kind) === 'catalog',
+  )
+  return sortResolvedListingStories(
+    mergeListingStoriesByUuid(
+      catalogs.map(mapStoryToListingResolved),
+      catalogDownloadables.map(mapStoryToListingResolved),
+    ),
+  )
+}
+
 export async function resolveListingRefItems(
   parsed: ListingVariantValue,
   locale?: string,
 ): Promise<ListingStoryResolved[]> {
-  const component = variantToComponent(parsed.variant)
-  const allStories = await resolveStoriesByComponent(component, locale)
-  const visibleStories =
-    parsed.variant === 'insetto'
-      ? allStories.filter((story) => isListingVisible(story.content.visibility))
-      : allStories
+  const allStories =
+    parsed.variant === 'catalogo'
+      ? await resolveCatalogListingStories(locale)
+      : await resolveStoriesByComponent(variantToComponent(parsed.variant), locale)
 
   if (parsed.selection_mode === 'manual') {
     if (parsed.items.length === 0) return []
     const included = new Set(parsed.items)
-    return sortResolvedListingStories(visibleStories.filter((story) => included.has(story.uuid)))
+    return sortResolvedListingStories(allStories.filter((story) => included.has(story.uuid)))
   }
 
   if (parsed.selection_mode === 'tag') {
@@ -126,13 +141,13 @@ export async function resolveListingRefItems(
     if (!tag) return []
     const tagged =
       parsed.variant === 'progetto'
-        ? filterProjectsByDivisions(visibleStories, parseProjectDivisions(tag))
-        : visibleStories
+        ? filterProjectsByDivisions(allStories, parseProjectDivisions(tag))
+        : allStories
     return sortResolvedListingStories(tagged)
   }
 
   const excluded = new Set(parsed.items)
-  return sortResolvedListingStories(visibleStories.filter((story) => !excluded.has(story.uuid)))
+  return sortResolvedListingStories(allStories.filter((story) => !excluded.has(story.uuid)))
 }
 
 type BlokRecord = Record<string, unknown> & {
@@ -181,7 +196,8 @@ export async function enrichListingBloks(
       blok.component === 'compare' ||
       blok.component === 'projects_highlight' ||
       blok.component === 'job_list' ||
-      blok.component === 'infestanti'
+      blok.component === 'infestanti' ||
+      blok.component === 'downloadable_resources'
     ) {
       listingBloks.push(blok)
     }
@@ -237,6 +253,16 @@ export async function enrichListingBloks(
 
       if (blok.component === 'infestanti') {
         blok.resolved_items = await resolveInsectStories(locale)
+        return
+      }
+
+      if (blok.component === 'downloadable_resources') {
+        const [catalogs, downloadables] = await Promise.all([
+          getStoriesByComponent('catalog', locale),
+          getStoriesByComponent('downloadable', locale),
+        ])
+        blok.resolved_catalogs = catalogs.map(mapStoryToListingResolved)
+        blok.resolved_downloadables = downloadables.map(mapStoryToListingResolved)
         return
       }
 

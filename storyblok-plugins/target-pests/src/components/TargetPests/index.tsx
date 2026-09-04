@@ -3,7 +3,6 @@ import { useFieldPlugin } from '@storyblok/field-plugin/react'
 import { fetchInsectStories, localeFromPluginStory } from '../../lib/stories'
 import { validateContent } from '../../lib/validateContent'
 import {
-  isProductPestVisible,
   type InsectOption,
   type TargetPestsPluginItem,
   type TargetPestsPluginValue,
@@ -59,7 +58,6 @@ export function TargetPests() {
   const selectable = useMemo(() => {
     const query = search.trim().toLowerCase()
     return insects.filter((insect) => {
-      if (!isProductPestVisible(insect.visibility)) return false
       if (selectedUuids.has(insect.uuid)) return false
       if (!query) return true
       return insect.name.toLowerCase().includes(query)

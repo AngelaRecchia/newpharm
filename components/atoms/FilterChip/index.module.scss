@@ -21,6 +21,16 @@
     }
   }
 
+  &.hoverBlack {
+    @media (hover: hover) and (pointer: fine) {
+      &:hover:not(:disabled):not(.selected) {
+        background-color: $c-black;
+        color: $c-white;
+        border-color: $c-black;
+      }
+    }
+  }
+
   &:focus-visible {
     outline: 2px solid $c-black;
     outline-offset: 2px;

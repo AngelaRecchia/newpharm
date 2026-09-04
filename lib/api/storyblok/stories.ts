@@ -8,6 +8,7 @@ import { getStoryblokApi } from "./client";
 import { getStoryblokVersion, getCacheVersion } from "./config";
 import { STORYBLOK_RESOLVE_RELATIONS } from "./resolveRelations";
 import { AssetStoryblok } from "@/types/storyblok";
+import { NON_ROUTABLE_COMPONENTS, isNonRoutableComponent } from "./routing";
 
 export interface GetStoryOptions {
   version?: "draft" | "published";
@@ -95,11 +96,11 @@ export async function getStory(
 
 /**
  * Recupera tutte le stories da Storyblok per generateStaticParams
- * Esclude automaticamente le stories in 'layout-components', 'glossary', 'insetti' e 'infestanti'
+ * Esclude cartelle di sistema e content type non routabili (downloadable, …).
  *
  * @param options - Opzioni per la richiesta
  * @param options.version - Versione da usare (default: basata su ambiente)
- * @param options.excludePaths - Path da escludere (default: ['layout-components', 'glossary'])
+ * @param options.excludePaths - Path da escludere (default: ['layout-components', 'glossary', 'insetti', 'infestanti'])
  * @param options.perPage - Numero di stories per pagina (default: 100)
  * @returns Array di stories
  *
@@ -134,6 +135,7 @@ export async function getAllStories(
         per_page: perPage,
         page,
         excluding_fields: "content", // Exclude large fields to speed up fetch
+        "filter_query[component][not_in]": NON_ROUTABLE_COMPONENTS.join(","),
       };
 
       // Add cv parameter if available
@@ -163,6 +165,10 @@ export async function getAllStories(
           return false
         }
 
+        if (isNonRoutableComponent(story.content?.component)) {
+          return false
+        }
+
         return true
       });
 
@@ -176,8 +182,62 @@ export async function getAllStories(
       }
     }
 
+    const catalogDownloadables = await fetchDownloadableCatalogStories(
+      version,
+      perPage,
+      cv,
+    )
+    allStories.push(
+      ...catalogDownloadables.filter((story: Story) => {
+        const fullSlug = story.full_slug || ""
+        if (!fullSlug) return false
+        const segments = fullSlug.split("/").filter(Boolean)
+        return !segments.some((segment) => excludePaths.includes(segment))
+      }),
+    )
+
     return allStories;
   } catch (error) {
+    return [];
+  }
+}
+
+async function fetchDownloadableCatalogStories(
+  version: "draft" | "published",
+  perPage: number,
+  cv: number | undefined,
+): Promise<Story[]> {
+  try {
+    const storyblokApi = getStoryblokApi();
+    const stories: Story[] = [];
+    let page = 1;
+    let hasMore = true;
+
+    while (hasMore) {
+      const params: Record<string, unknown> = {
+        version,
+        per_page: perPage,
+        page,
+        excluding_fields: "content",
+        "filter_query[component][in]": "downloadable",
+        "filter_query[kind][in]": "catalog",
+      };
+
+      if (cv !== undefined) {
+        params.cv = cv;
+      }
+
+      const { data } = await storyblokApi.get("cdn/stories", params);
+      const batch = (data?.stories ?? []) as Story[];
+      if (batch.length === 0) break;
+      stories.push(...batch);
+      hasMore = batch.length >= perPage;
+      page += 1;
+    }
+
+    return stories;
+  } catch (error) {
+    console.error("[Storyblok] Error fetching downloadable catalogs", error);
     return [];
   }
 }

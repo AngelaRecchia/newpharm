@@ -14,7 +14,7 @@ import FullBanner from '@/components/organisms/FullBanner'
 import { getStoryblokAnchorId } from '@/lib/storyblok/anchor'
 import { useRefreshPageScroll } from '@/lib/context/smooth-scroll-context'
 import { getEmptyMotion, getGridMotion } from '@/lib/animation/gridPresence'
-import { insectOverlayImages } from '@/lib/listing/mapInsectToCard'
+import { hasInsectGallery, insectOverlayImages } from '@/lib/listing/mapInsectToCard'
 import { mapStoryToCard } from '@/lib/listing/mapStoryToCard'
 import { INSECT_CATEGORIES, type InsectCategory } from '@/lib/insects/categories'
 import { filterInsectsByCategory } from '@/lib/insects/filterInsects'
@@ -137,7 +137,11 @@ function InfestantiInner({ blok }: { blok?: InfestantiStoryblok }) {
                   >
                     <CardInsect
                       {...item.card}
-                      onOpen={() => setOpenInsect(item.card)}
+                      onOpen={
+                        hasInsectGallery(item.card)
+                          ? () => setOpenInsect(item.card)
+                          : undefined
+                      }
                     />
                   </motion.div>
                 )

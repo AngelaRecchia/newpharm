@@ -1,0 +1,83 @@
+@use "../../../styles" as *;
+
+.wrapper {
+  width: 100%;
+  color: $c-black;
+  overflow: visible;
+  background-color: $c-white;
+}
+
+.body {
+  position: relative;
+  z-index: 1;
+  background-color: $c-white;
+  padding-block-end: $s-80;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: $s-64;
+
+  &.afterPrimary {
+    padding-block-start: $s-32;
+
+    @include md {
+      padding-block-start: $s-48;
+    }
+  }
+
+  &.noHero {
+    padding-block-start: $s-40;
+
+    @include md {
+      padding-block-start: $s-96;
+    }
+  }
+}
+
+.head {
+  padding-top: 5.625rem;
+
+  @include lg {
+    padding-top: 13.5rem;
+  }
+}
+
+.groups {
+  display: flex;
+  flex-direction: column;
+  gap: $s-64;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: $s-24;
+}
+
+.groupHeading {
+  @include t-h6;
+  margin: 0;
+}
+
+.grid {
+  display: grid;
+  gap: $s-16;
+  @include listing-grid-columns(4);
+}
+
+.gridItem {
+  min-width: 0;
+}
+
+.empty {
+  @include t-body;
+  padding-block: $s-40;
+  color: $c-gray-600;
+}
+
+.footer {
+  display: flex;
+  justify-content: center;
+}

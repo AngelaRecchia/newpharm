@@ -1,5 +1,4 @@
 import { getStoriesByComponent, getStoriesByUuids } from '@/lib/api/storyblok/stories'
-import { isListingVisible } from '@/lib/insects/visibility'
 import { filterListingByVista } from '@/lib/listing/filterListingByVista'
 import { sortResolvedListingStories } from '@/lib/listing/parseListingVariant'
 import { mapStoryToListingResolved } from '@/lib/listing/resolveListingItems'
@@ -48,21 +47,18 @@ export async function resolveCarouselItems(
     const allStories = (await getStoriesByComponent('insect', locale)).map(
       mapStoryToListingResolved,
     )
-    const visibleStories = allStories.filter((story) =>
-      isListingVisible(story.content.visibility),
-    )
 
     if (parsed.selection_mode === 'manual') {
       if (parsed.items.length === 0) return []
       const included = new Set(parsed.items)
       return sortResolvedListingStories(
-        visibleStories.filter((story) => included.has(story.uuid)),
+        allStories.filter((story) => included.has(story.uuid)),
       )
     }
 
     const excluded = new Set(parsed.items)
     return sortResolvedListingStories(
-      visibleStories.filter((story) => !excluded.has(story.uuid)),
+      allStories.filter((story) => !excluded.has(story.uuid)),
     )
   }
 

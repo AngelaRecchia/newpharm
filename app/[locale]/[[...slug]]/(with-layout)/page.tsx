@@ -8,10 +8,13 @@ import {
 } from '@/lib/products/relatedCategoryProducts'
 import { enrichProductTargetPests } from '@/lib/products/targetPests'
 import StoryblokRenderer from '@/components/StoryblokRenderer'
+import DownloadGate from '@/components/organisms/DownloadGate'
 import { setRequestLocale } from 'next-intl/server'
 import { notFound } from 'next/navigation'
 import { PageStoryblok, StoryStoryblok, JobStoryblok } from '@/types/storyblok'
 import localeConfig from '@/i18n/locales.json'
+import { isDownloadGateContent, isNonRoutableComponent } from '@/lib/api/storyblok/routing'
+import { mapStoryToDownloadGate } from '@/lib/downloadable/map'
 
 interface PageProps {
   params: Promise<{
@@ -79,7 +82,17 @@ export default async function WithLayoutPage({ params }: PageProps) {
   // Usa la funzione centralizzata per recuperare la story
   const story = await getStory(storySlug, locale)
 
-  if (!story || story.content?.component === 'glossary' || story.content?.component === 'insect') {
+  if (!story) {
+    notFound()
+  }
+
+  if (isDownloadGateContent(story.content)) {
+    const gate = mapStoryToDownloadGate(story, story.name)
+    if (!gate) notFound()
+    return <DownloadGate {...gate} />
+  }
+
+  if (isNonRoutableComponent(story.content?.component)) {
     notFound()
   }
 
@@ -167,7 +180,14 @@ export async function generateMetadata({ params }: PageProps) {
   const storySlug = slug && slug.length > 0 ? slug.join('/') : ''
   const story = await getStory(storySlug, locale)
 
-  if (story?.content?.component === 'glossary' || story?.content?.component === 'insect') {
+  if (isDownloadGateContent(story?.content)) {
+    return {
+      title: story?.name ? `${story.name} | Newpharm` : 'Newpharm',
+      robots: { index: false, follow: true },
+    }
+  }
+
+  if (isNonRoutableComponent(story?.content?.component)) {
     notFound()
   }
 

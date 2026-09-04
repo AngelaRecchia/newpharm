@@ -101,15 +101,12 @@ function mapStory(story: RawStory): StoryOption | null {
   }
 }
 
-export async function searchStories(
-  variant: keyof typeof VARIANT_TO_COMPONENT,
+async function fetchStoryPages(
   token: string,
+  extra: Record<string, string>,
   search: string,
   locale?: string,
 ): Promise<StoryOption[]> {
-  if (!token) return []
-
-  const component = VARIANT_TO_COMPONENT[variant]
   const cv = await getCacheVersion(token)
   const byUuid = new Map<string, StoryOption>()
   let page = 1
@@ -121,7 +118,7 @@ export async function searchStories(
       per_page: String(PER_PAGE),
       page: String(page),
       sort_by: 'created_at:desc',
-      content_type: component,
+      ...extra,
     })
 
     if (cv !== undefined) {
@@ -155,6 +152,42 @@ export async function searchStories(
   }
 
   return [...byUuid.values()]
+}
+
+export async function searchStories(
+  variant: keyof typeof VARIANT_TO_COMPONENT,
+  token: string,
+  search: string,
+  locale?: string,
+): Promise<StoryOption[]> {
+  if (!token) return []
+
+  if (variant === 'catalogo') {
+    const [catalogs, downloadables] = await Promise.all([
+      fetchStoryPages(token, { content_type: 'catalog' }, search, locale),
+      fetchStoryPages(
+        token,
+        {
+          content_type: 'downloadable',
+          'filter_query[kind][in]': 'catalog',
+        },
+        search,
+        locale,
+      ),
+    ])
+    const byUuid = new Map<string, StoryOption>()
+    for (const story of [...catalogs, ...downloadables]) {
+      if (!byUuid.has(story.uuid)) byUuid.set(story.uuid, story)
+    }
+    return [...byUuid.values()]
+  }
+
+  return fetchStoryPages(
+    token,
+    { content_type: VARIANT_TO_COMPONENT[variant] },
+    search,
+    locale,
+  )
 }
 
 function storyTimestamp(story: StoryOption): number {

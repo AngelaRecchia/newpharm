@@ -1,11 +1,12 @@
 import { getStoriesByUuids, type Story } from '@/lib/api/storyblok/stories'
+import { parsePestFamily, type PestFamily } from '@/lib/insects/families'
 import type { ListingStoryResolved } from '@/lib/listing/types'
-import type { AssetStoryblok, InsectStoryblok, InsectStoryResolved } from '@/types/storyblok'
+import type { InsectStoryblok, InsectStoryResolved } from '@/types/storyblok'
 
 export type TargetPestView = {
   uid: string
   title: string
-  image: AssetStoryblok | null
+  family: PestFamily | null
   text?: string
 }
 
@@ -16,22 +17,6 @@ export type TargetPestsPluginItem = {
 
 export type TargetPestsPluginValue = {
   items: TargetPestsPluginItem[]
-}
-
-function isAsset(value: unknown): value is AssetStoryblok {
-  return (
-    !!value &&
-    typeof value === 'object' &&
-    'filename' in value &&
-    typeof (value as { filename?: unknown }).filename === 'string' &&
-    (value as { filename: string }).filename.length > 0
-  )
-}
-
-function insectAsset(image: unknown): AssetStoryblok | null {
-  if (isAsset(image)) return image
-  if (Array.isArray(image) && isAsset(image[0])) return image[0]
-  return null
 }
 
 function getInsectBlok(raw: unknown): InsectStoryblok | null {
@@ -91,7 +76,7 @@ function viewFromInsect(
   return {
     uid,
     title: insect.title,
-    image: insectAsset(insect.icon ?? insect.image),
+    family: parsePestFamily(insect.famiglia),
     text,
   }
 }

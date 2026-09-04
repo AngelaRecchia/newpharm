@@ -1,0 +1,63 @@
+@use "sass:color" as color;
+@use "../../../styles" as *;
+
+@function white-alpha($a) {
+  @return color.change($c-white, $alpha: $a);
+}
+
+.wrapper {
+  width: 100%;
+  background-color: $c-white;
+  color: $c-black;
+  padding-block: $s-40 $s-80;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: $s-64;
+}
+
+.layout {
+  display: grid;
+  gap: $s-32;
+
+  @include md {
+    grid-template-columns: minmax(0, 16rem) minmax(0, 1fr);
+    gap: $s-64;
+    align-items: start;
+  }
+}
+
+.cover {
+  position: relative;
+  overflow: hidden;
+  border-radius: $s-4;
+  aspect-ratio: 259 / 340;
+  background-color: $c-surface;
+}
+
+.formWrap {
+  background: $c-black;
+  color: $c-white;
+  border-radius: $s-4;
+  padding: $s-40 $s-24;
+
+  @include md {
+    padding: $s-40;
+  }
+}
+
+.fileHint {
+  @include t-note;
+  margin: 0 0 $s-8;
+  color: white-alpha(0.5);
+  word-break: break-word;
+}
+
+.formTitle {
+  @include t-h6;
+  margin: 0 0 $s-24;
+  font-weight: $font-weight-semibold;
+  color: $c-white;
+}

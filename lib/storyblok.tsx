@@ -38,6 +38,7 @@ import Milestone from '@/components/organisms/Milestone'
 import Partners from '@/components/organisms/Partners'
 import Slideshow from '@/components/organisms/Slideshow'
 import CatalogsDownload from '@/components/organisms/CatalogsDownload'
+import DownloadableResources from '@/components/organisms/DownloadableResources'
 import Listing from '@/components/organisms/Listing'
 import Products from '@/components/organisms/Products'
 import Projects from '@/components/organisms/Projects'
@@ -83,6 +84,7 @@ const components = {
   partners: Partners,
   slideshow: Slideshow,
   catalogs_download: CatalogsDownload,
+  downloadable_resources: DownloadableResources,
   listing: Listing,
   products: Products,
   projects: Projects,

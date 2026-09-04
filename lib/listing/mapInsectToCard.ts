@@ -26,15 +26,22 @@ function firstImage(images: unknown): StoryblokAsset | null {
   return null
 }
 
+function isFilledAsset(image: unknown): image is StoryblokAsset {
+  return (
+    !!image &&
+    typeof image === 'object' &&
+    'filename' in image &&
+    typeof (image as StoryblokAsset).filename === 'string' &&
+    (image as StoryblokAsset).filename.length > 0
+  )
+}
+
 function asGallery(images: unknown): StoryblokAsset[] {
   if (!Array.isArray(images)) {
     const single = firstImage(images)
-    return single ? [single] : []
+    return single && isFilledAsset(single) ? [single] : []
   }
-  return images.filter(
-    (image): image is StoryblokAsset =>
-      !!image && typeof image === 'object' && 'filename' in image,
-  )
+  return images.filter(isFilledAsset)
 }
 
 export function mapInsectStoryToCard(story: ListingStoryResolved): ListingCardData {
@@ -53,8 +60,12 @@ export function mapInsectStoryToCard(story: ListingStoryResolved): ListingCardDa
   }
 }
 
+export function hasInsectGallery(card: ListingCardData): boolean {
+  return Boolean(card.gallery?.some((image) => image.filename))
+}
+
 export function insectOverlayImages(card: ListingCardData): StoryblokAsset[] {
-  if (card.gallery && card.gallery.length > 0) return card.gallery
+  if (hasInsectGallery(card) && card.gallery) return card.gallery
   return [card.image, card.imageHover ?? null].filter(
     (image): image is StoryblokAsset => image !== null,
   )

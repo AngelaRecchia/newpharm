@@ -10,7 +10,10 @@
   background: transparent;
   color: $c-black;
   text-align: start;
-  cursor: pointer;
+
+  &.interactive {
+    cursor: pointer;
+  }
 }
 
 .image {
@@ -39,7 +42,7 @@
   padding-block: $s-16;
 }
 
-.content-wrapper::before {
+.wrapper.interactive .content-wrapper::before {
   content: "";
   display: block;
   @include hover-circle-dot($color: currentColor);
@@ -54,6 +57,9 @@
   gap: $s-8;
   padding-inline-end: $s-24;
   min-width: 0;
+}
+
+.wrapper.interactive .content {
   @include hover-text-shift;
 }
 
@@ -70,12 +76,13 @@
 }
 
 @include md {
-  .wrapper:hover,
-  .wrapper:focus-visible {
-    &.hoverable .layer.hover {
-      opacity: 1;
-    }
+  .wrapper.hoverable:hover .layer.hover,
+  .wrapper.hoverable:focus-visible .layer.hover {
+    opacity: 1;
+  }
 
+  .wrapper.interactive:hover,
+  .wrapper.interactive:focus-visible {
     .content-wrapper::before {
       transform: scale(1);
       opacity: 1;

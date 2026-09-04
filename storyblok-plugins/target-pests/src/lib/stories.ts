@@ -1,4 +1,4 @@
-import type { InsectOption, InsectVisibility } from '../types'
+import type { InsectOption } from '../types'
 
 const LOCALE_FOLDERS = new Set(['it', 'en'])
 const PER_PAGE = 100
@@ -17,17 +17,11 @@ export function localeFromPluginStory(story: unknown): string | undefined {
   return localeFromStorySlug((story as { full_slug?: unknown }).full_slug)
 }
 
-function parseVisibility(raw: unknown): InsectVisibility | null {
-  if (raw === 'product' || raw === 'listing' || raw === 'both') return raw
-  return null
-}
-
 type RawStory = {
   uuid: string
   name: string
   full_slug: string
   content?: {
-    visibility?: unknown
     title?: string
   }
 }
@@ -85,7 +79,6 @@ function mapStory(story: RawStory): InsectOption | null {
   return {
     uuid: story.uuid,
     name: story.content?.title || story.name,
-    visibility: parseVisibility(story.content?.visibility),
   }
 }
 

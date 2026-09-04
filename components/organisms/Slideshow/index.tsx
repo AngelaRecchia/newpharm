@@ -10,9 +10,8 @@ import 'swiper/css'
 import 'swiper/css/navigation'
 import Asset from '@/components/atoms/Asset'
 import Button from '@/components/atoms/Button'
-import SmartLink from '@/components/atoms/SmartLink'
 import { SlideshowStoryblok, Card_slideshowStoryblok } from '@/types/storyblok'
-import { isLinkEmpty } from '@/lib/api/utils/links'
+import { isLinkStoryblokValid } from '@/lib/api/utils/links'
 import { getStoryblokAnchorId } from '@/lib/storyblok/anchor'
 import GlossaryText from '@/components/atoms/GlossaryText'
 
@@ -78,36 +77,44 @@ export default function Slideshow({ blok }: { blok?: SlideshowStoryblok }) {
                                 swiper.navigation.update()
                             }}
                         >
-                            {cards?.map((card: Card_slideshowStoryblok) => (
-                                <SwiperSlide key={card._uid} className={cn('swiper-slide')}>
-                                    <SmartLink link={card.link} className={cn('card')}>
-                                        {card.image && (
-                                            <div className={cn('card-image')}>
-                                                <Asset
-                                                    asset={
-                                                        Array.isArray(card.image)
-                                                            ? card.image[0]
-                                                            : card.image
-                                                    }
-                                                    size="m"
-                                                />
-                                            </div>
-                                        )}
-                                        {card.text && (
-                                            <p className={cn('card-text')}>
-                                                <GlossaryText text={card.text} />
+                            {cards?.map((card: Card_slideshowStoryblok) => {
+                                const links = (card.link ?? []).filter(isLinkStoryblokValid)
 
-                                                {card.link && card.link.length > 0 && !isLinkEmpty(card.link[0]?.link) && (
-                                                    <div className={cn('card-link')}>
-                                                        <Button link={card.link} inert={true} variant="secondary" />
-                                                    </div>
-                                                )}
-                                            </p>
-                                        )}
+                                return (
+                                    <SwiperSlide key={card._uid} className={cn('swiper-slide')}>
+                                        <article className={cn('card')}>
+                                            {card.image && (
+                                                <div className={cn('card-image')}>
+                                                    <Asset
+                                                        asset={
+                                                            Array.isArray(card.image)
+                                                                ? card.image[0]
+                                                                : card.image
+                                                        }
+                                                        size="m"
+                                                    />
+                                                </div>
+                                            )}
+                                            {(card.text || links.length > 0) && (
+                                                <div className={cn('card-text')}>
+                                                    {card.text ? (
+                                                        <GlossaryText text={card.text} />
+                                                    ) : null}
 
-                                    </SmartLink>
-                                </SwiperSlide>
-                            ))}
+                                                    {links.map((linkItem) => (
+                                                        <div key={linkItem._uid} className={cn('card-link')}>
+                                                            <Button
+                                                                link={linkItem}
+                                                                variant="secondary"
+                                                            />
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </article>
+                                    </SwiperSlide>
+                                )
+                            })}
 
                         </Swiper>
                     </div>

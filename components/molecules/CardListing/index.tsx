@@ -40,6 +40,29 @@ function CardImage({ image }: { image: CardListingImage }) {
   return <Asset asset={source} size="m" />
 }
 
+function hasCardImage(image: CardListingImage): boolean {
+  if (!image) return false
+  const source = Array.isArray(image) ? image[0] : image
+  if (!source) return false
+  if (isAssetStoryblok(source)) {
+    return Boolean(source.desktop?.filename || source.mobile?.filename)
+  }
+  return Boolean((source as StoryblokAsset).filename)
+}
+
+function toCardHref(href?: string): string | undefined {
+  if (!href) return undefined
+  if (
+    href.startsWith('/') ||
+    href.startsWith('#') ||
+    href.startsWith('//') ||
+    /^https?:\/\//i.test(href)
+  ) {
+    return href
+  }
+  return `/${href}`
+}
+
 export type CardListingProps = {
   title?: string | null
   subtitle?: string | null
@@ -50,6 +73,8 @@ export type CardListingProps = {
   dark?: boolean
   imageRatio?: 'square' | 'portrait'
   showDownload?: boolean
+  onActivate?: () => void
+  titleOnlyWhenNoImage?: boolean
 }
 
 export default function CardListing({
@@ -62,35 +87,47 @@ export default function CardListing({
   dark = false,
   imageRatio = 'portrait',
   showDownload = false,
+  onActivate,
+  titleOnlyWhenNoImage = false,
 }: CardListingProps) {
   const hasStoryblokLink = Boolean(getLinkUrl(link))
-  const hrefValue = href
-    ? href.startsWith('/')
-      ? href
-      : `/${href}`
-    : undefined
-  const hasLink = Boolean(hasStoryblokLink || hrefValue)
+  const hrefValue = toCardHref(href)
+  const hasCover = hasCardImage(image)
+  const isInteractive = Boolean(hasStoryblokLink || hrefValue || onActivate)
+  const hideMeta = titleOnlyWhenNoImage && !hasCover
+  const shownSubtitle = hideMeta ? undefined : subtitle
+  const shownDescription = hideMeta ? undefined : description
   const inner = (
     <>
-      <div className={cn('image', { square: imageRatio === 'square' })}>
-        <CardImage image={image} />
-      </div>
+      {hasCover ? (
+        <div className={cn('image', { square: imageRatio === 'square' })}>
+          <CardImage image={image} />
+        </div>
+      ) : null}
       <div className={cn('content-wrapper')}>
         <div className={cn('content')}>
           {title ? <h3 className={cn('title')}>{title}</h3> : null}
-          {subtitle ? <p className={cn('subtitle')}>{subtitle}</p> : null}
+          {shownSubtitle ? <p className={cn('subtitle')}>{shownSubtitle}</p> : null}
+          {shownDescription ? <p className={cn('description')}>{shownDescription}</p> : null}
           {showDownload ? (
             <span className={cn('download')} aria-hidden>
               <Icon type="download" size="s" />
             </span>
           ) : null}
-          {description ? <p className={cn('description')}>{description}</p> : null}
         </div>
       </div>
     </>
   )
 
-  const className = cn('wrapper', { dark, linked: hasLink })
+  const className = cn('wrapper', { dark, linked: isInteractive })
+
+  if (onActivate) {
+    return (
+      <button type="button" className={className} onClick={onActivate}>
+        {inner}
+      </button>
+    )
+  }
 
   if (hasStoryblokLink) {
     return (

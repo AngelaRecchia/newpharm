@@ -1,6 +1,12 @@
 export type ListingVariantSlug = 'prodotto' | 'progetto' | 'insetto' | 'catalogo'
 
-export type ListingContentComponent = 'product' | 'project' | 'insect' | 'catalog' | 'job'
+export type ListingContentComponent =
+  | 'product'
+  | 'project'
+  | 'insect'
+  | 'catalog'
+  | 'downloadable'
+  | 'job'
 
 export type ListingImageRatio = 'square' | 'portrait'
 
@@ -49,7 +55,7 @@ export const VARIANT_TO_COMPONENT: Record<ListingVariantSlug, ListingContentComp
   prodotto: 'product',
   progetto: 'project',
   insetto: 'insect',
-  catalogo: 'catalog',
+  catalogo: 'catalog', // dual-read: resolveCatalogListingStories aggiunge anche downloadable kind=catalog
 }
 
 export type ListingCardData = {
