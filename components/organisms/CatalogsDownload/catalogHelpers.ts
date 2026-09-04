@@ -45,19 +45,32 @@ export function getCatalogFileUrl(catalog: CatalogLikeContent): string | undefin
   return getAssetFileUrl(catalog.file)
 }
 
+/** Replace Storyblok CDN domain with Newpharm domain. */
+function mapToNewpharmUrl(url: string | undefined): string | undefined {
+  if (!url) return undefined
+  return url.replace('//a.storyblok.com/', '//www.newpharm.it/')
+}
+
 /** Testo riga + nome file per modale (stesso calcolo ovunque) */
 export function getCatalogRowMeta(
   catalog: CatalogLikeContent,
   productDownloadFallback: string,
 ) {
   const fileUrl = getCatalogFileUrl(catalog)
-  const assetName = getAssetName(catalog.file)
-  const label = catalog.title || assetName || productDownloadFallback
-  const modalFileName = assetName || label
   const rawDesc = catalog.short_description
   const shortDescription =
     typeof rawDesc === 'string' && rawDesc.trim().length > 0
       ? rawDesc.trim()
       : undefined
-  return { label, modalFileName, fileUrl, shortDescription }
+
+  // Usa il titolo del catalogo come nome visualizzato, non il nome file Storyblok
+  const label = catalog.title?.trim() || productDownloadFallback
+  const modalFileName = label
+
+  return {
+    label,
+    modalFileName,
+    fileUrl: mapToNewpharmUrl(fileUrl),
+    shortDescription,
+  }
 }

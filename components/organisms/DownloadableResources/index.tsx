@@ -268,6 +268,7 @@ function DownloadableResourcesInner({
 
         {showChips ? (
           <FilterChips
+            className={cn('chips')}
             items={available}
             value={kind ? [kind] : []}
             onChange={handleKindsChange}
