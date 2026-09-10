@@ -25,6 +25,9 @@
     position: sticky;
     top: var(--sticky-top, 0px);
     z-index: 19;
+    // Stessa durata della transizione transform dell'header, per restare
+    // in sync quando l'header si nasconde/mostra durante lo scroll.
+    transition: top 300ms ease;
   }
 }
 
@@ -161,6 +164,7 @@
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scroll-behavior: smooth;
+    transition: top 300ms ease;
 
     // Nasconde la scrollbar
     &::-webkit-scrollbar {

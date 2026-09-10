@@ -37,6 +37,47 @@ function walkBloks(node: unknown, visit: (blok: BlokRecord) => void): void {
   }
 }
 
+/**
+ * Risolve la variante `related_products` (manual o dynamic per categoria/sottocategoria/
+ * application_area/bestseller). Usata sia dal Carousel (limit=CAROUSEL_LIMIT) sia da chi
+ * ha bisogno dell'elenco completo/non limitato (es. pagina Project, indice inverso prodotto→progetti).
+ * `excludeUuid` permette di escludere una story (es. il prodotto corrente) dal risultato.
+ */
+export async function resolveRelatedProductsVariant(
+  parsed: CarouselVariantValue,
+  locale?: string,
+  limit?: number,
+  excludeUuid?: string,
+): Promise<ListingStoryResolved[]> {
+  let result: ListingStoryResolved[]
+
+  if (parsed.selection_mode === 'manual') {
+    if (parsed.items.length === 0) return []
+    const items = limit ? parsed.items.slice(0, limit) : parsed.items
+    const products = await getStoriesByUuids(items, locale)
+    result = products.map(mapStoryToListingResolved)
+  } else {
+    const allProducts = (await getStoriesByComponent('product', locale)).map(
+      mapStoryToListingResolved,
+    )
+    const filtered = filterListingByVista(allProducts, {
+      selection_mode: 'dynamic',
+      vista: parsed.vista,
+      category: parsed.category,
+      subcategory: parsed.subcategory,
+      application_area: parsed.application_area,
+      bestseller: parsed.bestseller,
+    })
+    result = sortProductStories(filtered, 'recent')
+  }
+
+  if (excludeUuid) {
+    result = result.filter((story) => story.uuid !== excludeUuid)
+  }
+
+  return limit ? result.slice(0, limit) : result
+}
+
 export async function resolveCarouselItems(
   parsed: CarouselVariantValue,
   locale?: string,
@@ -84,27 +125,7 @@ export async function resolveCarouselItems(
   }
 
   if (parsed.variant === 'related_products') {
-    if (parsed.selection_mode === 'manual') {
-      if (parsed.items.length === 0) return []
-      const products = await getStoriesByUuids(
-        parsed.items.slice(0, CAROUSEL_LIMIT),
-        locale,
-      )
-      return products.map(mapStoryToListingResolved)
-    }
-
-    const allProducts = (await getStoriesByComponent('product', locale)).map(
-      mapStoryToListingResolved,
-    )
-    const filtered = filterListingByVista(allProducts, {
-      selection_mode: 'dynamic',
-      vista: parsed.vista,
-      category: parsed.category,
-      subcategory: parsed.subcategory,
-      application_area: parsed.application_area,
-      bestseller: parsed.bestseller,
-    })
-    return sortProductStories(filtered, 'recent').slice(0, CAROUSEL_LIMIT)
+    return resolveRelatedProductsVariant(parsed, locale, CAROUSEL_LIMIT)
   }
 
   const allProducts = (await getStoriesByComponent('product', locale)).map(

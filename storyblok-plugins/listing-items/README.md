@@ -1,6 +1,8 @@
 # listing-items (Storyblok field plugin)
 
-Plugin per il campo `variant` dei blok **listing** e **carousel**. L’UI dipende dal componente padre.
+Plugin per il campo `variant` dei blok **listing** e **carousel**, e per il campo
+dedicato **`related_products`** su content type come **Story** e **Project**. L'UI
+dipende dal componente padre.
 
 ## Listing
 

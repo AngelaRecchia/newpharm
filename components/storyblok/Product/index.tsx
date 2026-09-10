@@ -53,6 +53,7 @@ const Product = ({ blok }: { blok: ProductStoryblok }) => {
     related_projects,
     related_category_products,
     related_category_parent_slug,
+    related_project_products,
     auto_cta_box,
   } = blok as any
 
@@ -215,21 +216,13 @@ const Product = ({ blok }: { blok: ProductStoryblok }) => {
       {/* CTA automatiche prima delle sezioni/carousel automatici */}
       {auto_cta_box && <CtaBox blok={auto_cta_box} />}
 
-      {/* Progetti correlati — query inversa da page.tsx */}
-      {related_projects && related_projects.length > 0 && (
-        <div className={cn('related-projects')}>
-          <h2 className={cn('related-projects-title')}>{t('product_related-projects')}</h2>
-          <div className={cn('related-projects-grid')}>
-            {related_projects.map((project: any, index: number) => (
-              <SmartLink key={project.full_slug ?? `related-project-${index}`} href={`/${project.full_slug}`} className={cn('project-card')}>
-                <div className={cn('project-card-image')}>
-                  <Asset asset={project.asset} size="m" overlay />
-                </div>
-                <span className={cn('project-card-title')}>{project.title}</span>
-              </SmartLink>
-            ))}
-          </div>
-        </div>
+      {/* Carousel prodotti dello stesso progetto — query inversa */}
+      {related_project_products && related_project_products.length > 0 && (
+        <Carousel
+          variant="prodotto"
+          title={t('completa_collezione')}
+          productItems={related_project_products}
+        />
       )}
 
       {related_category_products && related_category_products.length > 0 && (

@@ -9,6 +9,10 @@ import { getStoryblokVersion, getCacheVersion } from "./config";
 import { STORYBLOK_RESOLVE_RELATIONS } from "./resolveRelations";
 import { AssetStoryblok } from "@/types/storyblok";
 import { NON_ROUTABLE_COMPONENTS, isNonRoutableComponent } from "./routing";
+import { parseCarouselVariant } from "@/lib/carousel/parseCarouselVariant";
+import { filterListingByVista } from "@/lib/listing/filterListingByVista";
+import { sortProductStories } from "@/lib/products/filterProducts";
+import type { ListingStoryResolved } from "@/lib/listing/types";
 
 export interface GetStoryOptions {
   version?: "draft" | "published";
@@ -28,6 +32,15 @@ export interface Story {
   slug: string;
   full_slug: string;
   [key: string]: any;
+}
+
+const storyCache = new Map<string, Promise<Story | null>>();
+const allStoriesCache = new Map<string, Promise<Story[]>>();
+
+function stableOptionsKey(options: Record<string, unknown>): string {
+  return JSON.stringify(
+    Object.entries(options).sort(([a], [b]) => a.localeCompare(b)),
+  );
 }
 
 /**
@@ -60,10 +73,27 @@ export async function getStory(
 ): Promise<Story | null> {
   const storyPath =
     locale && !slug.startsWith(locale + "/") ? `${locale}/${slug}` : slug;
+  const version = options.version || getStoryblokVersion();
+  const cacheKey = `${storyPath}:${version}:${stableOptionsKey(options)}`;
 
+  if (version === "published") {
+    const cached = storyCache.get(cacheKey);
+    if (cached) return cached;
+    const promise = fetchStory(storyPath, version, options);
+    storyCache.set(cacheKey, promise);
+    return promise;
+  }
+
+  return fetchStory(storyPath, version, options);
+}
+
+async function fetchStory(
+  storyPath: string,
+  version: "draft" | "published",
+  options: GetStoryOptions,
+): Promise<Story | null> {
   try {
     const storyblokApi = getStoryblokApi();
-    const version = options.version || getStoryblokVersion();
     const cv = await getCacheVersion();
 
     const params: Record<string, any> = {
@@ -88,7 +118,7 @@ export async function getStory(
       return null; // Graceful return for notFound()
     }
 
-    console.error(`[Storyblok] Error fetching ${storyPath}}`);
+    console.error(`[Storyblok] Error fetching ${storyPath}`);
 
     return null;
   }
@@ -116,11 +146,29 @@ export async function getAllStories(
   } = {}
 ): Promise<Story[]> {
   const {
-    version = getStoryblokVersion(),
+    version: requestedVersion,
     excludePaths = ["layout-components", "glossary", "insetti", "infestanti"],
     perPage = 100,
   } = options;
+  const version = requestedVersion || getStoryblokVersion();
+  const cacheKey = `${version}:${perPage}:${stableOptionsKey({ excludePaths })}`;
 
+  if (version === "published") {
+    const cached = allStoriesCache.get(cacheKey);
+    if (cached) return cached;
+    const promise = fetchAllStories(version, excludePaths, perPage);
+    allStoriesCache.set(cacheKey, promise);
+    return promise;
+  }
+
+  return fetchAllStories(version, excludePaths, perPage);
+}
+
+async function fetchAllStories(
+  version: "draft" | "published",
+  excludePaths: string[],
+  perPage: number,
+): Promise<Story[]> {
   try {
     const storyblokApi = getStoryblokApi();
     const allStories: Story[] = [];
@@ -594,22 +642,9 @@ export interface RelatedProject {
   title: string;
   short_description?: string | null;
   asset: AssetStoryblok[];
-}
-
-function extractProductUuids(relatedProducts: unknown): string[] {
-  if (!relatedProducts) return [];
-  if (Array.isArray(relatedProducts)) {
-    return relatedProducts.filter(
-      (uuid): uuid is string => typeof uuid === "string" && uuid.length > 0
-    );
-  }
-  if (typeof relatedProducts === "string") {
-    return relatedProducts
-      .split(",")
-      .map((uuid) => uuid.trim())
-      .filter(Boolean);
-  }
-  return [];
+  /** Elenco completo (non limitato) dei prodotti del progetto (manuale o dinamico per categoria).
+   *  Popolato una sola volta per progetto durante la costruzione dell'indice inverso. */
+  products?: ListingStoryResolved[];
 }
 
 function asAssetArray(value: unknown): AssetStoryblok[] {
@@ -635,6 +670,19 @@ function toRelatedProject(story: Story): RelatedProject {
   };
 }
 
+function mapStoryToListingResolvedLocal(story: Story): ListingStoryResolved {
+  return {
+    uuid: story.uuid,
+    name: story.name,
+    slug: story.slug,
+    full_slug: story.full_slug,
+    created_at: story.created_at ?? null,
+    published_at: story.published_at ?? null,
+    first_published_at: story.first_published_at ?? null,
+    content: (story.content ?? {}) as Record<string, unknown>,
+  };
+}
+
 /** Indice invertito productUuid → progetti (una sola fetch paginata per locale) */
 const relatedProjectsIndexCache = new Map<
   string,
@@ -652,6 +700,11 @@ async function buildRelatedProjectsIndex(
 
   let page = 1;
   let hasMore = true;
+
+  // Tutti i prodotti del locale, necessari per risolvere le varianti dinamiche
+  // (categoria/sottocategoria/application_area/bestseller) di `related_products`.
+  const allProductStories = await getStoriesByComponent("product", locale);
+  const allProducts = allProductStories.map(mapStoryToListingResolvedLocal);
 
   while (hasMore) {
     const params: Record<string, any> = {
@@ -680,12 +733,41 @@ async function buildRelatedProjectsIndex(
 
     for (const story of stories) {
       const project = toRelatedProject(story);
-      const productUuids = extractProductUuids(story.content?.related_products);
+      // Normalizza il valore raw del campo plugin (variant + selection_mode ecc.)
+      // e risolve l'elenco COMPLETO (non limitato) di prodotti del progetto,
+      // sia in modalità manuale che dinamica per categoria.
+      const rawRelated = story.content?.related_products;
+      const normalizedRelated =
+        typeof rawRelated === "object" && rawRelated !== null
+          ? { ...rawRelated, variant: "related_products" }
+          : rawRelated;
+      const parsed = parseCarouselVariant(normalizedRelated);
 
-      for (const productUuid of productUuids) {
-        const existing = index.get(productUuid) ?? [];
+      let products: ListingStoryResolved[];
+      if (parsed.selection_mode === "manual") {
+        if (parsed.items.length === 0) continue;
+        const included = new Set(parsed.items);
+        products = allProducts.filter((p) => included.has(p.uuid));
+      } else {
+        const filtered = filterListingByVista(allProducts, {
+          selection_mode: "dynamic",
+          vista: parsed.vista,
+          category: parsed.category,
+          subcategory: parsed.subcategory,
+          application_area: parsed.application_area,
+          bestseller: parsed.bestseller,
+        });
+        products = sortProductStories(filtered, "recent");
+      }
+
+      if (products.length === 0) continue;
+
+      project.products = products;
+
+      for (const product of products) {
+        const existing = index.get(product.uuid) ?? [];
         existing.push(project);
-        index.set(productUuid, existing);
+        index.set(product.uuid, existing);
       }
     }
 

@@ -1,8 +1,9 @@
 import { getAllStories, getStory, getStoriesByComponent, getRelatedStoriesByTags, getRelatedProjectsByProduct } from '@/lib/api/storyblok/stories'
 import { buildStoryblokNavigationHref } from '@/lib/api/utils/links'
 import { enrichListingBloks, resolveProductStories, resolveStoryStories } from '@/lib/listing/resolveListingItems'
-import { enrichCarouselBloks, resolveCarouselItems } from '@/lib/carousel/resolveCarouselItems'
+import { enrichCarouselBloks, resolveCarouselItems, resolveRelatedProductsVariant } from '@/lib/carousel/resolveCarouselItems'
 import { parseCarouselVariant } from '@/lib/carousel/parseCarouselVariant'
+import { CAROUSEL_LIMIT } from '@/lib/carousel/types'
 import { mapStoryToNewsCard, sortStoriesByDate } from '@/lib/carousel/mapStoryToNewsCard'
 import {
   getParentFullSlug,
@@ -14,7 +15,7 @@ import StoryblokRenderer from '@/components/StoryblokRenderer'
 import DownloadGate from '@/components/organisms/DownloadGate'
 import { setRequestLocale, getTranslations } from 'next-intl/server'
 import { notFound } from 'next/navigation'
-import { PageStoryblok, StoryStoryblok, JobStoryblok } from '@/types/storyblok'
+import { PageStoryblok, StoryStoryblok, JobStoryblok, ProjectStoryblok } from '@/types/storyblok'
 import localeConfig from '@/i18n/locales.json'
 import { isDownloadGateContent, isNonRoutableComponent } from '@/lib/api/storyblok/routing'
 import { mapStoryToDownloadGate } from '@/lib/downloadable/map'
@@ -72,6 +73,37 @@ export const dynamicParams = true
 export const revalidate = 3600
 
 /**
+ * Risolve il campo plugin `related_products` (listing-items, variante related_products)
+ * condiviso da più content type (Story, Project, ...). Normalizza i valori legacy e
+ * fetcha i prodotti correlati (manuali o dinamici per categoria/sottocategoria/application area).
+ * `limit` opzionale: se omesso risolve TUTTI i prodotti corrispondenti (es. pagina Project).
+ */
+async function resolveRelatedProductsField(
+  rawRelated: StoryStoryblok['related_products'],
+  locale?: string,
+  limit?: number,
+): Promise<StoryStoryblok['related_products'] | undefined> {
+  if (!rawRelated) return undefined
+
+  // Normalizza i valori legacy: prima del fix il plugin poteva salvare variant
+  // 'prodotto'/'story' nel campo related_products. Forza related_products.
+  const normalizedRelated =
+    typeof rawRelated === 'object' && rawRelated !== null
+      ? { ...rawRelated, variant: 'related_products' }
+      : rawRelated
+  const parsed = parseCarouselVariant(normalizedRelated)
+  const resolved = limit
+    ? await resolveCarouselItems(parsed, locale)
+    : await resolveRelatedProductsVariant(parsed, locale)
+
+  return {
+    ...(typeof rawRelated === 'object' && rawRelated !== null ? rawRelated : {}),
+    variant: parsed,
+    resolved_items: resolved,
+  }
+}
+
+/**
  * Page per route con header/footer (route normali)
  */
 export default async function WithLayoutPage({ params }: PageProps) {
@@ -117,23 +149,13 @@ export default async function WithLayoutPage({ params }: PageProps) {
     }
 
     // Se il campo plugin related_products è configurato, risolvi i prodotti correlati
-    const rawRelated = storyContent.related_products
-    if (rawRelated) {
-      // Normalizza i valori legacy: prima del fix il plugin poteva salvare variant
-      // 'prodotto'/'story' nel campo related_products. Forza related_products.
-      const normalizedRelated =
-        typeof rawRelated === 'object' && rawRelated !== null
-          ? { ...rawRelated, variant: 'related_products' }
-          : rawRelated
-      const parsed = parseCarouselVariant(normalizedRelated)
-      const resolved = await resolveCarouselItems(parsed, locale)
-      nextContent.related_products = {
-        ...(typeof rawRelated === 'object' && rawRelated !== null
-          ? rawRelated
-          : {}),
-        variant: parsed,
-        resolved_items: resolved,
-      }
+    const resolvedRelated = await resolveRelatedProductsField(
+      storyContent.related_products,
+      locale,
+      CAROUSEL_LIMIT,
+    )
+    if (resolvedRelated) {
+      nextContent.related_products = resolvedRelated
     }
 
     story.content = nextContent
@@ -150,6 +172,22 @@ export default async function WithLayoutPage({ params }: PageProps) {
     }
   }
 
+  // Se il content è un Project, risolvi TUTTI i prodotti correlati (stesso plugin di Story,
+  // ma senza limite: la pagina Project mostra l'elenco completo, non un carousel troncato)
+  if (story.content?.component === 'project') {
+    const projectContent = story.content as ProjectStoryblok
+    const resolvedRelated = await resolveRelatedProductsField(
+      projectContent.related_products,
+      locale,
+    )
+    if (resolvedRelated) {
+      story.content = {
+        ...projectContent,
+        related_products: resolvedRelated,
+      }
+    }
+  }
+
   // Se il content è un Product, fetcha i progetti correlati (query inversa)
   // e i prodotti della stessa categoria per il carousel in fondo pagina.
   const attachProductRelations =
@@ -158,12 +196,25 @@ export default async function WithLayoutPage({ params }: PageProps) {
           const [relatedProjects, allProducts, , compareStories] = await Promise.all([
             getRelatedProjectsByProduct(story.uuid, locale),
             resolveProductStories(locale),
-            enrichProductTargetPests(story.content, locale),
+            enrichProductTargetPests(story.content, locale), // Enriches story.content in-place, result not used
             getStoriesByComponent('compare', locale),
           ])
 
           if (relatedProjects.length > 0) {
             story.content.related_projects = relatedProjects
+          }
+
+          // Carousel "stesso progetto": altri prodotti del primo progetto correlato
+          // (manuale o per categoria), esclude il prodotto corrente, max 8.
+          const primaryProject = relatedProjects[0]
+          if (primaryProject?.products?.length) {
+            const otherProjectProducts = primaryProject.products
+              .filter((product) => product.uuid !== story.uuid)
+              .slice(0, CAROUSEL_LIMIT)
+
+            if (otherProjectProducts.length > 0) {
+              story.content.related_project_products = otherProjectProducts
+            }
           }
 
           const relatedCategoryProducts = getRelatedCategoryProducts(

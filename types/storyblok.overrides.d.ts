@@ -101,6 +101,8 @@ export interface ProductStoryblok extends Generated.ProductStoryblok {
   /** Iniettate server-side in page.tsx (non sono campi Storyblok) */
   product_uuid?: string | null;
   comparison_page_url?: string | null;
+  /** Popolato SSR: altri prodotti dello stesso progetto (manuale o per categoria), max 8 */
+  related_project_products?: ListingStoryResolved[] | null;
 }
 
 /** full_banner — title richtext + asset come bloks Asset[] */
@@ -351,6 +353,12 @@ export interface ProjectStoryblok extends Omit<
   /** Multi-asset: campo CMS `image` (e alias `asset`) */
   image?: AssetStoryblok[] | null;
   asset?: AssetStoryblok[] | null;
+  /** Campo plugin listing-items: selezione prodotti correlati (manual/dynamic) */
+  related_products?: {
+    variant?: CarouselVariantValue | null;
+    resolved_items?: ListingStoryResolved[] | null;
+    [key: string]: unknown;
+  } | null;
 }
 
 /**

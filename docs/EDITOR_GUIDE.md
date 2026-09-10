@@ -448,7 +448,7 @@ quelli esatti che trovi nello schema `product`):
 | Sicurezza | `safety_data_sheet` | Il file PDF della SDS |
 | Foto | `images` | Foto del prodotto |
 | Video | `video` | URL YouTube |
-| Prodotti correlati | `related_products` | Compilato dal sistema |
+| Prodotti correlati | `related_products` | Manuale (singoli prodotti) o dinamico per categoria/sottocategoria/application area — stesso campo plugin usato su Story e Project |
 | Evidenze | `bestseller` | Se attivo, appare nelle evidenze |
 | Risorse | `resources` | Documenti/risorse collegate |
 

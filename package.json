@@ -5,19 +5,12 @@
   "scripts": {
     "fetch:locales": "tsx scripts/fetch-locales.ts",
     "fetch:filtri": "tsx scripts/fetch-filtri.ts",
-    "fetch:storyblok": "npm run fetch:locales && npm run fetch:filtri",
+    "fetch:storyblok": "tsx scripts/fetch-storyblok.ts",
     "dev": "npm run fetch:storyblok && next dev --experimental-https",
     "build": "npm run fetch:storyblok && next build",
     "start": "next start",
     "lint": "next lint",
     "generate:types": "tsx scripts/generate-storyblok-types.ts",
-    "create:job-components": "tsx scripts/create-job-components.ts",
-    "create:downloadable-components": "tsx scripts/create-downloadable-components.ts",
-    "patch:insect-component": "tsx scripts/patch-insect-component.ts",
-    "seed:job-modal-labels": "tsx scripts/seed-job-modal-labels.ts",
-    "seed:related-products-label": "tsx scripts/seed-related-products-label.ts",
-    "generate:component": "tsx scripts/generate-component.ts",
-    "guide:pdf": "tsx scripts/build-editor-guide.mjs",
     "postinstall": "patch-package"
   },
   "dependencies": {

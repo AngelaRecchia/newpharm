@@ -1,9 +1,12 @@
 #!/usr/bin/env tsx
 /**
- * Crea/aggiorna la label `related_products` nel datasource Storyblok `labels`
+ * Crea/aggiorna la label `prodotti_in_progetto` nel datasource Storyblok `labels`
  * con traduzioni IT, EN e AR.
  *
- * Uso: npm run seed:related-products-label
+ * Usata dal titolo del listing highlight "prodotti del progetto" (pagina Project)
+ * e dal carousel "stesso progetto" (pagina Product).
+ *
+ * Uso: npm run seed:prodotti-in-progetto-label
  */
 
 import * as dotenv from 'dotenv'
@@ -22,11 +25,11 @@ type LabelSeed = {
   ar: string
 }
 
-const RELATED_PRODUCTS_LABEL: LabelSeed = {
-  name: 'related_products',
-  it: 'Prodotti correlati',
-  en: 'Related products',
-  ar: 'منتجات ذات صلة',
+const PRODOTTI_IN_PROGETTO_LABEL: LabelSeed = {
+  name: 'prodotti_in_progetto',
+  it: 'Prodotti del progetto',
+  en: 'Project products',
+  ar: 'منتجات المشروع',
 }
 
 type DatasourceRecord = {
@@ -150,15 +153,15 @@ async function main() {
     process.exit(1)
   }
 
-  console.log('🚀 Seed label related_products su Storyblok...')
+  console.log('🚀 Seed label prodotti_in_progetto su Storyblok...')
 
   const { datasourceId, dimensionIds } = await getLabelsDatasource()
-  const existing = await findEntry(datasourceId, RELATED_PRODUCTS_LABEL.name)
-  const entryId = await upsertEntry(datasourceId, RELATED_PRODUCTS_LABEL, existing)
-  await upsertDimension(entryId, dimensionIds.en, RELATED_PRODUCTS_LABEL, 'en')
-  await upsertDimension(entryId, dimensionIds.ar, RELATED_PRODUCTS_LABEL, 'ar')
+  const existing = await findEntry(datasourceId, PRODOTTI_IN_PROGETTO_LABEL.name)
+  const entryId = await upsertEntry(datasourceId, PRODOTTI_IN_PROGETTO_LABEL, existing)
+  await upsertDimension(entryId, dimensionIds.en, PRODOTTI_IN_PROGETTO_LABEL, 'en')
+  await upsertDimension(entryId, dimensionIds.ar, PRODOTTI_IN_PROGETTO_LABEL, 'ar')
 
-  console.log(`✅ ${RELATED_PRODUCTS_LABEL.name} (${existing ? 'aggiornata' : 'creata'})`)
+  console.log(`✅ ${PRODOTTI_IN_PROGETTO_LABEL.name} (${existing ? 'aggiornata' : 'creata'})`)
   console.log('✅ Completato.')
 }
 

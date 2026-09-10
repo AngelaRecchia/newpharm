@@ -61,6 +61,9 @@ export function buildProductPageCtaBox(
   relatedProjects: RelatedProject[],
   labels: ProductPageCtaBoxLabels,
 ): Cta_boxStoryblok | null {
+  if (!relatedProjects || relatedProjects.length === 0) {
+    return null;
+  }
   const project = relatedProjects[0]
 
   const baseUid = 'product-page-auto-cta'

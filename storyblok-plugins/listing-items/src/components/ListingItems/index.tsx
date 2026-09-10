@@ -103,9 +103,11 @@ export function ListingItems() {
   const locale = localeFromPluginStory(plugin.data?.story)
   const isCarousel =
     parentComponent === 'carousel' || options.context === 'carousel'
-  // Campo dedicato related_products su content type story: forza la variante nel plugin
+  // Campo dedicato related_products su content type story/project: forza la variante nel plugin
   const isRelatedProductsField =
-    parentComponent === 'story' || options.context === 'related_products'
+    parentComponent === 'story' ||
+    parentComponent === 'project' ||
+    options.context === 'related_products'
   const isProjectsHighlight =
     parentComponent === 'projects_highlight' ||
     options.context === 'projects_highlight' ||

@@ -6,7 +6,7 @@
  * 
  * Per rigenerare: npm run generate:types
  * 
- * Generato il: 2026-09-02T15:13:51.829Z
+ * Generato il: 2026-09-10T14:06:31.012Z
  */
 
 
@@ -243,7 +243,7 @@ export interface DownloadableStoryblok {
   title: string
   image?: { id: number; alt: string; name: string; focus: string; title: string; filename: string; copyright: string; fieldtype: string; } | null // Optional
   short_description?: string | null // Optional
-  year: number
+  year?: number | null // Optional
   file?: { id: number; alt: string; name: string; focus: string; title: string; filename: string; copyright: string; fieldtype: string; } | null // Optional
   division?: 'cereals-storage' | 'pest-control' | 'zootech' | 'home-garden' | 'medical' | null // Optional
   ios_url?: { id: string; url: string; linktype: string; fieldtype: string; cached_url?: string; } | null // Optional
@@ -492,13 +492,13 @@ export interface PartnersStoryblok {
 
 
 export interface ProductStoryblok {
-  application_areas_text?: string | null // Optional
   composition?: string | null // Optional
+  application_areas_text?: string | null // Optional
   dosage_and_application?: string | null // Optional
   usage?: string | null // Optional
   target_pests?: any | null // Optional
-  units_per_carton?: string | null // Optional
   dimensions?: string | null // Optional
+  units_per_carton?: string | null // Optional
   registration?: string | null // Optional
   safety_data_sheet?: { id: number; alt: string; name: string; focus: string; title: string; filename: string; copyright: string; fieldtype: string; } | null // Optional
   title: string
@@ -542,6 +542,7 @@ export interface ProjectStoryblok {
   short_description?: string | null // Optional
   divisions?: 'cereals-storage' | 'pest-control' | 'zootech' | 'home-garden' | 'medical' | null // Optional
   body?: any[] | null // Optional
+  related_products?: any | null // Optional
   _uid: string
   component: string
   _editable?: string
@@ -648,6 +649,7 @@ export interface StoryStoryblok {
   tag?: 'company' | 'r&d' | 'events' | 'people' | 'academy' | 'professional_pest_control' | 'cereals_storage' | 'zootech' | 'home&garden' | null // Optional
   asset: any[]
   body?: any[] | null // Optional
+  related_products?: any | null // Optional
   _uid: string
   component: string
   _editable?: string
