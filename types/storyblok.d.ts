@@ -46,7 +46,6 @@ export type {
   Spec_tableStoryblok,
   Split_bannerStoryblok,
   Sticky_imageStoryblok,
-  StoryStoryblok,
   TabsStoryblok,
   TeaserStoryblok,
   Text_revealStoryblok,
@@ -88,6 +87,7 @@ export type {
   CompareStoryblok,
   Glossary_itemStoryblok,
   GlossaryStoryblok,
+  StoryStoryblok,
   ListingStoryResolved,
   ListingVariantValue,
   ListingVariantSlug,
@@ -142,7 +142,7 @@ export type StoryblokComponent =
   | Generated.Spec_tableStoryblok
   | Generated.Split_bannerStoryblok
   | Generated.Sticky_imageStoryblok
-  | Generated.StoryStoryblok
+  | Overrides.StoryStoryblok
   | Generated.TabsStoryblok
   | Generated.TeaserStoryblok
   | Generated.Text_revealStoryblok

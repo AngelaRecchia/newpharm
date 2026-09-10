@@ -15,16 +15,14 @@ import Carousel from '@/components/organisms/Carousel';
 const cn = classNames.bind(styles);
 
 interface StoryProps {
-    blok: StoryStoryblok & {
-        related_stories?: RelatedStory[]
-    },
+    blok: StoryStoryblok,
     relatedStories: RelatedStory[]
 }
 
 const Story = ({ blok, relatedStories }: StoryProps) => {
 
     const t = useTranslations('');
-    const { title, author, reading_time, date, tag, asset, body, related_stories } = blok;
+    const { title, author, reading_time, date, tag, asset, body, related_stories, related_products } = blok;
     const format = useFormatter();
     const dateTime = date ? new Date(date) : null;
     const formattedDate = dateTime ? format.dateTime(dateTime, { dateStyle: 'medium' }) : null;
@@ -33,6 +31,8 @@ const Story = ({ blok, relatedStories }: StoryProps) => {
     const hasTitle = !isEmpty(title);
     const hasAuthor = !isEmpty(author);
     const hasReadingTime = !isEmpty(reading_time);
+
+    const relatedProductsItems = related_products?.resolved_items ?? [];
 
     return (
         <div  {...storyblokEditable(blok as any)}>
@@ -66,11 +66,14 @@ const Story = ({ blok, relatedStories }: StoryProps) => {
             {/* Renderizza le story correlate se presenti */}
             {related_stories && related_stories.length > 0 && (
                 <div className={cn('related-stories')}>
-
                     <Carousel items={related_stories} variant='news' />
+                </div>
+            )}
 
-
-
+            {/* Renderizza i prodotti correlati se presenti (ultimo modulo) */}
+            {relatedProductsItems.length > 0 && (
+                <div className={cn('related-products')}>
+                    <Carousel variant='prodotto' productItems={relatedProductsItems} title={t('related_products')} />
                 </div>
             )}
         </div>
@@ -78,7 +81,3 @@ const Story = ({ blok, relatedStories }: StoryProps) => {
 }
 
 export default Story
-
-
-
-

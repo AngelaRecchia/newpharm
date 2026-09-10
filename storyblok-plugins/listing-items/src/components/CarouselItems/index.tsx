@@ -32,7 +32,7 @@ import {
 } from '../../types'
 import '../ListingItems/listing-items.css'
 
-const CAROUSEL_VARIANTS: CarouselVariantSlug[] = ['story', 'prodotto', 'editorial', 'insetto']
+const CAROUSEL_VARIANTS: CarouselVariantSlug[] = ['story', 'prodotto', 'editorial', 'insetto', 'related_products']
 
 const VISTAS: { value: ListingProductVista; label: string }[] = [
   { value: 'categoria', label: 'Categoria' },
@@ -43,6 +43,11 @@ const STORY_MODES: { value: CarouselStoryMode; label: string }[] = [
   { value: 'dynamic', label: 'Automatica (ultime 8)' },
   { value: 'tag', label: 'Per tag (ultime 8)' },
   { value: 'manual', label: 'Manuale' },
+]
+
+const RELATED_PRODUCTS_MODES: { value: 'manual' | 'dynamic'; label: string }[] = [
+  { value: 'manual', label: 'Manuale (seleziona singoli prodotti)' },
+  { value: 'dynamic', label: 'Automatica (per categoria / application area)' },
 ]
 
 const DEFAULT_STORY: PluginVariantValue = { ...EMPTY_CAROUSEL_VALUE }
@@ -83,10 +88,23 @@ const DEFAULT_INSECT: PluginVariantValue = {
   context: 'carousel',
 }
 
+const DEFAULT_RELATED_PRODUCTS: PluginVariantValue = {
+  variant: 'related_products',
+  selection_mode: 'manual',
+  category: '',
+  subcategory: '',
+  application_area: '',
+  bestseller: false,
+  tag: '',
+  items: [],
+  context: 'carousel',
+}
+
 function defaultForVariant(variant: CarouselVariantSlug): PluginVariantValue {
   if (variant === 'prodotto') return { ...DEFAULT_PRODUCT }
   if (variant === 'editorial') return { ...DEFAULT_EDITORIAL }
   if (variant === 'insetto') return { ...DEFAULT_INSECT }
+  if (variant === 'related_products') return { ...DEFAULT_RELATED_PRODUCTS }
   return { ...DEFAULT_STORY }
 }
 
@@ -95,7 +113,8 @@ function isCarouselVariant(variant: PluginVariantValue['variant']): variant is C
     variant === 'story' ||
     variant === 'prodotto' ||
     variant === 'editorial' ||
-    variant === 'insetto'
+    variant === 'insetto' ||
+    variant === 'related_products'
   )
 }
 
@@ -109,9 +128,11 @@ type CarouselPlugin = ReturnType<typeof useFieldPlugin<PluginVariantValue>>
 
 type CarouselItemsProps = {
   plugin: CarouselPlugin
+  /** Vincola la variante (es. related_products su content type story) e nasconde il dropdown Variante */
+  forceVariant?: CarouselVariantSlug
 }
 
-export function CarouselItems({ plugin }: CarouselItemsProps) {
+export function CarouselItems({ plugin, forceVariant }: CarouselItemsProps) {
   const [search, setSearch] = useState('')
   const [results, setResults] = useState<StoryOption[]>([])
   const [categories, setCategories] = useState<FiltriEntry[]>([])
@@ -122,7 +143,8 @@ export function CarouselItems({ plugin }: CarouselItemsProps) {
   const options = plugin.data?.options ?? {}
   const cdnToken = options.cdn_token || import.meta.env.VITE_STORYBLOK_CDN_TOKEN || ''
   const datasourceSlug = options.datasource_slug || 'filtri'
-  const value = plugin.data?.content ?? DEFAULT_STORY
+  const value =
+    plugin.data?.content ?? (forceVariant ? defaultForVariant(forceVariant) : DEFAULT_STORY)
   const locale = localeFromPluginStory(plugin.data?.story)
   const applicationAreaOptions = applicationAreas as ApplicationAreaEntry[]
 
@@ -142,6 +164,21 @@ export function CarouselItems({ plugin }: CarouselItemsProps) {
   useEffect(() => {
     if (plugin.type !== 'loaded' || didInit.current) return
     didInit.current = true
+
+    // Campo vincolato (es. related_products su story): forza la variante e i default corretti.
+    // Gestisce anche i valori legacy salvati con variant diversa (es. 'prodotto') prima del fix.
+    if (forceVariant) {
+      if (value.variant === forceVariant && value.context === 'carousel') return
+      if (value.variant === forceVariant) {
+        setContent({ ...value, context: 'carousel' })
+        return
+      }
+      setContent({
+        ...defaultForVariant(forceVariant),
+        items: value.variant === 'related_products' ? value.items : [],
+      })
+      return
+    }
 
     if (value.context === 'carousel' && isCarouselVariant(value.variant)) return
 
@@ -164,7 +201,7 @@ export function CarouselItems({ plugin }: CarouselItemsProps) {
     }
 
     setContent(DEFAULT_STORY)
-  }, [plugin.type, value, setContent])
+  }, [plugin.type, value, setContent, forceVariant])
 
   const handleVariantChange = (variant: CarouselVariantSlug) => {
     if (variant === value.variant) return
@@ -186,6 +223,20 @@ export function CarouselItems({ plugin }: CarouselItemsProps) {
       selection_mode,
       tag: selection_mode === 'tag' ? value.tag ?? '' : '',
       items: [],
+    })
+    setResults([])
+    setSearch('')
+  }
+
+  const handleRelatedProductsModeChange = (selection_mode: 'manual' | 'dynamic') => {
+    if (selection_mode === value.selection_mode) return
+    if (selection_mode === 'manual' && value.items.length === 0) {
+      // pass: la ricerca manuale riparte da zero
+    }
+    setContent({
+      ...value,
+      selection_mode,
+      items: selection_mode === 'manual' ? value.items : [],
     })
     setResults([])
     setSearch('')
@@ -235,13 +286,17 @@ export function CarouselItems({ plugin }: CarouselItemsProps) {
   }, [value.category, filtriEntries])
 
   const isProduct = value.variant === 'prodotto'
+  const isRelatedProducts = value.variant === 'related_products'
   const isStory = value.variant === 'story'
   const isEditorial = value.variant === 'editorial'
   const isInsect = value.variant === 'insetto'
   const isInsectAllMode = isInsect && value.selection_mode === 'all'
+  const isRelatedProductsManual = isRelatedProducts && value.selection_mode === 'manual'
+  const isRelatedProductsDynamic = isRelatedProducts && value.selection_mode === 'dynamic'
   const showPicker =
     (isStory && value.selection_mode === 'manual') ||
     (isInsect && (value.selection_mode === 'all' || value.selection_mode === 'manual'))
+  const showRelatedProductsPicker = isRelatedProductsManual
 
   useEffect(() => {
     if (plugin.type !== 'loaded' || !isProduct) return
@@ -270,7 +325,34 @@ export function CarouselItems({ plugin }: CarouselItemsProps) {
   }, [plugin.type, isProduct, datasourceSlug, cdnToken])
 
   useEffect(() => {
-    if (plugin.type !== 'loaded' || !showPicker) {
+    if (plugin.type !== 'loaded' || !isRelatedProducts) return
+
+    let cancelled = false
+    Promise.all([
+      fetchFiltriCategories(datasourceSlug, cdnToken),
+      fetchAllFiltriEntries(datasourceSlug, cdnToken),
+    ])
+      .then(([cats, entries]) => {
+        if (!cancelled) {
+          setCategories(cats)
+          setFiltriEntries(entries)
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setCategories([])
+          setFiltriEntries([])
+        }
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [plugin.type, isRelatedProducts, datasourceSlug, cdnToken])
+
+  useEffect(() => {
+    const shouldSearch = showPicker || showRelatedProductsPicker
+    if (plugin.type !== 'loaded' || !shouldSearch) {
       setResults([])
       return
     }
@@ -280,8 +362,9 @@ export function CarouselItems({ plugin }: CarouselItemsProps) {
       setLoading(true)
       setError(null)
       try {
+        const searchVariant = isRelatedProducts ? 'prodotto' : isInsect ? 'insetto' : 'story'
         const stories = await searchStories(
-          isInsect ? 'insetto' : 'story',
+          searchVariant,
           cdnToken,
           search,
           locale,
@@ -302,7 +385,7 @@ export function CarouselItems({ plugin }: CarouselItemsProps) {
       cancelled = true
       window.clearTimeout(timeout)
     }
-  }, [plugin.type, showPicker, isInsect, cdnToken, search, locale])
+  }, [plugin.type, showPicker, showRelatedProductsPicker, isRelatedProducts, isInsect, cdnToken, search, locale])
 
   if (plugin.type !== 'loaded') {
     return <p className="listing-items__loading">Caricamento editor...</p>
@@ -335,7 +418,7 @@ export function CarouselItems({ plugin }: CarouselItemsProps) {
     )
   }
 
-  if (!cdnToken && (isProduct || showPicker)) {
+  if (!cdnToken && (isProduct || showPicker || showRelatedProductsPicker)) {
     return (
       <p className="listing-items__error">
         Configura cdn_token nelle opzioni del plugin.
@@ -345,23 +428,25 @@ export function CarouselItems({ plugin }: CarouselItemsProps) {
 
   return (
     <div className="listing-items">
-      <div className="listing-items__field">
-        <label className="listing-items__label" htmlFor="carousel-variant">
-          Variante
-        </label>
-        <select
-          id="carousel-variant"
-          className="listing-items__select"
-          value={isCarouselVariant(value.variant) ? value.variant : 'story'}
-          onChange={(e) => handleVariantChange(e.target.value as CarouselVariantSlug)}
-        >
-          {CAROUSEL_VARIANTS.map((variant) => (
-            <option key={variant} value={variant}>
-              {getVariantLabel(variant)}
-            </option>
-          ))}
-        </select>
-      </div>
+      {!forceVariant && (
+        <div className="listing-items__field">
+          <label className="listing-items__label" htmlFor="carousel-variant">
+            Variante
+          </label>
+          <select
+            id="carousel-variant"
+            className="listing-items__select"
+            value={isCarouselVariant(value.variant) ? value.variant : 'story'}
+            onChange={(e) => handleVariantChange(e.target.value as CarouselVariantSlug)}
+          >
+            {CAROUSEL_VARIANTS.map((variant) => (
+              <option key={variant} value={variant}>
+                {getVariantLabel(variant)}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       {isStory && (
         <>
@@ -544,43 +629,167 @@ export function CarouselItems({ plugin }: CarouselItemsProps) {
         </div>
       )}
 
-      {showPicker && (
+      {isRelatedProducts && (
+        <>
+          <fieldset className="listing-items__fieldset">
+            <legend className="listing-items__label">Modalità</legend>
+            {RELATED_PRODUCTS_MODES.map((mode) => (
+              <label key={mode.value} className="listing-items__radio">
+                <input
+                  type="radio"
+                  name="carousel-related-products-mode"
+                  checked={value.selection_mode === mode.value}
+                  onChange={() => handleRelatedProductsModeChange(mode.value)}
+                />
+                {mode.label}
+              </label>
+            ))}
+          </fieldset>
+
+          {isRelatedProductsManual && (
+            <p className="listing-items__hint">
+              Cerca e seleziona fino a {CAROUSEL_LIMIT} prodotti correlati.
+            </p>
+          )}
+
+          {isRelatedProductsDynamic && (
+            <div className="listing-items__options">
+              <p className="listing-items__hint">
+                Mostra automaticamente i prodotti del pool. I filtri restringono la selezione.
+              </p>
+              <label className="listing-items__checkbox">
+                <input
+                  type="checkbox"
+                  checked={Boolean(value.bestseller)}
+                  onChange={(e) => updateOptions({ bestseller: e.target.checked })}
+                />
+                Bestseller
+              </label>
+
+              <div className="listing-items__field">
+                <label className="listing-items__label" htmlFor="carousel-vista">
+                  Vista (opzionale)
+                </label>
+                <select
+                  id="carousel-vista"
+                  className="listing-items__select"
+                  value={value.vista ?? ''}
+                  onChange={(e) => {
+                    const next = e.target.value as ListingProductVista | ''
+                    updateOptions({
+                      vista: next || undefined,
+                      category: next === 'categoria' ? value.category ?? '' : '',
+                      subcategory: next === 'categoria' ? value.subcategory ?? '' : '',
+                      application_area:
+                        next === 'application_area' ? value.application_area ?? '' : '',
+                    })
+                  }}
+                >
+                  <option value="">Nessuna vista aggiuntiva</option>
+                  {VISTAS.map((vista) => (
+                    <option key={vista.value} value={vista.value}>
+                      {vista.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {value.vista === 'categoria' && (
+                <>
+                  <div className="listing-items__field">
+                    <label className="listing-items__label" htmlFor="carousel-category">
+                      Categoria
+                    </label>
+                    <select
+                      id="carousel-category"
+                      className="listing-items__select"
+                      value={value.category ?? ''}
+                      onChange={(e) =>
+                        updateOptions({ category: e.target.value, subcategory: '' })
+                      }
+                    >
+                      <option value="">Tutte le categorie</option>
+                      {categories.map((cat) => (
+                        <option key={cat.value} value={cat.value}>
+                          {getCategoryLabel(cat)}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {value.category && subcategoryOptions.length > 0 && (
+                    <div className="listing-items__field">
+                      <label className="listing-items__label" htmlFor="carousel-subcategory">
+                        Sottocategoria
+                      </label>
+                      <select
+                        id="carousel-subcategory"
+                        className="listing-items__select"
+                        value={value.subcategory ?? ''}
+                        onChange={(e) => updateOptions({ subcategory: e.target.value })}
+                      >
+                        <option value="">Tutte le sottocategorie</option>
+                        {subcategoryOptions.map((entry) => (
+                          <option key={entry.value} value={entry.value}>
+                            {getSubfilterLabel(entry.name)}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                </>
+              )}
+
+              {value.vista === 'application_area' && (
+                <div className="listing-items__field">
+                  <label className="listing-items__label" htmlFor="carousel-application-area">
+                    Application area
+                  </label>
+                  <select
+                    id="carousel-application-area"
+                    className="listing-items__select"
+                    value={value.application_area ?? ''}
+                    onChange={(e) => updateOptions({ application_area: e.target.value })}
+                  >
+                    <option value="">Seleziona settore</option>
+                    {applicationAreaOptions.map((entry) => (
+                      <option key={entry.name} value={entry.name}>
+                        {entry.value}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+            </div>
+          )}
+        </>
+      )}
+
+      {showRelatedProductsPicker && (
         <>
           <div className="listing-items__field">
             <label className="listing-items__label" htmlFor="carousel-search">
-              Cerca {isInsect ? getVariantLabel('insetto').toLowerCase() : 'story'}
+              Cerca prodotti
             </label>
             <input
               id="carousel-search"
               className="listing-items__input"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Nome story..."
+              placeholder="Nome prodotto..."
             />
           </div>
-          {(isInsect ? results.length > 0 : true) && (
-            <p className="listing-items__count">
-              {isInsectAllMode
-                ? `${results.length - value.items.length} di ${results.length} selezionati`
-                : isInsect
-                  ? `${value.items.length} selezionati`
-                  : `${value.items.length} di ${CAROUSEL_LIMIT} selezionati`}
-            </p>
-          )}
+          <p className="listing-items__count">
+            {value.items.length} di {CAROUSEL_LIMIT} selezionati
+          </p>
         </>
       )}
 
-      {loading && <p className="listing-items__loading">Ricerca in corso...</p>}
-      {error && <p className="listing-items__error">{error}</p>}
-
-      {showPicker && results.length > 0 && (
+      {showRelatedProductsPicker && results.length > 0 && (
         <div className="listing-items__results">
           {results.map((story) => {
-            const selected = isInsect
-              ? isInsectSelected(value, story.uuid)
-              : value.items.includes(story.uuid)
-            const disabled =
-              !isInsect && !selected && value.items.length >= CAROUSEL_LIMIT
+            const selected = value.items.includes(story.uuid)
+            const disabled = !selected && value.items.length >= CAROUSEL_LIMIT
             return (
               <button
                 key={story.uuid}
@@ -601,6 +810,9 @@ export function CarouselItems({ plugin }: CarouselItemsProps) {
           })}
         </div>
       )}
+
+      {loading && <p className="listing-items__loading">Ricerca in corso...</p>}
+      {error && <p className="listing-items__error">{error}</p>}
     </div>
   )
 }

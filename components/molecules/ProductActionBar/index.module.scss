@@ -8,15 +8,12 @@
   display: flex;
   align-items: center;
   gap: $s-16;
-  padding: $s-24;
-  padding-top: $s-40;
+  padding: $s-16 $s-24;
   color: $c-white;
   border-top: 1px solid rgba($c-white, 0.15);
 
   @include md {
     padding-inline: $s-40;
-
-    padding-block: $s-32;
   }
 
   &.download {
@@ -72,7 +69,7 @@
 
   @include mobile {
     top: auto;
-    bottom: 1.75rem;
+    bottom: $s-16;
     transform: none;
   }
 }

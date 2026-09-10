@@ -14,6 +14,11 @@
 .title {
   @include t-h1;
   margin: 0;
+
+  @include lg {
+    // Max-width fluido solo da lg in su — su mobile nessun limite.
+    @include fluid-type-max-width(440px, h1);
+  }
 }
 
 .subtitle {

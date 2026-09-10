@@ -7,7 +7,7 @@ import {
   type CarouselVariantValue,
 } from './types'
 
-const VALID_VARIANTS: CarouselVariantSlug[] = ['story', 'prodotto', 'editorial', 'insetto']
+const VALID_VARIANTS: CarouselVariantSlug[] = ['story', 'prodotto', 'editorial', 'insetto', 'related_products']
 const VALID_STORY_MODES: CarouselStoryMode[] = ['dynamic', 'tag', 'manual']
 const VALID_INSECT_MODES: CarouselInsectMode[] = ['all', 'manual']
 const VALID_VISTAS: ListingProductVista[] = ['categoria', 'application_area']
@@ -108,6 +108,27 @@ export function parseCarouselVariant(raw: unknown): CarouselVariantValue {
       category: '',
       subcategory: '',
       application_area: '',
+    }
+  }
+
+  if (variant === 'related_products') {
+    const selection_mode = value.selection_mode === 'dynamic' ? 'dynamic' : 'manual'
+    return {
+      variant,
+      selection_mode,
+      tag: '',
+      items: selection_mode === 'manual' ? items : [],
+      vista: normalizeVista(value.vista, category),
+      category: selection_mode === 'dynamic' ? category : '',
+      subcategory:
+        selection_mode === 'dynamic' && typeof value.subcategory === 'string'
+          ? value.subcategory
+          : '',
+      application_area:
+        selection_mode === 'dynamic' && typeof value.application_area === 'string'
+          ? value.application_area
+          : '',
+      bestseller: selection_mode === 'dynamic' ? Boolean(value.bestseller) : false,
     }
   }
 

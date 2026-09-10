@@ -50,8 +50,8 @@ const DivisionBox = ({ blok }: { blok?: Division_boxStoryblok }) => {
                             swiper.navigation.update();
                         }}
                     >
-                        {cards.map((card) => (
-                            <SwiperSlide key={card._uid} className={cn('swiper-slide')}>
+                        {cards.map((card, index) => (
+                            <SwiperSlide key={card._uid ?? `division-${index}`} className={cn('swiper-slide')}>
                                 <DivisionCard card={card} />
                             </SwiperSlide>
                         ))}

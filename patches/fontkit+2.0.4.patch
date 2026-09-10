@@ -1,0 +1,19 @@
+diff --git a/node_modules/fontkit/dist/module.mjs b/node_modules/fontkit/dist/module.mjs
+index fde88fc..bb7d8b4 100644
+--- a/node_modules/fontkit/dist/module.mjs
++++ b/node_modules/fontkit/dist/module.mjs
+@@ -10899,8 +10899,13 @@ class $69aac16029968692$export$2e2bcd8739ae039 extends (0, $f92906be28e61769$exp
+         // We need to decode the glyph if variation processing is requested,
+         // so it's easier just to recompute the path's cbox after decoding.
+         if (this._font._variationProcessor && !internal) return this.path.cbox;
++        // Empty glyph (e.g. space) has no outline data — return zero bbox.
++        // See https://github.com/foliojs/fontkit/pull/379
++        let glyfPos = this._font.loca.offsets[this.id];
++        let nextPos = this._font.loca.offsets[this.id + 1];
++        if (glyfPos === nextPos) return Object.freeze(new (0, $f34600ab9d7f70d8$export$2e2bcd8739ae039)(0, 0, 0, 0));
+         let stream = this._font._getTableStream('glyf');
+-        stream.pos += this._font.loca.offsets[this.id];
++        stream.pos += glyfPos;
+         let glyph = $69aac16029968692$var$GlyfHeader.decode(stream);
+         let cbox = new (0, $f34600ab9d7f70d8$export$2e2bcd8739ae039)(glyph.xMin, glyph.yMin, glyph.xMax, glyph.yMax);
+         return Object.freeze(cbox);

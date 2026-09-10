@@ -7,7 +7,8 @@ import classNames from 'classnames/bind'
 import styles from './index.module.scss'
 import { Sticky_imageStoryblok } from '@/types/storyblok'
 import RichText from '../RichText'
-import Asset, { getAssetSrc } from '@/components/atoms/Asset'
+import Asset from '@/components/atoms/Asset'
+import { getAssetSrc } from '@/lib/assets/getAssetSrc'
 import HalftoneOverlay from './HalftoneOverlay'
 import { useViewport } from '@/lib/context/viewport-context'
 import { SmoothScrollContext, isViewportWidthUnchanged } from '@/lib/context/smooth-scroll-context'
@@ -143,7 +144,7 @@ const StickyImage = ({ blok }: { blok: Sticky_imageStoryblok }) => {
       <div className={cn('content')}>
         <div ref={leftRef} className={cn('left')}>
           <div className={cn('image-wrapper')}>
-            <Asset asset={image} mode='fit' priority={true} />
+            <Asset asset={image} mode='bg' priority={true} />
           </div>
 
           {isAnimated && isDesktop && imageSrc && webglSupported && (

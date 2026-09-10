@@ -1,7 +1,7 @@
 import type { DownloadableKind } from '@/types/storyblok'
 import { RESOURCE_TABS, type ResourceTab } from './types'
 
-const KIND_SET = new Set<DownloadableKind>(['catalog', 'brochure', 'app', 'other'])
+const KIND_SET = new Set<DownloadableKind>(['catalog', 'brochure', 'app', 'other', 'press'])
 const TAB_SET = new Set<string>(RESOURCE_TABS)
 
 export function parseDownloadableKind(raw: unknown): DownloadableKind | null {
@@ -29,6 +29,8 @@ export function downloadableKindToTab(kind: DownloadableKind): ResourceTab {
       return 'app'
     case 'other':
       return 'altro'
+    case 'press':
+      return 'press'
     default:
       return 'brochure'
   }

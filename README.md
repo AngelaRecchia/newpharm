@@ -1,212 +1,67 @@
-# Setup Guide
+# newpharm
 
-Guida completa per configurare il progetto da zero.
+Sito basato su **Next.js 15** + **Storyblok** con i18n (it/en/ar, RTL per l'arabo).
 
-## Prerequisiti
+> **Per sviluppatori e AI**: leggi [`AGENTS.md`](./AGENTS.md) per architettura, convenzioni e comandi.
 
-- Node.js 20+
-- npm o yarn
-- Account Storyblok con uno Space configurato
-
-## 1. Clona e Installa Dipendenze
+## Avvio rapido
 
 ```bash
 git clone <repository-url>
 cd newpharm
 npm install
+cp .env.example .env.local   # poi compila i token
+npm run dev
 ```
 
-## 2. Configurazione Variabili d'Ambiente
+Il server parte su `https://localhost:3000` (HTTPS necessario per il visual editor di Storyblok).
 
-Crea un file `.env.local` nella root del progetto con le seguenti variabili:
+## Variabili d'ambiente
+
+Vedi [`.env.example`](./.env.example) per l'elenco completo. Obbligatorie:
+
+| Variabile | Uso |
+| --- | --- |
+| `NEXT_PUBLIC_STORYBLOK_ACCESS_TOKEN` | CDN Token (Settings → Access Tokens) |
+| `NEXT_PUBLIC_STORYBLOK_SPACE_ID` | Space ID (Settings → General) |
+| `STORYBLOK_MANAGEMENT_TOKEN` | Management API (locales/types) |
+
+## Comandi utili
 
 ```bash
-# Storyblok Configuration
-NEXT_PUBLIC_STORYBLOK_ACCESS_TOKEN=your_cdn_token_here
-NEXT_PUBLIC_STORYBLOK_SPACE_ID=your_space_id_here
-STORYBLOK_MANAGEMENT_TOKEN=your_management_token_here
+npm run dev              # dev server con HTTPS (fetch locale+filtri automatici)
+npm run build            # build produzione (version=published)
+npm run generate:types   # rigenera types/storyblok.d.ts dagli schemi
+npm run lint             # ESLint
 ```
 
-### Come Ottenere i Token
+## Lingue e RTL
 
-1. **CDN Token** (`NEXT_PUBLIC_STORYBLOK_ACCESS_TOKEN`):
-   - Vai su Storyblok → Settings → Access Tokens
-   - Copia il **Public Token** (Preview o Public)
+- **it** (default, LTR), **en** (LTR), **ar** (RTL)
+- RTL automatico via `dir="rtl"` + CSS logical properties in tutti i componenti
 
-2. **Space ID** (`NEXT_PUBLIC_STORYBLOK_SPACE_ID`):
-   - Vai su Storyblok → Settings → General
-   - Copia lo **Space ID**
-
-3. **Management Token** (`STORYBLOK_MANAGEMENT_TOKEN`):
-   - Vai su https://app.storyblok.com/#/me/account
-   - Sezione "Personal access tokens"
-   - Crea un nuovo token con permessi di lettura
-   - Copia il token generato
-
-## 3. Struttura Storyblok
-
-### Setup Locales
-
-1. Crea cartelle root-level in Storyblok per ogni locale:
-   - `it/` (Italian) - **Default locale**
-   - `en/` (English)
-   - `ar/` (Arabic) - **RTL support**
-
-2. Ogni cartella locale deve contenere:
-   - Almeno una story pubblicata
-   - Le stories del sito
-
-### Setup Layout Components
-
-1. Crea una story chiamata `layout-components` in ogni cartella locale
-2. Configura i componenti Header e Footer in questa story
-3. Questa story viene usata per header/footer globali
-
-### Setup Datasource per Traduzioni
-
-1. Vai su **Content > Datasources** in Storyblok
-2. Crea un datasource chiamato **"labels"**
-3. Abilita **"Add dimension for entries"**
-4. Aggiungi dimensioni per ogni locale: `it` (default), `en`, `ar` (RTL)
-5. Aggiungi entries con:
-   - **Name**: Notazione a punti (es: `common.loading`, `nav.home`)
-   - **Value**: Testo tradotto
-   - **Dimension**: Codice locale (es: `it`, `en`, `ar`)
-
-## 4. Genera TypeScript Types
-
-Genera i types TypeScript dai componenti Storyblok:
-
-```bash
-npm run generate:types
-```
-
-Questo script:
-
-- Scarica gli schemi dei componenti da Storyblok
-- Genera interfacce TypeScript in `types/storyblok.d.ts`
-- Aggiorna i types per tutti i componenti
-
-**Importante**: Esegui questo comando ogni volta che modifichi gli schemi dei componenti su Storyblok.
-
-## 5. Avvia il Server di Sviluppo
-
-```bash
-npm run dev --experimental-https
-```
-
-Il progetto sarà disponibile su `https://localhost:3000` (con HTTPS per il bridge di Storyblok).
-
-## 6. Build per Produzione
-
-```bash
-npm run build
-npm start
-```
-
-## Supporto RTL (Right-to-Left)
-
-Il progetto supporta nativamente le lingue RTL come l'arabo:
-
-- **Automatico**: Il tag `<html>` riceve automaticamente `dir="rtl"` per la lingua `ar`
-- **CSS Logical Properties**: Tutti i componenti usano `inset-inline-start/end`, `padding-inline`, `margin-inline` invece di `left/right`
-- **Font**: Inter supporta sia Latin che Arabic
-- **Componenti**: Header, Footer, Navigation e tutti gli altri componenti sono compatibili RTL
-
-### Lingue Supportate
-
-- **it** (Italian) - Default, LTR
-- **en** (English) - LTR
-- **ar** (Arabic) - RTL
-
-## Struttura del Progetto
+## Struttura
 
 ```
-newpharm/
-├── app/                    # Next.js App Router
-│   └── [locale]/          # Route con supporto multi-lingua
-├── components/
-│   ├── atoms/             # Componenti atomici (Button, Input, etc.)
-│   ├── organisms/         # Componenti complessi (Header, Footer, Hero)
-│   └── storyblok/         # Wrapper Storyblok (passano solo props)
-├── lib/
-│   ├── api/               # API functions (Storyblok, datasource, etc.)
-│   ├── context/           # React Context providers
-│   └── storyblok.tsx      # Storyblok provider e inizializzazione
-├── i18n/                  # Configurazione next-intl
-├── styles/                # SCSS globali e mixins
-├── types/                 # TypeScript types generati
-└── docs/                  # Documentazione
+app/                      # App Router (route [locale])
+components/               # atoms / molecules / organisms / storyblok
+lib/                      # logica di dominio e client Storyblok
+types/                    # tipi generati
+styles/                   # SCSS globali
+scripts/                  # script one-shot di sviluppo
+storyblok-plugins/        # field plugins standalone
 ```
 
-## Variabili d'Ambiente
+## Documentazione
 
-### Sviluppo vs Produzione
-
-Il progetto gestisce automaticamente la versione Storyblok in base all'ambiente:
-
-- **Sviluppo** (`npm run dev`): Usa `version=draft` per vedere contenuti non pubblicati
-- **Produzione** (`npm run build`): Usa `version=published` per contenuti pubblicati
-
-### Variabili Richieste
-
-| Variabile                            | Descrizione                        | Obbligatoria |
-| ------------------------------------ | ---------------------------------- | ------------ |
-| `NEXT_PUBLIC_STORYBLOK_ACCESS_TOKEN` | CDN Token per fetch contenuti      | ✅ Sì        |
-| `NEXT_PUBLIC_STORYBLOK_SPACE_ID`     | ID dello Space Storyblok           | ✅ Sì        |
-| `STORYBLOK_MANAGEMENT_TOKEN`         | Token per Management API (locales) | ✅ Sì        |
-
-## Troubleshooting
-
-### "No locales found"
-
-- Verifica che `STORYBLOK_MANAGEMENT_TOKEN` sia configurato
-- Controlla che ci siano cartelle root-level in Storyblok
-- Assicurati che le cartelle abbiano almeno una story pubblicata
-
-### "Story not found"
-
-- Verifica che la story esista in Storyblok
-- Controlla che sia pubblicata (in produzione) o in draft (in sviluppo)
-- Verifica che lo slug corrisponda esattamente
-
-### Types non aggiornati
-
-```bash
-npm run generate:types
-```
-
-### Build fallisce
-
-- Verifica tutte le variabili d'ambiente sono configurate
-- Controlla che i componenti Storyblok siano pubblicati
-- Verifica la connessione a Storyblok API
-
-## Comandi Disponibili
-
-```bash
-# Sviluppo
-npm run dev              # Avvia dev server con HTTPS
-
-# Build
-npm run build            # Build per produzione
-npm start                # Avvia server produzione
-
-# Types
-npm run generate:types   # Genera TypeScript types da Storyblok
-
-# Lint
-npm run lint             # Esegue ESLint
-```
-
-## Documentazione Aggiuntiva
-
-- [Static Generation](./docs/STATIC_GENERATION.md) - Come funziona la generazione statica
-- [next-intl Setup](./docs/NEXT_INTL_SETUP.md) - Configurazione internazionalizzazione
-- [Datasource API](./docs/DATASOURCE_API.md) - API per traduzioni
-- [Languages API](./docs/LANGS_API.md) - Gestione locale
-- [Types Generation](./docs/TYPES_GENERATION.md) - Generazione types
+- [AGENTS.md](./AGENTS.md) — guida per sviluppatori e AI (architettura, convenzioni, comandi)
+- [Generazione Tipi](./docs/TYPES_GENERATION.md) — `npm run generate:types`
+- [Static Generation](./docs/STATIC_GENERATION.md) — SSR e bridge editor
+- [next-intl Setup](./docs/NEXT_INTL_SETUP.md) — i18n e datasource labels
+- [Datasource API](./docs/DATASOURCE_API.md) — traduzioni e filtri
+- [Languages API](./docs/LANGS_API.md) — gestione locale
+- [Upload traduzioni datasource](./docs/UPLOAD_DATASOURCE_TRANSLATIONS.md) — aggiungere/aggiornare chiavi nei datasource
 
 ## Supporto
 
-Per problemi o domande, consulta la documentazione in `docs/` o apri una issue.
+Per domande o problemi apri un'issue o consulta `AGENTS.md`.

@@ -8,10 +8,11 @@ import CheckboxField from '@/components/atoms/CheckboxField'
 import RecaptchaSlot from '@/components/atoms/RecaptchaSlot'
 import TextField from '@/components/atoms/TextField'
 import Modal from '@/components/molecules/Modal'
-import SmartLink from '@/components/atoms/SmartLink'
 import FileUpload from '@/components/molecules/FileUpload'
 import styles from './index.module.scss'
 import { useLocale, useTranslations } from 'next-intl'
+import { tSafe } from '@/lib/i18n/tSafe'
+import { renderTermsMessage } from '@/lib/i18n/termsMessage'
 
 const cn = classNames.bind(styles)
 
@@ -187,11 +188,7 @@ export default function JobApplicationModal({
               value={curriculum}
               onChange={setCurriculum}
               required
-              hint={t.rich('upload_file_hint', {
-                browse: (chunks) => (
-                  <span className="browse">{chunks}</span>
-                ),
-              })}
+              hint={tSafe(t, 'upload_file_hint', 'PDF o DOC, massimo 5 MB')}
             />
           </div>
 
@@ -200,7 +197,7 @@ export default function JobApplicationModal({
               label="Cognome*"
               name="cognome"
               autoComplete="family-name"
-              placeholder={t('your_surname_here')}
+              placeholder={tSafe(t, 'your_surname_here', 'Inserisci il cognome')}
               value={cognome}
               onChange={(e) => setCognome(e.target.value)}
               required
@@ -210,7 +207,7 @@ export default function JobApplicationModal({
               type="tel"
               name="telefono"
               autoComplete="tel"
-              placeholder={t('phone_placeholder')}
+              placeholder={tSafe(t, 'phone_placeholder', 'Inserisci il telefono')}
               value={telefono}
               onChange={(e) => setTelefono(e.target.value)}
               required
@@ -220,7 +217,7 @@ export default function JobApplicationModal({
               <textarea
                 className={cn('textarea')}
                 name="messaggio"
-                placeholder={t('message_placeholder')}
+                placeholder={tSafe(t, 'message_placeholder', 'Scrivi il messaggio')}
                 value={messaggio}
                 onChange={(e) => setMessaggio(e.target.value)}
                 rows={1}
@@ -254,11 +251,7 @@ export default function JobApplicationModal({
           onChange={(e) => setTerms(e.target.checked)}
           required
         >
-          {t.rich('accepts_terms', {
-            a: (chunks) => (
-              <SmartLink href="/termini">{chunks}</SmartLink>
-            ),
-          })}
+          {renderTermsMessage(String(t.raw('accepts_terms')), '/termini')}
         </CheckboxField>
 
         <div className={cn('actions')}>

@@ -27,8 +27,8 @@ const Faqs = ({ blok }: { blok: FaqsStoryblok }) => {
 
         {items && items.length > 0 && (
           <div className={cn('items')}>
-            {items.map((item: any) => (
-              <AccordionItem key={item._uid} label={item.title || ''} variant="secondary">
+            {items.map((item: any, index: number) => (
+              <AccordionItem key={item._uid ?? `faq-${index}`} label={item.title || ''} variant="secondary">
                 <RichText content={item.text} raw enableGlossary />
               </AccordionItem>
             ))}

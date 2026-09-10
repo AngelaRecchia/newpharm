@@ -28,7 +28,21 @@ export default getRequestConfig(async ({ requestLocale }) => {
   }
 
   // Fetch messages from Storyblok datasource
-  const messages = await getMessagesFromDatasource("labels", locale);
+  const messages = {
+    ...(await getMessagesFromDatasource("labels", locale)),
+    accepts_terms:
+      locale === "it"
+        ? "Ho letto e accetto i <a>termini e condizioni</a>"
+        : "I have read and accept the <a>terms and conditions</a>",
+    upload_file_hint:
+      locale === "it" ? "PDF o DOC, massimo 5 MB" : "PDF or DOC, maximum 5 MB",
+    your_surname_here:
+      locale === "it" ? "Inserisci il cognome" : "Enter your surname",
+    phone_placeholder:
+      locale === "it" ? "Inserisci il telefono" : "Enter your phone number",
+    message_placeholder:
+      locale === "it" ? "Scrivi il messaggio" : "Write your message",
+  };
 
   // Determine text direction based on locale
   const isRTL = locale === "ar";

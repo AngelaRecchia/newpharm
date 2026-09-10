@@ -1,4 +1,4 @@
-import { getStoriesByUuids, type Story } from '@/lib/api/storyblok/stories'
+﻿import { getStoriesByUuids, type Story } from '@/lib/api/storyblok/stories'
 import { parsePestFamily, type PestFamily } from '@/lib/insects/families'
 import type { ListingStoryResolved } from '@/lib/listing/types'
 import type { InsectStoryblok, InsectStoryResolved } from '@/types/storyblok'
@@ -93,7 +93,17 @@ export function mapTargetPests(items: unknown): TargetPestView[] {
   if (Array.isArray(items) && items.length > 0) {
     const first = items[0]
     if (first && typeof first === 'object' && 'title' in first && 'uid' in first) {
-      return items as TargetPestView[]
+      return items.flatMap((item) => {
+        if (!item || typeof item !== 'object') return []
+        const record = item as Partial<TargetPestView> & { famiglia?: unknown }
+        if (typeof record.uid !== 'string' || typeof record.title !== 'string') return []
+        return [{
+          uid: record.uid,
+          title: record.title,
+          family: parsePestFamily(record.family ?? record.famiglia),
+          text: typeof record.text === 'string' ? record.text : undefined,
+        }]
+      })
     }
   }
 

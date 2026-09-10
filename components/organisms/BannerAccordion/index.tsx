@@ -200,7 +200,7 @@ const Banneraccordion = ({ blok }: { blok?: Banner_accordionStoryblok }) => {
           >
             {items?.map((item, index) => (
               <CardBox
-                key={item._uid}
+                key={item._uid ?? `banner-accordion-${index}`}
                 blok={item as Card_boxStoryblok}
                 isOpen={openIndex === index}
                 onToggle={() => handleCardToggle(index)}

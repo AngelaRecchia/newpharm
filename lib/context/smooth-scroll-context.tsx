@@ -32,46 +32,49 @@ export const SmoothScrollContext = React.createContext<SmoothScrollContextType>(
 let scrollLockCount = 0
 let savedScrollY = 0
 
-function applyNativeScrollLock(scrollY: number) {
+function applyNativeScrollLock() {
   if (typeof document === 'undefined') return
 
   document.documentElement.dataset.scrollLock = 'true'
-  document.body.style.position = 'fixed'
-  document.body.style.top = `-${scrollY}px`
-  document.body.style.left = '0'
-  document.body.style.right = '0'
-  document.body.style.width = '100%'
+  // Overflow hidden su BODY SOLO: blocca lo scroll esattamente dov'è
+  // evitando il collasso dell'area di scroll di <html> (che azzererebbe
+  // window.scrollY). Su html NON si deve toccare overflow.
+  document.body.style.overflow = 'hidden'
 }
 
 function releaseNativeScrollLock() {
   if (typeof document === 'undefined') return
 
   delete document.documentElement.dataset.scrollLock
-  document.body.style.position = ''
-  document.body.style.top = ''
-  document.body.style.left = ''
-  document.body.style.right = ''
-  document.body.style.width = ''
+  document.body.style.overflow = ''
 }
 
 function lockPageScroll(lenis: Lenis | null) {
   if (scrollLockCount === 0) {
-    savedScrollY = lenis?.scroll ?? window.scrollY
-    applyNativeScrollLock(savedScrollY)
+    // Salva lo scroll REALE del documento: `lenis.scroll` può essere stantio
+    // (Lenis è asincrono e durante un click/scrollIntoView può non essere
+    // ancora allineato), causando un salto di pagina alla chiusura.
+    savedScrollY = window.scrollY
+    applyNativeScrollLock()
     lenis?.stop()
   }
   scrollLockCount += 1
 }
 
-function unlockPageScroll(lenis: Lenis | null) {
+function unlockPageScroll(lenis: Lenis | null, scrollY: number) {
   scrollLockCount = Math.max(0, scrollLockCount - 1)
   if (scrollLockCount === 0) {
-    const scrollY = savedScrollY
     releaseNativeScrollLock()
     lenis?.start()
+    // Con overflow-hidden su body il documento non si è mosso durante il
+    // lock: nessun ripristino necessario. Solo se un caso limite ha spostato
+    // davvero la pagina riallineiamo (confrontando lo scroll reale).
+    const actual = window.scrollY
     if (lenis) {
-      lenis.scrollTo(scrollY, { immediate: true })
-    } else {
+      if (Math.abs(actual - scrollY) > 1) {
+        lenis.scrollTo(scrollY, { immediate: true, force: true })
+      }
+    } else if (Math.abs(actual - scrollY) > 1) {
       window.scrollTo(0, scrollY)
     }
   }
@@ -90,16 +93,24 @@ export function useScrollLock(locked: boolean) {
     lockPageScroll(lenis)
 
     return () => {
-      unlockPageScroll(lenis)
+      const scrollY = savedScrollY
+      unlockPageScroll(lenis, scrollY)
     }
   }, [locked, lenis])
 }
 
 /** Ricalcola altezza scroll Lenis e posizioni ScrollTrigger dopo cambi layout (es. load more) */
-export function refreshPageScroll(lenis: Lenis | null) {
+export function refreshPageScroll(
+  lenis: Lenis | null,
+  options: { clampToLimit?: boolean } = {},
+) {
+  const { clampToLimit = true } = options
+
   requestAnimationFrame(() => {
     lenis?.resize()
     ScrollTrigger.refresh()
+    if (!clampToLimit) return
+
     const viewportHeight = document.documentElement.clientHeight
     const limit =
       lenis?.limit ?? Math.max(0, document.documentElement.scrollHeight - viewportHeight)
@@ -121,7 +132,10 @@ export function isViewportWidthUnchanged(previousWidth: number) {
 
 export function useRefreshPageScroll() {
   const { lenis } = useContext(SmoothScrollContext)
-  return useCallback(() => refreshPageScroll(lenis), [lenis])
+  return useCallback(
+    (options?: { clampToLimit?: boolean }) => refreshPageScroll(lenis, options),
+    [lenis],
+  )
 }
 
 export function SmoothScrollProvider({ children }: { children: ReactNode }) {
@@ -151,7 +165,7 @@ export function SmoothScrollProvider({ children }: { children: ReactNode }) {
 
     if (scrollLockCount > 0) {
       savedScrollY = lenisInstance.scroll
-      applyNativeScrollLock(savedScrollY)
+      applyNativeScrollLock()
       lenisInstance.stop()
     }
 

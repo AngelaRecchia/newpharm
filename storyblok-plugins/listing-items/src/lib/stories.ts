@@ -8,6 +8,7 @@ const VARIANT_LABELS: Record<PluginVariantSlug, string> = {
   catalogo: 'Catalogo',
   story: 'Story',
   editorial: 'Editorial',
+  related_products: 'Prodotti correlati',
 }
 
 const LOCALE_FOLDERS = new Set(['it', 'en'])

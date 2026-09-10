@@ -1,5 +1,35 @@
 @use "../../../styles/" as *;
 
+@mixin richtext-lists {
+  ul,
+  ol {
+    margin-block: $s-16;
+    padding-inline-start: $s-24;
+
+    @include lg {
+      margin-block: $s-24;
+      padding-inline-start: $s-32;
+    }
+
+    p {
+      margin-block: 0;
+    }
+
+    li {
+      margin-block: $s-8;
+      white-space: pre-line;
+    }
+  }
+
+  ul {
+    list-style: disc;
+  }
+
+  ol {
+    list-style: decimal;
+  }
+}
+
 @mixin richtext-content {
   .nested-blok {
     margin-block: $s-16;
@@ -49,34 +79,7 @@
     @include t-h3;
   }
 
-  // Stili per le liste
-  ul,
-  ol {
-    margin-block: $s-16;
-    padding-inline-start: $s-24;
-
-    @include lg {
-      margin-block: $s-24;
-      padding-inline-start: $s-32;
-    }
-
-    p {
-      margin-block: 0;
-    }
-
-    li {
-      margin-block: $s-8;
-      white-space: pre-line;
-    }
-  }
-
-  ul {
-    list-style: disc;
-  }
-
-  ol {
-    list-style: decimal;
-  }
+  @include richtext-lists;
 
   // Stili per i link (esclusi quelli nei nested bloks che sono componenti Button)
   a {
@@ -110,6 +113,10 @@
 
 .richtext:not(.raw) {
   @include richtext-content;
+}
+
+.richtext.raw {
+  @include richtext-lists;
 }
 
 .richtext.container-lg:not(.raw) {

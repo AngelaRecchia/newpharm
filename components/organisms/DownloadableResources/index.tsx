@@ -15,7 +15,7 @@ import CatalogDownloadModal from '@/components/organisms/CatalogsDownload/Catalo
 import { getEmptyMotion, getGridMotion } from '@/lib/animation/gridPresence'
 import { getStoryblokAnchorId } from '@/lib/storyblok/anchor'
 import { useRefreshPageScroll } from '@/lib/context/smooth-scroll-context'
-import { groupByYear, sliceGroupedItems } from '@/lib/downloadable/group'
+import { groupByDivision, groupByYear, sliceGroupedItems } from '@/lib/downloadable/group'
 import {
   filterDownloadablesByKind,
   mapCatalogStoryToPreviewItem,
@@ -50,6 +50,7 @@ const TAB_LABEL_KEY: Record<ResourceTab, string> = {
   brochure: 'resources_brochures',
   app: 'resources_apps',
   altro: 'resources_other',
+  press: 'resources_press',
 }
 
 function hasHeroAsset(image?: AssetStoryblok[] | null): boolean {
@@ -67,10 +68,11 @@ function ResourceCard({
   const fileUrl = item.fileUrl ? toAbsoluteHttpsUrl(item.fileUrl) : undefined
   const gated = Boolean(fileUrl) && requiresDownloadForm(item)
   const href = gated ? undefined : fileUrl ?? item.href
+  const showTitle = item.kind !== 'app' && item.kind !== 'altro'
 
   return (
     <CardListing
-      title={item.label}
+      title={showTitle ? item.label : undefined}
       description={item.shortDescription}
       image={item.cover}
       href={href}
@@ -135,14 +137,23 @@ function DownloadableResourcesInner({
     [resolvedDownloadables, downloadLabel],
   )
 
+  const press = useMemo(
+    () =>
+      sortStoriesByContentDate(
+        filterDownloadablesByKind(resolvedDownloadables ?? [], 'press'),
+      ).map((story) => mapDownloadableStoryToPreviewItem(story, downloadLabel)),
+    [resolvedDownloadables, downloadLabel],
+  )
+
   const available = useMemo(() => {
     const tabs: ResourceTab[] = []
     if (catalogs.length > 0) tabs.push('cataloghi')
     if (brochures.length > 0) tabs.push('brochure')
     if (apps.length > 0) tabs.push('app')
+    if (press.length > 0) tabs.push('press')
     if (others.length > 0) tabs.push('altro')
     return tabs
-  }, [apps.length, brochures.length, catalogs.length, others.length])
+  }, [apps.length, brochures.length, catalogs.length, others.length, press.length])
 
   const { kind, setKind } = useResourcesTabUrl(available)
 
@@ -159,8 +170,9 @@ function DownloadableResourcesInner({
       brochure: brochures,
       app: apps,
       altro: others,
+      press,
     }),
-    [apps, brochures, catalogs, others],
+    [apps, brochures, catalogs, others, press],
   )
 
   const filteredItems = useMemo(() => {
@@ -168,14 +180,15 @@ function DownloadableResourcesInner({
     return itemsByKind[kind]
   }, [itemsByKind, kind])
 
-  const yearGroups = useMemo(
-    () => groupByYear(filteredItems),
-    [filteredItems],
-  )
-  const groups = useMemo(
-    () => sliceGroupedItems(yearGroups, visibleCount),
-    [yearGroups, visibleCount],
-  )
+  const groups = useMemo(() => {
+    if (kind === 'brochure') {
+      return sliceGroupedItems(
+        groupByDivision(filteredItems, (division) => t(division)),
+        visibleCount,
+      )
+    }
+    return sliceGroupedItems(groupByYear(filteredItems), visibleCount)
+  }, [filteredItems, kind, t, visibleCount])
   const hasMore = visibleCount < filteredItems.length
 
   const handleKindsChange = useCallback(

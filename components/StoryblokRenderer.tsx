@@ -53,6 +53,9 @@ function preserveSsrEnrichment(source: unknown, target: unknown): unknown {
     if (Array.isArray(sourceRecord.related_projects)) {
       merged.related_projects = sourceRecord.related_projects
     }
+    if (sourceRecord.auto_cta_box && typeof sourceRecord.auto_cta_box === 'object') {
+      merged.auto_cta_box = sourceRecord.auto_cta_box
+    }
     if (Array.isArray(sourceRecord.related_category_products)) {
       merged.related_category_products = sourceRecord.related_category_products
     }
@@ -65,6 +68,37 @@ function preserveSsrEnrichment(source: unknown, target: unknown): unknown {
     if (Array.isArray(sourceRecord.resolved_target_pests)) {
       merged.resolved_target_pests = sourceRecord.resolved_target_pests
     }
+    // comparison_page_url: iniettata server-side (vedi page.tsx), non esiste
+    // nel blok live dell'editor — la ripristiniamo dall'enrichment SSR.
+    if (typeof sourceRecord.comparison_page_url === 'string') {
+      merged.comparison_page_url = sourceRecord.comparison_page_url
+    }
+    // product_uuid: stesso pattern — uuid della story richiesto per PDF/confronto.
+    if (typeof sourceRecord.product_uuid === 'string') {
+      merged.product_uuid = sourceRecord.product_uuid
+    }
+    // related_products: oggetto plugin; preserva resolved_items SSR dal source
+    if (
+      sourceRecord.related_products &&
+      typeof sourceRecord.related_products === 'object'
+    ) {
+      const sourceRelatedProducts = sourceRecord.related_products as Record<
+        string,
+        unknown
+      >
+      const targetRelatedProducts =
+        targetRecord.related_products &&
+        typeof targetRecord.related_products === 'object'
+          ? (targetRecord.related_products as Record<string, unknown>)
+          : {}
+      if (Array.isArray(sourceRelatedProducts.resolved_items)) {
+        merged.related_products = {
+          ...targetRelatedProducts,
+          resolved_items: sourceRelatedProducts.resolved_items,
+          variant: targetRelatedProducts.variant ?? sourceRelatedProducts.variant,
+        }
+      }
+    }
   }
 
   for (const key of Object.keys(merged)) {
@@ -73,10 +107,13 @@ function preserveSsrEnrichment(source: unknown, target: unknown): unknown {
       key === 'resolved_catalogs' ||
       key === 'resolved_downloadables' ||
       key === 'related_projects' ||
+      key === 'auto_cta_box' ||
       key === 'related_category_products' ||
       key === 'related_category_parent_slug' ||
       key === 'related_stories' ||
       key === 'resolved_target_pests' ||
+      key === 'comparison_page_url' ||
+      key === 'product_uuid' ||
       key === 'variant' ||
       key === 'listing_items'
     ) {

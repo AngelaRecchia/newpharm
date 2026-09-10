@@ -96,6 +96,14 @@
   width: 100%;
 }
 
+.listImageLink {
+  display: block;
+  min-width: 0;
+  color: inherit;
+  cursor: pointer;
+  text-decoration: none;
+}
+
 .listBody {
   display: flex;
   flex-direction: column;

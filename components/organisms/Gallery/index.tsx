@@ -52,8 +52,8 @@ const Gallery = ({ blok }: { blok?: GalleryStoryblok }) => {
                                     swiper.navigation.update()
                                 }}
                             >
-                                {images.map((image: any) => (
-                                    <SwiperSlide key={image._uid} className={cn('swiper-slide')}>
+                                {images.map((image: any, index: number) => (
+                                    <SwiperSlide key={image._uid ?? `gallery-${index}`} className={cn('swiper-slide')}>
                                         <div className={cn('image-item')}>
                                             <Asset asset={image} size="m" mode="fit" />
                                         </div>

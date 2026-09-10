@@ -13,8 +13,8 @@ const SplitBanner = ({ blok }: { blok: Split_bannerStoryblok }) => {
 
     return (
         <section className={cn('wrapper', hasMultiple && 'has-multiple')} id={getStoryblokAnchorId(blok.anchor_id)} {...storyblokEditable(blok as any)}>
-            {items?.map((item) => (
-                <div key={item._uid} className={cn('item')}>
+            {items?.map((item, index) => (
+                <div key={item._uid ?? `split-banner-${index}`} className={cn('item')}>
                     <Asset asset={item} size="l" mode={hasMultiple ? 'bg' : 'fit'} overlay />
                 </div>
             ))}

@@ -1,0 +1,192 @@
+@use "../../../styles" as *;
+
+// ============================================
+// PRODUCT STICKY BAR — dettaglio prodotto
+// ============================================
+//
+// Desktop: barra sticky sotto l'header (`--sticky-top`), link schede a
+// sinistra, CTA a destra.
+//
+// Mobile: la barra è scrollabile in overflow orizzontale; per prima cosa si
+// vedono le CTA (Richiedi informazioni / Confronta), poi le schede.
+
+.wrapper {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  width: 100%;
+  // Sfondo primary blu: i link delle schede sono bianchi, le CTA restano
+  // invariati (Confronta bianco, Richiedi informazioni nero).
+  background-color: $c-primary;
+  border-bottom: 1px solid $c-border-dark;
+
+  // Desktop: sticky sotto l'header (come la listing sticky filters)
+  @include md {
+    position: sticky;
+    top: var(--sticky-top, 0px);
+    z-index: 19;
+  }
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $s-16;
+  min-width: 0;
+  padding: $s-16;
+  flex: 1;
+
+  @include md {
+    max-width: $breakpoint-xxxl;
+    margin-inline: auto;
+    padding-inline: $s-40;
+  }
+}
+
+// Link schede — underline + freccia obliqua (Icon external)
+.sheets {
+  display: flex;
+  align-items: center;
+  gap: $s-16;
+  min-width: 0;
+  flex-shrink: 0;
+}
+
+.sheetLink {
+  display: inline-flex;
+  align-items: center;
+  gap: $s-8;
+  color: $c-white;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  white-space: nowrap;
+
+  &:focus-visible {
+    outline: 2px solid $c-white;
+    outline-offset: 2px;
+  }
+}
+
+.sheetIcon {
+  position: relative;
+  display: inline-flex;
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.sheetIconTrack {
+  position: absolute;
+  inset: 0;
+
+  svg {
+    position: absolute;
+    inset: 0;
+    display: block;
+    transition: transform $td-300 $ease-smooth;
+  }
+
+  svg:nth-child(2) {
+    transform: translate(-100%, 100%);
+  }
+
+  .sheetLink:hover &,
+  .sheetLink:focus-visible & {
+    svg:first-child {
+      transform: translate(100%, -100%);
+    }
+
+    svg:nth-child(2) {
+      transform: translate(0, 0);
+    }
+  }
+}
+
+.sheetLabel {
+  @include t-note;
+}
+
+// CTA — Richiedi informazioni (black/secondary) + Confronta (white/tertiary)
+.ctas {
+  display: flex;
+  align-items: center;
+  gap: $s-12;
+  flex-shrink: 0;
+
+  :global([class*="buttonWithIcon"]) {
+    :global([class*="buttonIcon"]) {
+      transform: scale(0.45) !important;
+      transform-origin: center;
+
+      svg {
+        opacity: 0 !important;
+      }
+    }
+
+    &:hover,
+    &:focus-visible {
+      :global([class*="buttonIcon"]) {
+        transform: scale(1) !important;
+
+        svg {
+          opacity: 1 !important;
+        }
+      }
+    }
+  }
+
+  :global([class*="buttonSecondary"]) :global([class*="buttonIcon"]) {
+    background-color: $c-white !important;
+    color: $c-black !important;
+  }
+
+  :global([class*="buttonTertiary"]) :global([class*="buttonIcon"]) {
+    background-color: $c-black !important;
+    color: $c-white !important;
+  }
+}
+
+// ── Mobile: sticky + scroll orizzontale, CTA prima, schede dopo ──
+@include mobile {
+  .wrapper {
+    box-sizing: border-box;
+    position: sticky;
+    top: var(--sticky-top, 0px);
+    z-index: 19;
+    width: 100%;
+    max-width: 100vw;
+    padding-block: $s-12;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+
+    // Nasconde la scrollbar
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    @supports not selector(::-webkit-scrollbar) {
+      scrollbar-width: none;
+    }
+
+    .bar {
+      flex: 0 0 max-content;
+      width: max-content;
+      min-width: 100%;
+      padding-inline: $s-24;
+    }
+
+    // Ordine: CTA a sinistra (prima visibili), poi le schede a destra
+    .sheets {
+      order: 2;
+      margin-inline-start: $s-16;
+    }
+
+    .ctas {
+      order: 1;
+      flex-shrink: 0;
+    }
+  }
+}

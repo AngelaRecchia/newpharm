@@ -2,22 +2,19 @@
 
 .layout {
   display: flex;
-  flex-direction: column;
-  gap: $s-40;
+  align-items: center;
+  justify-content: space-between;
+  gap: $s-24;
   min-width: 0;
   color: $c-white;
 }
 
 .left {
   display: flex;
-
-  gap: $s-40;
+  align-items: center;
+  gap: $s-16;
   min-width: 0;
   flex: 1;
-
-  @include mobile {
-    flex-direction: column;
-  }
 }
 
 .thumb {
@@ -44,19 +41,12 @@
   align-items: center;
   gap: $s-16 $s-24;
   min-width: 0;
-
-  @include mobile {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: $s-40;
-  }
 }
 
 .link {
   @include t-note;
-  width: 100%;
   display: inline-flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   gap: $s-8;
   padding: 0;
@@ -82,9 +72,6 @@
     flex-shrink: 0;
   }
 
-  @include md {
-    margin-inline-end: 2.75rem;
-  }
 }
 
 .copy {
@@ -125,6 +112,31 @@
       padding-inline-end: 0;
       align-self: center;
     }
+  }
+}
+
+@include mobile {
+  .layout {
+    flex-direction: column;
+    align-items: stretch;
+    gap: $s-16;
+  }
+
+  .left {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $s-16;
+  }
+
+  .links {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $s-16;
+  }
+
+  .right {
+    align-self: flex-start;
+    padding-inline-end: $s-24;
   }
 }
 

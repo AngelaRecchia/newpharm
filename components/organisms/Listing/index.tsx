@@ -13,7 +13,7 @@ import InsectGalleryModal from '@/components/molecules/InsectGalleryModal'
 import PaginationNumbers from '@/components/molecules/PaginationNumbers'
 import { getStoryblokAnchorId } from '@/lib/storyblok/anchor'
 import { useRefreshPageScroll } from '@/lib/context/smooth-scroll-context'
-import { insectOverlayImages } from '@/lib/listing/mapInsectToCard'
+import { hasInsectGallery, insectOverlayImages } from '@/lib/listing/mapInsectToCard'
 import { mapStoryToCard } from '@/lib/listing/mapStoryToCard'
 import {
   parseListingVariant,
@@ -134,7 +134,9 @@ export default function Listing({ blok }: { blok?: ListingStoryblok }) {
         <CardInsect
           key={`${card.uuid ?? card.title}-${index}`}
           {...card}
-          onOpen={() => setOpenInsect(card)}
+          onOpen={
+            hasInsectGallery(card) ? () => setOpenInsect(card) : undefined
+          }
         />
       )
     }
@@ -167,9 +169,9 @@ export default function Listing({ blok }: { blok?: ListingStoryblok }) {
 
         {listingType === 'editorial' && editorialVisible.length > 0 && (
           <div className={cn('grid', gridCols)}>
-            {editorialVisible.map((card) => (
+            {editorialVisible.map((card, index) => (
               <CardListing
-                key={card._uid}
+                key={card._uid ?? `listing-${index}`}
                 title={card.title}
                 subtitle={card.subtitle}
                 description={card.description}

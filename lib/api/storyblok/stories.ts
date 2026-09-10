@@ -589,8 +589,10 @@ export async function getRelatedStoriesByTags(
  * Interface per progetti correlati a un prodotto
  */
 export interface RelatedProject {
+  uuid: string;
   full_slug: string;
   title: string;
+  short_description?: string | null;
   asset: AssetStoryblok[];
 }
 
@@ -625,8 +627,10 @@ function asAssetArray(value: unknown): AssetStoryblok[] {
 
 function toRelatedProject(story: Story): RelatedProject {
   return {
+    uuid: story.uuid,
     full_slug: story.full_slug,
     title: story.content?.title || story.name,
+    short_description: story.content?.short_description,
     asset: asAssetArray(story.content?.asset ?? story.content?.image),
   };
 }

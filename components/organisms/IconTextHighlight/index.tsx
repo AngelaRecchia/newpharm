@@ -21,8 +21,8 @@ const IconTextHighlight = ({ blok }: { blok: Icon_text_highlightStoryblok }) => 
         </div>
 
         <div className={cn('items')} style={{ '--cols': cols } as CSSProperties}>
-          {items?.map((item) => (
-            <div key={item._uid} className={cn('item')}>
+          {items?.map((item, index) => (
+            <div key={item._uid ?? `icon-text-${index}`} className={cn('item')}>
               <div className={cn('item-image')}>
                 <Asset asset={item.image} size='s' />
               </div>

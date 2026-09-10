@@ -90,7 +90,7 @@ export default function NavItem({
                     >
                         {item.items.map((subItem, subIndex) => (
                             <motion.li
-                                key={subItem._uid}
+                                key={subItem._uid ?? `subnav-${subIndex}`}
                                 className={cn('dropdownItem')}
                                 initial={{ opacity: 0, y: 0 }}
                                 animate={{ opacity: 1, y: 0 }}

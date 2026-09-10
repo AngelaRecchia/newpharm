@@ -6,11 +6,11 @@ import classNames from 'classnames/bind'
 import Button from '@/components/atoms/Button'
 import CheckboxField from '@/components/atoms/CheckboxField'
 import RecaptchaSlot from '@/components/atoms/RecaptchaSlot'
-import SmartLink from '@/components/atoms/SmartLink'
 import TextField from '@/components/atoms/TextField'
 import Select from '@/components/molecules/Select'
 import { useLocale, useTranslations } from 'next-intl'
 import { toAbsoluteHttpsUrl } from '@/lib/downloadable/assets'
+import { renderTermsMessage } from '@/lib/i18n/termsMessage'
 import styles from './CatalogDownloadModal.module.scss'
 
 const cn = classNames.bind(styles)
@@ -170,9 +170,7 @@ export default function DownloadLeadForm({
         onChange={(e) => setTerms(e.target.checked)}
         required
       >
-        {t.rich('accepts_terms', {
-          a: (chunks) => <SmartLink href="/termini">{chunks}</SmartLink>,
-        })}
+        {renderTermsMessage(String(t.raw('accepts_terms')), '/termini')}
       </CheckboxField>
       <CheckboxField
         checked={newsletter}

@@ -42,6 +42,10 @@
   top: $s-32;
   inset-inline-start: $s-40;
   z-index: 1;
+
+  @include mobile {
+    inset-inline-start: $s-24;
+  }
 }
 
 .product-image {

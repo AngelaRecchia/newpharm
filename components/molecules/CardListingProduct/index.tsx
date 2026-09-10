@@ -150,9 +150,17 @@ export function CardListingRef({
   if (layout === 'list') {
     return (
       <article className={cn('wrapper', 'listLayout')}>
-        <div className={cn('listImage')}>
-          {image && <Asset asset={image} size="m" mode="fit" />}
-        </div>
+        {productHref ? (
+          <SmartLink href={productHref} className={cn('listImageLink')} aria-label={title}>
+            <div className={cn('listImage')}>
+              {image && <Asset asset={image} size="m" mode="fit" />}
+            </div>
+          </SmartLink>
+        ) : (
+          <div className={cn('listImage')}>
+            {image && <Asset asset={image} size="m" mode="fit" />}
+          </div>
+        )}
         <div className={cn('listBody')}>
           {productHref ? (
             <SmartLink href={productHref} className={cn('listTitle')}>

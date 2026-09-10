@@ -25,8 +25,8 @@ const CtaBox = ({ blok }: { blok?: Cta_boxStoryblok }) => {
             style={{ '--cards-count': cards?.length || 0 } as React.CSSProperties}
         >
 
-            {cards?.map((card) => (
-                <CardCtaBox key={card._uid} blok={card} />
+            {cards?.map((card, index) => (
+                <CardCtaBox key={card._uid ?? `cta-card-${index}`} blok={card} />
             ))}
 
         </section>

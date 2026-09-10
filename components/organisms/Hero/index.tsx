@@ -31,8 +31,8 @@ export default function HeroComponent({ blok }: { blok?: HeroStoryblok }) {
         if (!blok) return null
         const { links, variant } = blok
         if (variant === 'primary') {
-            return links?.map((link) => (
-                <Button key={link._uid} link={link} variant='secondary' />
+            return links?.map((link, index) => (
+                <Button key={link._uid ?? `hero-link-${index}`} link={link} variant='secondary' />
             ))
         }
 
@@ -44,8 +44,8 @@ export default function HeroComponent({ blok }: { blok?: HeroStoryblok }) {
                     className={cn('swiper')}
                     style={{ '--hero-link-count': links?.length ?? 1 } as CSSProperties}
                 >
-                    {links?.map((link) => (
-                        <SwiperSlide key={link._uid} className={cn('swiper-slide')}>
+                    {links?.map((link, index) => (
+                        <SwiperSlide key={link._uid ?? `hero-slide-${index}`} className={cn('swiper-slide')}>
                             <AnchorLink
                                 link={link.link}
                                 label={link.label}

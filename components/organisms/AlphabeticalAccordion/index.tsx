@@ -76,9 +76,9 @@ const AlphabeticalAccordion = ({ blok }: { blok: Alphabetical_accordionStoryblok
           >
             <h3 className={cn('groupLetter')}>{group.letter}</h3>
             <div className={cn('items')}>
-              {group.items.map((item) => (
+              {group.items.map((item, index) => (
                 <AccordionItem
-                  key={item._uid}
+                  key={item._uid ?? `alphabetical-${group.letter}-${index}`}
                   label={item.title || ''}
                   variant="secondary"
                 >

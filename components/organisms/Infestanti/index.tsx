@@ -17,6 +17,10 @@ import { getEmptyMotion, getGridMotion } from '@/lib/animation/gridPresence'
 import { hasInsectGallery, insectOverlayImages } from '@/lib/listing/mapInsectToCard'
 import { mapStoryToCard } from '@/lib/listing/mapStoryToCard'
 import { INSECT_CATEGORIES, type InsectCategory } from '@/lib/insects/categories'
+import {
+  parseInsectCategory,
+  sortInsectCategories,
+} from '@/lib/insects/categories'
 import { filterInsectsByCategory } from '@/lib/insects/filterInsects'
 import {
   INSECT_PAGE_SIZE,
@@ -46,6 +50,16 @@ function InfestantiInner({ blok }: { blok?: InfestantiStoryblok }) {
         .slice(0, MAX_BANNERS),
     [blok?.banners],
   )
+
+  // Mostra solo le categorie che hanno almeno un infestante tra i resolved items.
+  const availableCategories = useMemo(() => {
+    const seen = new Set<InsectCategory>()
+    for (const story of resolvedItems) {
+      const category = parseInsectCategory(story.content?.category)
+      if (category) seen.add(category)
+    }
+    return sortInsectCategories([...seen])
+  }, [resolvedItems])
 
   const filteredItems = useMemo(
     () => filterInsectsByCategory(resolvedItems, categories),
@@ -79,6 +93,18 @@ function InfestantiInner({ blok }: { blok?: InfestantiStoryblok }) {
     refreshPageScroll()
   }, [safePage, categories, cards.length, refreshPageScroll])
 
+  // Se la selezione corrente (URL) contiene categorie non più disponibili
+  // (es. dopo un aggiornamento dei contenuti), la ripulisce.
+  useEffect(() => {
+    if (categories.length === 0 || availableCategories.length === 0) return
+    const clean = categories.filter((category) =>
+      availableCategories.includes(category),
+    )
+    if (clean.length !== categories.length) {
+      setCategories(clean)
+    }
+  }, [categories, availableCategories, setCategories])
+
   const handleCategoriesChange = useCallback(
     (next: InsectCategory[]) => {
       setCategories(next)
@@ -102,7 +128,7 @@ function InfestantiInner({ blok }: { blok?: InfestantiStoryblok }) {
         <HeroTertiary title={blok.title} subtitle={blok.subtitle} />
 
         <FilterChips
-          items={INSECT_CATEGORIES}
+          items={availableCategories.length > 0 ? availableCategories : INSECT_CATEGORIES}
           value={categories}
           onChange={handleCategoriesChange}
           ariaLabel="Infestanti"
@@ -120,7 +146,7 @@ function InfestantiInner({ blok }: { blok?: InfestantiStoryblok }) {
                 if (item.type === 'banner') {
                   return (
                     <motion.div
-                      key={item.banner._uid}
+                      key={item.banner._uid ?? `insect-banner-${index}`}
                       className={cn('gridItem', 'banner')}
                       {...getGridMotion(index, reduceMotion)}
                     >
@@ -131,7 +157,7 @@ function InfestantiInner({ blok }: { blok?: InfestantiStoryblok }) {
 
                 return (
                   <motion.div
-                    key={item.card.uuid ?? item.card.title}
+                    key={item.card.uuid ?? item.card.title ?? `insect-card-${index}`}
                     className={cn('gridItem')}
                     {...getGridMotion(index, reduceMotion)}
                   >

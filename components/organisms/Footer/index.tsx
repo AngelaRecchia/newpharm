@@ -48,8 +48,8 @@ export default function Footer({ blok }: FooterProps) {
 
           <div className={cn('linksContainer')}>
             <ul className={cn('links')}>
-              {items?.map((item) => (
-                <li key={item._uid} className={cn('linkItem')}>
+              {items?.map((item, index) => (
+                <li key={item._uid ?? `footer-link-${index}`} className={cn('linkItem')}>
                   <SmartLink className={cn('link')} link={item.link}>
                     {item.label}
                   </SmartLink>
@@ -58,8 +58,8 @@ export default function Footer({ blok }: FooterProps) {
             </ul>
 
             <ul className={cn('socials')}>
-              {socials?.map((social) => (
-                <li key={social._uid}>
+              {socials?.map((social, index) => (
+                <li key={social._uid ?? `social-${index}`}>
                   <SocialItem item={social} />
                 </li>
               ))}
@@ -74,8 +74,8 @@ export default function Footer({ blok }: FooterProps) {
 
           <div className={cn('bottomLinksContainer')}>
             <ul className={cn('bottomLinks')}>
-              {bottom_links?.map((link) => (
-                <li key={link._uid}>
+              {bottom_links?.map((link, index) => (
+                <li key={link._uid ?? `bottom-link-${index}`}>
                   <SmartLink link={link.link}>{link.label}</SmartLink>
                 </li>
               ))}

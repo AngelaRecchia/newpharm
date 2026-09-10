@@ -23,7 +23,11 @@ import { getStoryblokAnchorId } from '@/lib/storyblok/anchor';
 import { storyblokEditable } from '@storyblok/react';
 import { parseCarouselVariant } from '@/lib/carousel/parseCarouselVariant';
 import { mapStoryToNewsCard } from '@/lib/carousel/mapStoryToNewsCard';
-import { insectOverlayImages, mapInsectStoryToCard } from '@/lib/listing/mapInsectToCard';
+import {
+  hasInsectGallery,
+  insectOverlayImages,
+  mapInsectStoryToCard,
+} from '@/lib/listing/mapInsectToCard';
 import { mapProductStoryToCard } from '@/lib/listing/mapProductToCard';
 import type { ListingCardData, ListingStoryResolved } from '@/lib/listing/types';
 
@@ -187,6 +191,9 @@ const Carousel = ({
                         modules={[Navigation]}
                         spaceBetween={16}
                         slidesPerView="auto"
+                        simulateTouch
+                        grabCursor
+                        touchReleaseOnEdges
                         navigation={{
                             nextEl: `.carousel-next-${navId}`,
                             prevEl: `.carousel-prev-${navId}`,
@@ -207,7 +214,7 @@ const Carousel = ({
                         }}
                         className={cn('swiper')}
                     >
-                        {newsCards.map((item) => {
+                        {newsCards.map((item, index) => {
                             const image = item.asset?.length > 0 && item.asset[0] ? item.asset[0] : null;
                             const tags = item.tag
                                 ? (typeof item.tag === 'string' ? [item.tag] : item.tag)
@@ -217,7 +224,7 @@ const Carousel = ({
                                 : '';
 
                             return (
-                                <SwiperSlide key={item.full_slug} className={cn('swiper-slide')}>
+                                <SwiperSlide key={item.full_slug ?? `news-${index}`} className={cn('swiper-slide')}>
                                     <CardNews
                                         title={item.title || ''}
                                         subtitle={formattedDate}
@@ -244,13 +251,17 @@ const Carousel = ({
                             <SwiperSlide key={card.uuid ?? `${card.title}-${index}`} className={cn('swiper-slide')}>
                                 <CardInsect
                                     {...card}
-                                    onOpen={() => setOpenInsect(card)}
+                                    onOpen={
+                                        hasInsectGallery(card)
+                                            ? () => setOpenInsect(card)
+                                            : undefined
+                                    }
                                 />
                             </SwiperSlide>
                         ))}
 
-                        {editorialCards.map((card) => (
-                            <SwiperSlide key={card._uid} className={cn('swiper-slide')}>
+                        {editorialCards.map((card, index) => (
+                            <SwiperSlide key={card._uid ?? `editorial-${index}`} className={cn('swiper-slide')}>
                                 <CardListing
                                     title={card.title}
                                     subtitle={card.subtitle}

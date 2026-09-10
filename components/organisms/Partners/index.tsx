@@ -28,7 +28,7 @@ export default function Partners({ blok }: { blok?: PartnersStoryblok }) {
 
                 {items && items.length > 0 && (
                     <div className={cn('items')}>
-                        {items.map((item: Logo_itemStoryblok) => {
+                        {items.map((item: Logo_itemStoryblok, index) => {
                             const logoLight = Array.isArray(item.logo_light)
                                 ? item.logo_light[0]
                                 : item.logo_light
@@ -41,7 +41,7 @@ export default function Partners({ blok }: { blok?: PartnersStoryblok }) {
                                     : (logoLight as { alt?: string } | undefined)?.alt || ''
 
                             return (
-                                <div key={item._uid} className={cn('item')}>
+                                <div key={item._uid ?? `partner-${index}`} className={cn('item')}>
                                     <div className={cn('item-logo')}>
                                         {!isDark ? (
                                             logoLight && (

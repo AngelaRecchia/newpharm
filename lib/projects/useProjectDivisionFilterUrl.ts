@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { usePathname, useRouter } from '@/i18n/navigation'
 import {
@@ -17,7 +17,11 @@ function divisionsEqual(a: ProjectDivision[], b: ProjectDivision[]): boolean {
 }
 
 export function useProjectDivisionFilterUrl() {
-  const searchParams = useSearchParams()
+  const rawSearchParams = useSearchParams()
+  const searchParams = useMemo(
+    () => rawSearchParams ?? new URLSearchParams(),
+    [rawSearchParams],
+  )
   const router = useRouter()
   const pathname = usePathname()
   const skipUrlSyncRef = useRef(false)

@@ -3,46 +3,33 @@
 .wrapper {
   width: 100%;
   padding-block: 0;
-  overflow: visible;
+  overflow: hidden;
 }
 
 .track {
-  overflow-x: auto;
-  overflow-y: hidden;
-  width: 100%;
-  overscroll-behavior-x: contain;
-  overscroll-behavior-y: none;
-  -webkit-overflow-scrolling: touch;
-  touch-action: pan-x;
-  scrollbar-width: none;
-  cursor: grab;
-  user-select: none;
+  box-sizing: border-box;
+  overflow: hidden;
   width: calc(100% + 48px);
   margin-inline-start: -24px;
-  padding-inline-start: 24px;
+  padding-inline: 0 24px;
 
-  &.grabbing {
-    cursor: grabbing;
-    touch-action: none;
-  }
-
-  &::-webkit-scrollbar {
-    display: none;
+  @include md {
+    margin-inline: -40px;
+    width: calc(100% + 80px);
+    padding-inline: 0 40px;
   }
 }
 
-.trackInner {
-  display: inline-flex;
-  flex-wrap: nowrap;
-  align-items: center;
-  gap: $s-12;
-  min-width: min-content;
+.swiper {
+  overflow: visible;
+  padding-inline-start: 24px;
 
   @include md {
-    gap: $s-16;
+    padding-inline-start: 40px;
   }
 }
 
 .trackItem {
+  width: auto;
   flex-shrink: 0;
 }

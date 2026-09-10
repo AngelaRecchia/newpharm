@@ -58,6 +58,25 @@ export default function RichText({
             return React.createElement('p', { ...safeAttrs, style }, node.children)
         },
         hard_break: () => React.createElement('br'),
+        bullet_list: (node) =>
+            React.createElement(
+                'ul',
+                node.attrs || undefined,
+                node.children,
+            ),
+        ordered_list: (node) =>
+            React.createElement(
+                'ol',
+                node.attrs || undefined,
+                node.children,
+            ),
+        list_item: (node) =>
+            React.createElement(
+                'li',
+                node.attrs || undefined,
+                node.children,
+            ),
+        horizontal_rule: () => React.createElement('hr'),
         ...(enableGlossary
             ? {
                 text: (node: any) => {

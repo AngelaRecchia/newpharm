@@ -3,7 +3,7 @@
 import { Suspense, useCallback, useMemo } from 'react'
 import classNames from 'classnames/bind'
 import { storyblokEditable } from '@storyblok/react'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import Asset from '@/components/atoms/Asset'
 import Button from '@/components/atoms/Button'
 import Icon from '@/components/atoms/Icon'
@@ -56,6 +56,7 @@ function getSelectOptions(
 
 function CompareInner({ blok }: { blok?: CompareStoryblok }) {
   const t = useTranslations('')
+  const locale = useLocale()
   const { slots, setSlots } = useCompareProductsUrl()
 
   const allProducts = useMemo(
@@ -78,9 +79,25 @@ function CompareInner({ blok }: { blok?: CompareStoryblok }) {
   const technicalLabel = t('product_technical_sheet')
   const safetyLabel = t('product_safety_sheet')
 
-  const handleTechnicalSheetDownload = useCallback(async (_productUuid: string) => {
-    // TODO: fetch scheda tecnica
-  }, [])
+  const handleTechnicalSheetDownload = useCallback(async (productUuid: string) => {
+    // Scarica la scheda tecnica PDF (generata on-demand lato server)
+    const res = await fetch(
+      `/api/products/${productUuid}/scheda-tecnica?locale=${encodeURIComponent(locale)}`,
+    )
+    if (!res.ok) {
+      console.error('Failed to download technical sheet', res.status)
+      return
+    }
+    const blob = await res.blob()
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `scheda-tecnica-${productUuid}.pdf`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }, [locale])
 
   const handleSlotChange = (slotIndex: SlotIndex, uuid: string | null) => {
     setSlots((prev) => {
@@ -144,9 +161,9 @@ function CompareInner({ blok }: { blok?: CompareStoryblok }) {
         hasContent: (product) => hasCompareResources(product),
         render: (product) => (
           <div className={cn('downloadLinks')}>
-            {product.resources.map((resource) => (
+            {product.resources.map((resource, index) => (
               <SmartLink
-                key={resource._uid}
+                key={resource._uid ?? `resource-${index}`}
                 link={resource.link}
                 className={cn('downloadLink')}
               >

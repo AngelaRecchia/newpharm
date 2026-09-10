@@ -39,6 +39,11 @@
     background-color: $c-primary;
   }
 
+  &.white {
+    background-color: $c-white;
+    color: $c-black;
+  }
+
   .title {
     @include t-h2;
   }

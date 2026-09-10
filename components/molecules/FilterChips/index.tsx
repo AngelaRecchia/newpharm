@@ -64,7 +64,6 @@ export default function FilterChips<T extends string>({
         className={cn('track')}
         role="group"
         aria-label={ariaLabel}
-        data-lenis-prevent
       >
         <div className={cn('trackInner')}>
           {showAll ? (

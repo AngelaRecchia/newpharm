@@ -77,11 +77,11 @@ export default function Slideshow({ blok }: { blok?: SlideshowStoryblok }) {
                                 swiper.navigation.update()
                             }}
                         >
-                            {cards?.map((card: Card_slideshowStoryblok) => {
+                            {cards?.map((card: Card_slideshowStoryblok, index) => {
                                 const links = (card.link ?? []).filter(isLinkStoryblokValid)
 
                                 return (
-                                    <SwiperSlide key={card._uid} className={cn('swiper-slide')}>
+                                    <SwiperSlide key={card._uid ?? `slideshow-${index}`} className={cn('swiper-slide')}>
                                         <article className={cn('card')}>
                                             {card.image && (
                                                 <div className={cn('card-image')}>
@@ -101,8 +101,8 @@ export default function Slideshow({ blok }: { blok?: SlideshowStoryblok }) {
                                                         <GlossaryText text={card.text} />
                                                     ) : null}
 
-                                                    {links.map((linkItem) => (
-                                                        <div key={linkItem._uid} className={cn('card-link')}>
+                                                    {links.map((linkItem, linkIndex) => (
+                                                        <div key={linkItem._uid ?? `slideshow-link-${index}-${linkIndex}`} className={cn('card-link')}>
                                                             <Button
                                                                 link={linkItem}
                                                                 variant="secondary"

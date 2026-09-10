@@ -1,6 +1,6 @@
 export type ListingVariantSlug = 'prodotto' | 'progetto' | 'insetto' | 'catalogo'
 
-export type CarouselVariantSlug = 'story' | 'prodotto' | 'editorial' | 'insetto'
+export type CarouselVariantSlug = 'story' | 'prodotto' | 'editorial' | 'insetto' | 'related_products'
 
 export type PluginVariantSlug = ListingVariantSlug | CarouselVariantSlug
 

@@ -1,4 +1,4 @@
-@use "../../../styles" as *;
+﻿@use "../../../styles" as *;
 
 .list {
   display: flex;
@@ -29,10 +29,9 @@
 }
 
 .title {
-  font-weight: 400;
+  font-weight: 700;
 }
 
 .text {
-  font-style: italic;
   white-space: pre-wrap;
 }

@@ -2,6 +2,10 @@
 
 .wrapper {
   background-color: $c-white;
+
+  // Il carosello scorre oltre il container (peek della card tagliata):
+  // clippiamo qui in modo che non esca mai dal viewport e non crei
+  // lo scroll orizzontale della pagina.
   overflow: clip;
 }
 
@@ -61,14 +65,39 @@
   position: relative;
 
   width: 100%;
+
+  // Annulla SOLO il padding inline-end del container: la card tagliata
+  // (peek) arriva fino al bordo destro della sezione. Lo spazio
+  // inline-start resta quello del container.
+  margin-inline-end: calc(-1 * $s-24);
+
+  @include lg {
+    margin-inline-end: calc(-1 * $s-40);
+  }
 }
 
 .swiper {
   width: 100%;
-  overflow: visible;
 
+  // Peek: la card successiva resta visibile oltre il bordo del container.
+  // L'overflow di pagina è bloccato dal clip sul .wrapper.
+  overflow: visible !important;
+
+  // Drag con mouse (simulateTouch): evita che il browser inizi il drag
+  // nativo su immagini/link, che "rubano" il gesto allo scroll.
   :global(.swiper-wrapper) {
-    overflow: visible;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  :global(.swiper-slide) {
+    img,
+    a,
+    picture,
+    [data-asset] {
+      -webkit-user-drag: none;
+      user-select: none;
+    }
   }
 }
 

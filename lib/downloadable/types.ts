@@ -1,7 +1,7 @@
 import type { StoryblokAsset } from '@/components/atoms/Asset'
 import type { ProjectDivision } from '@/lib/projects/divisions'
 
-export const RESOURCE_TABS = ['cataloghi', 'brochure', 'app', 'altro'] as const
+export const RESOURCE_TABS = ['cataloghi', 'brochure', 'app', 'altro', 'press'] as const
 
 export type ResourceTab = (typeof RESOURCE_TABS)[number]
 

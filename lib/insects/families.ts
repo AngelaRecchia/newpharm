@@ -1,4 +1,4 @@
-export const PEST_FAMILIES = [
+﻿export const PEST_FAMILIES = [
   'blatte',
   'mosche',
   'vespe',
@@ -16,7 +16,22 @@ export function isPestFamily(value: string): value is PestFamily {
 
 export function parsePestFamily(raw: unknown): PestFamily | null {
   if (typeof raw !== 'string' || !raw.trim()) return null
-  return isPestFamily(raw) ? raw : null
+
+  const normalized = raw.trim().toLocaleLowerCase('it-IT')
+  const aliases: Record<string, PestFamily> = {
+    blatta: 'blatte',
+    blatte: 'blatte',
+    mosca: 'mosche',
+    mosche: 'mosche',
+    vespa: 'vespe',
+    vespe: 'vespe',
+    zanzara: 'zanzare',
+    zanzare: 'zanzare',
+    formica: 'formiche',
+    formiche: 'formiche',
+  }
+
+  return aliases[normalized] ?? (isPestFamily(normalized) ? normalized : null)
 }
 
 export const PEST_FAMILY_ICON: Record<PestFamily, `pest-${PestFamily}`> = {

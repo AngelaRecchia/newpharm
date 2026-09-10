@@ -105,7 +105,7 @@ const Tabs = ({ blok }: { blok: TabsStoryblok }) => {
               <div className={cn('items')}>
                 {tabItems.map((item: any, index: number) => (
                   <div
-                    key={item._uid}
+                    key={item._uid ?? `tab-${index}`}
                     className={cn('item')}
                     onMouseEnter={() => showPreview(index)}
                     onFocusCapture={() => showPreview(index)}

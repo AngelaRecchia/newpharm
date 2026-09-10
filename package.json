@@ -15,10 +15,16 @@
     "create:downloadable-components": "tsx scripts/create-downloadable-components.ts",
     "patch:insect-component": "tsx scripts/patch-insect-component.ts",
     "seed:job-modal-labels": "tsx scripts/seed-job-modal-labels.ts",
-    "generate:component": "tsx scripts/generate-component.ts"
+    "seed:related-products-label": "tsx scripts/seed-related-products-label.ts",
+    "generate:component": "tsx scripts/generate-component.ts",
+    "guide:pdf": "tsx scripts/build-editor-guide.mjs",
+    "postinstall": "patch-package"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1128.0",
+    "@fontsource/inter": "^5.3.0",
     "@kworq/storyblok-space-cloner": "^0.2.2",
+    "@react-pdf/renderer": "^4.9.0",
     "@storyblok/react": "^4.6.0",
     "@storyblok/richtext": "^3.8.2",
     "@tailwindcss/postcss": "^4.1.18",
@@ -47,6 +53,8 @@
     "eslint": "^8.0.0",
     "eslint-config-next": "15.5.19",
     "json-schema-to-typescript": "^15.0.4",
+    "md-to-pdf": "^5.2.5",
+    "patch-package": "^8.0.1",
     "postcss": "^8.5.6",
     "sass": "^1.97.2",
     "tailwindcss": "^4.1.18",

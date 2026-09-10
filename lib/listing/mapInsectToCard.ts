@@ -1,4 +1,5 @@
 import type { StoryblokAsset } from '@/components/atoms/Asset'
+import { getCoverAsset } from '@/lib/downloadable/assets'
 import type { ListingCardData, ListingStoryResolved } from './types'
 
 type InsectContent = {
@@ -9,45 +10,33 @@ type InsectContent = {
   gallery?: StoryblokAsset[] | null
 }
 
-function firstImage(images: unknown): StoryblokAsset | null {
-  if (Array.isArray(images)) {
-    if (images.length === 0) return null
-    const first = images[0]
-    if (first && typeof first === 'object' && 'filename' in first) {
-      return first as StoryblokAsset
-    }
-    return null
-  }
-
-  if (images && typeof images === 'object' && 'filename' in images) {
-    return images as unknown as StoryblokAsset
-  }
-
-  return null
-}
-
-function isFilledAsset(image: unknown): image is StoryblokAsset {
+function isFilledAsset(value: unknown): value is StoryblokAsset {
   return (
-    !!image &&
-    typeof image === 'object' &&
-    'filename' in image &&
-    typeof (image as StoryblokAsset).filename === 'string' &&
-    (image as StoryblokAsset).filename.length > 0
+    !!value &&
+    typeof value === 'object' &&
+    'filename' in value &&
+    typeof (value as StoryblokAsset).filename === 'string' &&
+    (value as StoryblokAsset).filename.length > 0
   )
 }
 
 function asGallery(images: unknown): StoryblokAsset[] {
   if (!Array.isArray(images)) {
-    const single = firstImage(images)
+    const single = getCoverAsset(images)
     return single && isFilledAsset(single) ? [single] : []
   }
-  return images.filter(isFilledAsset)
+  const collected: StoryblokAsset[] = []
+  for (const item of images) {
+    const cover = getCoverAsset(item)
+    if (cover && isFilledAsset(cover)) collected.push(cover)
+  }
+  return collected
 }
 
 export function mapInsectStoryToCard(story: ListingStoryResolved): ListingCardData {
   const content = story.content as InsectContent
-  const image = firstImage(content.image)
-  const imageHover = firstImage(content.image_hover)
+  const image = getCoverAsset(content.image)
+  const imageHover = getCoverAsset(content.image_hover)
   const gallery = asGallery(content.gallery)
 
   return {
@@ -65,8 +54,8 @@ export function hasInsectGallery(card: ListingCardData): boolean {
 }
 
 export function insectOverlayImages(card: ListingCardData): StoryblokAsset[] {
+  // Solo le immagini della gallery: cover e hover del card sono PNG trasparenti
+  // e non devono finire nel lightbox (problemi di sfondo).
   if (hasInsectGallery(card) && card.gallery) return card.gallery
-  return [card.image, card.imageHover ?? null].filter(
-    (image): image is StoryblokAsset => image !== null,
-  )
+  return []
 }

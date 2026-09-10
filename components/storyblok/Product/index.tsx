@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import classNames from 'classnames/bind'
 import styles from './index.module.scss'
@@ -18,6 +18,8 @@ import { getProductCategorySlug } from '@/lib/product-filtri'
 import { mapTargetPests, type TargetPestView } from '@/lib/products/mapTargetPests'
 import TargetPests from '@/components/molecules/TargetPests'
 import Carousel from '@/components/organisms/Carousel'
+import CtaBox from '@/components/organisms/CtaBox'
+import ProductStickyBar from '@/components/molecules/ProductStickyBar'
 
 const cn = classNames.bind(styles)
 
@@ -51,9 +53,10 @@ const Product = ({ blok }: { blok: ProductStoryblok }) => {
     related_projects,
     related_category_products,
     related_category_parent_slug,
+    auto_cta_box,
   } = blok as any
 
-  const targetPests = blok.resolved_target_pests ?? mapTargetPests(blok.target_pests)
+  const targetPests = mapTargetPests(blok.resolved_target_pests ?? blok.target_pests)
 
   const categorySlug = getProductCategorySlug(product_filtri, category)
 
@@ -117,6 +120,13 @@ const Product = ({ blok }: { blok: ProductStoryblok }) => {
 
   return (
     <section className={cn('wrapper')}>
+
+      <ProductStickyBar
+        uuid={blok.product_uuid ?? ''}
+        title={title}
+        safetySheetHref={(safety_data_sheet as any)?.filename || null}
+        comparisonPageUrl={blok.comparison_page_url ?? null}
+      />
 
       <div className={cn('sticky-section')}>
         {/* Colonna sinistra — immagine prodotto */}
@@ -193,19 +203,25 @@ const Product = ({ blok }: { blok: ProductStoryblok }) => {
 
       {body && (
         <div className={cn('body')}>
-          {body.map((item: any) => (
-            <StoryblokComponent blok={item} key={item._uid} />
+          {body.map((item: any, index: number) => (
+            <StoryblokComponent
+              blok={item}
+              key={item._uid || `${item.component || 'blok'}-${index}`}
+            />
           ))}
         </div>
       )}
+
+      {/* CTA automatiche prima delle sezioni/carousel automatici */}
+      {auto_cta_box && <CtaBox blok={auto_cta_box} />}
 
       {/* Progetti correlati — query inversa da page.tsx */}
       {related_projects && related_projects.length > 0 && (
         <div className={cn('related-projects')}>
           <h2 className={cn('related-projects-title')}>{t('product_related-projects')}</h2>
           <div className={cn('related-projects-grid')}>
-            {related_projects.map((project: any) => (
-              <SmartLink key={project.full_slug} href={`/${project.full_slug}`} className={cn('project-card')}>
+            {related_projects.map((project: any, index: number) => (
+              <SmartLink key={project.full_slug ?? `related-project-${index}`} href={`/${project.full_slug}`} className={cn('project-card')}>
                 <div className={cn('project-card-image')}>
                   <Asset asset={project.asset} size="m" overlay />
                 </div>
@@ -225,6 +241,7 @@ const Product = ({ blok }: { blok: ProductStoryblok }) => {
           ctaLabel={t('see_all')}
         />
       )}
+
     </section>
   )
 }

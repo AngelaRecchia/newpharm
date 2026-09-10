@@ -19,6 +19,19 @@ import type { ProjectDivision } from "@/lib/projects/divisions";
 import type { PestFamily } from "@/lib/insects/families";
 import type { LinkActionValue } from "@/lib/link-action";
 import type { RelatedStory } from "@/lib/api/storyblok/stories";
+import type { CarouselVariantValue } from "@/lib/carousel/types";
+import type { ListingStoryResolved } from "@/lib/listing/types";
+
+/** story — content type contenuto editoriale con prodotti correlati opzionali */
+export interface StoryStoryblok extends Generated.StoryStoryblok {
+  related_stories?: RelatedStory[] | null;
+  /** Campo plugin listing-items: selezione prodotti correlati (manual/dynamic) */
+  related_products?: {
+    variant?: CarouselVariantValue | null;
+    resolved_items?: ListingStoryResolved[] | null;
+    [key: string]: unknown;
+  } | null;
+}
 
 /** Catalog — campi CMS oltre al generato */
 export interface CatalogStoryblok extends Omit<Generated.CatalogStoryblok, "year"> {
@@ -83,6 +96,11 @@ export interface ProductStoryblok extends Generated.ProductStoryblok {
   resolved_target_pests?: TargetPestView[] | null;
   related_category_products?: ListingStoryResolved[] | null;
   related_category_parent_slug?: string | null;
+  /** Categoria legacy (non più in schema — usata in scheda-tecnica PDF) */
+  category?: string | null;
+  /** Iniettate server-side in page.tsx (non sono campi Storyblok) */
+  product_uuid?: string | null;
+  comparison_page_url?: string | null;
 }
 
 /** full_banner — title richtext + asset come bloks Asset[] */
@@ -131,7 +149,7 @@ export interface CatalogsDownloadStoryblok {
   _editable?: string;
 }
 
-export type DownloadableKind = "catalog" | "brochure" | "app" | "other";
+export type DownloadableKind = "catalog" | "brochure" | "app" | "other" | "press";
 
 /** downloadable — catalogo, brochure, app store o materiale altro */
 export interface DownloadableStoryblok extends Omit<

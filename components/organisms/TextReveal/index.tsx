@@ -126,8 +126,8 @@ const TextReveal = ({ blok }: { blok?: Text_revealStoryblok }) => {
 
                     {linkArray.length > 0 && (
                         <div ref={linksRef} className={cn('links')}>
-                            {linkArray.map((linkItem) => (
-                                <StoryblokComponent blok={linkItem} key={linkItem._uid} />
+                            {linkArray.map((linkItem, index) => (
+                                <StoryblokComponent blok={linkItem} key={linkItem._uid ?? `text-link-${index}`} />
                             ))}
                         </div>
                     )}

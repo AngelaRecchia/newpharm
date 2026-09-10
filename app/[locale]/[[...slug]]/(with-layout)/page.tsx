@@ -1,20 +1,24 @@
-import { getAllStories, getStory, getRelatedStoriesByTags, getRelatedProjectsByProduct } from '@/lib/api/storyblok/stories'
+import { getAllStories, getStory, getStoriesByComponent, getRelatedStoriesByTags, getRelatedProjectsByProduct } from '@/lib/api/storyblok/stories'
+import { buildStoryblokNavigationHref } from '@/lib/api/utils/links'
 import { enrichListingBloks, resolveProductStories, resolveStoryStories } from '@/lib/listing/resolveListingItems'
-import { enrichCarouselBloks } from '@/lib/carousel/resolveCarouselItems'
+import { enrichCarouselBloks, resolveCarouselItems } from '@/lib/carousel/resolveCarouselItems'
+import { parseCarouselVariant } from '@/lib/carousel/parseCarouselVariant'
 import { mapStoryToNewsCard, sortStoriesByDate } from '@/lib/carousel/mapStoryToNewsCard'
 import {
   getParentFullSlug,
   getRelatedCategoryProducts,
 } from '@/lib/products/relatedCategoryProducts'
 import { enrichProductTargetPests } from '@/lib/products/targetPests'
+import { buildProductPageCtaBox } from '@/lib/products/productPageCtaBox'
 import StoryblokRenderer from '@/components/StoryblokRenderer'
 import DownloadGate from '@/components/organisms/DownloadGate'
-import { setRequestLocale } from 'next-intl/server'
+import { setRequestLocale, getTranslations } from 'next-intl/server'
 import { notFound } from 'next/navigation'
 import { PageStoryblok, StoryStoryblok, JobStoryblok } from '@/types/storyblok'
 import localeConfig from '@/i18n/locales.json'
 import { isDownloadGateContent, isNonRoutableComponent } from '@/lib/api/storyblok/routing'
 import { mapStoryToDownloadGate } from '@/lib/downloadable/map'
+import { tSafe } from '@/lib/i18n/tSafe'
 
 interface PageProps {
   params: Promise<{
@@ -96,7 +100,7 @@ export default async function WithLayoutPage({ params }: PageProps) {
     notFound()
   }
 
-  // Se il content è una Story, fetcha le story correlate
+  // Se il content è una Story, fetcha le story correlate + prodotti correlati
   if (story.content?.component === 'story') {
 
     const storyContent = story.content as StoryStoryblok
@@ -107,12 +111,32 @@ export default async function WithLayoutPage({ params }: PageProps) {
     )
 
     // Inietta le story correlate nel blok
-    if (relatedStories.length > 0) {
-      story.content = {
-        ...storyContent,
-        related_stories: relatedStories
+    const nextContent: StoryStoryblok = {
+      ...storyContent,
+      ...(relatedStories.length > 0 ? { related_stories: relatedStories } : {}),
+    }
+
+    // Se il campo plugin related_products è configurato, risolvi i prodotti correlati
+    const rawRelated = storyContent.related_products
+    if (rawRelated) {
+      // Normalizza i valori legacy: prima del fix il plugin poteva salvare variant
+      // 'prodotto'/'story' nel campo related_products. Forza related_products.
+      const normalizedRelated =
+        typeof rawRelated === 'object' && rawRelated !== null
+          ? { ...rawRelated, variant: 'related_products' }
+          : rawRelated
+      const parsed = parseCarouselVariant(normalizedRelated)
+      const resolved = await resolveCarouselItems(parsed, locale)
+      nextContent.related_products = {
+        ...(typeof rawRelated === 'object' && rawRelated !== null
+          ? rawRelated
+          : {}),
+        variant: parsed,
+        resolved_items: resolved,
       }
     }
+
+    story.content = nextContent
   }
 
   // Se il content è un Job, fetcha le ultime news
@@ -131,10 +155,11 @@ export default async function WithLayoutPage({ params }: PageProps) {
   const attachProductRelations =
     story.content?.component === 'product'
       ? (async () => {
-          const [relatedProjects, allProducts] = await Promise.all([
+          const [relatedProjects, allProducts, , compareStories] = await Promise.all([
             getRelatedProjectsByProduct(story.uuid, locale),
             resolveProductStories(locale),
             enrichProductTargetPests(story.content, locale),
+            getStoriesByComponent('compare', locale),
           ])
 
           if (relatedProjects.length > 0) {
@@ -153,6 +178,37 @@ export default async function WithLayoutPage({ params }: PageProps) {
               story.full_slug,
             )
           }
+
+          // CTA box automatico: due card fisse e una card progetto opzionale.
+          // Viene renderizzato dal Product prima dei carousel automatici.
+          const t = await getTranslations({ locale })
+          story.content.auto_cta_box = buildProductPageCtaBox(relatedProjects, {
+            box1Title: tSafe(t, 'product_cta_box_1', 'Informa chi può trarne valore'),
+            box2Title: tSafe(t, 'chiedi_supporto_esperto', 'Chiedi supporto a un nostro esperto'),
+            copyLabel: tSafe(t, 'copy_link', 'Copia link'),
+            contactLabel: tSafe(t, 'contact_us', 'Contattaci'),
+            projectLabel: tSafe(t, 'scopri_progetto', 'Scopri il progetto'),
+          })
+
+          // Pagina confronto per il dettaglio prodotto.
+          // 1. Preferenza: story `compare` del locale (pagina dedicata).
+          // 2. Fallback: la listing prodotti — la pagina madre del prodotto
+          //    (`it/prodotti/…` → `it/prodotti`). Nello spazio attuale non
+          //    esiste ancora una story `compare`, quindi il bottone "Confronta"
+          //    punta alla listing con i prodotti nei query params.
+          const compareStory = (compareStories ?? [])[0]
+          const listingFallbackSlug = getParentFullSlug(story.full_slug)
+          const compareSlug = compareStory?.full_slug || listingFallbackSlug
+          if (compareSlug) {
+            const compareUrl = buildStoryblokNavigationHref(`/${compareSlug}`)
+            if (compareUrl) {
+              story.content.comparison_page_url = compareUrl
+            }
+          }
+
+          // L'uuid della story serve a ProductStickyBar (download PDF + confronto).
+          // StoryblokComponent passa solo il content: lo esponiamo sul blok.
+          story.content.product_uuid = story.uuid
         })()
       : Promise.resolve()
 

@@ -120,7 +120,7 @@ function StoriesInner({ blok }: { blok?: StoriesStoryblok }) {
 
   const renderCard = (item: RelatedStory, index: number, slot: MosaicSlot, cellClassName?: string) => (
     <motion.div
-      key={item.full_slug}
+      key={item.full_slug ?? `story-card-${index}`}
       className={cellClassName}
       {...getGridMotion(index % MOSAIC_CYCLE, reduceMotion)}
     >
@@ -168,7 +168,7 @@ function StoriesInner({ blok }: { blok?: StoriesStoryblok }) {
                     >
                       {group.items.map(({ item, slot }, offset) => (
                         <div
-                          key={item.full_slug}
+                          key={item.full_slug ?? `story-cell-${group.items[0].index}-${offset}`}
                           className={cn('cell', { 'row2-wide': offset === 0 })}
                         >
                           <StoryNewsCard

@@ -2,7 +2,7 @@
 
 import { useCallback } from 'react'
 import classNames from 'classnames/bind'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import Asset from '@/components/atoms/Asset'
 import Button from '@/components/atoms/Button'
 import Icon from '@/components/atoms/Icon'
@@ -32,6 +32,7 @@ export default function ProductDownloadBar({
   onDownloadAll,
 }: ProductDownloadBarProps) {
   const t = useTranslations('')
+  const locale = useLocale()
 
   const technicalLabel = t('product_technical_sheet')
   const safetyLabel = t('product_safety_sheet')
@@ -41,8 +42,25 @@ export default function ProductDownloadBar({
   const item = items[0] ?? null
 
   const handleTechnicalSheetDownload = useCallback(async () => {
-    // TODO: fetch scheda tecnica
-  }, [])
+    if (!item) return
+    // Scarica la scheda tecnica PDF (generata on-demand lato server)
+    const res = await fetch(
+      `/api/products/${item.uuid}/scheda-tecnica?locale=${encodeURIComponent(locale)}`,
+    )
+    if (!res.ok) {
+      console.error('Failed to download technical sheet', res.status)
+      return
+    }
+    const blob = await res.blob()
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `scheda-tecnica-${item.title.replace(/\s+/g, '-').toLowerCase()}.pdf`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }, [item, locale])
 
   const selectedCountLabel = `${items.length} ${t('prodotti_selezionati')}`
 

@@ -179,7 +179,7 @@ export default function Header({
             <ul className={cn('headerNavItems')}>
               {navItems.map((item, index) => (
                 <NavItem
-                  key={item._uid}
+                  key={item._uid ?? `nav-item-${index}`}
                   item={item}
                   index={index}
                   expanded={openDropdownIndex === index}
@@ -226,7 +226,7 @@ export default function Header({
                     const hasItems = item.items && item.items.length > 0
                     const isOpen = openDropdownIndex === index
                     const hasLink = getLinkUrl(item.link)
-                    return <li key={item._uid}>
+                    return <li key={item._uid ?? `mobile-nav-${index}`}>
                       {hasLink ? (
                         <SmartLink
                           link={item.link}
@@ -253,8 +253,8 @@ export default function Header({
                           hasItems && isOpen && item.items && (
                             <motion.ul className={cn('headerMobileDropdown')} initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
                               transition={{ duration: 0.2, ease: 'easeOut' }}>
-                              {item.items.map((subItem) => (
-                                <li key={subItem._uid}>
+                              {item.items.map((subItem, subIndex) => (
+                                <li key={subItem._uid ?? `mobile-subnav-${index}-${subIndex}`}>
                                   <AnchorLink
                                     link={subItem.link}
                                     label={subItem.label}

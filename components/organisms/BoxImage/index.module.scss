@@ -10,7 +10,7 @@
   --height: 100dvw;
 
   @include md {
-    --height: 50dvw;
+    --height: 100vh;
     overflow: clip;
   }
 
@@ -46,10 +46,10 @@
 
   > * {
     overflow: clip;
-    height: var(--height);
+    height: var(--height) !important;
 
     @include md {
-      height: max(var(--height), var(--content-height, 0px));
+      height: max(var(--height), var(--content-height, 0px)) !important;
     }
   }
 

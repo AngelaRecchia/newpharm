@@ -33,7 +33,7 @@ const CardCtaBox = ({ blok }: { blok?: Card_cta_boxStoryblok }) => {
                     <Button
                         link={validLink}
                         inert={isHref}
-                        variant={color === 'black' ? 'primary' : 'secondary'}
+                        variant={color === 'black' || color === 'white' ? 'primary' : 'secondary'}
                     />
                 )}
             </div>

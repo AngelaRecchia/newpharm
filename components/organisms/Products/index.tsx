@@ -3,6 +3,7 @@
 import { Suspense, useCallback, useContext, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import classNames from 'classnames/bind'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
+import { useSearchParams } from 'next/navigation'
 import { storyblokEditable } from '@storyblok/react'
 import Container from '@/components/atoms/Container'
 import HeroTertiary from '@/components/molecules/HeroTertiary'
@@ -31,6 +32,7 @@ import {
 import { downloadAllSafetySheets } from '@/lib/products/downloadAllSafetySheets'
 import { getLinkUrl } from '@/lib/api/utils/links'
 import { getEmptyMotion, getGridMotion } from '@/lib/animation/gridPresence'
+import { parseCompareProductsSearchParams } from '@/lib/products/compareQuery'
 import type { ProductsStoryblok } from '@/types/storyblok'
 import styles from './index.module.scss'
 
@@ -41,7 +43,7 @@ function ProductsInner({ blok }: { blok?: ProductsStoryblok }) {
   const refreshPageScroll = useRefreshPageScroll()
   const { lenis } = useContext(SmoothScrollContext)
   const skipScrollRefresh = useRef(true)
-  const skipPageScrollRef = useRef(true)
+  const shouldScrollToPageRef = useRef(false)
   const filtersSentinelRef = useRef<HTMLDivElement>(null)
   const stickyFiltersRef = useRef<HTMLDivElement>(null)
   const gridRef = useRef<HTMLDivElement>(null)
@@ -60,6 +62,44 @@ function ProductsInner({ blok }: { blok?: ProductsStoryblok }) {
   const [downloadItems, setDownloadItems] = useState<ProductBarItem[]>([])
   const [downloadMultiMode, setDownloadMultiMode] = useState(false)
   const [activeBar, setActiveBar] = useState<ActiveProductBar>(null)
+
+  // Se si arriva con `?products=<uuid>` (es. dal "Confronta" della sticky bar
+  // nel dettaglio), il prodotto arriva già selezionato nella barra confronto.
+  const initialCompareUuids = parseCompareProductsSearchParams(
+    useSearchParams() ?? new URLSearchParams(),
+  )
+
+  useEffect(() => {
+    if (!initialCompareUuids[0] && !initialCompareUuids[1]) return
+    const byUuid = new Map<string, ProductBarItem>()
+    for (const resolved of resolvedItems) {
+      const card = mapStoryToCard(resolved, 'product')
+      if (card?.uuid) {
+        byUuid.set(card.uuid, {
+          uuid: card.uuid,
+          title: card.title,
+          image: card.image,
+          href: card.href,
+          safetySheetHref: card.safetySheetHref,
+        })
+      }
+    }
+
+    const initial: ProductBarItem[] = []
+    for (const uuid of initialCompareUuids) {
+      const item = uuid && byUuid.get(uuid)
+      if (item && !initial.some((entry) => entry.uuid === item.uuid)) {
+        initial.push(item)
+      }
+      if (initial.length >= COMPARE_MAX) break
+    }
+
+    if (initial.length > 0) {
+      setCompareItems(initial)
+      setActiveBar('compare')
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const parsedFiltri = useMemo(() => parseFiltriEntries(getBundledFiltriEntries()), [])
 
@@ -93,7 +133,7 @@ function ProductsInner({ blok }: { blok?: ProductsStoryblok }) {
   }, [filteredItems, currentPage])
 
   const handleGridExitComplete = useCallback(() => {
-    refreshPageScroll()
+    refreshPageScroll({ clampToLimit: false })
   }, [refreshPageScroll])
 
   const scrollToGridTop = useCallback(() => {
@@ -142,12 +182,20 @@ function ProductsInner({ blok }: { blok?: ProductsStoryblok }) {
   }, [currentPage, filters, refreshPageScroll])
 
   useEffect(() => {
-    if (skipPageScrollRef.current) {
-      skipPageScrollRef.current = false
+    if (!shouldScrollToPageRef.current) {
       return
     }
+    shouldScrollToPageRef.current = false
     scrollToGridTop()
   }, [currentPage, scrollToGridTop])
+
+  const handlePageChange = useCallback(
+    (page: number) => {
+      shouldScrollToPageRef.current = true
+      setCurrentPage(page)
+    },
+    [setCurrentPage],
+  )
 
   const handleCategoryChange = useCallback((category: string | null) => {
     setFilters((prev) => ({
@@ -356,7 +404,7 @@ function ProductsInner({ blok }: { blok?: ProductsStoryblok }) {
             <PaginationNumbers
               currentPage={currentPage}
               totalPages={totalPages}
-              onPageChange={setCurrentPage}
+              onPageChange={handlePageChange}
             />
           </div>
         ) : null}

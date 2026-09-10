@@ -83,6 +83,30 @@ export async function resolveCarouselItems(
     return sortStoriesByDate(allStories).slice(0, CAROUSEL_LIMIT)
   }
 
+  if (parsed.variant === 'related_products') {
+    if (parsed.selection_mode === 'manual') {
+      if (parsed.items.length === 0) return []
+      const products = await getStoriesByUuids(
+        parsed.items.slice(0, CAROUSEL_LIMIT),
+        locale,
+      )
+      return products.map(mapStoryToListingResolved)
+    }
+
+    const allProducts = (await getStoriesByComponent('product', locale)).map(
+      mapStoryToListingResolved,
+    )
+    const filtered = filterListingByVista(allProducts, {
+      selection_mode: 'dynamic',
+      vista: parsed.vista,
+      category: parsed.category,
+      subcategory: parsed.subcategory,
+      application_area: parsed.application_area,
+      bestseller: parsed.bestseller,
+    })
+    return sortProductStories(filtered, 'recent').slice(0, CAROUSEL_LIMIT)
+  }
+
   const allProducts = (await getStoriesByComponent('product', locale)).map(
     mapStoryToListingResolved,
   )

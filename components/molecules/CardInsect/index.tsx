@@ -18,8 +18,8 @@ export default function CardInsect({
   imageHover,
   onOpen,
 }: CardInsectProps) {
-  const hasHover = Boolean(imageHover)
   const isInteractive = Boolean(onOpen)
+  const hasHover = Boolean(imageHover) && isInteractive
   const className = cn('wrapper', { hoverable: hasHover, interactive: isInteractive })
 
   const inner = (

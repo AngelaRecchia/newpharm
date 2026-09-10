@@ -70,7 +70,7 @@ export default function Modal({
     if (open) setPresent(true)
   }, [open])
 
-  useBodyScrollLock(open || present)
+  useBodyScrollLock(open)
 
   useEffect(() => {
     if (!open) return

@@ -202,6 +202,35 @@ function normalizeCarouselInsetto(
   }
 }
 
+function normalizeCarouselRelatedProducts(
+  value: Record<string, unknown>,
+  items: string[],
+): PluginVariantValue {
+  // related_products supporta manual (singoli prodotti) e dynamic (categoria/application_area)
+  const rawMode = value.selection_mode
+  const selection_mode = rawMode === 'dynamic' ? 'dynamic' : 'manual'
+  const category = typeof value.category === 'string' ? value.category : ''
+
+  return {
+    variant: 'related_products',
+    selection_mode,
+    vista: normalizeVista(value.vista, category),
+    category: selection_mode === 'dynamic' ? category : '',
+    subcategory:
+      selection_mode === 'dynamic' && typeof value.subcategory === 'string'
+        ? value.subcategory
+        : '',
+    application_area:
+      selection_mode === 'dynamic' && typeof value.application_area === 'string'
+        ? value.application_area
+        : '',
+    bestseller: selection_mode === 'dynamic' ? Boolean(value.bestseller) : false,
+    tag: '',
+    items: selection_mode === 'manual' ? items.slice(0, 8) : [],
+    context: 'carousel',
+  }
+}
+
 export function normalizeContent(content: unknown): PluginVariantValue {
   const coerced = coercePluginContent(content)
 
@@ -236,6 +265,9 @@ export function normalizeContent(content: unknown): PluginVariantValue {
     }
     if (raw === 'insetto' || raw === 'insect') {
       return normalizeCarouselInsetto(value, items)
+    }
+    if (raw === 'related_products') {
+      return normalizeCarouselRelatedProducts(value, items)
     }
     return normalizeCarouselStory(value, items)
   }
