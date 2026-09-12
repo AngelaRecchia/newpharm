@@ -1,7 +1,7 @@
 @use "../../../../styles" as *;
 
 .container {
-  min-height: 100vh;
+  min-height: 100svh;
   background-color: $c-primary;
   display: flex;
   align-items: center;

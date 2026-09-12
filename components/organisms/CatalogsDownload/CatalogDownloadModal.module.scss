@@ -1,0 +1,54 @@
+@use "sass:color" as color;
+@use "../../../styles" as *;
+
+// Testi secondari su sfondo scuro: alpha su $c-white (design token)
+@function white-alpha($a) {
+  @return color.change($c-white, $alpha: $a);
+}
+
+.title {
+  @include t-h6;
+  margin: 0 0 $s-8;
+  padding-right: $s-40;
+  font-weight: $font-weight-semibold;
+  color: $c-white;
+}
+
+.subtitle {
+  @include t-note;
+  margin: 0 0 $s-8;
+  color: white-alpha(0.65);
+}
+
+.fileHint {
+  @include t-note;
+  margin: 0 0 $s-24;
+  color: white-alpha(0.5);
+  word-break: break-word;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: $s-24;
+}
+
+.row2 {
+  display: grid;
+  gap: $s-24;
+  grid-template-columns: 1fr;
+
+  @include md {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.recaptchaError {
+  @include t-note;
+  margin: (-$s-8) 0 0;
+  color: $c-alert;
+}
+
+.actions {
+  margin-top: $s-8;
+}

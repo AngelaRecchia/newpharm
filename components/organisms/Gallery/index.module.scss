@@ -1,0 +1,147 @@
+@use "../../../styles" as *;
+
+.wrapper {
+  overflow: clip;
+}
+
+.container {
+  @include container-lg;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: $s-40;
+
+  @include lg {
+    gap: $s-80;
+  }
+}
+
+.head {
+  @include md {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+  }
+}
+
+.title {
+  @include t-h3;
+  grid-column: 7 / -1;
+}
+
+.swiper-wrapper {
+  height: 28.75rem;
+
+  @include lg {
+    height: 768px;
+  }
+}
+
+.swiper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+
+  overflow: visible;
+
+  :global(.swiper-pagination) {
+    position: relative;
+    inset: 0;
+    margin-top: $s-32;
+  }
+
+  :global(.swiper-pagination-bullet) {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: block;
+    background-color: $c-black;
+    opacity: 0.3;
+    transition: opacity 300ms ease;
+    cursor: pointer;
+    margin: 0;
+  }
+
+  :global(.swiper-pagination-bullet-active) {
+    opacity: 1;
+  }
+
+  :global(.swiper-pagination-horizontal.swiper-pagination-bullets) {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+  }
+}
+
+.swiper-slide {
+  width: auto;
+  height: 100%;
+  max-width: 100%;
+
+  @include lg {
+    &::before,
+    &::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 120px;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    &::before {
+      left: 0;
+      background: linear-gradient(
+        to left,
+        rgba($c-black, 0) 0%,
+        rgba($c-black, 0.3) 100%
+      );
+    }
+
+    &::after {
+      right: 0;
+      background: linear-gradient(
+        to right,
+        rgba($c-black, 0) 0%,
+        rgba($c-black, 0.3) 100%
+      );
+    }
+  }
+}
+
+.image-item {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+
+  [data-asset],
+  img {
+    height: 100%;
+    --asset-height: 100%;
+    --asset-width: auto;
+    max-width: 100%;
+    --asset-object-fit: cover;
+  }
+}
+
+.buttons-wrapper {
+  width: 100%;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  justify-content: space-between;
+  z-index: 10;
+  padding-inline: $s-4;
+
+  @include md {
+    padding-inline: $s-8;
+  }
+
+  @include lg {
+    padding-inline: $s-24;
+  }
+}

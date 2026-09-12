@@ -53,14 +53,3 @@
     }
   }
 }
-
-.article {
-  @include lg {
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
-
-    > * {
-      grid-column: 4 / span 6;
-    }
-  }
-}

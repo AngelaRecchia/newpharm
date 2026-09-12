@@ -1,5 +1,9 @@
 @use "../../../styles" as *;
 
+.wrapper {
+  background-color: $c-surface;
+}
+
 .container {
   @include container-md;
 }

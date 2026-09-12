@@ -1,0 +1,160 @@
+@use "../../../styles" as *;
+
+// ==============================================
+// Wrapper
+// ==============================================
+.wrapper {
+  width: 100%;
+  overflow: clip;
+  background-color: $c-white;
+  --height: 100dvw;
+
+  @include md {
+    --height: 100vh;
+    overflow: clip;
+  }
+
+  & + * {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+.wrapper.carousel {
+  --height: 100svh;
+}
+
+// ==============================================
+// Layout
+// ==============================================
+.container {
+  @include md {
+    display: flex;
+    align-items: flex-start;
+  }
+}
+
+.asset-wrapper {
+  width: 100%;
+  position: sticky;
+  top: 0;
+
+  img,
+  video {
+    @include transition(transform, $td-300);
+  }
+
+  > * {
+    overflow: clip;
+    height: var(--height) !important;
+
+    @include md {
+      height: max(var(--height), var(--content-height, 0px)) !important;
+    }
+  }
+
+  @include untilMd {
+    height: 0;
+  }
+
+  @include md {
+    top: 0; // fisso: --sticky-top dell'header causava saltino
+    flex-basis: 50%;
+    max-width: 50%;
+  }
+}
+
+.content-wrapper {
+  width: 100%;
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+  z-index: 1;
+
+  @include untilMd {
+    padding-top: var(--height);
+  }
+
+  @include md {
+    overflow: hidden;
+    min-height: var(--height);
+    flex-basis: 50%;
+    max-width: 50%;
+  }
+}
+
+// ==============================================
+// Content
+// ==============================================
+.content {
+  min-height: calc(var(--height) / 2);
+  padding: $s-40 $s-24 $s-128;
+  display: flex;
+  flex-direction: column;
+  gap: $s-16;
+  background-color: $c-white;
+
+  @include md {
+    gap: $s-32;
+    padding: $s-96 $s-40 $s-128;
+  }
+}
+
+.title {
+  @include t-h2;
+}
+
+.subtitle {
+  @include t-h3;
+}
+
+.link-wrapper {
+  margin-top: $s-8;
+}
+
+.module-link {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  cursor: pointer;
+}
+
+// ==============================================
+// Hover (modulo intero cliccabile)
+// ==============================================
+.wrapper.has-module-link {
+  position: relative;
+  cursor: pointer;
+  --button-hover: 0;
+
+  .asset-wrapper {
+    z-index: 3;
+    pointer-events: none;
+
+    [data-video-controls] {
+      pointer-events: auto;
+    }
+  }
+
+  @include md {
+    &:hover {
+      --button-hover: 1;
+
+      .asset-wrapper img,
+      .asset-wrapper video {
+        transform: scale(1.03);
+      }
+    }
+  }
+}
+
+// ==============================================
+// Orientation right
+// ==============================================
+.wrapper.image-alignment-right {
+  .container {
+    @include md {
+      flex-direction: row-reverse;
+    }
+  }
+}

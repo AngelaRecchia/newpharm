@@ -1,0 +1,143 @@
+﻿@use "../../../styles" as *;
+
+.wrapper {
+  min-height: 60vh;
+  padding-block: $s-64;
+  background-color: $c-white;
+  color: $c-black;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: $s-24;
+  margin-bottom: $s-48;
+}
+
+.title {
+  @include t-h1;
+  margin: 0;
+}
+
+.subtitle {
+  @include t-body;
+  margin: 0;
+  color: $c-gray-600;
+}
+
+.form {
+  width: 100%;
+}
+
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: $s-16;
+  padding: $s-16 $s-24;
+  border: 1px solid $c-border-light;
+  border-radius: 9999px;
+  background-color: $c-white;
+  transition: border-color 200ms ease;
+
+  &:focus-within {
+    border-color: $c-primary;
+  }
+
+  svg {
+    flex-shrink: 0;
+    color: $c-gray-600;
+  }
+}
+
+.input {
+  flex: 1 1 auto;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  @include t-body;
+  color: $c-black;
+  outline: none;
+
+  &::placeholder {
+    color: $c-gray-600;
+  }
+
+  &::-webkit-search-decoration,
+  &::-webkit-search-cancel-button {
+    display: none;
+  }
+}
+
+.clear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: $s-32;
+  height: $s-32;
+  border-radius: 50%;
+  border: 0;
+  background-color: $c-surface;
+  color: $c-black;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.chips {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: $s-16;
+}
+
+.chipsLabel {
+  @include t-note;
+  color: $c-gray-600;
+}
+
+.chipsTrack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $s-8;
+}
+
+.loading,
+.empty {
+  @include t-body;
+  padding-block: $s-48;
+  text-align: center;
+  color: $c-gray-600;
+}
+
+.results {
+  display: flex;
+  flex-direction: column;
+  gap: $s-64;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: $s-24;
+}
+
+.sectionTitle {
+  @include t-h2;
+  margin: 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $s-16;
+
+  @include md {
+    grid-template-columns: repeat(3, 1fr);
+    gap: $s-24;
+  }
+
+  @include lg {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

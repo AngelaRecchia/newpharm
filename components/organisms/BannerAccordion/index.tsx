@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState, type CSSProperties } from 'react'
 import classNames from 'classnames/bind'
 import styles from './index.module.scss'
 import { Banner_accordionStoryblok, Card_boxStoryblok } from '@/types/storyblok'
@@ -9,6 +9,8 @@ import CardBox from '@/components/molecules/CardBox'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { BREAKPOINT_MD_PX } from '@/lib/breakpoints'
+import { getStoryblokAnchorId } from '@/lib/storyblok/anchor'
+import { isViewportWidthUnchanged } from '@/lib/context/smooth-scroll-context'
 import { useViewport } from '@/lib/context/viewport-context'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -47,6 +49,14 @@ const Banneraccordion = ({ blok }: { blok?: Banner_accordionStoryblok }) => {
     const cards = content.children
 
     if (cards.length === 0) return
+
+    const cleanupScrollTrigger = () => {
+      if (scrollTriggerRef.current) {
+        scrollTriggerRef.current.kill()
+        scrollTriggerRef.current = null
+      }
+      gsap.set(content, { clearProps: 'transform' })
+    }
 
     // Calcola la larghezza totale delle card e il gap
     const calculateDimensions = () => {
@@ -99,17 +109,23 @@ const Banneraccordion = ({ blok }: { blok?: Banner_accordionStoryblok }) => {
       // Imposta la posizione iniziale delle card (fuori dalla viewport a destra)
       gsap.set(content, { x: 0, force3D: true })
 
+      // Scroll extra dopo l'ultima card: il modulo resta pinnato senza muovere il contenuto
+      const holdDistance = Math.round(document.documentElement.clientHeight * 0.25)
+      const totalPinDistance = scrollDistance + holdDistance
+
       // Crea la timeline per animare le card
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: wrapper,
           start: 'top top',
-          end: () => `+=${scrollDistance}px`,
+          end: () => `+=${totalPinDistance}px`,
           pin: true,
           pinSpacing: true,
-          scrub: 1, // Valore più basso = più smooth, più alto = più responsive
+          // Transform pin: compatibile con Lenis e con main { transform, z-index }
+          pinType: 'transform',
+          anticipatePin: 1,
+          scrub: 1,
           invalidateOnRefresh: true,
-
         }
       })
 
@@ -117,27 +133,42 @@ const Banneraccordion = ({ blok }: { blok?: Banner_accordionStoryblok }) => {
       tl.to(content, {
         x: -scrollDistance,
         ease: 'none',
-        duration: 1,
-        force3D: true, // Forza accelerazione hardware
-        roundProps: 'x', // Arrotonda i valori per evitare sub-pixel rendering
+        duration: scrollDistance / totalPinDistance,
+        force3D: true,
+        roundProps: 'x',
+      })
+
+      // Hold: ultima card visibile prima di scrollare via
+      tl.to({}, {
+        duration: holdDistance / totalPinDistance,
       })
 
       scrollTriggerRef.current = tl.scrollTrigger || null
     }
 
-    // Se tutte le card sono già visibili all'inizio, non fare nulla
-    if (checkIfAllCardsInViewport()) {
-      return
+    const setupAnimation = () => {
+      if (checkIfAllCardsInViewport()) {
+        cleanupScrollTrigger()
+        return
+      }
+
+      initAnimation()
     }
 
-    initAnimation()
+    // Aspetta il settle del layout (immagini, font) prima di calcolare le dimensioni
+    const rafId = requestAnimationFrame(() => {
+      requestAnimationFrame(setupAnimation)
+    })
 
     // Gestisci il resize
     let resizeTimeout: NodeJS.Timeout
+    let lastWidth = window.innerWidth
     const handleResize = () => {
+      if (isViewportWidthUnchanged(lastWidth)) return
+      lastWidth = window.innerWidth
       clearTimeout(resizeTimeout)
       resizeTimeout = setTimeout(() => {
-        initAnimation()
+        setupAnimation()
         ScrollTrigger.refresh()
       }, 250)
     }
@@ -145,29 +176,37 @@ const Banneraccordion = ({ blok }: { blok?: Banner_accordionStoryblok }) => {
     window.addEventListener('resize', handleResize)
 
     return () => {
+      cancelAnimationFrame(rafId)
+      clearTimeout(resizeTimeout)
       window.removeEventListener('resize', handleResize)
-      if (scrollTriggerRef.current) {
-        scrollTriggerRef.current.kill()
-      }
+      cleanupScrollTrigger()
     }
   }, [items])
 
   return (
-    <div ref={wrapperRef} className={cn('wrapper')}>
+    <div ref={wrapperRef} className={cn('wrapper')} id={getStoryblokAnchorId(blok?.anchor_id)}>
       <div className={cn('container')}>
         <div className={cn('image')}>
           <Asset asset={image} size='l' overlay />
         </div>
 
-        <div ref={contentRef} className={cn('content')}>
-          {items?.map((item, index) => (
-            <CardBox
-              key={item._uid}
-              blok={item as Card_boxStoryblok}
-              isOpen={openIndex === index}
-              onToggle={() => handleCardToggle(index)}
-            />
-          ))}
+        <div className={cn('content-position')}>
+          <div
+            ref={contentRef}
+            className={cn('content')}
+            style={
+              { '--banner-card-count': items?.length ?? 1 } as CSSProperties
+            }
+          >
+            {items?.map((item, index) => (
+              <CardBox
+                key={item._uid ?? `banner-accordion-${index}`}
+                blok={item as Card_boxStoryblok}
+                isOpen={openIndex === index}
+                onToggle={() => handleCardToggle(index)}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </div>

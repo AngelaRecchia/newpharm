@@ -5,6 +5,8 @@
 @use "../../../styles" as *;
 
 .button {
+  flex-shrink: 0;
+  font-family: inherit;
   @include flex-center;
   border-radius: 9999px;
   cursor: pointer;
@@ -16,6 +18,12 @@
 
   background-color: var(--button-background-color);
   color: var(--button-color);
+
+  &Primary {
+    &.buttonWithIcon .buttonIcon {
+      color: $c-black;
+    }
+  }
 
   &Secondary {
     --button-background-color: #{$c-black};
@@ -39,6 +47,16 @@
     }
 
     justify-content: center;
+
+    .iconOnly {
+      width: $s-16;
+      height: $s-16;
+
+      @include md {
+        width: 1.125rem; // 18px
+        height: 1.125rem;
+      }
+    }
 
     &.buttonPrimary:hover {
       --button-background-color: #{$c-black};
@@ -83,6 +101,91 @@
     &:hover,
     &:focus-visible {
       --button-hover: 1;
+    }
+  }
+
+  // Animazione icona al hover e click (per bottoni con solo icona)
+  &.animated {
+    svg {
+      @include transition(transform, $td-200);
+    }
+
+    // Default: anima verso destra
+    &:hover svg {
+      transform: translateX(2px);
+    }
+
+    &:active svg {
+      transform: translateX(3px);
+    }
+
+    // Se è un bottone "left" (chevron-left, arrow-left) o ha classe button-prev, anima verso sinistra
+    &.button-left:hover svg,
+    &.button-prev:hover svg,
+    &[class*="prev"]:hover svg {
+      transform: translateX(-2px);
+    }
+
+    &.button-left:active svg,
+    &.button-prev:active svg,
+    &[class*="prev"]:active svg {
+      transform: translateX(-4px);
+    }
+  }
+
+  // Rotazione icona per link esterni (solo quando è onlyIcon con arrow)
+  &.button-external {
+    svg {
+      transform: rotate(-45deg);
+      @include transition(transform, $td-200);
+    }
+  }
+}
+
+.iconAlwaysVisible {
+  --button-hover: 1;
+
+  &.buttonWithIcon .buttonIcon {
+    transform: scale(1);
+    background-color: $c-primary;
+    color: $c-white;
+
+    svg {
+      opacity: 1;
+      transition: transform 300ms $ease-smooth;
+    }
+  }
+}
+
+.iconRotate {
+  &.buttonWithIcon .buttonIcon svg {
+    transform: rotate(45deg);
+  }
+}
+
+.iconPlain {
+  --button-hover: 1;
+
+  &.buttonWithIcon .buttonIcon {
+    width: auto;
+    height: auto;
+    background-color: transparent;
+    border-radius: 0;
+    transform: none;
+    color: $c-primary;
+
+    svg {
+      width: 0.875rem;
+      height: 0.875rem;
+      opacity: 1;
+      transition: transform 300ms $ease-smooth;
+    }
+  }
+
+  &:hover,
+  &:focus-visible {
+    &.buttonWithIcon .buttonIcon {
+      color: $c-white;
     }
   }
 }

@@ -1,0 +1,49 @@
+.link-action {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-family: inherit;
+  font-size: 14px;
+  color: #1a1a1a;
+}
+
+.link-action__fieldset {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 10px;
+  border: 1px solid #e5e5e5;
+  border-radius: 4px;
+  background: #fafafa;
+}
+
+.link-action__label {
+  font-weight: 600;
+  font-size: 13px;
+  padding: 0 4px;
+}
+
+.link-action__radio {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.link-action__radio input {
+  margin: 0;
+}
+
+.link-action__hint {
+  margin: 0;
+  font-size: 12px;
+  color: #666;
+}
+
+.link-action__loading {
+  margin: 0;
+  font-size: 13px;
+  color: #666;
+}

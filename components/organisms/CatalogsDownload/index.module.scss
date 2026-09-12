@@ -1,0 +1,19 @@
+@use "../../../styles" as *;
+
+.wrapper {
+  background-color: $c-surface;
+}
+
+.container {
+  @include container-lg;
+
+  @include md {
+    min-height: 100svh;
+    display: grid;
+  }
+}
+
+.title {
+  @include t-h3;
+  margin: 0;
+}

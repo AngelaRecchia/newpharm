@@ -13,6 +13,9 @@ import { getMessagesFromDatasource } from "../lib/api/storyblok/datasource";
  *
  * @see https://next-intl.dev/docs/routing/setup
  */
+// Map to store missing messages per locale
+const missingMessagesByLocale = new Map<string, Set<string>>();
+
 export default getRequestConfig(async ({ requestLocale }) => {
   // Typically corresponds to the `[locale]` segment
   let locale = await requestLocale;
@@ -24,27 +27,119 @@ export default getRequestConfig(async ({ requestLocale }) => {
     locale = routing.defaultLocale;
   }
 
+  // Fallback translations for features not yet present in Storyblok datasource
+  const searchFallbacks: Record<string, Record<string, string>> = {
+    it: {
+      cerca_per: "Cerca per",
+      search_placeholder: "Cosa stai cercando?",
+      close: "Chiudi",
+      clear_search: "Cancella",
+      most_searched: "I più cercati",
+      search_solutions: "Soluzioni",
+      search_products: "Prodotti",
+      search_stories: "Approfondimenti",
+      search_downloads: "Download",
+      search_no_results: "Nessun risultato",
+      all_results: "Tutti i risultati",
+      loading: "Caricamento...",
+    },
+    en: {
+      cerca_per: "Search for",
+      search_placeholder: "What are you looking for?",
+      close: "Close",
+      clear_search: "Clear",
+      most_searched: "Most searched",
+      search_solutions: "Solutions",
+      search_products: "Products",
+      search_stories: "Insights",
+      search_downloads: "Downloads",
+      search_no_results: "No results found",
+      all_results: "All results",
+      loading: "Loading...",
+    },
+    ar: {
+      cerca_per: "ابحث عن",
+      search_placeholder: "عن ماذا تبحث؟",
+      close: "إغلاق",
+      clear_search: "مسح",
+      most_searched: "الأكثر بحثًا",
+      search_solutions: "حلول",
+      search_products: "منتجات",
+      search_stories: "رؤى",
+      search_downloads: "تنزيلات",
+      search_no_results: "لا توجد نتائج",
+      all_results: "كل النتائج",
+      loading: "جار التحميل...",
+    },
+  };
+
   // Fetch messages from Storyblok datasource
-  const messages = await getMessagesFromDatasource("labels", locale);
+  const messages = {
+    ...(await getMessagesFromDatasource("labels", locale)),
+    ...(searchFallbacks[locale] || searchFallbacks.en),
+    accepts_terms:
+      locale === "it"
+        ? "Ho letto e accetto i <a>termini e condizioni</a>"
+        : "I have read and accept the <a>terms and conditions</a>",
+    upload_file_hint:
+      locale === "it" ? "PDF o DOC, massimo 5 MB" : "PDF or DOC, maximum 5 MB",
+    your_surname_here:
+      locale === "it" ? "Inserisci il cognome" : "Enter your surname",
+    phone_placeholder:
+      locale === "it" ? "Inserisci il telefono" : "Enter your phone number",
+    message_placeholder:
+      locale === "it" ? "Scrivi il messaggio" : "Write your message",
+  };
 
   // Determine text direction based on locale
   const isRTL = locale === "ar";
   const dir = isRTL ? "rtl" : "ltr";
+
+  // Initialize Set for this locale if it doesn't exist
+  if (!missingMessagesByLocale.has(locale)) {
+    missingMessagesByLocale.set(locale, new Set<string>());
+  }
+  const missingMessages = missingMessagesByLocale.get(locale)!;
 
   return {
     locale,
     messages,
     timeZone: "Europe/Rome",
     now: new Date(),
+
+    // 1. Questo evita che l'errore interrompa il rendering
+    getMessageFallback: ({ namespace, key, error }) => {
+      // Costruisci la chiave completa del messaggio
+      const messageKey = namespace ? `${namespace}.${key}` : key;
+
+      // Se c'è un errore di messaggio mancante, raccogli la chiave
+      if (error && error.code === IntlErrorCode.MISSING_MESSAGE) {
+        if (!missingMessages.has(messageKey)) {
+          missingMessages.add(messageKey);
+          // Logga tutte le label mancanti insieme
+          const allMissing = Array.from(missingMessages);
+          console.warn(
+            `[next-intl] Missing messages for locale "${locale}":`,
+            allMissing
+          );
+        }
+      }
+      // Restituisce solo la chiave (es. "nav.home") invece di crashare
+      return messageKey;
+    },
+
+    // 2. Questo gestisce il LOGGING per altri errori e previene che vengano rilanciati
     onError: (error) => {
       if (error.code === IntlErrorCode.MISSING_MESSAGE) {
-        console.warn(error);
+        // Gli errori MISSING_MESSAGE sono già gestiti da getMessageFallback
+        // Non rilanciare l'errore - questo previene che venga mostrato come errore
+        return;
       } else {
-        // Other errors indicate a bug in the app and should be reported
-        console.error(error);
+        console.error(error); // Errori critici meglio lasciarli come error
       }
     },
-    // Add direction for RTL support
+
+    // 3. Configurazione per prevenire errori in sviluppo
     ...(isRTL && { direction: "rtl" }),
   };
 });

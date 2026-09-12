@@ -1,26 +1,34 @@
 import classNames from 'classnames/bind'
+import type { CSSProperties } from 'react'
 import styles from './index.module.scss'
 import { Icon_text_highlightStoryblok } from '@/types/storyblok'
 import Asset from '@/components/atoms/Asset'
+import { storyblokEditable } from '@storyblok/react'
+import { getStoryblokAnchorId } from '@/lib/storyblok/anchor'
+import { getAssetSrc } from '@/lib/assets/getAssetSrc'
 
 const cn = classNames.bind(styles)
 
 const IconTextHighlight = ({ blok }: { blok: Icon_text_highlightStoryblok }) => {
   const { title, description, items } = blok
+  const cols = Math.min(items?.length || 1, 4)
+
   return (
-    <div className={cn('wrapper')}>
+    <div className={cn('wrapper')} id={getStoryblokAnchorId(blok.anchor_id)} {...storyblokEditable(blok as any)}>
       <div className={cn('container')}>
         <div className={cn('head')}>
           <h3 className={cn('title')}>{title}</h3>
           <p className={cn('description')}>{description}</p>
         </div>
 
-        <div className={cn('items')}>
-          {items?.map((item) => (
-            <div key={item._uid} className={cn('item')}>
-              <div className={cn('item-image')}>
-                <Asset asset={item.image} size='s' />
-              </div>
+        <div className={cn('items')} style={{ '--cols': cols } as CSSProperties}>
+          {items?.map((item, index) => (
+            <div key={item._uid ?? `icon-text-${index}`} className={cn('item')}>
+              {getAssetSrc(item.image as any) && (
+                <div className={cn('item-image')}>
+                  <Asset asset={item.image} size='s' />
+                </div>
+              )}
               <h4 className={cn('item-title')}>{item.title}</h4>
               <p className={cn('item-description')}>{item.description}</p>
             </div>

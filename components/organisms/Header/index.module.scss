@@ -6,6 +6,7 @@
 
 .header {
   width: 100%;
+  font-family: var(--font-sans);
   transition:
     background-color 300ms ease,
     transform 300ms ease;
@@ -46,6 +47,11 @@
 
   &Hidden {
     transform: translateY(-100%);
+  }
+
+  &SearchOpen {
+    transform: none !important;
+    transition: background-color 300ms ease !important;
   }
 
   &Content {
@@ -103,13 +109,15 @@
   }
 
   &MobileNavWrapper {
-    overflow: clip;
-    position: absolute;
-
-    top: 4.25rem; // header height 68px;
-
-    inset-inline-start: 0;
-
+    position: fixed;
+    top: 4.25rem; // header height 68px
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 1;
+    overflow-x: clip;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
     background-color: $c-white;
     width: 100%;
 
@@ -127,6 +135,7 @@
 
   &MobileNavItem {
     width: 100%;
+    color: $c-black;
     @include t-h3;
     @include flex-between;
 
@@ -167,6 +176,11 @@
 
     &.headerWhite {
       background-color: rgba(0, 0, 0, 0.7);
+    }
+
+    &Search {
+      background-color: rgba(0, 0, 0, 0.3);
+      mix-blend-mode: multiply;
     }
   }
 }

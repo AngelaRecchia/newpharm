@@ -5,6 +5,10 @@ import styles from './index.module.scss';
 import Button from '@/components/atoms/Button';
 import SmartLink from '@/components/atoms/SmartLink';
 import Asset from '@/components/atoms/Asset';
+import { isEmpty, getFirstValidLink } from '@/lib/api/utils/links';
+import { getAssetSrc } from '@/lib/assets/getAssetSrc';
+import { parseLinkAction } from '@/lib/link-action';
+
 const cn = classNames.bind(styles);
 
 
@@ -12,18 +16,27 @@ const CardCtaBox = ({ blok }: { blok?: Card_cta_boxStoryblok }) => {
     if (!blok) return <></>;
 
     const { title, link, image, color } = blok;
-    const hasLink = link && link.length > 0 && link[0];
+    const validLink = getFirstValidLink(link);
+    const action = parseLinkAction(validLink?.action);
+    const isHref = Boolean(validLink && action.type === 'link');
+    const hasImage = Boolean(getAssetSrc(image));
 
-    const Tag = hasLink ? SmartLink : 'div';
-    const props = hasLink ? { link: link[0].link } : {};
+    const Tag = isHref ? SmartLink : 'div';
+    const props = isHref && validLink ? { link: validLink.link } : {};
     return (
-        <Tag className={cn('wrapper', color, { hasImage: image && image.filename.length > 0 })} {...storyblokEditable(blok as any)} {...props}>
+        <Tag className={cn('wrapper', color, { hasImage })} {...storyblokEditable(blok as any)} {...props}>
 
-            {image && image.filename.length > 0 && <Asset asset={image} size="l" overlay />}
+            {hasImage && <Asset asset={image} size="l" />}
 
             <div className={cn('content')}>
-                <h2 className={cn('title')}>{title}</h2>
-                {hasLink && < Button label={link[0].label} variant={color === 'black' ? 'primary' : 'secondary'} />}
+                {!isEmpty(title) && <h2 className={cn('title')}>{title}</h2>}
+                {validLink && (
+                    <Button
+                        link={validLink}
+                        inert={isHref}
+                        variant={color === 'black' || color === 'white' ? 'primary' : 'secondary'}
+                    />
+                )}
             </div>
         </Tag>
     )

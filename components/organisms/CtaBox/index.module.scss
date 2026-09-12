@@ -9,6 +9,11 @@
 
   gap: $s-16;
 
+  // Cta box adiacenti: un solo padding tra un blocco e l'altro
+  &[data-cta-box] + [data-cta-box] {
+    padding-top: 0;
+  }
+
   @include md {
     flex-direction: row;
 

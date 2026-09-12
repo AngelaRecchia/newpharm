@@ -106,6 +106,10 @@ function storyblokTypeToTS(field: StoryblokField): string {
 /**
  * Genera l'interfaccia TypeScript per un componente
  */
+function formatPropertyKey(key: string): string {
+  return /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(key) ? key : JSON.stringify(key)
+}
+
 function generateComponentInterface(component: StoryblokComponent): string {
   const componentName = component.name
   const interfaceName = `${componentName.charAt(0).toUpperCase() + componentName.slice(1)}Storyblok`
@@ -116,7 +120,7 @@ function generateComponentInterface(component: StoryblokComponent): string {
       const tsType = storyblokTypeToTS(field)
       const optional = field.required ? '' : '?'
       const comment = field.required ? '' : ' // Optional'
-      return `  ${key}${optional}: ${tsType}${comment}`
+      return `  ${formatPropertyKey(key)}${optional}: ${tsType}${comment}`
     })
 
   return `
@@ -194,13 +198,15 @@ export type StoryblokBlok = StoryblokComponent
       fs.mkdirSync(typesDir, { recursive: true })
     }
 
-    // Salva il file
-    const outputPath = path.join(typesDir, 'storyblok.d.ts')
+    // Salva il file generato
+    const outputPath = path.join(typesDir, 'storyblok.generated.d.ts')
     fs.writeFileSync(outputPath, fileContent, 'utf-8')
 
     console.log(`\n✅ Types generati con successo in: ${outputPath}`)
-    console.log(`\n💡 Importa i types nei componenti:`)
+    console.log(`\n💡 I tipi vengono esportati da: types/storyblok.d.ts`)
+    console.log(`   Importa i types nei componenti:`)
     console.log(`   import { HeaderStoryblok } from '@/types/storyblok'`)
+    console.log(`\n📝 Per sovrascrivere tipi, modifica: types/storyblok.overrides.d.ts`)
     console.log(`\n🔄 Per rigenerare i types dopo modifiche su Storyblok:`)
     console.log(`   npm run generate:types`)
   } catch (error: any) {

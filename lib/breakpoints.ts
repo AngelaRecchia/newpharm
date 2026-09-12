@@ -1,7 +1,8 @@
 /**
  * Breakpoint values (px). Single source of truth for JS/TS.
- * SCSS variables in styles/_variables.scss ($breakpoint-m, $breakpoint-l) must match these.
+ * SCSS variables in styles/_variables.scss ($breakpoint-s, $breakpoint-m, $breakpoint-l) must match these.
  */
+export const BREAKPOINT_SM_PX = 512;
 export const BREAKPOINT_MD_PX = 768;
 export const BREAKPOINT_LG_PX = 1024;
 export const BREAKPOINT_XL_PX = 1200;

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import classNames from 'classnames/bind'
 import styles from './index.module.scss'
@@ -13,8 +13,21 @@ import SmartLink from '@/components/atoms/SmartLink'
 import Icon from '@/components/atoms/Icon'
 import VideoYt from '@/components/organisms/VideoYt'
 import { StoryblokComponent } from '@storyblok/react'
+import { hasRichTextContent } from '@/lib/api/utils/richtext'
+import { getProductCategorySlug } from '@/lib/product-filtri'
+import { mapTargetPests, type TargetPestView } from '@/lib/products/mapTargetPests'
+import TargetPests from '@/components/molecules/TargetPests'
+import Carousel from '@/components/organisms/Carousel'
+import CtaBox from '@/components/organisms/CtaBox'
+import ProductStickyBar from '@/components/molecules/ProductStickyBar'
 
 const cn = classNames.bind(styles)
+
+type AccordionItemData = {
+  label: string
+  content: unknown
+  type: 'richtext' | 'text' | 'file' | 'pests'
+}
 
 const Product = ({ blok }: { blok: ProductStoryblok }) => {
   const t = useTranslations('')
@@ -26,17 +39,27 @@ const Product = ({ blok }: { blok: ProductStoryblok }) => {
     features,
     product_type,
     category,
+    product_filtri,
     application_areas_text,
     composition,
     dosage_and_application,
     units_per_carton,
+    usage,
+    dimensions,
     registration,
     safety_data_sheet,
     video,
     body,
-    related_projects
+    related_projects,
+    related_category_products,
+    related_category_parent_slug,
+    related_project_products,
+    auto_cta_box,
   } = blok as any
 
+  const targetPests = mapTargetPests(blok.resolved_target_pests ?? blok.target_pests)
+
+  const categorySlug = getProductCategorySlug(product_filtri, category)
 
   // Immagine principale = primo asset, secondarie = resto dell'array
   const mainImage = Array.isArray(images) && images.length > 0 ? [images[0]] : images
@@ -47,13 +70,15 @@ const Product = ({ blok }: { blok: ProductStoryblok }) => {
     { label: t('products'), href: '/' + t('products').toLowerCase() },
     { label: title },
   ]
-  // Renderizza il contenuto di un accordion in base al tipo
-  const renderAccordionContent = (item: { content: any; type: 'richtext' | 'text' | 'file' }) => {
+
+  const renderAccordionContent = (item: AccordionItemData) => {
     switch (item.type) {
       case 'richtext':
-        return <RichText content={item.content} raw />
+        return <RichText content={item.content as any} raw />
       case 'text':
         return <p>{item.content as string}</p>
+      case 'pests':
+        return <TargetPests items={item.content as TargetPestView[]} />
       case 'file':
         return (
           <SmartLink
@@ -69,11 +94,13 @@ const Product = ({ blok }: { blok: ProductStoryblok }) => {
     }
   }
 
-  // Verifica se un contenuto è effettivamente valorizzato
-  const hasContent = (content: any, type: string): boolean => {
+  const hasContent = (content: unknown, type: AccordionItemData['type']): boolean => {
     if (!content) return false
+    if (type === 'pests') {
+      return Array.isArray(content) && content.length > 0
+    }
     if (type === 'richtext' && typeof content === 'object') {
-      return Array.isArray(content.content) && content.content.length > 0
+      return hasRichTextContent(content)
     }
     if (type === 'file') {
       return !!(content as any).filename
@@ -81,25 +108,35 @@ const Product = ({ blok }: { blok: ProductStoryblok }) => {
     return !!content
   }
 
-  // Accordion items — solo quelli con contenuto
-  const accordionItems = [
+  const accordionItems: AccordionItemData[] = [
     { label: t('product_application-areas'), content: application_areas_text, type: 'richtext' as const },
-    { label: t('product_composition'), content: composition, type: 'text' as const },
-    { label: t('product_target-pests'), content: null, type: 'text' as const },
+    { label: t('product_composition'), content: composition, type: 'richtext' as const },
+    { label: t('product_target-pests'), content: targetPests, type: 'pests' as const },
     { label: t('product_dosage'), content: dosage_and_application, type: 'richtext' as const },
+    { label: t('product_usage'), content: usage, type: 'richtext' as const },
+    { label: t('product_dimensions'), content: dimensions, type: 'richtext' as const },
     { label: t('product_units-per-carton'), content: units_per_carton, type: 'richtext' as const },
     { label: t('product_download'), content: safety_data_sheet, type: 'file' as const },
-  ].filter(item => hasContent(item.content, item.type))
+  ].filter((item) => hasContent(item.content, item.type))
 
   return (
     <section className={cn('wrapper')}>
 
+      <ProductStickyBar
+        uuid={blok.product_uuid ?? ''}
+        title={title}
+        safetySheetHref={(safety_data_sheet as any)?.filename || null}
+        comparisonPageUrl={blok.comparison_page_url ?? null}
+      />
+
       <div className={cn('sticky-section')}>
         {/* Colonna sinistra — immagine prodotto */}
         <div className={cn('image-col')}>
-          <div className={cn('tag')}>
-            <Tag tag={t(category)} variant="primary" />
-          </div>
+          {categorySlug && (
+            <div className={cn('tag')}>
+              <Tag tag={t(categorySlug)} variant="primary" />
+            </div>
+          )}
           <div className={cn('product-image')}>
             <Asset asset={mainImage} mode="fit" priority={true} />
           </div>
@@ -167,28 +204,37 @@ const Product = ({ blok }: { blok: ProductStoryblok }) => {
 
       {body && (
         <div className={cn('body')}>
-          {body.map((item: any) => (
-            <StoryblokComponent blok={item} key={item._uid} />
+          {body.map((item: any, index: number) => (
+            <StoryblokComponent
+              blok={item}
+              key={item._uid || `${item.component || 'blok'}-${index}`}
+            />
           ))}
         </div>
       )}
 
-      {/* Progetti correlati — query inversa da page.tsx */}
-      {related_projects && related_projects.length > 0 && (
-        <div className={cn('related-projects')}>
-          <h2 className={cn('related-projects-title')}>{t('product_related-projects')}</h2>
-          <div className={cn('related-projects-grid')}>
-            {related_projects.map((project: any) => (
-              <SmartLink key={project.full_slug} href={`/${project.full_slug}`} className={cn('project-card')}>
-                <div className={cn('project-card-image')}>
-                  <Asset asset={project.asset} size="m" overlay />
-                </div>
-                <span className={cn('project-card-title')}>{project.title}</span>
-              </SmartLink>
-            ))}
-          </div>
-        </div>
+      {/* CTA automatiche prima delle sezioni/carousel automatici */}
+      {auto_cta_box && <CtaBox blok={auto_cta_box} />}
+
+      {/* Carousel prodotti dello stesso progetto — query inversa */}
+      {related_project_products && related_project_products.length > 0 && (
+        <Carousel
+          variant="prodotto"
+          title={t('completa_collezione')}
+          productItems={related_project_products}
+        />
       )}
+
+      {related_category_products && related_category_products.length > 0 && (
+        <Carousel
+          variant="prodotto"
+          title={t('prodotti_correlati')}
+          productItems={related_category_products}
+          ctaHref={related_category_parent_slug || undefined}
+          ctaLabel={t('see_all')}
+        />
+      )}
+
     </section>
   )
 }

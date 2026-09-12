@@ -1,0 +1,17 @@
+@use "../../../styles" as *;
+
+// Wrapper per tutti i blocchi body: rimane sopra l'hero sticky parallasse
+// (che ha z-index: 0 e altezza 200svh) in modo che il contenuto del progetto
+// non venga coperto dall'immagine di sfondo dell'hero.
+.body {
+  position: relative;
+  z-index: 1;
+}
+
+.related-products {
+  margin-top: $s-40;
+
+  @include lg {
+    margin-top: $s-80;
+  }
+}

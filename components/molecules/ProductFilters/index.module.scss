@@ -1,0 +1,35 @@
+@use "../../../styles" as *;
+
+.wrapper {
+  width: 100%;
+  padding-block: 0;
+  overflow: hidden;
+}
+
+.track {
+  box-sizing: border-box;
+  overflow: hidden;
+  width: calc(100% + 48px);
+  margin-inline-start: -24px;
+  padding-inline: 0 24px;
+
+  @include md {
+    margin-inline: -40px;
+    width: calc(100% + 80px);
+    padding-inline: 0 40px;
+  }
+}
+
+.swiper {
+  overflow: visible;
+  padding-inline-start: 24px;
+
+  @include md {
+    padding-inline-start: 40px;
+  }
+}
+
+.trackItem {
+  width: auto;
+  flex-shrink: 0;
+}

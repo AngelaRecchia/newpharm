@@ -1,0 +1,108 @@
+@use "../../../styles" as *;
+
+.wrapper {
+  width: 100%;
+  background-color: $c-white;
+  color: $c-black;
+  padding-block-end: $s-80;
+  overflow: visible;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: $s-64;
+}
+
+.head {
+  padding-top: 5.625rem;
+
+  @include lg {
+    padding-top: 13.5rem;
+  }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $s-16;
+  align-items: start;
+  position: relative;
+
+  @include md {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+}
+
+.cell {
+  min-width: 0;
+
+  @include md {
+    &.span-3 {
+      grid-column: span 3;
+    }
+
+    &.span-6 {
+      grid-column: span 6;
+    }
+
+    &.span-12 {
+      grid-column: span 12;
+    }
+
+    &.row-span-2 {
+      grid-row: span 2;
+    }
+  }
+
+  @include lg {
+    &.desktop-span-3 {
+      grid-column: span 3;
+    }
+
+    &.desktop-span-6 {
+      grid-column: span 6;
+    }
+
+    &.desktop-span-12 {
+      grid-column: span 12;
+    }
+  }
+}
+
+// 2fr 1fr 1fr: larghezze esatte 2:1:1, così 3/2 e 3/4 hanno la stessa altezza (i gap 12-col la rompono).
+.row2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $s-16;
+  align-items: start;
+  min-width: 0;
+
+  @include md {
+    grid-column: 1 / -1;
+    grid-template-columns: 1fr 1fr;
+
+    .row2-wide {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @include lg {
+    grid-template-columns: 2fr 1fr 1fr;
+
+    .row2-wide {
+      grid-column: auto;
+    }
+  }
+}
+
+.empty {
+  @include t-body;
+  padding-block: $s-40;
+  color: rgba($c-black, 0.64);
+}
+
+.footer {
+  display: flex;
+  justify-content: center;
+}

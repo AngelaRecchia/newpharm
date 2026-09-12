@@ -1,0 +1,73 @@
+@use "sass:color" as color;
+@use "../../../styles" as *;
+
+@function white-alpha($a) {
+  @return color.change($c-white, $alpha: $a);
+}
+
+/* Check bianco su sfondo primary (stato selezionato) */
+$check-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 10' fill='none'%3E%3Cpath stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M1 5l3.5 3.5L11 1'/%3E%3C/svg%3E");
+
+.root {
+  display: flex;
+  align-items: center;
+  gap: $s-12;
+  @include t-note;
+  color: $c-white;
+  cursor: pointer;
+}
+
+.input {
+  appearance: none;
+  box-sizing: border-box;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  flex-shrink: 0;
+  border: 1px solid white-alpha(0.6);
+  border-radius: 0;
+  background: transparent;
+  cursor: pointer;
+  transition:
+    border-color $td-200 $ease-natural,
+    background-color $td-200 $ease-natural;
+
+  &:hover {
+    border-color: $c-white;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $c-white;
+    outline-offset: 2px;
+  }
+
+  &:checked {
+    background-color: $c-primary;
+    border-color: $c-primary;
+    background-image: $check-icon;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 10px 8px;
+  }
+}
+
+.text {
+  color: $c-white;
+  flex: 1;
+  min-width: 0;
+
+  a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.12em;
+
+    &:hover {
+      opacity: 0.85;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $c-white;
+      outline-offset: 2px;
+    }
+  }
+}

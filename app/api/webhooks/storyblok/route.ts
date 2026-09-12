@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { revalidatePath } from 'next/cache'
 import { clearCacheVersion } from '@/lib/api/storyblok/config'
+import { clearStoriesByComponentCache } from '@/lib/api/storyblok/stories'
 
 /**
  * Storyblok Webhook Handler
@@ -43,8 +44,8 @@ export async function POST(request: NextRequest) {
     const action: string = body?.action || ''
     const storyFullSlug: string = body?.full_slug || body?.story?.full_slug || ''
 
-    // Clear the cached cv so next request fetches fresh data
     clearCacheVersion()
+    clearStoriesByComponentCache()
 
     // Determine what to revalidate based on the event
     if (action.startsWith('datasource')) {

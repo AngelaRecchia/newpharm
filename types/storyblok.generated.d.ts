@@ -1,0 +1,723 @@
+/**
+ * TypeScript types generati automaticamente da Storyblok
+ * 
+ * Questo file è generato automaticamente da scripts/generate-storyblok-types.ts
+ * NON modificare manualmente - rigenera i types dopo aver modificato i componenti su Storyblok
+ * 
+ * Per rigenerare: npm run generate:types
+ * 
+ * Generato il: 2026-09-11T12:38:04.051Z
+ */
+
+
+export interface Accordion_itemStoryblok {
+  title?: string | null // Optional
+  text?: string | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface Alphabetical_accordionStoryblok {
+  items?: any[] | null // Optional
+  anchor_id?: string | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface Anchor_linkStoryblok {
+  title?: string | null // Optional
+  text?: string | null // Optional
+  target?: { id: string; url: string; linktype: string; fieldtype: string; cached_url?: string; } | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface Article_bodyStoryblok {
+  article?: string | null // Optional
+  show_copy_button?: boolean | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface AssetStoryblok {
+  mobile?: { id: number; alt: string; name: string; focus: string; title: string; filename: string; copyright: string; fieldtype: string; } | null // Optional
+  desktop?: { id: number; alt: string; name: string; focus: string; title: string; filename: string; copyright: string; fieldtype: string; } | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface Banner_accordionStoryblok {
+  image?: any[] | null // Optional
+  items?: any[] | null // Optional
+  anchor_id?: string | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface Box_imageStoryblok {
+  product?: any | null // Optional
+  project?: any | null // Optional
+  title?: string | null // Optional
+  subtitle?: string | null // Optional
+  asset?: any[] | null // Optional
+  link?: any[] | null // Optional
+  image_alignment?: any | null // Optional
+  anchor_id?: string | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface Box_image_carouselStoryblok {
+  title?: string | null // Optional
+  items?: any[] | null // Optional
+  anchor_id?: string | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface Card_boxStoryblok {
+  title?: string | null // Optional
+  text?: string | null // Optional
+  link?: any[] | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface Card_cta_boxStoryblok {
+  title?: string | null // Optional
+  link?: any[] | null // Optional
+  image?: { id: number; alt: string; name: string; focus: string; title: string; filename: string; copyright: string; fieldtype: string; } | null // Optional
+  color?: any | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface Card_divisionStoryblok {
+  image?: { id: number; alt: string; name: string; focus: string; title: string; filename: string; copyright: string; fieldtype: string; } | null // Optional
+  label?: string | null // Optional
+  number?: string | null // Optional
+  title?: string | null // Optional
+  link?: { id: string; url: string; linktype: string; fieldtype: string; cached_url?: string; } | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface Card_highlightStoryblok {
+  image?: any[] | null // Optional
+  text?: string | null // Optional
+  link?: { id: string; url: string; linktype: string; fieldtype: string; cached_url?: string; } | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface Card_icon_textStoryblok {
+  title?: string | null // Optional
+  description?: string | null // Optional
+  image?: any[] | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface Card_listing_editorialStoryblok {
+  image: any[]
+  title?: string | null // Optional
+  subtitle?: string | null // Optional
+  description?: string | null // Optional
+  link?: { id: string; url: string; linktype: string; fieldtype: string; cached_url?: string; } | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface Card_slideshowStoryblok {
+  image?: any[] | null // Optional
+  text?: string | null // Optional
+  link?: any[] | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface CarouselStoryblok {
+  title?: string | null // Optional
+  subtitle?: string | null // Optional
+  variant?: any | null // Optional
+  link?: any[] | null // Optional
+  cards?: any[] | null // Optional
+  anchor_id?: string | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface CatalogStoryblok {
+  title?: string | null // Optional
+  qr_code?: any | null // Optional
+  file?: { id: number; alt: string; name: string; focus: string; title: string; filename: string; copyright: string; fieldtype: string; } | null // Optional
+  image?: any[] | null // Optional
+  short_description?: string | null // Optional
+  year: number
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface Catalogs_downloadStoryblok {
+  title?: string | null // Optional
+  items?: string | null // Optional
+  anchor_id?: string | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface CompareStoryblok {
+
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface Cta_boxStoryblok {
+  cards?: any[] | null // Optional
+  anchor_id?: string | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface DividerStoryblok {
+  padding?: boolean | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface Division_boxStoryblok {
+  title?: string | null // Optional
+  link?: any[] | null // Optional
+  cards?: any[] | null // Optional
+  anchor_id?: string | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface DownloadableStoryblok {
+  kind: any
+  title: string
+  image?: { id: number; alt: string; name: string; focus: string; title: string; filename: string; copyright: string; fieldtype: string; } | null // Optional
+  short_description?: string | null // Optional
+  year?: number | null // Optional
+  file?: { id: number; alt: string; name: string; focus: string; title: string; filename: string; copyright: string; fieldtype: string; } | null // Optional
+  division?: 'cereals-storage' | 'pest-control' | 'zootech' | 'home-garden' | 'medical' | null // Optional
+  ios_url?: { id: string; url: string; linktype: string; fieldtype: string; cached_url?: string; } | null // Optional
+  android_url?: { id: string; url: string; linktype: string; fieldtype: string; cached_url?: string; } | null // Optional
+  require_download_form?: boolean | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface Downloadable_resourcesStoryblok {
+  title?: string | null // Optional
+  image?: any[] | null // Optional
+  anchor_id?: string | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface FaqsStoryblok {
+  title?: string | null // Optional
+  description?: string | null // Optional
+  items?: any[] | null // Optional
+  anchor_id?: string | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface FooterStoryblok {
+  newsletter_text?: string | null // Optional
+  address?: string | null // Optional
+  items?: any[] | null // Optional
+  socials?: any[] | null // Optional
+  bottom_links?: any[] | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface Full_bannerStoryblok {
+  title?: string | null // Optional
+  asset?: any[] | null // Optional
+  variant?: any | null // Optional
+  anchor_id?: string | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface GalleryStoryblok {
+  title?: string | null // Optional
+  images?: any[] | null // Optional
+  anchor_id?: string | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface GlossaryStoryblok {
+  items?: any[] | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface Glossary_itemStoryblok {
+  term: string
+  aliases?: string | null // Optional
+  definition?: string | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface HeaderStoryblok {
+  search_page?: { id: string; url: string; linktype: string; fieldtype: string; cached_url?: string; } | null // Optional
+  nav_items?: any[] | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface HeroStoryblok {
+  variant?: any | null // Optional
+  title?: string | null // Optional
+  subtitle?: string | null // Optional
+  background?: any[] | null // Optional
+  links?: any[] | null // Optional
+  anchor_id?: string | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface Icon_text_highlightStoryblok {
+  title?: string | null // Optional
+  description?: string | null // Optional
+  items?: any[] | null // Optional
+  anchor_id?: string | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface InfestantiStoryblok {
+  title?: string | null // Optional
+  subtitle?: string | null // Optional
+  banners?: any[] | null // Optional
+  anchor_id?: string | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface InsectStoryblok {
+  title: string
+  image?: { id: number; alt: string; name: string; focus: string; title: string; filename: string; copyright: string; fieldtype: string; } | null // Optional
+  short_description?: string | null // Optional
+  image_hover?: { id: number; alt: string; name: string; focus: string; title: string; filename: string; copyright: string; fieldtype: string; } | null // Optional
+  category?: any | null // Optional
+  gallery?: any | null // Optional
+  famiglia?: any | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface JobStoryblok {
+  title: string
+  short_description?: string | null // Optional
+  area?: string | null // Optional
+  esperienza?: any | null // Optional
+  description?: any[] | null // Optional
+  body?: any[] | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface Job_listStoryblok {
+  title?: string | null // Optional
+  subtitle?: string | null // Optional
+  anchor_id?: string | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface LinkStoryblok {
+  label?: string | null // Optional
+  action?: any | null // Optional
+  link?: { id: string; url: string; linktype: string; fieldtype: string; cached_url?: string; } | null // Optional
+  description?: string | null // Optional
+  variant?: any | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface ListingStoryblok {
+  type?: any | null // Optional
+  theme?: any | null // Optional
+  title?: string | null // Optional
+  subtitle?: string | null // Optional
+  variant?: any | null // Optional
+  cards?: any[] | null // Optional
+  anchor_id?: string | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface Logo_itemStoryblok {
+  logo_light?: any[] | null // Optional
+  logo_dark?: any[] | null // Optional
+  description?: string | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface MilestoneStoryblok {
+  title?: string | null // Optional
+  items?: any[] | null // Optional
+  anchor_id?: string | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface Milestone_itemStoryblok {
+  title?: string | null // Optional
+  text?: string | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface Nav_itemStoryblok {
+  label?: string | null // Optional
+  link?: { id: string; url: string; linktype: string; fieldtype: string; cached_url?: string; } | null // Optional
+  items?: any[] | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface PageStoryblok {
+  body?: any[] | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface PartnersStoryblok {
+  variant?: any | null // Optional
+  title?: string | null // Optional
+  items?: any[] | null // Optional
+  anchor_id?: string | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface ProductStoryblok {
+  composition?: string | null // Optional
+  application_areas_text?: string | null // Optional
+  dosage_and_application?: string | null // Optional
+  usage?: string | null // Optional
+  target_pests?: any | null // Optional
+  dimensions?: string | null // Optional
+  units_per_carton?: string | null // Optional
+  registration?: string | null // Optional
+  safety_data_sheet?: { id: number; alt: string; name: string; focus: string; title: string; filename: string; copyright: string; fieldtype: string; } | null // Optional
+  title: string
+  "tab-cd7f2c9c-47a9-4630-a228-1739262250da"?: any | null // Optional
+  secondary_title?: string | null // Optional
+  images?: any[] | null // Optional
+  short_description?: string | null // Optional
+  features?: string | null // Optional
+  formulazione?: any | null // Optional
+  product_type?: any | null // Optional
+  tab_filtri?: any | null // Optional
+  application_areas?: string | null // Optional
+  tab_dettaglio?: any | null // Optional
+  tab_media?: any | null // Optional
+  video?: string | null // Optional
+  bestseller?: boolean | null // Optional
+  resources?: any[] | null // Optional
+  body?: any[] | null // Optional
+  product_filtri?: any | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface ProductsStoryblok {
+  title?: string | null // Optional
+  subtitle?: string | null // Optional
+  anchor_id?: string | null // Optional
+  products_comparison_page?: { id: string; url: string; linktype: string; fieldtype: string; cached_url?: string; } | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface ProjectStoryblok {
+  title: string
+  image?: any[] | null // Optional
+  short_description?: string | null // Optional
+  divisions?: 'cereals-storage' | 'pest-control' | 'zootech' | 'home-garden' | 'medical' | null // Optional
+  body?: any[] | null // Optional
+  related_products?: any | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface ProjectsStoryblok {
+  title?: string | null // Optional
+  subtitle?: string | null // Optional
+  anchor_id?: string | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface Projects_highlightStoryblok {
+  title?: string | null // Optional
+  link?: any[] | null // Optional
+  variant?: any | null // Optional
+  anchor_id?: string | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface SearchStoryblok {
+  title?: string | null // Optional
+  subtitle?: string | null // Optional
+  suggested_searches?: string | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface SettingsStoryblok {
+  header?: any[] | null // Optional
+  footer?: any[] | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface SlideshowStoryblok {
+  title?: string | null // Optional
+  cards?: any[] | null // Optional
+  anchor_id?: string | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface Social_itemStoryblok {
+  type?: any | null // Optional
+  url?: { id: string; url: string; linktype: string; fieldtype: string; cached_url?: string; } | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface Spec_tableStoryblok {
+  title?: string | null // Optional
+  description?: string | null // Optional
+  table?: any[][] | null // Optional
+  table_code?: string | null // Optional
+  anchor_id?: string | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface Split_bannerStoryblok {
+  items?: any[] | null // Optional
+  anchor_id?: string | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface Sticky_imageStoryblok {
+  title?: string | null // Optional
+  image?: any[] | null // Optional
+  content?: string | null // Optional
+  animated?: boolean | null // Optional
+  anchor_id?: string | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface StoriesStoryblok {
+  title?: string | null // Optional
+  subtitle?: string | null // Optional
+  anchor_id?: string | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface StoryStoryblok {
+  title?: string | null // Optional
+  author?: string | null // Optional
+  reading_time?: string | null // Optional
+  date?: string | null // Optional
+  tag?: 'company' | 'r&d' | 'events' | 'people' | 'academy' | 'professional_pest_control' | 'cereals_storage' | 'zootech' | 'home&garden' | null // Optional
+  asset: any[]
+  body?: any[] | null // Optional
+  related_products?: any | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface TabsStoryblok {
+  title?: string | null // Optional
+  asset?: any[] | null // Optional
+  items?: any[] | null // Optional
+  anchor_id?: string | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface Target_pest_itemStoryblok {
+  insect: any
+  text?: string | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface TeaserStoryblok {
+  headline?: string | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface Text_revealStoryblok {
+  text?: string | null // Optional
+  link?: any[] | null // Optional
+  anchor_id?: string | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+
+export interface Video_ytStoryblok {
+  video_id?: string | null // Optional
+  anchor_id?: string | null // Optional
+  _uid: string
+  component: string
+  _editable?: string
+}
+
+/**
+ * Union type di tutti i componenti Storyblok
+ */
+export type StoryblokComponent = Accordion_itemStoryblok | Alphabetical_accordionStoryblok | Anchor_linkStoryblok | Article_bodyStoryblok | AssetStoryblok | Banner_accordionStoryblok | Box_imageStoryblok | Box_image_carouselStoryblok | Card_boxStoryblok | Card_cta_boxStoryblok | Card_divisionStoryblok | Card_highlightStoryblok | Card_icon_textStoryblok | Card_listing_editorialStoryblok | Card_slideshowStoryblok | CarouselStoryblok | CatalogStoryblok | Catalogs_downloadStoryblok | CompareStoryblok | Cta_boxStoryblok | DividerStoryblok | Division_boxStoryblok | DownloadableStoryblok | Downloadable_resourcesStoryblok | FaqsStoryblok | FooterStoryblok | Full_bannerStoryblok | GalleryStoryblok | GlossaryStoryblok | Glossary_itemStoryblok | HeaderStoryblok | HeroStoryblok | Icon_text_highlightStoryblok | InfestantiStoryblok | InsectStoryblok | JobStoryblok | Job_listStoryblok | LinkStoryblok | ListingStoryblok | Logo_itemStoryblok | MilestoneStoryblok | Milestone_itemStoryblok | Nav_itemStoryblok | PageStoryblok | PartnersStoryblok | ProductStoryblok | ProductsStoryblok | ProjectStoryblok | ProjectsStoryblok | Projects_highlightStoryblok | SearchStoryblok | SettingsStoryblok | SlideshowStoryblok | Social_itemStoryblok | Spec_tableStoryblok | Split_bannerStoryblok | Sticky_imageStoryblok | StoriesStoryblok | StoryStoryblok | TabsStoryblok | Target_pest_itemStoryblok | TeaserStoryblok | Text_revealStoryblok | Video_ytStoryblok
+
+/**
+ * Helper type per il prop 'blok' nei componenti Storyblok
+ */
+export type StoryblokBlok = StoryblokComponent

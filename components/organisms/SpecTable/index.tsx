@@ -5,11 +5,15 @@ import classNames from 'classnames/bind'
 import styles from './index.module.scss'
 import { storyblokEditable } from '@storyblok/react'
 import { Spec_tableStoryblok } from '@/types/storyblok'
+import { isEmpty } from '@/lib/api/utils/links'
+import { getStoryblokAnchorId } from '@/lib/storyblok/anchor'
 
 const cn = classNames.bind(styles)
 
 const SpecTable = ({ blok }: { blok: Spec_tableStoryblok }) => {
     const { title, description, table, table_code } = blok
+    const hasTitle = !isEmpty(title)
+    const hasDescription = !isEmpty(description)
     const scrollRef = useRef<HTMLDivElement>(null)
     const [hasOverflow, setHasOverflow] = useState(false)
 
@@ -36,14 +40,14 @@ const SpecTable = ({ blok }: { blok: Spec_tableStoryblok }) => {
     const hasTableStructure = table && typeof table === 'object' && 'thead' in table && 'tbody' in table
 
     return (
-        <div className={cn('wrapper')} {...storyblokEditable(blok as any)}>
+        <div className={cn('wrapper')} id={getStoryblokAnchorId(blok.anchor_id)} {...storyblokEditable(blok as any)}>
 
             <div className={cn('container')}>
                 {/* Header — titolo + descrizione */}
-                {(title || description) && (
+                {(hasTitle || hasDescription) && (
                     <div className={cn('header')}>
-                        {title && <h2 className={cn('title')}>{title}</h2>}
-                        {description && <p className={cn('description')}>{description}</p>}
+                        {hasTitle && <h2 className={cn('title')}>{title}</h2>}
+                        {hasDescription && <p className={cn('description')}>{description}</p>}
                     </div>
                 )}
 

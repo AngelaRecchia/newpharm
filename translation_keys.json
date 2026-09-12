@@ -1,0 +1,32 @@
+﻿{
+    "request_error_network":  {
+                                  "en":  "Network error",
+                                  "ar":  "خطأ في الاتصال",
+                                  "it":  "Errore di connessione"
+                              },
+    "contact_us":  {
+                       "en":  "Contact us",
+                       "ar":  "اتصل بنا",
+                       "it":  "Contattaci"
+                   },
+    "chiedi_supporto_esperto":  {
+                                    "en":  "Ask for expert support",
+                                    "ar":  "اطلب الدعم من خبيرنا",
+                                    "it":  "Chiedi supporto a un nostro esperto"
+                                },
+    "scopri_progetto":  {
+                            "en":  "Discover project",
+                            "ar":  "اكتشف المشروع",
+                            "it":  "Scopri progetto"
+                        },
+    "request_error_generic":  {
+                                  "en":  "Request error",
+                                  "ar":  "خطأ في الطلب",
+                                  "it":  "Errore nella richiesta"
+                              },
+    "product_cta_box_1":  {
+                              "en":  "Inform who can benefit",
+                              "ar":  "إخبار من يمكن أن يستفيد",
+                              "it":  "Informa chi può trarne valore"
+                          }
+}
