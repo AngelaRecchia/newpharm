@@ -35,7 +35,6 @@ export type {
   FaqsStoryblok,
   FooterStoryblok,
   GalleryStoryblok,
-  HeaderStoryblok,
   Icon_text_highlightStoryblok,
   Logo_itemStoryblok,
   MilestoneStoryblok,
@@ -69,6 +68,7 @@ export type {
   Target_pest_itemStoryblok,
   ProductStoryblok,
   Full_bannerStoryblok,
+  HeaderStoryblok,
   HeroStoryblok,
   LinkStoryblok,
   Video_ytStoryblok,
@@ -94,6 +94,7 @@ export type {
   ListingImageRatio,
   ListingTheme,
   InsectCategory,
+  SearchStoryblok,
   CarouselStoryblok,
   CarouselVariantValue,
   CarouselVariantSlug,
@@ -126,7 +127,7 @@ export type StoryblokComponent =
   | Generated.FooterStoryblok
   | Overrides.Full_bannerStoryblok
   | Generated.GalleryStoryblok
-  | Generated.HeaderStoryblok
+  | Overrides.HeaderStoryblok
   | Overrides.HeroStoryblok
   | Generated.Icon_text_highlightStoryblok
   | Overrides.InsectStoryblok
@@ -142,6 +143,7 @@ export type StoryblokComponent =
   | Generated.Spec_tableStoryblok
   | Generated.Split_bannerStoryblok
   | Generated.Sticky_imageStoryblok
+  | Overrides.SearchStoryblok
   | Overrides.StoryStoryblok
   | Generated.TabsStoryblok
   | Generated.TeaserStoryblok

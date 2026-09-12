@@ -96,7 +96,7 @@ export function buildProductPageCtaBox(
       component: 'card_cta_box',
       title: project.title,
       color: 'white',
-      image: project.asset[0] ?? null,
+      image: project.image[0] ?? null,
       link: [
         projectLink(
           `${baseUid}-project-link`,

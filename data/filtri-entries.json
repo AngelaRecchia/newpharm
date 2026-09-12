@@ -100,67 +100,67 @@
     "value": "pest__zecche"
   },
   {
-    "name": "[CATEGORIA] Fitosanitari derrate",
+    "name": "[CATEGORIA] Protezione derrate",
     "value": "category__fitosanitari-derrate"
   },
   {
-    "name": "[FITOSANITARI DERRATE] Frumento",
+    "name": "[PROTEZIONE DERRATE] Frumento",
     "value": "fitos__frumento"
   },
   {
-    "name": "[FITOSANITARI DERRATE] Avena",
+    "name": "[PROTEZIONE DERRATE] Avena",
     "value": "fitos__avena"
   },
   {
-    "name": "[FITOSANITARI DERRATE] Triticale",
+    "name": "[PROTEZIONE DERRATE] Triticale",
     "value": "fitos__triticale"
   },
   {
-    "name": "[FITOSANITARI DERRATE] Orzo",
+    "name": "[PROTEZIONE DERRATE] Orzo",
     "value": "fitos__orzo"
   },
   {
-    "name": "[FITOSANITARI DERRATE] Sorgo",
+    "name": "[PROTEZIONE DERRATE] Sorgo",
     "value": "fitos__sorgo"
   },
   {
-    "name": "[FITOSANITARI DERRATE] Risone",
+    "name": "[PROTEZIONE DERRATE] Risone",
     "value": "fitos__risone"
   },
   {
-    "name": "[FITOSANITARI DERRATE] Mais",
+    "name": "[PROTEZIONE DERRATE] Mais",
     "value": "fitos__mais"
   },
   {
-    "name": "[FITOSANITARI DERRATE] Farro",
+    "name": "[PROTEZIONE DERRATE] Farro",
     "value": "fitos__farro"
   },
   {
-    "name": "[FITOSANITARI DERRATE] Segale",
+    "name": "[PROTEZIONE DERRATE] Segale",
     "value": "fitos__segale"
   },
   {
-    "name": "[FITOSANITARI DERRATE] Miglio",
+    "name": "[PROTEZIONE DERRATE] Miglio",
     "value": "fitos__miglio"
   },
   {
-    "name": "[FITOSANITARI DERRATE] Grano saraceno",
+    "name": "[PROTEZIONE DERRATE] Grano saraceno",
     "value": "fitos__grano-saraceno"
   },
   {
-    "name": "[FITOSANITARI DERRATE] Soia",
+    "name": "[PROTEZIONE DERRATE] Soia",
     "value": "fitos__soia"
   },
   {
-    "name": "[FITOSANITARI DERRATE] Pisello proteico",
+    "name": "[PROTEZIONE DERRATE] Pisello proteico",
     "value": "fitos__pisello-proteico"
   },
   {
-    "name": "[FITOSANITARI DERRATE] Semi oleosi",
+    "name": "[PROTEZIONE DERRATE] Semi oleosi",
     "value": "fitos__semi-oleosi"
   },
   {
-    "name": "[FITOSANITARI DERRATE] Altre colture proteiche",
+    "name": "[PROTEZIONE DERRATE] Altre colture proteiche",
     "value": "fitos__altre-colture-proteiche"
   },
   {
@@ -340,7 +340,7 @@
     "value": "sub__trappole-meccaniche"
   },
   {
-    "name": "[ACCESSORI RODITORI] Stazioni di cattura/avvelenamento",
+    "name": "[ACCESSORI RODITORI] Postazione di monitoraggio e cattura",
     "value": "sub__stazioni-di-catturaavvelenamento"
   },
   {

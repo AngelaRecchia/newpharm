@@ -22,6 +22,11 @@ import type { RelatedStory } from "@/lib/api/storyblok/stories";
 import type { CarouselVariantValue } from "@/lib/carousel/types";
 import type { ListingStoryResolved } from "@/lib/listing/types";
 
+/** Header — campo per link alla pagina di ricerca */
+export interface HeaderStoryblok extends Generated.HeaderStoryblok {
+  search_page?: (StoryblokLink & { anchor?: string }) | LinkStoryblok | LinkStoryblok[] | null;
+}
+
 /** story — content type contenuto editoriale con prodotti correlati opzionali */
 export interface StoryStoryblok extends Generated.StoryStoryblok {
   related_stories?: RelatedStory[] | null;
@@ -87,6 +92,18 @@ export interface Target_pest_itemStoryblok extends Omit<
   insect?: string | InsectStoryblok | InsectStoryResolved | null;
 }
 
+/** search — pagina atterraggio ricerca */
+export interface SearchStoryblok {
+  title?: string | null;
+  subtitle?: string | null;
+  /** Chips suggerite editorialmente, separate da virgola */
+  suggested_searches?: string | null;
+  anchor_id?: string | null;
+  _uid: string;
+  component: string;
+  _editable?: string;
+}
+
 /** product — composition come richtext in CMS */
 export interface ProductStoryblok extends Generated.ProductStoryblok {
   composition?: ISbRichtext | null;
@@ -103,6 +120,17 @@ export interface ProductStoryblok extends Generated.ProductStoryblok {
   comparison_page_url?: string | null;
   /** Popolato SSR: altri prodotti dello stesso progetto (manuale o per categoria), max 8 */
   related_project_products?: ListingStoryResolved[] | null;
+  /**
+   * Popolato SSR: progetti correlati a questo prodotto (query inversa).
+   * Non è più un campo CMS editabile, ma viene iniettato in page.tsx.
+   */
+  related_projects?: import("@/lib/api/storyblok/stories").RelatedProject[] | null;
+  /** Popolato SSR: prodotti correlati per la stessa categoria (carousel in fondo pagina) */
+  related_products?: {
+    variant?: CarouselVariantValue | null;
+    resolved_items?: ListingStoryResolved[] | null;
+    [key: string]: unknown;
+  } | null;
 }
 
 /** full_banner — title richtext + asset come bloks Asset[] */

@@ -12,7 +12,7 @@
     padding: $s-24;
     height: 100%;
     position: relative;
-    z-index: 1;
+    z-index: 2;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -48,8 +48,21 @@
     @include t-h2;
   }
 
-  .hasImage {
-    color: $c-black;
+  &.hasImage {
+    color: $c-white;
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background: linear-gradient(
+        to bottom,
+        rgba($c-black, 0.4),
+        rgba($c-black, 0.2)
+      );
+    }
   }
 
   // Quando il wrapper è in hover, imposta la variabile a 1

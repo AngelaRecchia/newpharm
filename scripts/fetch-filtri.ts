@@ -52,7 +52,7 @@ async function main() {
     )
   } else {
     try {
-      const raw = await getDatasourceEntries(DATASOURCE_SLUG)
+      const raw = await getDatasourceEntries(DATASOURCE_SLUG, undefined, Date.now())
       entries = raw.map(({ name, value }) => ({ name, value }))
     } catch (error) {
       console.warn(

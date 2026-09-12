@@ -49,6 +49,11 @@
     transform: translateY(-100%);
   }
 
+  &SearchOpen {
+    transform: none !important;
+    transition: background-color 300ms ease !important;
+  }
+
   &Content {
     padding-block: 1.125rem;
 
@@ -171,6 +176,11 @@
 
     &.headerWhite {
       background-color: rgba(0, 0, 0, 0.7);
+    }
+
+    &Search {
+      background-color: rgba(0, 0, 0, 0.3);
+      mix-blend-mode: multiply;
     }
   }
 }

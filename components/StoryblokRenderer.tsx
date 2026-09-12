@@ -5,6 +5,33 @@ import { useEffect, useState } from 'react'
 import { getStoryblokVersion } from '@/lib/api/storyblok/config'
 import { STORYBLOK_RESOLVE_RELATIONS } from '@/lib/api/storyblok/resolveRelations'
 import { isInsideStoryblokEditor } from '@/lib/api/storyblok/config'
+import { parseCarouselVariant } from '@/lib/carousel/parseCarouselVariant'
+
+function hasSameRelatedProductsConfig(
+  source: Record<string, unknown>,
+  target: Record<string, unknown>,
+): boolean {
+  const sourceVariant =
+    source.variant && typeof source.variant === 'object'
+      ? source.variant
+      : { ...source, variant: 'related_products' }
+  const targetVariant =
+    target.variant && typeof target.variant === 'object'
+      ? target.variant
+      : { ...target, variant: 'related_products' }
+  const sourceConfig = parseCarouselVariant(sourceVariant)
+  const targetConfig = parseCarouselVariant(targetVariant)
+
+  return (
+    sourceConfig.selection_mode === targetConfig.selection_mode &&
+    sourceConfig.items.join(',') === targetConfig.items.join(',') &&
+    sourceConfig.vista === targetConfig.vista &&
+    sourceConfig.category === targetConfig.category &&
+    sourceConfig.subcategory === targetConfig.subcategory &&
+    sourceConfig.application_area === targetConfig.application_area &&
+    sourceConfig.bestseller === targetConfig.bestseller
+  )
+}
 
 /**
  * Copia `resolved_items` (e altri campi SSR) dal contenuto statico al live editor.
@@ -95,9 +122,15 @@ function preserveSsrEnrichment(source: unknown, target: unknown): unknown {
           ? (targetRecord.related_products as Record<string, unknown>)
           : {}
       if (Array.isArray(sourceRelatedProducts.resolved_items)) {
+        const preserveResolvedItems = hasSameRelatedProductsConfig(
+          sourceRelatedProducts,
+          targetRelatedProducts,
+        )
         merged.related_products = {
           ...targetRelatedProducts,
-          resolved_items: sourceRelatedProducts.resolved_items,
+          resolved_items: preserveResolvedItems
+            ? sourceRelatedProducts.resolved_items
+            : [],
           variant: targetRelatedProducts.variant ?? sourceRelatedProducts.variant,
         }
       }
@@ -147,36 +180,59 @@ const STORYBLOK_BRIDGE_PARAMS = {
   resolveLinks: 'url' as const,
 }
 
-/**
- * StoryblokRenderer
- *
- * During normal development/production: renders statically with zero client-side API calls.
- * Inside the Storyblok visual editor: uses useStoryblok for real-time updates.
- */
-export default function StoryblokRenderer({ blok, story }: StoryblokRendererProps) {
-  const [isEditor, setIsEditor] = useState(false)
+function PublishedRenderer({ blok }: { blok: any }) {
+  if (!blok || !blok.component) return null
 
-  useEffect(() => {
-    setIsEditor(isInsideStoryblokEditor())
-  }, [])
+  return <StoryblokComponent blok={blok} />
+}
 
+function VisualEditorRenderer({ blok, story }: StoryblokRendererProps) {
   // Slug CDN: sempre da story (SSR/CSR allineati). Non usare '_' come placeholder:
   // useStoryblok fa comunque GET /v2/cdn/stories/{slug} e 'stories/_' → 404.
   const storySlug = (story?.full_slug || '').trim()
 
   const liveStory = useStoryblok(
-    storySlug || '_',
+    storySlug,
     STORYBLOK_CDN_PARAMS,
     STORYBLOK_BRIDGE_PARAMS,
   )
 
   if (!blok || !blok.component) return null
 
-  // Se siamo nell'editor, usa il contenuto live mantenendo enrichment SSR (resolved_items)
-  const content =
-    isEditor && liveStory?.content
-      ? preserveSsrEnrichment(blok, liveStory.content)
-      : blok
+  // Usa il contenuto live mantenendo enrichment SSR (resolved_items)
+  const content = liveStory?.content
+    ? preserveSsrEnrichment(blok, liveStory.content)
+    : blok
 
   return <StoryblokComponent blok={content} />
+}
+
+function DraftRenderer({ blok, story }: StoryblokRendererProps) {
+  const [isEditor, setIsEditor] = useState(false)
+
+  useEffect(() => {
+    setIsEditor(isInsideStoryblokEditor())
+  }, [])
+
+  if (!isEditor) {
+    if (!blok || !blok.component) return null
+    return <StoryblokComponent blok={blok} />
+  }
+
+  return <VisualEditorRenderer blok={blok} story={story} />
+}
+
+/**
+ * StoryblokRenderer
+ *
+ * In produzione (published): renderizza il contenuto SSR senza alcuna chiamata client-side.
+ * In draft: rileva il Visual Editor solo lato client e, solo se necessario, attiva useStoryblok.
+ */
+export default function StoryblokRenderer({ blok, story }: StoryblokRendererProps) {
+  // Decisione SSR-safe: in build published non montiamo mai la logica live.
+  if (getStoryblokVersion() === 'published') {
+    return <PublishedRenderer blok={blok} />
+  }
+
+  return <DraftRenderer blok={blok} story={story} />
 }

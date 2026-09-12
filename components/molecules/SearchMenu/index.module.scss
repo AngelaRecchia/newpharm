@@ -1,0 +1,166 @@
+@use "../../../styles" as *;
+
+.wrapper {
+  position: absolute;
+  top: 100%;
+  inset-inline: 0;
+  z-index: 1001;
+  background-color: $c-white;
+  border-block-end: 1px solid $c-border-light;
+  box-shadow: 0 1rem 2rem rgba($c-black, 0.08);
+  transform-origin: top center;
+  will-change: transform, opacity;
+}
+
+.inner {
+  width: 100%;
+}
+
+.content {
+  padding: $s-40 $s-24;
+
+  @include md {
+    padding: $s-40 $s-40;
+  }
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: $s-16;
+  padding: 0 0 $s-16;
+  border-block-end: 1px solid $c-border-light;
+  background-color: transparent;
+  transition: border-color 200ms ease;
+
+  @include md {
+    padding: 0 0 $s-24;
+  }
+
+  &:focus-within {
+    border-color: $c-primary;
+  }
+}
+
+.input {
+  flex: 1 1 auto;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  @include t-h1;
+  color: $c-black;
+  outline: none;
+
+  &::placeholder {
+    opacity: 0.3;
+    color: inherit;
+  }
+
+  &::-webkit-search-decoration,
+  &::-webkit-search-cancel-button {
+    display: none;
+  }
+}
+
+.clear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: $s-32;
+  height: $s-32;
+  border-radius: 50%;
+  border: 0;
+  background-color: $c-black;
+  color: $c-white;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.suggested {
+  display: flex;
+  flex-direction: column;
+  gap: $s-12;
+  margin-block-start: $s-24;
+}
+
+.suggestedLabel {
+  @include t-note;
+  color: $c-gray-600;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $s-8;
+}
+
+.loading,
+.empty {
+  @include t-body;
+  padding-block: $s-32;
+  color: $c-gray-600;
+}
+
+.results {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $s-32;
+  margin-block-start: $s-32;
+
+  @include md {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include lg {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.sectionTitle {
+  @include t-note;
+  margin: 0 0 $s-24 0;
+  color: $c-gray-600;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: $s-16;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  max-height: 10rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.item {
+  @include t-body;
+  color: $c-black;
+  text-decoration: none;
+
+  &:hover,
+  &:focus-visible {
+    color: $c-primary;
+  }
+}
+
+.footer {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  margin-block-start: $s-8;
+}

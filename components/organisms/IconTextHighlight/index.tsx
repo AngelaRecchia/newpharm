@@ -5,6 +5,7 @@ import { Icon_text_highlightStoryblok } from '@/types/storyblok'
 import Asset from '@/components/atoms/Asset'
 import { storyblokEditable } from '@storyblok/react'
 import { getStoryblokAnchorId } from '@/lib/storyblok/anchor'
+import { getAssetSrc } from '@/lib/assets/getAssetSrc'
 
 const cn = classNames.bind(styles)
 
@@ -23,9 +24,11 @@ const IconTextHighlight = ({ blok }: { blok: Icon_text_highlightStoryblok }) => 
         <div className={cn('items')} style={{ '--cols': cols } as CSSProperties}>
           {items?.map((item, index) => (
             <div key={item._uid ?? `icon-text-${index}`} className={cn('item')}>
-              <div className={cn('item-image')}>
-                <Asset asset={item.image} size='s' />
-              </div>
+              {getAssetSrc(item.image as any) && (
+                <div className={cn('item-image')}>
+                  <Asset asset={item.image} size='s' />
+                </div>
+              )}
               <h4 className={cn('item-title')}>{item.title}</h4>
               <p className={cn('item-description')}>{item.description}</p>
             </div>

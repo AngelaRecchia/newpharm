@@ -62,6 +62,7 @@ export async function fetchFiltriEntries(
   }
 
   const entries: FiltriEntry[] = []
+  const cacheVersion = Date.now()
   let page = 1
 
   while (true) {
@@ -70,6 +71,7 @@ export async function fetchFiltriEntries(
       token: cdnToken,
       per_page: '100',
       page: String(page),
+      cv: String(cacheVersion),
     })
 
     const res = await fetch(

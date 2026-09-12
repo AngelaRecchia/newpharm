@@ -58,6 +58,7 @@ const StickyImage = dynamic(() => import('@/components/organisms/StickyImage'))
 const TextReveal = dynamic(() => import('@/components/organisms/TextReveal'))
 const VideoYt = dynamic(() => import('@/components/organisms/VideoYt'))
 const Gallery = dynamic(() => import('@/components/organisms/Gallery'))
+const Search = dynamic(() => import('@/components/storyblok/Search'))
 const components = {
 
   // Organisms
@@ -106,6 +107,7 @@ const components = {
   page: Page,
   settings: Settings,
   story: Story,
+  search: Search,
   header: Header,
   footer: Footer,
 }

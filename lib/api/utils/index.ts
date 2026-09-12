@@ -4,4 +4,4 @@
 
 export { getLinkUrl } from './links'
 export type { StoryblokLink } from './links'
-export { hasRichTextContent } from './richtext'
+export { hasRichTextContent, richTextToPlainText } from './richtext'

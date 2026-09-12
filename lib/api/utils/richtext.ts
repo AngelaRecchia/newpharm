@@ -20,3 +20,16 @@ export function hasRichTextContent(
   }
   return false
 }
+
+export function richTextToPlainText(
+  node: RichTextNode | null | undefined,
+): string {
+  if (!node || typeof node !== 'object') return ''
+  if (node.type === 'text' && typeof node.text === 'string') {
+    return node.text
+  }
+  if (Array.isArray(node.content)) {
+    return node.content.map(richTextToPlainText).join(' ')
+  }
+  return ''
+}

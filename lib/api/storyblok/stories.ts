@@ -433,6 +433,68 @@ async function fetchStoriesByComponent(
 }
 
 /**
+ * Cerca stories di un componente specifico usando il parametro search_term
+ * di Storyblok. Ritorna solo le stories che contengono il termine in campi
+ * testuali/richtext, riducendo drasticamente il payload rispetto al fetch
+ * completo di tutte le stories del componente.
+ */
+export async function searchStoriesByComponent(
+  component: string,
+  query: string,
+  locale?: string,
+  options: GetStoryOptions = {},
+): Promise<Story[]> {
+  if (!query.trim()) return []
+
+  try {
+    const storyblokApi = getStoryblokApi()
+    const version = options.version || getStoryblokVersion()
+    const cv = await getCacheVersion()
+    const stories: Story[] = []
+
+    let page = 1
+    let hasMore = true
+
+    while (hasMore) {
+      const params: Record<string, unknown> = {
+        version,
+        per_page: 100,
+        page,
+        resolve_links: 'url',
+        'filter_query[component][in]': component,
+        search_term: query.trim(),
+        excluding_fields: 'body,article',
+        ...options,
+      }
+
+      if (locale) {
+        params.starts_with = `${locale}/`
+      }
+
+      if (cv !== undefined) {
+        params.cv = cv
+      }
+
+      const { data } = await storyblokApi.get('cdn/stories', params)
+      const batch = (data?.stories ?? []) as Story[]
+
+      if (batch.length === 0) {
+        break
+      }
+
+      stories.push(...batch)
+      hasMore = batch.length === 100
+      page += 1
+    }
+
+    return stories
+  } catch (error) {
+    console.error(`[Storyblok] Error searching stories by component ${component}`, error)
+    return []
+  }
+}
+
+/**
  * Recupera story correlate che hanno almeno un tag in comune
  * Ritorna solo full_slug, title, date, tag, asset
  * Ordinate per: 1. presenza di tutti i tag, 2. data (più recente prima)
@@ -641,23 +703,20 @@ export interface RelatedProject {
   full_slug: string;
   title: string;
   short_description?: string | null;
-  asset: AssetStoryblok[];
+  image: AssetStoryblok[];
   /** Elenco completo (non limitato) dei prodotti del progetto (manuale o dinamico per categoria).
    *  Popolato una sola volta per progetto durante la costruzione dell'indice inverso. */
   products?: ListingStoryResolved[];
 }
 
 function asAssetArray(value: unknown): AssetStoryblok[] {
-  if (Array.isArray(value)) {
-    return value.filter(
-      (item): item is AssetStoryblok =>
-        !!item && typeof item === "object" && "filename" in item,
-    );
-  }
-  if (value && typeof value === "object" && "filename" in value) {
-    return [value as unknown as AssetStoryblok];
-  }
-  return [];
+  if (!Array.isArray(value)) return [];
+
+  return value.filter((item): item is AssetStoryblok => {
+    if (!item || typeof item !== "object") return false;
+    const asset = item as Partial<AssetStoryblok>;
+    return Boolean(asset.desktop?.filename || asset.mobile?.filename);
+  });
 }
 
 function toRelatedProject(story: Story): RelatedProject {
@@ -666,7 +725,7 @@ function toRelatedProject(story: Story): RelatedProject {
     full_slug: story.full_slug,
     title: story.content?.title || story.name,
     short_description: story.content?.short_description,
-    asset: asAssetArray(story.content?.asset ?? story.content?.image),
+    image: asAssetArray(story.content?.image),
   };
 }
 

@@ -8,11 +8,23 @@
 import { getStory } from './storyblok/stories'
 import { getLangs } from './storyblok/languages'
 
+const SEARCH_SLUGS: Record<string, string> = {
+  it: 'cerca',
+  en: 'search',
+  ar: 'search',
+}
+
 export interface GlobalSettings {
   header?: any
   footer?: any
   locales: string[]
+  search_suggestions?: string[]
   [key: string]: any
+}
+
+function parseSuggestedSearches(value: unknown): string[] {
+  if (typeof value !== 'string' || !value) return []
+  return value.split(',').map((s) => s.trim()).filter(Boolean)
 }
 
 /**
@@ -25,7 +37,10 @@ export interface GlobalSettings {
 export async function getGlobalSettings(
   locale: string = "it",
 ): Promise<GlobalSettings | null> {
-  const story = await getStory("layout-components", locale)
+  const [story, searchStory] = await Promise.all([
+    getStory("layout-components", locale),
+    getStory(SEARCH_SLUGS[locale] ?? 'search', locale).catch(() => null),
+  ])
 
   if (story?.content) {
     // Fetch available locales and add to settings
@@ -34,6 +49,9 @@ export async function getGlobalSettings(
     return {
       ...story.content,
       locales,
+      search_suggestions: parseSuggestedSearches(
+        (searchStory?.content as Record<string, unknown>)?.suggested_searches,
+      ),
     }
   }
   

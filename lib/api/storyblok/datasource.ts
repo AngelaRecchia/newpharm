@@ -37,12 +37,13 @@ export interface DatasourceEntries {
  */
 export async function getDatasourceEntries(
   datasource: string,
-  dimension?: string
+  dimension?: string,
+  cacheVersion?: number,
 ): Promise<DatasourceEntry[]> {
   try {
     const storyblokApi = getStoryblokApi()
     const version = getStoryblokVersion()
-    const cv = await getCacheVersion()
+    const cv = cacheVersion ?? await getCacheVersion()
 
     const params: Record<string, any> = {
       datasource,

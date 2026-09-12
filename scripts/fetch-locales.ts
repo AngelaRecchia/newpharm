@@ -43,7 +43,8 @@ async function main() {
         excludePaths: EXCLUDE_FOLDERS,
         checkForContent: true,
         skipCache: true,
-      })
+          verbose: true,
+        })
     } catch (error) {
       console.warn(
         '⚠ Failed to fetch locales from Storyblok:',
