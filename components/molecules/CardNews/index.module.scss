@@ -5,12 +5,51 @@
   flex-direction: column;
   gap: $s-8;
   width: 100%;
+  position: relative;
+
+  &.mosaic {
+    .subtitle {
+      text-transform: uppercase;
+    }
+  }
 }
 
 .image {
-  aspect-ratio: 3/4;
+  aspect-ratio: 3 / 4;
   position: relative;
   overflow: hidden;
+  background-color: $c-surface;
+  width: 100%;
+
+  .mosaic & {
+    aspect-ratio: 3 / 2;
+  }
+
+  @include md {
+    &.ratio-3-2 {
+      aspect-ratio: 3 / 2;
+    }
+
+    &.ratio-3-4 {
+      aspect-ratio: 3 / 4;
+    }
+
+    &.ratio-13-9 {
+      aspect-ratio: 13 / 9;
+    }
+  }
+
+  .mosaic & {
+    :global([data-asset]),
+    :global(img),
+    :global(video) {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
 
   &:hover,
   &:focus-visible {
@@ -19,11 +58,6 @@
     }
   }
 
-  // Easing for the image good for products
-  //   > * {
-  //     transition: transform 500ms cubic-bezier(0.16, 1, 0.3, 1);
-  //   }
-
   > * {
     transition: transform 500ms cubic-bezier(0.4, 0, 0.2, 1);
   }
@@ -31,8 +65,8 @@
 
 .content-wrapper {
   position: relative;
-
   padding-block: $s-16;
+  flex-shrink: 0;
 
   &::before {
     content: "";
@@ -53,6 +87,11 @@
 
   .title {
     @include t-body;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
   .subtitle {

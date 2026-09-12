@@ -8,29 +8,27 @@
   overflow: clip;
   background-color: $c-white;
   --height: 100dvw;
-  --content-height: 0px; // Impostata da JS
 
-  @include lg {
-    --height: 50dvw;
+  @include md {
+    --height: 100vh;
+    overflow: clip;
   }
 
   & + * {
     position: relative;
     z-index: 1;
   }
+}
 
-  // Fratelli BoxImage adiacenti (prima o dopo): altezza fullscreen
-  &[data-box-image]:has(+ [data-box-image]),
-  &[data-box-image] ~ [data-box-image] {
-    --height: 100dvh;
-  }
+.wrapper.carousel {
+  --height: 100svh;
 }
 
 // ==============================================
 // Layout
 // ==============================================
 .container {
-  @include lg {
+  @include md {
     display: flex;
     align-items: flex-start;
   }
@@ -48,14 +46,19 @@
 
   > * {
     overflow: clip;
-    height: var(--height);
+    height: var(--height) !important;
+
+    @include md {
+      height: max(var(--height), var(--content-height, 0px)) !important;
+    }
   }
 
-  @include untilLg {
+  @include untilMd {
     height: 0;
   }
 
-  @include lg {
+  @include md {
+    top: 0; // fisso: --sticky-top dell'header causava saltino
     flex-basis: 50%;
     max-width: 50%;
   }
@@ -68,11 +71,12 @@
   position: relative;
   z-index: 1;
 
-  @include untilLg {
-    padding-top: 100%;
+  @include untilMd {
+    padding-top: var(--height);
   }
 
-  @include lg {
+  @include md {
+    overflow: hidden;
     min-height: var(--height);
     flex-basis: 50%;
     max-width: 50%;
@@ -83,14 +87,14 @@
 // Content
 // ==============================================
 .content {
-  background-color: $c-white;
   min-height: calc(var(--height) / 2);
   padding: $s-40 $s-24 $s-128;
   display: flex;
   flex-direction: column;
   gap: $s-16;
+  background-color: $c-white;
 
-  @include lg {
+  @include md {
     gap: $s-32;
     padding: $s-96 $s-40 $s-128;
   }
@@ -108,32 +112,36 @@
   margin-top: $s-8;
 }
 
+.module-link {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  cursor: pointer;
+}
+
 // ==============================================
-// Hover (solo desktop, con link)
+// Hover (modulo intero cliccabile)
 // ==============================================
-.wrapper.has-link {
-  .content-wrapper {
-    @include lg {
-      @include transition(transform, $td-300);
+.wrapper.has-module-link {
+  position: relative;
+  cursor: pointer;
+  --button-hover: 0;
+
+  .asset-wrapper {
+    z-index: 3;
+    pointer-events: none;
+
+    [data-video-controls] {
+      pointer-events: auto;
     }
   }
 
-  .asset-wrapper > * {
-    @include lg {
-      @include transition(transform, $td-300);
-    }
-  }
+  @include md {
+    &:hover {
+      --button-hover: 1;
 
-  &.is-hovered {
-    .content-wrapper {
-      @include lg {
-        transform: translateX($s-24);
-      }
-    }
-
-    .asset-wrapper img,
-    .asset-wrapper video {
-      @include lg {
+      .asset-wrapper img,
+      .asset-wrapper video {
         transform: scale(1.03);
       }
     }
@@ -143,25 +151,10 @@
 // ==============================================
 // Orientation right
 // ==============================================
-.wrapper.orientation-right {
+.wrapper.image-alignment-right {
   .container {
-    @include lg {
+    @include md {
       flex-direction: row-reverse;
-    }
-  }
-
-  &.has-link {
-    .content-wrapper {
-      @include lg {
-        @include transition(padding-inline-end, $td-300);
-      }
-    }
-
-    &.is-hovered .content-wrapper {
-      @include lg {
-        padding-inline-end: $s-24;
-        padding-inline-start: 0;
-      }
     }
   }
 }

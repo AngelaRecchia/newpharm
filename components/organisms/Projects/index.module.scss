@@ -1,0 +1,44 @@
+@use "../../../styles" as *;
+
+.wrapper {
+  width: 100%;
+  background-color: $c-black;
+  color: $c-white;
+  padding-block-end: $s-80;
+  overflow: visible;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: $s-64;
+}
+
+.head {
+  padding-top: 5.625rem;
+
+  @include lg {
+    padding-top: 13.5rem;
+  }
+}
+
+.grid {
+  display: grid;
+  gap: $s-16;
+  @include listing-grid-columns(3);
+}
+
+.gridItem {
+  min-width: 0;
+}
+
+.empty {
+  @include t-body;
+  padding-block: $s-40;
+  color: rgba($c-white, 0.64);
+}
+
+.footer {
+  display: flex;
+  justify-content: center;
+}

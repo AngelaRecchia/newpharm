@@ -5,6 +5,7 @@
 // ============================================
 :root {
   --header-height: 4.25rem; // 68px - altezza header
+  --sticky-top: 4.25rem; // offset sticky sincronizzato con header (animato via JS)
 }
 
 html,
@@ -16,6 +17,7 @@ body {
 
 * {
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
   &:focus-visible {
     outline: 2px solid $c-primary;
     outline-offset: 2px;
@@ -33,9 +35,11 @@ body {
 
   .wrapper .main {
     background-color: $c-white;
-    min-height: 100dvh;
+    min-height: 100svh;
     position: relative;
     z-index: 1;
+    // Fix Safari per sticky revealing footer
+    transform: translate3d(0, 0, 0);
   }
 
   header[data-transparent="false"] + .main {
@@ -55,6 +59,7 @@ button {
   background: none;
   cursor: pointer;
   outline: none;
+  font-family: inherit;
 }
 
 ul {
@@ -83,4 +88,8 @@ p {
 .scroller {
   // Layout wrapper - no overflow needed with Lenis
   // Lenis handles smooth scrolling on the document body
+}
+
+html[data-scroll-lock='true'] body {
+  overscroll-behavior: none;
 }

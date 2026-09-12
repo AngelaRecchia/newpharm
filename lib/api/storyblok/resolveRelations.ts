@@ -6,4 +6,5 @@
  *
  * @see https://www.storyblok.com/docs/api/content-delivery/v2#parameters/resolve_relations
  */
-export const STORYBLOK_RESOLVE_RELATIONS = "catalogs_download.items" as const;
+export const STORYBLOK_RESOLVE_RELATIONS =
+  "catalogs_download.items,box_image.product,box_image.project" as const;

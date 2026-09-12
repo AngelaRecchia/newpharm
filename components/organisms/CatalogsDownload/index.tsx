@@ -1,30 +1,27 @@
 'use client'
 
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import classNames from 'classnames/bind'
-import { AnimatePresence, motion } from 'motion/react'
 import { storyblokEditable } from '@storyblok/react'
 import { useTranslations } from 'next-intl'
-import Asset from '@/components/atoms/Asset'
-import Icon from '@/components/atoms/Icon'
+import DownloadPreviewList from '@/components/molecules/DownloadPreviewList'
 import {
-  CatalogStoryblok,
-  CatalogStoryResolved,
   CatalogsDownloadStoryblok,
 } from '@/types/storyblok'
+import { useRefreshPageScroll } from '@/lib/context/smooth-scroll-context'
+import { PAGE_INITIAL, PAGE_STEP } from '@/lib/downloadable/types'
+import type { DownloadPreviewItem } from '@/lib/downloadable/types'
 import CatalogDownloadModal from './CatalogDownloadModal'
 import {
   firstCoverAsset,
   getCatalogBlok,
+  getCatalogItemKey,
   getCatalogRowMeta,
 } from './catalogHelpers'
 import styles from './index.module.scss'
-import Button from '@/components/atoms/Button'
+import { getStoryblokAnchorId } from '@/lib/storyblok/anchor'
 
 const cn = classNames.bind(styles)
-
-const PAGE_INITIAL = 5
-const PAGE_STEP = 5
 
 export default function CatalogsDownload({
   blok,
@@ -32,18 +29,33 @@ export default function CatalogsDownload({
   blok?: CatalogsDownloadStoryblok
 }) {
   const t = useTranslations('')
-  const { title, items } = blok ?? {}
+  const refreshPageScroll = useRefreshPageScroll()
+  const skipScrollRefresh = useRef(true)
+  const { title, items, anchor_id } = blok ?? {}
   const productDownloadLabel = t('product_download')
 
-  const catalogs = useMemo(() => {
+  const previewItems = useMemo(() => {
     if (!items?.length) return []
-    const out: CatalogStoryblok[] = []
+    const out: DownloadPreviewItem[] = []
     for (const raw of items) {
-      const c = getCatalogBlok(raw as CatalogStoryblok | CatalogStoryResolved | string)
-      if (c) out.push(c)
+      const catalog = getCatalogBlok(raw)
+      if (!catalog) continue
+      const meta = getCatalogRowMeta(catalog, productDownloadLabel)
+      if (!meta.fileUrl) continue
+      out.push({
+        key: getCatalogItemKey(raw, catalog),
+        kind: 'cataloghi',
+        label: meta.label,
+        cover: firstCoverAsset(catalog),
+        fileUrl: meta.fileUrl,
+        modalFileName: meta.modalFileName,
+        shortDescription: meta.shortDescription,
+      })
     }
     return out
-  }, [items])
+  }, [items, productDownloadLabel])
+
+  const groups = useMemo(() => [{ items: previewItems }], [previewItems])
 
   const [previewIndex, setPreviewIndex] = useState(0)
   const [visibleCount, setVisibleCount] = useState(PAGE_INITIAL)
@@ -53,51 +65,25 @@ export default function CatalogsDownload({
     subtitle?: string
   } | null>(null)
 
-  const previewCatalog = useMemo(() => {
-    const safe = Math.min(
-      previewIndex,
-      Math.max(0, catalogs.length - 1)
-    )
-    return catalogs[safe] ?? catalogs[0]
-  }, [catalogs, previewIndex])
-
-  const coverAsset = useMemo(
-    () => (previewCatalog ? firstCoverAsset(previewCatalog) : null),
-    [previewCatalog]
-  )
-
-  const visibleCatalogs = useMemo(
-    () => catalogs.slice(0, visibleCount),
-    [catalogs, visibleCount]
-  )
-
-  const hasMore = visibleCount < catalogs.length
-
-  const showPreview = useCallback(
-    (index: number) => {
-      if (index >= 0 && index < catalogs.length) setPreviewIndex(index)
-    },
-    [catalogs.length]
-  )
-
   const loadMore = useCallback(() => {
-    setVisibleCount((n) => Math.min(n + PAGE_STEP, catalogs.length))
-  }, [catalogs.length])
+    setVisibleCount((n) => Math.min(n + PAGE_STEP, previewItems.length))
+  }, [previewItems.length])
 
-  const openDownloadForCatalog = useCallback(
-    (catalog: CatalogStoryblok) => {
-      const { fileUrl, modalFileName, shortDescription } = getCatalogRowMeta(
-        catalog,
-        productDownloadLabel
-      )
-      setDownloadModal({
-        url: fileUrl ?? '',
-        name: modalFileName,
-        subtitle: shortDescription ?? '',
-      })
-    },
-    [productDownloadLabel]
-  )
+  useEffect(() => {
+    if (skipScrollRefresh.current) {
+      skipScrollRefresh.current = false
+      return
+    }
+    refreshPageScroll()
+  }, [visibleCount, refreshPageScroll])
+
+  const openDownload = useCallback((item: DownloadPreviewItem) => {
+    setDownloadModal({
+      url: item.fileUrl ?? '',
+      name: item.modalFileName,
+      subtitle: item.shortDescription ?? '',
+    })
+  }, [])
 
   const closeDownloadModal = useCallback(() => {
     setDownloadModal(null)
@@ -105,49 +91,8 @@ export default function CatalogsDownload({
 
   if (!blok) return null
 
-  if (catalogs.length === 0) {
-    return (
-      <section className={cn('wrapper')} {...storyblokEditable(blok as any)}>
-        <div className={cn('container')}>
-          {title && <h2 className={cn('title')}>{title}</h2>}
-        </div>
-      </section>
-    )
-  }
-
-  const previewKey = previewCatalog?._uid ?? `idx-${previewIndex}`
-
-  const renderPreview = (variant: 'sticky' | 'mobile') => {
-    if (!coverAsset) return <></>
-    return (
-      <div className={cn('preview', variant)} aria-hidden={true}>
-        <div className={cn('previewInner')}>
-          <div className={cn('previewFrame')}>
-            <AnimatePresence mode="sync" initial={false}>
-              <motion.div
-                key={previewKey}
-                className={cn('previewMotion')}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
-              >
-                <Asset
-                  asset={coverAsset}
-                  size="l"
-                  mode="fit"
-                  className={cn('previewAsset')}
-                />
-              </motion.div>
-            </AnimatePresence>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
   return (
-    <section className={cn('wrapper')} {...storyblokEditable(blok as any)}>
+    <section className={cn('wrapper')} id={getStoryblokAnchorId(anchor_id)} {...storyblokEditable(blok as never)}>
       <CatalogDownloadModal
         open={downloadModal !== null}
         fileUrl={downloadModal?.url ?? ''}
@@ -156,68 +101,21 @@ export default function CatalogsDownload({
         onClose={closeDownloadModal}
       />
       <div className={cn('container')}>
-        <div className={cn('layout')}>
-          {renderPreview('sticky')}
-
-          <div className={cn('main')}>
-            {title && <h2 className={cn('title')}>{title}</h2>}
-
-            {renderPreview('mobile')}
-
-            <ul className={cn('list')}>
-              {visibleCatalogs.map((catalog, rowIndex) => {
-                const { label } = getCatalogRowMeta(catalog, productDownloadLabel)
-
-                return (
-                  <li
-                    key={catalog._uid || `row-${rowIndex}`}
-                    role="button"
-                    tabIndex={0}
-                    className={cn('row')}
-                    onMouseEnter={() => showPreview(rowIndex)}
-                    onFocus={() => showPreview(rowIndex)}
-                    onClick={(e) => {
-                      e.preventDefault()
-                      e.stopPropagation()
-                      openDownloadForCatalog(catalog)
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault()
-                        openDownloadForCatalog(catalog)
-                      }
-                    }}
-                    aria-label={`${label} — ${productDownloadLabel}`}
-                    aria-haspopup="dialog"
-                  >
-                    <span className={cn('rowLabel')}>{label}</span>
-                    <Button
-                      icon='download'
-                      inert
-                      variant='secondary'
-                      size='small'
-                    />
-                  </li>
-                )
-              })}
-            </ul>
-
-            {hasMore && (
-              <div className={cn('footer')}>
-                <button
-                  type="button"
-                  className={cn('loadMore')}
-                  onClick={loadMore}
-                >
-                  <span>Carica altri</span>
-                  <span className={cn('loadMoreIcon')} aria-hidden>
-                    <Icon type="chevron-down" size="s" weight="normal" />
-                  </span>
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
+        {previewItems.length > 0 ? (
+          <DownloadPreviewList
+            groups={groups}
+            visibleCount={visibleCount}
+            previewIndex={previewIndex}
+            downloadLabel={productDownloadLabel}
+            loadMoreLabel={t('load_more')}
+            header={title ? <h2 className={cn('title')}>{title}</h2> : null}
+            onPreview={setPreviewIndex}
+            onDownload={openDownload}
+            onLoadMore={loadMore}
+          />
+        ) : (
+          title ? <h2 className={cn('title')}>{title}</h2> : null
+        )}
       </div>
     </section>
   )

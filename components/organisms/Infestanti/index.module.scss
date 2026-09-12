@@ -1,0 +1,40 @@
+@use "../../../styles" as *;
+
+.wrapper {
+  width: 100%;
+  background-color: $c-white;
+  color: $c-black;
+  padding-block: $s-40 $s-80;
+  overflow: visible;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: $s-64;
+}
+
+.grid {
+  display: grid;
+  gap: $s-16;
+  @include listing-grid-columns(4);
+}
+
+.gridItem {
+  min-width: 0;
+}
+
+.banner {
+  grid-column: 1 / -1;
+}
+
+.empty {
+  @include t-body;
+  padding-block: $s-40;
+  color: $c-gray-600;
+}
+
+.footer {
+  display: flex;
+  justify-content: center;
+}

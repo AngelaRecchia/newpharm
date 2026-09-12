@@ -19,38 +19,32 @@ import type * as Overrides from "./storyblok.overrides";
 // Re-exporta tutti i tipi generati
 export type {
   Accordion_itemStoryblok,
+  Alphabetical_accordionStoryblok,
   Anchor_linkStoryblok,
   AssetStoryblok,
   Banner_accordionStoryblok,
-  Box_imageStoryblok,
+  Box_image_carouselStoryblok,
   Card_boxStoryblok,
   Card_cta_boxStoryblok,
   Card_divisionStoryblok,
   Card_highlightStoryblok,
   Card_icon_textStoryblok,
-  CarouselStoryblok,
   Cta_boxStoryblok,
+  DividerStoryblok,
   Division_boxStoryblok,
   FaqsStoryblok,
   FooterStoryblok,
-  Full_bannerStoryblok,
   GalleryStoryblok,
-  HeaderStoryblok,
-  HeroStoryblok,
   Icon_text_highlightStoryblok,
-  LinkStoryblok,
   Logo_itemStoryblok,
   MilestoneStoryblok,
   Milestone_itemStoryblok,
   Nav_itemStoryblok,
   PageStoryblok,
-  ProductStoryblok,
-  Projects_highlightStoryblok,
   Social_itemStoryblok,
   Spec_tableStoryblok,
   Split_bannerStoryblok,
   Sticky_imageStoryblok,
-  StoryStoryblok,
   TabsStoryblok,
   TeaserStoryblok,
   Text_revealStoryblok,
@@ -64,8 +58,48 @@ export type {
   CatalogsDownloadStoryblok,
   CatalogStoryResolved,
   CatalogStoryblok,
+  DownloadableStoryblok,
+  DownloadableResourcesStoryblok,
+  DownloadableKind,
+  Box_imageStoryblok,
+  BoxImageStoryResolved,
+  InsectStoryblok,
+  InsectStoryResolved,
+  Target_pest_itemStoryblok,
+  ProductStoryblok,
+  Full_bannerStoryblok,
+  HeaderStoryblok,
+  HeroStoryblok,
+  LinkStoryblok,
   Video_ytStoryblok,
   SettingsStoryblok,
+  Card_listing_editorialStoryblok,
+  ListingStoryblok,
+  ProjectStoryblok,
+  ProductsStoryblok,
+  ProjectsStoryblok,
+  Projects_highlightStoryblok,
+  StoriesStoryblok,
+  InfestantiStoryblok,
+  JobStoryblok,
+  Job_listStoryblok,
+  Article_bodyStoryblok,
+  CompareStoryblok,
+  Glossary_itemStoryblok,
+  GlossaryStoryblok,
+  StoryStoryblok,
+  ListingStoryResolved,
+  ListingVariantValue,
+  ListingVariantSlug,
+  ListingImageRatio,
+  ListingTheme,
+  InsectCategory,
+  SearchStoryblok,
+  CarouselStoryblok,
+  CarouselVariantValue,
+  CarouselVariantSlug,
+  CarouselInsectMode,
+  CarouselSelectionMode,
 } from "./storyblok.overrides";
 
 /**
@@ -74,46 +108,67 @@ export type {
  */
 export type StoryblokComponent =
   | Generated.Accordion_itemStoryblok
+  | Generated.Alphabetical_accordionStoryblok
   | Generated.Anchor_linkStoryblok
   | Generated.AssetStoryblok
   | Generated.Banner_accordionStoryblok
-  | Generated.Box_imageStoryblok
+  | Overrides.Box_imageStoryblok
+  | Generated.Box_image_carouselStoryblok
   | Generated.Card_boxStoryblok
   | Generated.Card_cta_boxStoryblok
   | Generated.Card_divisionStoryblok
   | Generated.Card_highlightStoryblok
   | Generated.Card_icon_textStoryblok
-  | Generated.CarouselStoryblok
+  | Overrides.CarouselStoryblok
   | Generated.Cta_boxStoryblok
+  | Generated.DividerStoryblok
   | Generated.Division_boxStoryblok
   | Generated.FaqsStoryblok
   | Generated.FooterStoryblok
-  | Generated.Full_bannerStoryblok
+  | Overrides.Full_bannerStoryblok
   | Generated.GalleryStoryblok
-  | Generated.HeaderStoryblok
-  | Generated.HeroStoryblok
+  | Overrides.HeaderStoryblok
+  | Overrides.HeroStoryblok
   | Generated.Icon_text_highlightStoryblok
-  | Generated.LinkStoryblok
+  | Overrides.InsectStoryblok
+  | Overrides.LinkStoryblok
   | Generated.Logo_itemStoryblok
   | Generated.MilestoneStoryblok
   | Generated.Milestone_itemStoryblok
   | Generated.Nav_itemStoryblok
   | Generated.PageStoryblok
-  | Generated.ProductStoryblok
-  | Generated.Projects_highlightStoryblok
+  | Overrides.ProductStoryblok
+  | Overrides.Projects_highlightStoryblok
   | Generated.Social_itemStoryblok
   | Generated.Spec_tableStoryblok
   | Generated.Split_bannerStoryblok
   | Generated.Sticky_imageStoryblok
-  | Generated.StoryStoryblok
+  | Overrides.SearchStoryblok
+  | Overrides.StoryStoryblok
   | Generated.TabsStoryblok
   | Generated.TeaserStoryblok
   | Generated.Text_revealStoryblok
   | Overrides.CatalogStoryblok
+  | Overrides.DownloadableStoryblok
+  | Overrides.DownloadableResourcesStoryblok
   | Overrides.PartnersStoryblok
   | Overrides.SlideshowStoryblok
   | Overrides.Card_slideshowStoryblok
-  | Overrides.CatalogsDownloadStoryblok;
+  | Overrides.CatalogsDownloadStoryblok
+  | Overrides.ListingStoryblok
+  | Overrides.ProjectStoryblok
+  | Overrides.ProductsStoryblok
+  | Overrides.ProjectsStoryblok
+  | Overrides.StoriesStoryblok
+  | Overrides.InfestantiStoryblok
+  | Overrides.JobStoryblok
+  | Overrides.Job_listStoryblok
+  | Overrides.Article_bodyStoryblok
+  | Overrides.CompareStoryblok
+  | Overrides.Glossary_itemStoryblok
+  | Overrides.GlossaryStoryblok
+  | Overrides.Card_listing_editorialStoryblok
+  | Overrides.Target_pest_itemStoryblok;
 
 /**
  * Helper type per il prop 'blok' nei componenti Storyblok

@@ -193,4 +193,29 @@ export const icons = {
             <path id="Vector" d="M70.9564 15.9374L70.9111 15.8799L70.8935 15.9076L70.5336 16.4537L70.5528 16.5134C71.0147 17.6938 71.0523 18.7519 70.483 19.314C70.3948 19.4029 70.2598 19.4422 70.1493 19.5063C68.295 20.2221 64.215 18.4977 60.4282 15.2894C56.2884 11.7832 54.0436 7.79493 55.3271 6.28395C56.0744 5.6934 57.4891 5.77131 59.1907 6.38735C59.3303 6.29633 59.4554 6.19293 59.6142 6.10045C57.5029 4.91861 55.6401 4.24286 54.362 4.21737C54.3566 4.21737 54.3551 4.21592 54.3497 4.21519C53.5564 4.16858 53.1291 4.42126 52.9028 4.67249C52.7962 4.79045 52.7332 4.90842 52.698 4.9958C52.6642 5.07735 52.6074 5.38756 52.5982 5.52956C52.4624 7.59613 55.4269 11.7278 60.0246 15.6214C65.4341 20.2031 71.0369 22.7117 72.5414 21.2226C73.4022 20.3721 72.7002 18.3295 70.9571 15.9367" className="logo-dot" fill="currentColor" fillRule="nonzero" />
         </svg>
     ),
+    'pest-blatte': (
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="1" />
+        </svg>
+    ),
+    'pest-mosche': (
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="1" />
+        </svg>
+    ),
+    'pest-vespe': (
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="1" />
+        </svg>
+    ),
+    'pest-zanzare': (
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="1" />
+        </svg>
+    ),
+    'pest-formiche': (
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="1" />
+        </svg>
+    ),
 }

@@ -27,8 +27,69 @@ export default getRequestConfig(async ({ requestLocale }) => {
     locale = routing.defaultLocale;
   }
 
+  // Fallback translations for features not yet present in Storyblok datasource
+  const searchFallbacks: Record<string, Record<string, string>> = {
+    it: {
+      cerca_per: "Cerca per",
+      search_placeholder: "Cosa stai cercando?",
+      close: "Chiudi",
+      clear_search: "Cancella",
+      most_searched: "I più cercati",
+      search_solutions: "Soluzioni",
+      search_products: "Prodotti",
+      search_stories: "Approfondimenti",
+      search_downloads: "Download",
+      search_no_results: "Nessun risultato",
+      all_results: "Tutti i risultati",
+      loading: "Caricamento...",
+    },
+    en: {
+      cerca_per: "Search for",
+      search_placeholder: "What are you looking for?",
+      close: "Close",
+      clear_search: "Clear",
+      most_searched: "Most searched",
+      search_solutions: "Solutions",
+      search_products: "Products",
+      search_stories: "Insights",
+      search_downloads: "Downloads",
+      search_no_results: "No results found",
+      all_results: "All results",
+      loading: "Loading...",
+    },
+    ar: {
+      cerca_per: "ابحث عن",
+      search_placeholder: "عن ماذا تبحث؟",
+      close: "إغلاق",
+      clear_search: "مسح",
+      most_searched: "الأكثر بحثًا",
+      search_solutions: "حلول",
+      search_products: "منتجات",
+      search_stories: "رؤى",
+      search_downloads: "تنزيلات",
+      search_no_results: "لا توجد نتائج",
+      all_results: "كل النتائج",
+      loading: "جار التحميل...",
+    },
+  };
+
   // Fetch messages from Storyblok datasource
-  const messages = await getMessagesFromDatasource("labels", locale);
+  const messages = {
+    ...(await getMessagesFromDatasource("labels", locale)),
+    ...(searchFallbacks[locale] || searchFallbacks.en),
+    accepts_terms:
+      locale === "it"
+        ? "Ho letto e accetto i <a>termini e condizioni</a>"
+        : "I have read and accept the <a>terms and conditions</a>",
+    upload_file_hint:
+      locale === "it" ? "PDF o DOC, massimo 5 MB" : "PDF or DOC, maximum 5 MB",
+    your_surname_here:
+      locale === "it" ? "Inserisci il cognome" : "Enter your surname",
+    phone_placeholder:
+      locale === "it" ? "Inserisci il telefono" : "Enter your phone number",
+    message_placeholder:
+      locale === "it" ? "Scrivi il messaggio" : "Write your message",
+  };
 
   // Determine text direction based on locale
   const isRTL = locale === "ar";

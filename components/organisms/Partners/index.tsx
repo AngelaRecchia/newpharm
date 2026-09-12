@@ -3,6 +3,7 @@
 import classNames from 'classnames/bind'
 import styles from './index.module.scss'
 import { storyblokEditable } from '@storyblok/react'
+import { getStoryblokAnchorId } from '@/lib/storyblok/anchor'
 import Asset from '@/components/atoms/Asset'
 import { PartnersStoryblok, Logo_itemStoryblok } from '@/types/storyblok'
 
@@ -17,7 +18,7 @@ export default function Partners({ blok }: { blok?: PartnersStoryblok }) {
     const isDark = variant === 'dark'
 
     return (
-        <section className={cn('wrapper', { dark: isDark })} {...storyblokEditable(blok as any)}>
+        <section className={cn('wrapper', { dark: isDark })} id={getStoryblokAnchorId(blok.anchor_id)} {...storyblokEditable(blok as any)}>
             <div className={cn('container')}>
                 {title && (
                     <div className={cn('head')}>
@@ -27,7 +28,7 @@ export default function Partners({ blok }: { blok?: PartnersStoryblok }) {
 
                 {items && items.length > 0 && (
                     <div className={cn('items')}>
-                        {items.map((item: Logo_itemStoryblok) => {
+                        {items.map((item: Logo_itemStoryblok, index) => {
                             const logoLight = Array.isArray(item.logo_light)
                                 ? item.logo_light[0]
                                 : item.logo_light
@@ -40,7 +41,7 @@ export default function Partners({ blok }: { blok?: PartnersStoryblok }) {
                                     : (logoLight as { alt?: string } | undefined)?.alt || ''
 
                             return (
-                                <div key={item._uid} className={cn('item')}>
+                                <div key={item._uid ?? `partner-${index}`} className={cn('item')}>
                                     <div className={cn('item-logo')}>
                                         {!isDark ? (
                                             logoLight && (

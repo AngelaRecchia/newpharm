@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+node_modules/
 /.pnp
 .pnp.js
 
@@ -14,6 +15,10 @@
 
 # production
 /build
+
+# Storyblok field plugins (build output)
+storyblok-plugins/**/dist/
+storyblok-plugins/**/dist-ssr/
 
 # misc
 .DS_Store
@@ -39,18 +44,17 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# scripts output
-scripts/*.js
-scripts/*.js.map
-
-# cursor agents and skills
-.agents
-.cursor
-
-# cursor rules (keep local, don't push)
-.cursorrules
-
 # dev api cache
 .cache/
 
+# local agent and editor rules
+.agents/
+.cursor/
+.cursorrules
+
 certificates
+
+# one-shot scripts: only .ts is source of truth (compiled output ignored)
+# (keep any committed .js config files by reversing with !)
+scripts/*.js
+scripts/*.js.map

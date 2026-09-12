@@ -3,7 +3,7 @@
 import { storyblokInit, apiPlugin, loadStoryblokBridge } from '@storyblok/react'
 import { ReactNode, useEffect } from 'react'
 import dynamic from 'next/dynamic'
-import { shouldEnableBridge } from './api/storyblok/config'
+import { shouldEnableBridge, isInsideStoryblokEditor } from './api/storyblok/config'
 
 // Lightweight components — static imports
 import Page from '@/components/storyblok/Page'
@@ -13,6 +13,8 @@ import { AssetStoryblok } from '@/types/storyblok'
 import Link from '@/components/storyblok/Link'
 import Story from '@/components/storyblok/Story'
 import Product from '@/components/storyblok/Product'
+import Project from '@/components/storyblok/Project'
+import Job from '@/components/storyblok/Job'
 
 // Wrapper inline per Asset - passa il blok direttamente all'atom
 const Asset = ({ blok, ...props }: { blok?: AssetStoryblok } & any) => {
@@ -27,23 +29,36 @@ import SpecTable from '@/components/organisms/SpecTable'
 import IconTextHighlight from '@/components/organisms/IconTextHighlight'
 import Tabs from '@/components/organisms/Tabs'
 import Faqs from '@/components/organisms/Faqs'
+import AlphabeticalAccordion from '@/components/organisms/AlphabeticalAccordion'
 import BoxImage from '@/components/organisms/BoxImage'
+import BoxImageCarousel from '@/components/organisms/BoxImageCarousel'
+import FullBanner from '@/components/organisms/FullBanner'
 import ProjectsHighlight from '@/components/organisms/ProjectsHighlight'
 import Milestone from '@/components/organisms/Milestone'
 import Partners from '@/components/organisms/Partners'
 import Slideshow from '@/components/organisms/Slideshow'
 import CatalogsDownload from '@/components/organisms/CatalogsDownload'
+import DownloadableResources from '@/components/organisms/DownloadableResources'
+import Listing from '@/components/organisms/Listing'
+import Products from '@/components/organisms/Products'
+import Projects from '@/components/organisms/Projects'
+import Stories from '@/components/organisms/Stories'
+import Infestanti from '@/components/organisms/Infestanti'
+import Compare from '@/components/organisms/Compare'
+import JobList from '@/components/organisms/JobList'
+import Divider from '@/components/organisms/Divider'
+import ArticleBody from '@/components/organisms/ArticleBody'
 // Heavy components (GSAP / Swiper / WebGL) — dynamic imports for bundle splitting
 const Header = dynamic(() => import('@/components/organisms/Header'))
 const Footer = dynamic(() => import('@/components/organisms/Footer'))
 const HeroComponent = dynamic(() => import('@/components/organisms/Hero'))
-const FullBanner = dynamic(() => import('@/components/organisms/FullBanner'))
 const Carousel = dynamic(() => import('@/components/organisms/Carousel'))
 const Banneraccordion = dynamic(() => import('@/components/organisms/BannerAccordion'))
 const StickyImage = dynamic(() => import('@/components/organisms/StickyImage'))
 const TextReveal = dynamic(() => import('@/components/organisms/TextReveal'))
 const VideoYt = dynamic(() => import('@/components/organisms/VideoYt'))
 const Gallery = dynamic(() => import('@/components/organisms/Gallery'))
+const Search = dynamic(() => import('@/components/storyblok/Search'))
 const components = {
 
   // Organisms
@@ -61,13 +76,25 @@ const components = {
   icon_text_highlight: IconTextHighlight,
   tabs: Tabs,
   faqs: Faqs,
+  alphabetical_accordion: AlphabeticalAccordion,
   gallery: Gallery,
   box_image: BoxImage,
+  box_image_carousel: BoxImageCarousel,
   projects_highlight: ProjectsHighlight,
   milestone: Milestone,
   partners: Partners,
   slideshow: Slideshow,
   catalogs_download: CatalogsDownload,
+  downloadable_resources: DownloadableResources,
+  listing: Listing,
+  products: Products,
+  projects: Projects,
+  stories: Stories,
+  infestanti: Infestanti,
+  compare: Compare,
+  job_list: JobList,
+  divider: Divider,
+  article_body: ArticleBody,
 
   // Atoms
   asset: Asset,
@@ -75,28 +102,14 @@ const components = {
 
   // Templates
   product: Product,
+  project: Project,
+  job: Job,
   page: Page,
   settings: Settings,
   story: Story,
+  search: Search,
   header: Header,
   footer: Footer,
-}
-
-/**
- * Detect if we're inside the Storyblok Visual Editor (iframe or _storyblok param)
- */
-function isInsideStoryblokEditor(): boolean {
-  if (typeof window === 'undefined') return false
-  try {
-    return (
-      window.location !== window.parent.location ||
-      window.location.search.includes('_storyblok') ||
-      window.location.search.includes('_storyblok_tk')
-    )
-  } catch {
-    // Cross-origin iframe access throws — assume we're in the editor
-    return true
-  }
 }
 
 // Initialize Storyblok at module level (runs once when module loads)

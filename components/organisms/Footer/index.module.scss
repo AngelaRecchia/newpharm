@@ -7,6 +7,13 @@
 .footer {
   border-top: 1px solid rgba(255, 255, 255, 0.2);
 
+  @include md {
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    z-index: 0;
+  }
+
   .newsletter {
     background-color: $c-black;
     color: $c-white;
@@ -17,9 +24,7 @@
     align-items: center;
     gap: $s-16;
 
-    @include t-h6;
-
-    @include lg {
+    @include md {
       flex-direction: row;
       gap: $s-32;
       padding: $s-24 $s-40;
@@ -28,8 +33,9 @@
     .newsletterText {
       padding: 0;
       margin: 0;
+      @include t-h6;
 
-      @include lg {
+      @include md {
         flex-grow: 4;
       }
     }
@@ -68,12 +74,16 @@
 
     address {
       flex-basis: 50%;
-      @include t-h6;
+      @include t-body;
       font-style: normal;
 
       p {
         padding: 0;
         margin: 0;
+      }
+
+      a {
+        text-decoration: underline;
       }
     }
 

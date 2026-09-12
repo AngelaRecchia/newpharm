@@ -5,7 +5,6 @@ import styles from './index.module.scss'
 import SmartLink from '@/components/atoms/SmartLink'
 import Button from '@/components/atoms/Button'
 import RichText from '@/components/organisms/RichText'
-import { StoryblokRichText } from '@storyblok/react'
 import { gsap } from 'gsap'
 
 const cn = classNames.bind(styles)
@@ -91,14 +90,12 @@ const CardBox = ({ blok, isOpen: controlledIsOpen, onToggle }: CardBoxProps) => 
             <h3 className={cn('title')}>{title}</h3>
 
             <div ref={contentRef} className={cn('content', { 'content-open': isOpen })} inert={!isOpen}>
-                <StoryblokRichText doc={text as any} />
-
-
+                <RichText content={text as any} raw />
             </div>
 
             <div inert={!isOpen} className={cn('primary-link', { 'primary-link-closed': !isOpen })}>
-                {link?.map((link) => (
-                    <Button key={link._uid} link={link.link} label={link.label} variant='primary' />
+                {link?.map((item, index) => (
+                    <Button key={item._uid ?? `card-link-${index}`} link={item} variant='primary' />
                 ))}
 
             </div>

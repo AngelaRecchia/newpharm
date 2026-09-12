@@ -1,58 +1,71 @@
-import type { CatalogStoryblok, CatalogStoryResolved } from '@/types/storyblok'
+import { getAssetFileUrl, getCoverAsset } from '@/lib/downloadable/assets'
+import { isCatalogContent } from '@/lib/downloadable/parse'
 
-export function getCatalogBlok(
-  item: CatalogStoryblok | CatalogStoryResolved | string
-): CatalogStoryblok | null {
-  if (!item || typeof item === 'string') return null
-  if (typeof item === 'object' && 'content' in item && item.content) {
-    const c = item.content as CatalogStoryblok
-    if (c?.component === 'catalog') return c
+export type CatalogLikeContent = {
+  component?: string | null
+  kind?: unknown
+  title?: string | null
+  file?: unknown
+  image?: unknown
+  short_description?: string | null
+  _uid?: string
+}
+
+function asRecord(value: unknown): Record<string, unknown> | null {
+  if (!value || typeof value !== 'object') return null
+  return value as Record<string, unknown>
+}
+
+export function getCatalogBlok(item: unknown): CatalogLikeContent | null {
+  if (typeof item === 'string') return null
+  const record = asRecord(item)
+  if (!record) return null
+
+  if (record.content && typeof record.content === 'object') {
+    const content = record.content as CatalogLikeContent
+    return isCatalogContent(content) ? content : null
   }
-  const direct = item as CatalogStoryblok
-  if (direct?.component === 'catalog') return direct
-  return null
+
+  return isCatalogContent(record) ? (record as CatalogLikeContent) : null
 }
 
-export function firstCoverAsset(catalog: CatalogStoryblok) {
-  const imgs = catalog.image
-  if (!Array.isArray(imgs) || imgs.length === 0) return null
-  return imgs[0]
+export function getCatalogItemKey(item: unknown, content: CatalogLikeContent): string {
+  const record = asRecord(item)
+  if (typeof record?.uuid === 'string' && record.uuid) return record.uuid
+  if (content._uid) return content._uid
+  return content.title?.trim() || 'catalog'
 }
 
-export function getCatalogFileUrl(catalog: CatalogStoryblok): string | undefined {
-  const raw = catalog.file as
-    | { filename?: string }
-    | { filename?: string }[]
-    | null
-    | undefined
-  if (!raw) return undefined
-  const asset = Array.isArray(raw) ? raw[0] : raw
-  const filename = asset?.filename
-  return typeof filename === 'string' && filename.length > 0 ? filename : undefined
+export function firstCoverAsset(catalog: CatalogLikeContent) {
+  return getCoverAsset(catalog.image)
 }
 
-type RawFile =
-  | { filename?: string; name?: string }
-  | { filename?: string; name?: string }[]
-  | null
-  | undefined
+function getCatalogFileUrl(catalog: CatalogLikeContent): string | undefined {
+  return getAssetFileUrl(catalog.file)
+}
 
-/** Testo riga + nome file per modale (stesso calcolo ovunque) */
+function mapToNewpharmUrl(url: string | undefined): string | undefined {
+  if (!url) return undefined
+  return url.replace('//a.storyblok.com/', '//www.newpharm.it/')
+}
+
 export function getCatalogRowMeta(
-  catalog: CatalogStoryblok,
-  productDownloadFallback: string
+  catalog: CatalogLikeContent,
+  productDownloadFallback: string,
 ) {
   const fileUrl = getCatalogFileUrl(catalog)
-  const rawFile = catalog.file as RawFile
-  const assetName = Array.isArray(rawFile)
-    ? rawFile[0]?.name
-    : rawFile?.name
-  const label = catalog.title || assetName || productDownloadFallback
-  const modalFileName = assetName || label
-  const rawDesc = catalog.short_description
+  const rawDescription = catalog.short_description
   const shortDescription =
-    typeof rawDesc === 'string' && rawDesc.trim().length > 0
-      ? rawDesc.trim()
+    typeof rawDescription === 'string' && rawDescription.trim().length > 0
+      ? rawDescription.trim()
       : undefined
-  return { label, modalFileName, fileUrl, shortDescription }
+
+  const label = catalog.title?.trim() || productDownloadFallback
+
+  return {
+    label,
+    modalFileName: label,
+    fileUrl: mapToNewpharmUrl(fileUrl),
+    shortDescription,
+  }
 }

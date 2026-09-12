@@ -7,95 +7,179 @@ import {
     StoryblokRichText,
     type StoryblokRichTextResolvers
 } from '@storyblok/react'
-import React from 'react'
+import React, { useMemo, useRef } from 'react'
 import classNames from 'classnames/bind'
+import { GlossaryTermButton } from '@/components/atoms/GlossaryText'
+import { useGlossary } from '@/lib/glossary/context'
+import { buildGlossaryMatcher } from '@/lib/glossary/match'
+import { applyRichTextMarks } from '@/lib/richtext/applyRichTextMarks'
+import { renderTextWithBreaks } from '@/lib/richtext/renderTextWithBreaks'
 import styles from './index.module.scss'
 
 
 const cn = classNames.bind(styles)
+
+type RichTextContainer = 'lg' | 'narrow' | false
 
 interface RichTextProps {
     content?: ISbRichtext | string | null
     className?: string
     blok?: any
     raw?: boolean
+    enableGlossary?: boolean
+    container?: RichTextContainer
 }
 
 
-export default function RichText({ content, className, blok, raw = false }: RichTextProps) {
-    if (!content || typeof content !== 'object') {
-        return <></>
-    }
+export default function RichText({
+    content,
+    className,
+    blok,
+    raw = false,
+    enableGlossary = false,
+    container = 'lg',
+}: RichTextProps) {
+    const blokKeyCounter = useRef(0)
+    blokKeyCounter.current = 0
+    const glossary = useGlossary()
+    const glossaryItems = enableGlossary ? glossary?.items : undefined
+    const openGlossary = glossary?.open
+    const matcher = useMemo(
+        () => (glossaryItems && glossaryItems.length > 0
+            ? buildGlossaryMatcher(glossaryItems)
+            : null),
+        [glossaryItems],
+    )
 
-
-    const resolvers: StoryblokRichTextResolvers<React.ReactElement> = {
-        // Resolver per paragrafi — strip attributi non-DOM come textAlign
+    const resolvers = useMemo((): StoryblokRichTextResolvers<React.ReactElement> => ({
         paragraph: (node) => {
             const { textAlign, ...safeAttrs } = (node.attrs || {}) as any
             const style = textAlign ? { textAlign } : undefined
-            return React.createElement(
-                'p',
-                { ...safeAttrs, style, key: `p-${Math.random()}` },
-                node.children
-            )
+            return React.createElement('p', { ...safeAttrs, style }, node.children)
         },
-        // Resolver per i nodi di tipo "blok" (nested bloks)
+        hard_break: () => React.createElement('br'),
+        bullet_list: (node) =>
+            React.createElement(
+                'ul',
+                node.attrs || undefined,
+                node.children,
+            ),
+        ordered_list: (node) =>
+            React.createElement(
+                'ol',
+                node.attrs || undefined,
+                node.children,
+            ),
+        list_item: (node) =>
+            React.createElement(
+                'li',
+                node.attrs || undefined,
+                node.children,
+            ),
+        horizontal_rule: () => React.createElement('hr'),
+        ...(enableGlossary
+            ? {
+                text: (node: any) => {
+                    const text = node?.text || ''
+                    const marks = node?.marks || []
+                    const insideLink = marks.some(
+                        (mark: { type?: string }) =>
+                            mark.type === 'link' || mark.type === 'anchor',
+                    )
+
+                    let inner: React.ReactNode = renderTextWithBreaks(text)
+                    if (text && !insideLink && matcher && openGlossary) {
+                        const hits = matcher(text)
+                        if (
+                            hits.length > 1 ||
+                            (hits.length === 1 && hits[0].type === 'term')
+                        ) {
+                            inner = (
+                                <>
+                                    {hits.map((hit, index) =>
+                                        hit.type === 'text' ? (
+                                            <React.Fragment key={`text-${index}`}>
+                                                {renderTextWithBreaks(hit.value)}
+                                            </React.Fragment>
+                                        ) : (
+                                            <GlossaryTermButton
+                                                key={`${hit.uid}-${index}`}
+                                                uid={hit.uid}
+                                            >
+                                                {hit.value}
+                                            </GlossaryTermButton>
+                                        ),
+                                    )}
+                                </>
+                            )
+                        }
+                    }
+
+                    return applyRichTextMarks(marks, inner) as React.ReactElement
+                },
+            }
+            : {}),
         blok: (node) => {
-            // node.attrs contiene i dati del blok annidato
             const nestedBlok = node.attrs
-
-
+            const blokIndex = blokKeyCounter.current++
+            const baseKey =
+                nestedBlok?.id ||
+                nestedBlok?._uid ||
+                nestedBlok?.component ||
+                'blok'
+            const uniqueKey = `${baseKey}-${blokIndex}`
 
             if (!nestedBlok) {
-                // Restituisce un elemento React vuoto invece di null
                 return React.createElement(React.Fragment)
             }
 
-            // Se il blok ha un body con altri nested bloks, renderizzali
             if (nestedBlok.body && Array.isArray(nestedBlok.body)) {
-                const parentKey = nestedBlok._uid || nestedBlok.id || `nested-${Math.random()}`
                 return React.createElement(
                     'div',
                     {
-                        key: `nested-wrapper-${parentKey}`,
-                        className: cn('nested-blok')
+                        key: `nested-wrapper-${uniqueKey}`,
+                        className: cn('nested-blok'),
                     },
                     nestedBlok.body.map((childBlok: any, index: number) =>
                         React.createElement(StoryblokComponent, {
-                            key: childBlok._uid ? `child-${childBlok._uid}-${index}` : `child-${parentKey}-${index}`,
+                            key: `${childBlok._uid || childBlok.id || 'child'}-${blokIndex}-${index}`,
                             blok: childBlok,
-                            ...(childBlok.component === 'asset' ? { mode: 'fit', size: 'm' } : {})
+                            ...(childBlok.component === 'asset' ? { mode: 'fit', size: 'm' } : {}),
                         })
                     )
                 )
             }
 
-
-            // Renderizza il blok direttamente usando StoryblokComponent
-            const uniqueKey = nestedBlok._uid
-                ? `nested-${nestedBlok._uid}`
-                : nestedBlok.id
-                    ? `nested-${nestedBlok.id}`
-                    : `nested-${Math.random()}`
-
             return React.createElement(
                 'div',
                 {
                     key: uniqueKey,
-                    className: cn('nested-blok')
+                    className: cn('nested-blok'),
                 },
                 React.createElement(StoryblokComponent, {
                     key: `${uniqueKey}-component`,
                     blok: nestedBlok,
-                    ...(nestedBlok.component === 'asset' ? { mode: 'fit', size: 'm' } : {})
+                    ...(nestedBlok.component === 'asset' ? { mode: 'fit', size: 'm' } : {}),
                 })
             )
         },
+    }), [enableGlossary, matcher, openGlossary])
+
+    if (!content || typeof content !== 'object') {
+        return <></>
     }
 
     return (
         <div
-            className={cn('richtext', className, { raw })}
+            className={cn(
+                'richtext',
+                {
+                    raw,
+                    'container-lg': !raw && container === 'lg',
+                    'container-narrow': !raw && container === 'narrow',
+                },
+                className,
+            )}
             {...(blok ? storyblokEditable(blok) : {})}
         >
             <StoryblokRichText

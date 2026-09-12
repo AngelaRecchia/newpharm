@@ -8,6 +8,9 @@ import { IntlProvider } from '@/lib/intl-provider'
 import { getMessages, setRequestLocale } from 'next-intl/server'
 import { notFound } from 'next/navigation'
 import localeConfig from '@/i18n/locales.json'
+import { getGlossary } from '@/lib/api/storyblok/glossary'
+import GlossaryRoot from '@/components/organisms/GlossaryRoot'
+import PopupRoot from '@/components/organisms/PopupRoot'
 
 // Load Inter font with support for Latin and Arabic
 const inter = Inter({
@@ -18,7 +21,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: 'Newpharm',
-  description: 'Newpharm - Progetto Next.js con Storyblok',
+  description: 'Newpharm - Sito ufficiale di Newpharm',
 }
 
 export function generateStaticParams() {
@@ -41,21 +44,28 @@ export default async function RootLayout({ children, params }: Props) {
   // Enable static rendering
   setRequestLocale(locale)
 
-  // Get messages for the locale
-  const messages = await getMessages()
+  const [messages, glossaryItems] = await Promise.all([
+    getMessages(),
+    getGlossary(locale),
+  ])
 
   // Determine text direction based on locale
   const isRTL = locale === 'ar'
   const dir = isRTL ? 'rtl' : 'ltr'
 
   return (
-    <html lang={locale} dir={dir}>
+    <html lang={locale} dir={dir} className={inter.variable}>
       <body className={inter.className}>
 
         <StoryblokProvider>
           <IntlProvider locale={locale} messages={messages}>
             <ViewportProvider>
-              <SmoothScrollProvider>{children}</SmoothScrollProvider>
+              <SmoothScrollProvider>
+                <GlossaryRoot items={glossaryItems}>
+                  {children}
+                  <PopupRoot />
+                </GlossaryRoot>
+              </SmoothScrollProvider>
             </ViewportProvider>
           </IntlProvider>
         </StoryblokProvider>

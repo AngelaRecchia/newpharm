@@ -1,0 +1,14 @@
+@use "../../../styles" as *;
+
+.article {
+  @include container-narrow;
+}
+
+.share {
+  padding-block-start: $s-8;
+  padding-block-end: $s-40;
+
+  @include lg {
+    padding-block-end: $s-64;
+  }
+}

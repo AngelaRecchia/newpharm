@@ -137,14 +137,24 @@ export async function getLangs(
   options: {
     excludePaths?: string[];
     checkForContent?: boolean;
+    /** Bypass .cache/storyblok/_langs.json (es. script fetch-locales pre-build) */
+    skipCache?: boolean;
+    /** Stampa dettagli utili in fase di build/debug */
+    verbose?: boolean;
   } = {}
 ): Promise<string[]> {
-  // Check filesystem cache first (dev only)
-  const cached = readFsCache<string[]>("_langs.json");
-  if (cached) return cached;
+  const {
+    excludePaths = ["layout-components"],
+    checkForContent = true,
+    skipCache = false,
+    verbose = false,
+  } = options;
 
-  const { excludePaths = ["layout-components"], checkForContent = true } =
-    options;
+  // Check filesystem cache first (dev only)
+  if (!skipCache) {
+    const cached = readFsCache<string[]>("_langs.json");
+    if (cached) return cached;
+  }
 
   try {
     const managementApi = getManagementApi();
@@ -179,10 +189,19 @@ export async function getLangs(
     // Filter folder candidates: solo root locale (no nested `it/foo`)
     const folderCandidates = allFolderStories
       .filter((story) => {
+        if (verbose) {
+          console.log(
+            `[getLangs] folder: slug="${story.slug}" name="${story.name}" full_slug="${story.full_slug}" published=${story.published} parent_id=${story.parent_id}`
+          );
+        }
+
         if (!isRootLocaleFolder(story)) return false;
 
         // Skip unpublished folders in production
         if (requirePublished && !story.published) {
+          if (verbose) {
+            console.warn(`[getLangs] skipping "${story.slug}": not published`);
+          }
           return false;
         }
 
@@ -190,6 +209,9 @@ export async function getLangs(
 
         // Skip excluded paths
         if (excludePaths.includes(folderName)) {
+          if (verbose) {
+            console.warn(`[getLangs] skipping "${story.slug}": excluded path`);
+          }
           return false;
         }
 
@@ -199,6 +221,13 @@ export async function getLangs(
         id: story.id,
         slug: story.slug || story.name,
       }));
+
+    if (verbose) {
+      console.log(
+        `[getLangs] root locale candidates:`,
+        folderCandidates.map((f) => f.slug).join(", ") || "(none)"
+      );
+    }
 
     // If no content check needed, return immediately
     if (!checkForContent) {
@@ -229,16 +258,27 @@ export async function getLangs(
           excluding_fields: "body", // Exclude content to speed up
         };
 
-        // Add cv parameter if available (omitted in dev to encourage caching)
+        // Add cv parameter if available
         if (cv !== undefined) {
           params.cv = cv;
         }
 
+        if (verbose) {
+          console.log(`[getLangs] CDN check for "${folder.slug}":`, params);
+        }
+
         // Query stories inside this folder using CDN API with starts_with
         const { data } = await storyblokApi.get("cdn/stories", params);
+        const found = data?.stories && data.stories.length > 0;
+
+        if (verbose) {
+          console.log(
+            `[getLangs] CDN check for "${folder.slug}": found=${found} total=${data?.total ?? "?"}`
+          );
+        }
 
         // If there's at least one story, add locale
-        if (data?.stories && data.stories.length > 0) {
+        if (found) {
           localesSet.add(folder.slug);
         }
       } catch (error) {

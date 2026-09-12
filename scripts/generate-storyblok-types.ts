@@ -106,6 +106,10 @@ function storyblokTypeToTS(field: StoryblokField): string {
 /**
  * Genera l'interfaccia TypeScript per un componente
  */
+function formatPropertyKey(key: string): string {
+  return /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(key) ? key : JSON.stringify(key)
+}
+
 function generateComponentInterface(component: StoryblokComponent): string {
   const componentName = component.name
   const interfaceName = `${componentName.charAt(0).toUpperCase() + componentName.slice(1)}Storyblok`
@@ -116,7 +120,7 @@ function generateComponentInterface(component: StoryblokComponent): string {
       const tsType = storyblokTypeToTS(field)
       const optional = field.required ? '' : '?'
       const comment = field.required ? '' : ' // Optional'
-      return `  ${key}${optional}: ${tsType}${comment}`
+      return `  ${formatPropertyKey(key)}${optional}: ${tsType}${comment}`
     })
 
   return `

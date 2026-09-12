@@ -1,7 +1,36 @@
 @use "../../../styles/" as *;
 
-.richtext:not(.raw) {
-  @include container-lg;
+@mixin richtext-lists {
+  ul,
+  ol {
+    margin-block: $s-16;
+    padding-inline-start: $s-24;
+
+    @include lg {
+      margin-block: $s-24;
+      padding-inline-start: $s-32;
+    }
+
+    p {
+      margin-block: 0;
+    }
+
+    li {
+      margin-block: $s-8;
+      white-space: pre-line;
+    }
+  }
+
+  ul {
+    list-style: disc;
+  }
+
+  ol {
+    list-style: decimal;
+  }
+}
+
+@mixin richtext-content {
   .nested-blok {
     margin-block: $s-16;
 
@@ -13,6 +42,11 @@
   // Stili per i paragrafi
   p {
     margin-block: $s-24;
+    white-space: pre-line;
+
+    &:empty {
+      min-height: 1lh;
+    }
   }
 
   // Stili per gli heading
@@ -37,54 +71,25 @@
   // body font size
   @include t-h6;
 
-  h1 {
+  h2 {
     @include t-h2;
   }
 
-  h2 {
+  h3 {
     @include t-h3;
   }
 
-  // Stili per le liste
-  ul,
-  ol {
-    margin-block: $s-16;
-    padding-inline-start: $s-24;
-
-    @include lg {
-      margin-block: $s-24;
-      padding-inline-start: $s-32;
-    }
-
-    p {
-      margin-block: 0;
-    }
-
-    li {
-      margin-block: $s-8;
-    }
-  }
-
-  ul {
-    list-style: disc;
-  }
-
-  ol {
-    list-style: decimal;
-  }
+  @include richtext-lists;
 
   // Stili per i link (esclusi quelli nei nested bloks che sono componenti Button)
-  // I link normali nel testo del richtext
   a {
     text-decoration: underline;
   }
 
-  // Escludi i link dentro i nested bloks (componenti come Button)
   .nested-blok a {
     text-decoration: none;
   }
 
-  // Stili per le immagini
   img,
   video {
     max-width: 100%;
@@ -96,12 +101,33 @@
     }
   }
 
-  // Stili per il testo in grassetto e corsivo
-  strong {
-    font-weight: 600;
+  strong,
+  b {
+    font-weight: 700;
   }
 
   em {
     font-style: italic;
+  }
+}
+
+.richtext:not(.raw) {
+  @include richtext-content;
+}
+
+.richtext.raw {
+  @include richtext-lists;
+}
+
+.richtext.container-lg:not(.raw) {
+  @include container-lg;
+}
+
+.richtext.container-narrow:not(.raw) {
+  @include container-narrow;
+  padding-block: $s-40;
+
+  @include lg {
+    padding-block: $s-64;
   }
 }

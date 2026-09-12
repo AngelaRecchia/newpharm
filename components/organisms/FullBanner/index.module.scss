@@ -12,6 +12,7 @@
 
   .title {
     @include t-h1;
+    @include fluid-type-max-width(900px, h1);
     position: absolute;
     bottom: $s-64;
     width: 100%;
@@ -24,11 +25,29 @@
     }
 
     z-index: 2;
-    max-width: 56.25rem;
+
+    p,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      margin: 0;
+      font: inherit;
+      letter-spacing: inherit;
+      line-height: inherit;
+      color: inherit;
+    }
+
+    strong,
+    em {
+      font: inherit;
+    }
   }
 
   &.full {
-    height: 100dvh;
+    height: 100svh;
 
     .container {
       position: absolute;
@@ -39,7 +58,7 @@
     .asset-video-control-wrapper {
       position: sticky;
 
-      top: calc(100dvh - $s-32 - $s-40);
+      top: calc(100svh - $s-32 - $s-40);
       padding: $s-24;
       display: flex;
       justify-content: flex-end;
@@ -49,15 +68,24 @@
     .asset-wrapper {
       position: absolute;
       inset: 0;
-
+      overflow: hidden;
       will-change: transform;
       z-index: 0;
+
+      > :global(*) {
+        inset: auto;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: 100%;
+        top: 0;
+      }
     }
 
     .content {
       position: relative;
       z-index: 1;
-      height: 100dvh;
+      height: 100svh;
     }
   }
 
@@ -67,7 +95,7 @@
       padding-block: var(--padding-block);
     }
 
-    height: 100dvh;
+    height: 100svh;
 
     .container {
       position: relative;
@@ -78,8 +106,18 @@
     .asset-wrapper {
       inset: 0;
       position: absolute;
+      overflow: hidden;
       will-change: transform;
-      
+
+      > :global(*) {
+        inset: auto;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: 100%;
+        top: 0;
+      }
+
       img,
       video {
         will-change: transform;

@@ -23,6 +23,8 @@ interface HalftoneOverlayScrollProps extends HalftoneOverlayBaseProps {
     /** Progress legato direttamente allo scroll (0–1) */
     mode: 'scroll'
     progressRef: React.MutableRefObject<number>
+    /** Callback di render invocato da ScrollTrigger onUpdate */
+    renderRef?: React.MutableRefObject<(() => void) | null>
     overlayVisible?: never
 }
 
@@ -99,6 +101,7 @@ const HalftoneOverlay: React.FC<HalftoneOverlayProps> = (props) => {
     const textureRef = useRef<WebGLTexture | null>(null)
     const internalProgressRef = useRef(0)
     const progressRef = (mode === 'scroll' ? props.progressRef : internalProgressRef) as React.MutableRefObject<number>
+    const renderRef = mode === 'scroll' ? (props as HalftoneOverlayScrollProps).renderRef : undefined
     const rafRef = useRef<number | null>(null)
     const tweenRef = useRef<gsap.core.Tween | null>(null)
 
@@ -236,9 +239,24 @@ const HalftoneOverlay: React.FC<HalftoneOverlayProps> = (props) => {
             if (nw > 0 && nh > 0) {
                 canvas.width = nw * dpr
                 canvas.height = nh * dpr
+                renderFrame()
             }
         })
         ro.observe(container)
+
+        if (mode === 'scroll') {
+            if (renderRef) {
+                renderRef.current = renderFrame
+            }
+            renderFrame()
+
+            return () => {
+                if (renderRef) {
+                    renderRef.current = null
+                }
+                ro.disconnect()
+            }
+        }
 
         let running = true
         let lastProgress = progressRef.current
@@ -248,19 +266,16 @@ const HalftoneOverlay: React.FC<HalftoneOverlayProps> = (props) => {
             if (!running) return
 
             const currentProgress = progressRef.current
-            // Renderizza solo se il progress è cambiato
             if (currentProgress !== lastProgress) {
                 renderFrame()
                 lastProgress = currentProgress
             }
 
-            // Continua il loop solo se necessario
             if (running) {
                 rafId = requestAnimationFrame(loop)
             }
         }
 
-        // Avvia il loop
         rafId = requestAnimationFrame(loop)
         rafRef.current = rafId
 

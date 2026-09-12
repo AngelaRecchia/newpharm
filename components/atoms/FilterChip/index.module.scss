@@ -1,0 +1,83 @@
+@use "../../../styles" as *;
+
+.chip {
+  @include t-note;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  padding: $s-16;
+  border: 1px solid transparent;
+  text-align: start;
+  cursor: pointer;
+  background-color: $c-surface;
+  color: $c-black;
+  @include transition(background-color color border-color, $td-200);
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled):not(.selected) {
+      background-color: rgb(240, 240, 240);
+    }
+  }
+
+  &.hoverBlack {
+    @media (hover: hover) and (pointer: fine) {
+      &:hover:not(:disabled):not(.selected) {
+        background-color: $c-black;
+        color: $c-white;
+        border-color: $c-black;
+      }
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid $c-black;
+    outline-offset: 2px;
+  }
+
+  &.selected {
+    background-color: $c-black;
+    color: $c-white;
+    border-color: $c-black;
+  }
+
+  &.dark {
+    background-color: #1a1a1a;
+    color: $c-white;
+
+    @media (hover: hover) and (pointer: fine) {
+      &:hover:not(:disabled):not(.selected) {
+        background-color: #2a2a2a;
+      }
+    }
+
+    &:focus-visible {
+      outline-color: $c-white;
+    }
+
+    &.selected {
+      background-color: $c-white;
+      color: $c-black;
+      border-color: $c-white;
+    }
+  }
+
+  &.large {
+    width: 11.5rem; // 184px
+    height: 11.5rem;
+    @include t-h6;
+  }
+
+  &.small {
+    width: 8.5625rem; // 137px
+    height: 8.5625rem;
+    @include t-note;
+  }
+}
+
+.label {
+  margin: 0;
+  width: 100%;
+  word-break: break-word;
+}

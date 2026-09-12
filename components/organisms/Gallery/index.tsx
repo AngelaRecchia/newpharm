@@ -5,6 +5,7 @@ import classNames from 'classnames/bind'
 import styles from './index.module.scss'
 import { GalleryStoryblok } from '@/types/storyblok'
 import { storyblokEditable } from '@storyblok/react'
+import { getStoryblokAnchorId } from '@/lib/storyblok/anchor'
 import Asset from '@/components/atoms/Asset'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import 'swiper/css'
@@ -24,7 +25,7 @@ const Gallery = ({ blok }: { blok?: GalleryStoryblok }) => {
     const hasTitle = !isEmpty(title)
 
     return (
-        <section className={cn('wrapper')} {...storyblokEditable(blok as any)}>
+        <section className={cn('wrapper')} id={getStoryblokAnchorId(blok.anchor_id)} {...storyblokEditable(blok as any)}>
             <div className={cn('container')}>
                 <div className={cn('content')}>
                     {hasTitle && (
@@ -51,8 +52,8 @@ const Gallery = ({ blok }: { blok?: GalleryStoryblok }) => {
                                     swiper.navigation.update()
                                 }}
                             >
-                                {images.map((image: any) => (
-                                    <SwiperSlide key={image._uid} className={cn('swiper-slide')}>
+                                {images.map((image: any, index: number) => (
+                                    <SwiperSlide key={image._uid ?? `gallery-${index}`} className={cn('swiper-slide')}>
                                         <div className={cn('image-item')}>
                                             <Asset asset={image} size="m" mode="fit" />
                                         </div>

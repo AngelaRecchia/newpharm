@@ -1,0 +1,55 @@
+@use "sass:color" as color;
+@use "../../../styles" as *;
+
+@function white-alpha($a) {
+  @return color.change($c-white, $alpha: $a);
+}
+
+.title {
+  @include t-h6;
+  margin: 0 0 $s-8;
+  padding-right: $s-40;
+  font-weight: $font-weight-semibold;
+  color: $c-white;
+}
+
+.intro {
+  @include t-note;
+  margin: 0 0 $s-24;
+  color: white-alpha(0.65);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: $s-24;
+}
+
+.textareaField {
+  display: flex;
+  flex-direction: column;
+  gap: $s-8;
+}
+
+.textareaLabel {
+  @include t-help;
+  color: white-alpha(0.6);
+}
+
+.textarea {
+  width: 100%;
+  min-height: 6rem;
+  padding: $s-12 0;
+  border: none;
+  border-bottom: 1px solid white-alpha(0.6);
+  background: transparent;
+  color: $c-white;
+  resize: vertical;
+  @include t-note;
+  font-family: inherit;
+
+  &:focus-visible {
+    outline: none;
+    border-bottom-color: $c-white;
+  }
+}

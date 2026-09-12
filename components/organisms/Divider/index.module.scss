@@ -1,0 +1,13 @@
+@use "../../../styles" as *;
+
+.wrapper {
+  width: 100%;
+  padding-block: $s-8;
+}
+
+.line {
+  margin: 0;
+  border: 0;
+  height: 1px;
+  background-color: $c-border-dark;
+}

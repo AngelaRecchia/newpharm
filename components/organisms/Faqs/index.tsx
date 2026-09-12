@@ -5,6 +5,7 @@ import { storyblokEditable } from '@storyblok/react'
 import AccordionItem from '@/components/atoms/AccordionItem'
 import RichText from '@/components/organisms/RichText'
 import { isEmpty } from '@/lib/api/utils/links'
+import { getStoryblokAnchorId } from '@/lib/storyblok/anchor'
 
 const cn = classNames.bind(styles)
 
@@ -14,7 +15,7 @@ const Faqs = ({ blok }: { blok: FaqsStoryblok }) => {
   const hasDescription = !isEmpty(description)
 
   return (
-    <section className={cn('wrapper')} {...storyblokEditable(blok as any)}>
+    <section className={cn('wrapper')} id={getStoryblokAnchorId(blok.anchor_id)} {...storyblokEditable(blok as any)}>
 
       <div className={cn('container')}>
         {(hasTitle || hasDescription) && (
@@ -26,9 +27,9 @@ const Faqs = ({ blok }: { blok: FaqsStoryblok }) => {
 
         {items && items.length > 0 && (
           <div className={cn('items')}>
-            {items.map((item: any) => (
-              <AccordionItem key={item._uid} label={item.title || ''} variant="secondary">
-                <RichText content={item.text} raw />
+            {items.map((item: any, index: number) => (
+              <AccordionItem key={item._uid ?? `faq-${index}`} label={item.title || ''} variant="secondary">
+                <RichText content={item.text} raw enableGlossary />
               </AccordionItem>
             ))}
           </div>

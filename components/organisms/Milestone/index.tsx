@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import classNames from 'classnames/bind'
 import styles from './index.module.scss'
 import { storyblokEditable } from '@storyblok/react'
+import { getStoryblokAnchorId } from '@/lib/storyblok/anchor'
 import Button from '@/components/atoms/Button'
 import { isEmpty } from '@/lib/api/utils/links'
 import { MilestoneStoryblok } from '@/types/storyblok'
@@ -50,7 +51,7 @@ const Milestone = ({ blok }: { blok?: MilestoneStoryblok }) => {
     const visibleItems = items?.slice(0, visibleCount)
 
     return (
-        <section className={cn('wrapper')} {...storyblokEditable(blok as any)}>
+        <section className={cn('wrapper')} id={getStoryblokAnchorId(blok.anchor_id)} {...storyblokEditable(blok as any)}>
             <div className={cn('container')}>
                 {!isEmpty(title) && (
                     <div className={cn('head')}>
@@ -61,7 +62,7 @@ const Milestone = ({ blok }: { blok?: MilestoneStoryblok }) => {
                 {visibleItems && visibleItems.length > 0 && (
                     <div ref={itemsRef} className={cn('items')}>
                         {visibleItems.map((item, index) => (
-                            <div key={item._uid} className={cn('item')} style={{ '--i': index % ITEMS_PER_PAGE } as React.CSSProperties}>
+                            <div key={item._uid ?? `milestone-${index}`} className={cn('item')} style={{ '--i': index % ITEMS_PER_PAGE } as React.CSSProperties}>
                                 <div className={cn('item-container')}>
                                     <div className={cn('item-title__wrapper')}>
                                         <h3 className={cn('item-title')}>{item.title}</h3>

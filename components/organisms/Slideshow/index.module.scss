@@ -62,21 +62,9 @@
   background-color: $c-surface;
 
   overflow: hidden;
-  transition:
-    transform $td-300 ease,
-    box-shadow $td-300 ease;
-
-  &:hover {
-    --button-hover: 1;
-  }
 
   @include md {
     min-height: 32rem;
-    &:hover {
-      transform: translateY(-$s-4);
-      box-shadow: 0 $s-8 $s-24 rgba($c-black, 0.1);
-    }
-
     display: grid;
     grid-template-columns: repeat(12, 1fr);
     padding: 0;

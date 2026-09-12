@@ -1,0 +1,75 @@
+@use "../../../styles" as *;
+
+.bar {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 10040;
+  display: flex;
+  align-items: center;
+  gap: $s-16;
+  padding: $s-16 $s-24;
+  color: $c-white;
+  border-top: 1px solid rgba($c-white, 0.15);
+
+  @include md {
+    padding-inline: $s-40;
+  }
+
+  &.download {
+    background-color: $c-primary;
+
+    &.multiLine {
+      @include mobile {
+        flex-wrap: wrap;
+        align-items: flex-start;
+      }
+    }
+  }
+
+  &.compare {
+    background-color: $c-black;
+
+    @include mobile {
+      flex-wrap: wrap;
+      align-items: flex-start;
+    }
+  }
+}
+
+.inner {
+  flex: 1;
+  min-width: 0;
+}
+
+.close {
+  position: absolute;
+  inset-inline-end: $s-24;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: $s-24;
+  height: $s-24;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid $c-white;
+    outline-offset: 2px;
+  }
+
+  @include md {
+    inset-inline-end: $s-40;
+  }
+
+  @include mobile {
+    top: auto;
+    bottom: $s-16;
+    transform: none;
+  }
+}

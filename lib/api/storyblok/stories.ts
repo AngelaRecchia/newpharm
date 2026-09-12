@@ -8,6 +8,11 @@ import { getStoryblokApi } from "./client";
 import { getStoryblokVersion, getCacheVersion } from "./config";
 import { STORYBLOK_RESOLVE_RELATIONS } from "./resolveRelations";
 import { AssetStoryblok } from "@/types/storyblok";
+import { NON_ROUTABLE_COMPONENTS, isNonRoutableComponent } from "./routing";
+import { parseCarouselVariant } from "@/lib/carousel/parseCarouselVariant";
+import { filterListingByVista } from "@/lib/listing/filterListingByVista";
+import { sortProductStories } from "@/lib/products/filterProducts";
+import type { ListingStoryResolved } from "@/lib/listing/types";
 
 export interface GetStoryOptions {
   version?: "draft" | "published";
@@ -27,6 +32,15 @@ export interface Story {
   slug: string;
   full_slug: string;
   [key: string]: any;
+}
+
+const storyCache = new Map<string, Promise<Story | null>>();
+const allStoriesCache = new Map<string, Promise<Story[]>>();
+
+function stableOptionsKey(options: Record<string, unknown>): string {
+  return JSON.stringify(
+    Object.entries(options).sort(([a], [b]) => a.localeCompare(b)),
+  );
 }
 
 /**
@@ -59,10 +73,27 @@ export async function getStory(
 ): Promise<Story | null> {
   const storyPath =
     locale && !slug.startsWith(locale + "/") ? `${locale}/${slug}` : slug;
+  const version = options.version || getStoryblokVersion();
+  const cacheKey = `${storyPath}:${version}:${stableOptionsKey(options)}`;
 
+  if (version === "published") {
+    const cached = storyCache.get(cacheKey);
+    if (cached) return cached;
+    const promise = fetchStory(storyPath, version, options);
+    storyCache.set(cacheKey, promise);
+    return promise;
+  }
+
+  return fetchStory(storyPath, version, options);
+}
+
+async function fetchStory(
+  storyPath: string,
+  version: "draft" | "published",
+  options: GetStoryOptions,
+): Promise<Story | null> {
   try {
     const storyblokApi = getStoryblokApi();
-    const version = options.version || getStoryblokVersion();
     const cv = await getCacheVersion();
 
     const params: Record<string, any> = {
@@ -72,7 +103,7 @@ export async function getStory(
       ...options,
     };
 
-    // Add cv parameter if available (omitted in dev to encourage caching)
+    // Add cv parameter if available
     if (cv !== undefined) {
       params.cv = cv;
     }
@@ -87,7 +118,7 @@ export async function getStory(
       return null; // Graceful return for notFound()
     }
 
-    console.error(`[Storyblok] Error fetching ${storyPath}}`);
+    console.error(`[Storyblok] Error fetching ${storyPath}`);
 
     return null;
   }
@@ -95,11 +126,11 @@ export async function getStory(
 
 /**
  * Recupera tutte le stories da Storyblok per generateStaticParams
- * Esclude automaticamente le stories in 'layout-components'
+ * Esclude cartelle di sistema e content type non routabili (downloadable, …).
  *
  * @param options - Opzioni per la richiesta
  * @param options.version - Versione da usare (default: basata su ambiente)
- * @param options.excludePaths - Path da escludere (default: ['layout-components'])
+ * @param options.excludePaths - Path da escludere (default: ['layout-components', 'glossary', 'insetti', 'infestanti'])
  * @param options.perPage - Numero di stories per pagina (default: 100)
  * @returns Array di stories
  *
@@ -115,11 +146,29 @@ export async function getAllStories(
   } = {}
 ): Promise<Story[]> {
   const {
-    version = getStoryblokVersion(),
-    excludePaths = ["layout-components"],
+    version: requestedVersion,
+    excludePaths = ["layout-components", "glossary", "insetti", "infestanti"],
     perPage = 100,
   } = options;
+  const version = requestedVersion || getStoryblokVersion();
+  const cacheKey = `${version}:${perPage}:${stableOptionsKey({ excludePaths })}`;
 
+  if (version === "published") {
+    const cached = allStoriesCache.get(cacheKey);
+    if (cached) return cached;
+    const promise = fetchAllStories(version, excludePaths, perPage);
+    allStoriesCache.set(cacheKey, promise);
+    return promise;
+  }
+
+  return fetchAllStories(version, excludePaths, perPage);
+}
+
+async function fetchAllStories(
+  version: "draft" | "published",
+  excludePaths: string[],
+  perPage: number,
+): Promise<Story[]> {
   try {
     const storyblokApi = getStoryblokApi();
     const allStories: Story[] = [];
@@ -134,9 +183,10 @@ export async function getAllStories(
         per_page: perPage,
         page,
         excluding_fields: "content", // Exclude large fields to speed up fetch
+        "filter_query[component][not_in]": NON_ROUTABLE_COMPONENTS.join(","),
       };
 
-      // Add cv parameter if available (omitted in dev to encourage caching)
+      // Add cv parameter if available
       if (cv !== undefined) {
         params.cv = cv;
       }
@@ -158,19 +208,16 @@ export async function getAllStories(
         }
 
         // Check if story is in excluded path
-        const segments = fullSlug.split("/");
-
-        // Check first segment (e.g., 'layout-components')
-        if (excludePaths.includes(segments[0])) {
-          return false;
+        const segments = fullSlug.split("/").filter(Boolean)
+        if (segments.some((segment) => excludePaths.includes(segment))) {
+          return false
         }
 
-        // Check second segment (e.g., 'en/layout-components')
-        if (segments.length > 1 && excludePaths.includes(segments[1])) {
-          return false;
+        if (isNonRoutableComponent(story.content?.component)) {
+          return false
         }
 
-        return true;
+        return true
       });
 
       allStories.push(...filteredStories);
@@ -183,9 +230,267 @@ export async function getAllStories(
       }
     }
 
+    const catalogDownloadables = await fetchDownloadableCatalogStories(
+      version,
+      perPage,
+      cv,
+    )
+    allStories.push(
+      ...catalogDownloadables.filter((story: Story) => {
+        const fullSlug = story.full_slug || ""
+        if (!fullSlug) return false
+        const segments = fullSlug.split("/").filter(Boolean)
+        return !segments.some((segment) => excludePaths.includes(segment))
+      }),
+    )
+
     return allStories;
   } catch (error) {
     return [];
+  }
+}
+
+async function fetchDownloadableCatalogStories(
+  version: "draft" | "published",
+  perPage: number,
+  cv: number | undefined,
+): Promise<Story[]> {
+  try {
+    const storyblokApi = getStoryblokApi();
+    const stories: Story[] = [];
+    let page = 1;
+    let hasMore = true;
+
+    while (hasMore) {
+      const params: Record<string, unknown> = {
+        version,
+        per_page: perPage,
+        page,
+        excluding_fields: "content",
+        "filter_query[component][in]": "downloadable",
+        "filter_query[kind][in]": "catalog",
+      };
+
+      if (cv !== undefined) {
+        params.cv = cv;
+      }
+
+      const { data } = await storyblokApi.get("cdn/stories", params);
+      const batch = (data?.stories ?? []) as Story[];
+      if (batch.length === 0) break;
+      stories.push(...batch);
+      hasMore = batch.length >= perPage;
+      page += 1;
+    }
+
+    return stories;
+  } catch (error) {
+    console.error("[Storyblok] Error fetching downloadable catalogs", error);
+    return [];
+  }
+}
+
+/**
+ * Recupera stories per UUID preservando l'ordine richiesto.
+ * Richieste batched (max 50 UUID per chiamata — limite CDN Storyblok).
+ */
+export async function getStoriesByUuids(
+  uuids: string[],
+  locale?: string,
+  options: GetStoryOptions = {},
+): Promise<Story[]> {
+  const unique = [...new Set(uuids.filter(Boolean))]
+  if (unique.length === 0) return []
+
+  const CHUNK_SIZE = 50
+  const chunks: string[][] = []
+  for (let i = 0; i < unique.length; i += CHUNK_SIZE) {
+    chunks.push(unique.slice(i, i + CHUNK_SIZE))
+  }
+
+  try {
+    const storyblokApi = getStoryblokApi()
+    const version = options.version || getStoryblokVersion()
+    const cv = await getCacheVersion()
+
+    const chunkResults = await Promise.all(
+      chunks.map(async (chunk) => {
+        const params: Record<string, unknown> = {
+          version,
+          by_uuids: chunk.join(','),
+          resolve_links: 'url',
+          resolve_relations: STORYBLOK_RESOLVE_RELATIONS,
+          per_page: chunk.length,
+          ...options,
+        }
+
+        if (locale) {
+          params.language = locale
+        }
+
+        if (cv !== undefined) {
+          params.cv = cv
+        }
+
+        const { data } = await storyblokApi.get('cdn/stories', params)
+        return (data?.stories ?? []) as Story[]
+      }),
+    )
+
+    const byUuid = new Map<string, Story>()
+    for (const stories of chunkResults) {
+      for (const story of stories) {
+        byUuid.set(story.uuid, story)
+      }
+    }
+
+    return unique.map((uuid) => byUuid.get(uuid)).filter(Boolean) as Story[]
+  } catch (error) {
+    console.error('[Storyblok] Error fetching stories by UUID', error)
+    return []
+  }
+}
+
+const storiesByComponentCache = new Map<string, Promise<Story[]>>()
+
+export function clearStoriesByComponentCache() {
+  storiesByComponentCache.clear()
+}
+
+/**
+ * Recupera tutte le stories di un content type nel locale corrente (prefetch paginato).
+ */
+export async function getStoriesByComponent(
+  component: string,
+  locale?: string,
+  options: GetStoryOptions = {},
+): Promise<Story[]> {
+  const version = options.version || getStoryblokVersion()
+  if (version === 'draft') {
+    return fetchStoriesByComponent(component, locale, options)
+  }
+
+  const cv = await getCacheVersion()
+  const cacheKey = `${component}:${version}:${locale ?? '__all__'}:${cv ?? 'nocv'}`
+  const cached = storiesByComponentCache.get(cacheKey)
+  if (cached) return cached
+
+  const promise = fetchStoriesByComponent(component, locale, options)
+  storiesByComponentCache.set(cacheKey, promise)
+  return promise
+}
+
+async function fetchStoriesByComponent(
+  component: string,
+  locale?: string,
+  options: GetStoryOptions = {},
+): Promise<Story[]> {
+  try {
+    const storyblokApi = getStoryblokApi()
+    const version = options.version || getStoryblokVersion()
+    const cv = await getCacheVersion()
+    const stories: Story[] = []
+
+    let page = 1
+    let hasMore = true
+
+    while (hasMore) {
+      const params: Record<string, unknown> = {
+        version,
+        per_page: 100,
+        page,
+        resolve_links: 'url',
+        resolve_relations: STORYBLOK_RESOLVE_RELATIONS,
+        'filter_query[component][in]': component,
+        ...options,
+      }
+
+      if (locale) {
+        params.starts_with = `${locale}/`
+      }
+
+      if (cv !== undefined) {
+        params.cv = cv
+      }
+
+      const { data } = await storyblokApi.get('cdn/stories', params)
+      const batch = (data?.stories ?? []) as Story[]
+
+      if (batch.length === 0) {
+        break
+      }
+
+      stories.push(...batch)
+      hasMore = batch.length === 100
+      page += 1
+    }
+
+    return stories
+  } catch (error) {
+    console.error(`[Storyblok] Error fetching stories by component ${component}`, error)
+    return []
+  }
+}
+
+/**
+ * Cerca stories di un componente specifico usando il parametro search_term
+ * di Storyblok. Ritorna solo le stories che contengono il termine in campi
+ * testuali/richtext, riducendo drasticamente il payload rispetto al fetch
+ * completo di tutte le stories del componente.
+ */
+export async function searchStoriesByComponent(
+  component: string,
+  query: string,
+  locale?: string,
+  options: GetStoryOptions = {},
+): Promise<Story[]> {
+  if (!query.trim()) return []
+
+  try {
+    const storyblokApi = getStoryblokApi()
+    const version = options.version || getStoryblokVersion()
+    const cv = await getCacheVersion()
+    const stories: Story[] = []
+
+    let page = 1
+    let hasMore = true
+
+    while (hasMore) {
+      const params: Record<string, unknown> = {
+        version,
+        per_page: 100,
+        page,
+        resolve_links: 'url',
+        'filter_query[component][in]': component,
+        search_term: query.trim(),
+        excluding_fields: 'body,article',
+        ...options,
+      }
+
+      if (locale) {
+        params.starts_with = `${locale}/`
+      }
+
+      if (cv !== undefined) {
+        params.cv = cv
+      }
+
+      const { data } = await storyblokApi.get('cdn/stories', params)
+      const batch = (data?.stories ?? []) as Story[]
+
+      if (batch.length === 0) {
+        break
+      }
+
+      stories.push(...batch)
+      hasMore = batch.length === 100
+      page += 1
+    }
+
+    return stories
+  } catch (error) {
+    console.error(`[Storyblok] Error searching stories by component ${component}`, error)
+    return []
   }
 }
 
@@ -394,14 +699,164 @@ export async function getRelatedStoriesByTags(
  * Interface per progetti correlati a un prodotto
  */
 export interface RelatedProject {
+  uuid: string;
   full_slug: string;
   title: string;
-  asset: AssetStoryblok[];
+  short_description?: string | null;
+  image: AssetStoryblok[];
+  /** Elenco completo (non limitato) dei prodotti del progetto (manuale o dinamico per categoria).
+   *  Popolato una sola volta per progetto durante la costruzione dell'indice inverso. */
+  products?: ListingStoryResolved[];
+}
+
+function asAssetArray(value: unknown): AssetStoryblok[] {
+  if (!Array.isArray(value)) return [];
+
+  return value.filter((item): item is AssetStoryblok => {
+    if (!item || typeof item !== "object") return false;
+    const asset = item as Partial<AssetStoryblok>;
+    return Boolean(asset.desktop?.filename || asset.mobile?.filename);
+  });
+}
+
+function toRelatedProject(story: Story): RelatedProject {
+  return {
+    uuid: story.uuid,
+    full_slug: story.full_slug,
+    title: story.content?.title || story.name,
+    short_description: story.content?.short_description,
+    image: asAssetArray(story.content?.image),
+  };
+}
+
+function mapStoryToListingResolvedLocal(story: Story): ListingStoryResolved {
+  return {
+    uuid: story.uuid,
+    name: story.name,
+    slug: story.slug,
+    full_slug: story.full_slug,
+    created_at: story.created_at ?? null,
+    published_at: story.published_at ?? null,
+    first_published_at: story.first_published_at ?? null,
+    content: (story.content ?? {}) as Record<string, unknown>,
+  };
+}
+
+/** Indice invertito productUuid → progetti (una sola fetch paginata per locale) */
+const relatedProjectsIndexCache = new Map<
+  string,
+  Promise<Map<string, RelatedProject[]>>
+>();
+
+async function buildRelatedProjectsIndex(
+  locale?: string,
+  options: GetStoryOptions = {}
+): Promise<Map<string, RelatedProject[]>> {
+  const storyblokApi = getStoryblokApi();
+  const version = options.version || getStoryblokVersion();
+  const cv = await getCacheVersion();
+  const index = new Map<string, RelatedProject[]>();
+
+  let page = 1;
+  let hasMore = true;
+
+  // Tutti i prodotti del locale, necessari per risolvere le varianti dinamiche
+  // (categoria/sottocategoria/application_area/bestseller) di `related_products`.
+  const allProductStories = await getStoriesByComponent("product", locale);
+  const allProducts = allProductStories.map(mapStoryToListingResolvedLocal);
+
+  while (hasMore) {
+    const params: Record<string, any> = {
+      version,
+      per_page: 100,
+      page,
+      excluding_fields: "body,article",
+      "filter_query[component][in]": "project",
+      ...options,
+    };
+
+    if (locale) {
+      params.starts_with = `${locale}/`;
+    }
+
+    if (cv !== undefined) {
+      params.cv = cv;
+    }
+
+    const { data } = await storyblokApi.get("cdn/stories", params);
+    const stories: Story[] = data?.stories ?? [];
+
+    if (stories.length === 0) {
+      break;
+    }
+
+    for (const story of stories) {
+      const project = toRelatedProject(story);
+      // Normalizza il valore raw del campo plugin (variant + selection_mode ecc.)
+      // e risolve l'elenco COMPLETO (non limitato) di prodotti del progetto,
+      // sia in modalità manuale che dinamica per categoria.
+      const rawRelated = story.content?.related_products;
+      const normalizedRelated =
+        typeof rawRelated === "object" && rawRelated !== null
+          ? { ...rawRelated, variant: "related_products" }
+          : rawRelated;
+      const parsed = parseCarouselVariant(normalizedRelated);
+
+      let products: ListingStoryResolved[];
+      if (parsed.selection_mode === "manual") {
+        if (parsed.items.length === 0) continue;
+        const included = new Set(parsed.items);
+        products = allProducts.filter((p) => included.has(p.uuid));
+      } else {
+        const filtered = filterListingByVista(allProducts, {
+          selection_mode: "dynamic",
+          vista: parsed.vista,
+          category: parsed.category,
+          subcategory: parsed.subcategory,
+          application_area: parsed.application_area,
+          bestseller: parsed.bestseller,
+        });
+        products = sortProductStories(filtered, "recent");
+      }
+
+      if (products.length === 0) continue;
+
+      project.products = products;
+
+      for (const product of products) {
+        const existing = index.get(product.uuid) ?? [];
+        existing.push(project);
+        index.set(product.uuid, existing);
+      }
+    }
+
+    hasMore = stories.length === params.per_page;
+    page += 1;
+  }
+
+  return index;
+}
+
+function getRelatedProjectsIndex(
+  locale?: string,
+  options: GetStoryOptions = {}
+): Promise<Map<string, RelatedProject[]>> {
+  const cacheKey = `${options.version || getStoryblokVersion()}:${locale ?? "__all__"}`;
+  const cached = relatedProjectsIndexCache.get(cacheKey);
+
+  if (cached) {
+    return cached;
+  }
+
+  const promise = buildRelatedProjectsIndex(locale, options);
+  relatedProjectsIndexCache.set(cacheKey, promise);
+  return promise;
 }
 
 /**
- * Query inversa: trova tutti i progetti che referenziano un prodotto
- * Cerca nel campo related_products dei content type "project"
+ * Query inversa: trova tutti i progetti che referenziano un prodotto.
+ * Usa un indice invertito (fetch unica paginata per locale) per evitare
+ * N chiamate API durante la build statica.
  *
  * @param productUuid - UUID del prodotto corrente
  * @param locale - Locale per filtrare le stories
@@ -416,39 +871,8 @@ export async function getRelatedProjectsByProduct(
   try {
     if (!productUuid) return [];
 
-    const storyblokApi = getStoryblokApi();
-    const version = options.version || getStoryblokVersion();
-    const cv = await getCacheVersion();
-
-    const params: Record<string, any> = {
-      version,
-      per_page: 100,
-      excluding_fields: "body,article",
-      ...options,
-    };
-
-    if (locale) {
-      params.starts_with = `${locale}/`;
-    }
-
-    params["filter_query[component][in]"] = "project";
-    params["filter_query[related_products][in]"] = productUuid;
-
-    if (cv !== undefined) {
-      params.cv = cv;
-    }
-
-    const { data } = await storyblokApi.get("cdn/stories", params);
-
-    if (!data?.stories || data.stories.length === 0) {
-      return [];
-    }
-
-    return data.stories.map((story: Story) => ({
-      full_slug: story.full_slug,
-      title: story.content?.title || story.name,
-      asset: story.content?.asset || [],
-    }));
+    const index = await getRelatedProjectsIndex(locale, options);
+    return index.get(productUuid) ?? [];
   } catch (error) {
     console.error("[Storyblok] Error fetching related projects by product:", error);
     return [];

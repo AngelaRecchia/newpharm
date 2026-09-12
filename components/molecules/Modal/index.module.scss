@@ -1,5 +1,14 @@
 @use "../../../styles" as *;
 
+.dim {
+  position: fixed;
+  inset: 0;
+  z-index: 10050;
+  background-color: $c-black;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
 .backdrop {
   position: fixed;
   inset: 0;
@@ -11,6 +20,15 @@
   padding: $s-24;
   overflow-y: auto;
   background: rgba(0, 0, 0, 0.75);
+
+  &.centered {
+    align-items: center;
+  }
+
+  &.multiply {
+    z-index: 10051;
+    background: transparent;
+  }
 }
 
 .panel {
@@ -26,6 +44,16 @@
   @include md {
     max-width: 44rem;
     padding: $s-40;
+  }
+
+  &.plain {
+    width: auto;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    border-radius: 0;
+    color: $c-white;
   }
 }
 

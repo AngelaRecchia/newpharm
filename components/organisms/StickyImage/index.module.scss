@@ -45,22 +45,24 @@
       align-items: center;
       gap: $s-40;
 
+      > div {
+        width: 100%;
+      }
+
       [data-asset] {
         max-width: 37.5rem;
         margin: 0 auto;
       }
 
-      p,
-      div:has(> a) {
+      :is(p, div:has(> a), div:has([data-button])):not([data-asset]):not(:has([data-asset])) {
         max-width: 25rem;
         margin: 0 auto;
       }
 
       @include lg {
         padding-block: $s-64;
-        p,
-        div:has(> a) {
-          width: 60%;
+        :is(p, div:has(> a), div:has([data-button])):not([data-asset]):not(:has([data-asset])) {
+          width: 55%;
         }
 
         [data-asset] {
@@ -89,6 +91,29 @@
     position: sticky;
     top: 0;
     align-self: start;
+    height: 100vh;
+    overflow: hidden;
+
+    .image-wrapper {
+      height: 100%;
+
+      :global([data-asset]) {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      img,
+      video {
+        position: absolute !important;
+        inset: 0;
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+      }
+
+    }
   }
 }
 

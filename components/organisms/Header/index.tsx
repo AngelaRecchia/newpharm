@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 
 import { useViewport } from '@/lib/context/viewport-context'
+import { useGlobalSettings } from '@/lib/context/global-settings-context'
 
 import { getLinkUrl } from '@/lib/api/utils/links'
 import { HeaderStoryblok, Nav_itemStoryblok } from '@/types/storyblok'
@@ -23,6 +24,7 @@ import SmartLink from '../../atoms/SmartLink'
 import Icon from '../../atoms/Icon'
 import Button from '../../atoms/Button'
 import NavItem from '../../atoms/NavItem'
+import SearchMenu from '../../molecules/SearchMenu'
 
 
 interface HeaderProps {
@@ -35,10 +37,17 @@ export default function Header({
   variant = 'transparent',
 }: HeaderProps) {
   const t = useTranslations()
+  const settings = useGlobalSettings()
   const navItems = (blok?.nav_items as Nav_itemStoryblok[]) || []
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
+  const searchOpenRef = useRef(searchOpen)
   const [openDropdownIndex, setOpenDropdownIndex] = useState<number | null>(null)
   const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    searchOpenRef.current = searchOpen
+  }, [searchOpen])
 
   const { isMobile } = useViewport()
 
@@ -47,7 +56,9 @@ export default function Header({
   }, [])
 
   const headerOverlayOpen =
-    (openDropdownIndex !== null && !isMobile) || (isMobile && mobileMenuOpen)
+    (openDropdownIndex !== null && !isMobile) ||
+    (isMobile && mobileMenuOpen) ||
+    searchOpen
   useBodyScrollLock(headerOverlayOpen)
 
   const toggleDropdown = (index: number) => {
@@ -76,8 +87,11 @@ export default function Header({
           const scrollDelta = Math.abs(scrollY - lastScrollY)
           lastScrollY = scrollY
 
-          // Se siamo all'inizio della pagina, mostra sempre l'header
-          if (scrollY <= 10) {
+          // Se il menu di ricerca è aperto, mantieni l'header sempre visibile
+          if (searchOpenRef.current) {
+            setIsHeaderVisible(true)
+          } else if (scrollY <= 10) {
+            // Se siamo all'inizio della pagina, mostra sempre l'header
             setIsHeaderVisible(true)
           } else if (scrollDelta > 5) {
             // Nascondi/mostra header in base alla direzione (solo se scroll significativo)
@@ -102,8 +116,8 @@ export default function Header({
   }, [])
 
   useEffect(() => {
-    // Menu mobile ha priorità: se è aperto, forza bianco e mantieni visibile
-    if (isMobile && mobileMenuOpen) {
+    // Menu mobile o search aperti hanno priorità: forza bianco e mantieni visibile
+    if ((isMobile && mobileMenuOpen) || searchOpen) {
       setHeaderVariant('white')
       setIsHeaderVisible(true)
     } else if (scrolled) {
@@ -113,18 +127,17 @@ export default function Header({
       // Altrimenti usa la variante originale
       setHeaderVariant(variant)
     }
-  }, [isMobile, mobileMenuOpen, variant, scrolled])
+  }, [isMobile, mobileMenuOpen, searchOpen, variant, scrolled])
 
-  // Aggiorna la variabile CSS --sticky-top in base alla visibilità dell'header
+  // Aggiorna --sticky-top in sync con l'animazione hide/show dell'header (300ms)
   useEffect(() => {
-    if (typeof document !== 'undefined') {
-      const root = document.documentElement
-      if (isHeaderVisible) {
-        root.style.setProperty('--sticky-top', 'var(--header-height)')
-      } else {
-        root.style.setProperty('--sticky-top', '0px') // Usa '0px' invece di '0' per compatibilità con calc
-      }
-    }
+    if (typeof document === 'undefined') return
+
+    const root = document.documentElement
+    const headerHeight =
+      getComputedStyle(root).getPropertyValue('--header-height').trim() || '4.25rem'
+
+    root.style.setProperty('--sticky-top', isHeaderVisible ? headerHeight : '0px')
   }, [isHeaderVisible])
 
 
@@ -134,7 +147,14 @@ export default function Header({
     headerWhite: headerVariant === 'white',
     headerTransparent: headerVariant === 'transparent',
     headerHidden: !isHeaderVisible,
+    headerSearchOpen: searchOpen,
   })
+
+  const handleEscape = (e: KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      closeMenu()
+    }
+  }
 
   useEffect(() => {
     document.addEventListener('keyup', handleEscape)
@@ -143,26 +163,23 @@ export default function Header({
     }
   }, [])
 
-  const handleEscape = (e: KeyboardEvent) => {
-    if (e.key === 'Escape') {
-      setOpenDropdownIndex(null)
-    }
-  }
-
   const closeMenu = () => {
     setOpenDropdownIndex(null)
     setMobileMenuOpen(false)
+    setSearchOpen(false)
   }
 
 
 
   if (!blok) return <></>
 
+  const searchPage = blok.search_page
+
   return (
     <>
       <header className={headerClasses} data-transparent={variant === 'transparent'} {...storyblokEditable(blok as any)}>
 
-        <div className={cn('headerContent')}>
+        <div className={cn('headerContent', { headerContentSearchOpen: searchOpen })}>
           {/* Logo */}
           <div className={cn('headerLogo')}>
             <SmartLink href="/" aria-label={t('home')} className={cn({
@@ -180,7 +197,7 @@ export default function Header({
             <ul className={cn('headerNavItems')}>
               {navItems.map((item, index) => (
                 <NavItem
-                  key={item._uid}
+                  key={item._uid ?? `nav-item-${index}`}
                   item={item}
                   index={index}
                   expanded={openDropdownIndex === index}
@@ -193,12 +210,28 @@ export default function Header({
             {/* Actions */}
             <div className={cn('headerActions')}>
               <Button icon="download" aria-label={t('download')} variant={isMobile ? 'tertiary' : 'primary'} className={isMobile ? 'bg-surface' : ''} />
-              <Button icon='search' aria-label={t('search')} variant={isMobile ? 'tertiary' : 'primary'} className={isMobile ? 'bg-surface' : ''} />
+              <Button
+                icon={searchOpen ? 'close' : 'search'}
+                aria-label={searchOpen ? t('close') : t('search')}
+                variant={isMobile ? 'tertiary' : 'primary'}
+                className={isMobile ? 'bg-surface' : ''}
+                onClick={() => {
+                  setSearchOpen((open) => !open)
+                  setMobileMenuOpen(false)
+                  setOpenDropdownIndex(null)
+                }}
+              />
               {isMobile && (
                 <Button
                   icon={mobileMenuOpen ? 'close' : 'hamburger'}
                   aria-label={t('menu')}
-                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                  onClick={() => {
+                    if (mobileMenuOpen) closeMenu()
+                    else {
+                      setSearchOpen(false)
+                      setMobileMenuOpen(true)
+                    }
+                  }}
                 />
               )}
             </div>
@@ -211,14 +244,20 @@ export default function Header({
           <AnimatePresence>
             {mobileMenuOpen && (
 
-              <motion.nav className={cn('headerMobileNavWrapper')} initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, y: 0, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.2 }}>
+              <motion.nav
+                className={cn('headerMobileNavWrapper')}
+                data-lenis-prevent
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
                 <ul className={cn('headerMobileNav')} >
                   {navItems.map((item, index) => {
                     const hasItems = item.items && item.items.length > 0
                     const isOpen = openDropdownIndex === index
                     const hasLink = getLinkUrl(item.link)
-                    return <li key={item._uid}>
+                    return <li key={item._uid ?? `mobile-nav-${index}`}>
                       {hasLink ? (
                         <SmartLink
                           link={item.link}
@@ -245,8 +284,8 @@ export default function Header({
                           hasItems && isOpen && item.items && (
                             <motion.ul className={cn('headerMobileDropdown')} initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
                               transition={{ duration: 0.2, ease: 'easeOut' }}>
-                              {item.items.map((subItem) => (
-                                <li key={subItem._uid}>
+                              {item.items.map((subItem, subIndex) => (
+                                <li key={subItem._uid ?? `mobile-subnav-${index}-${subIndex}`}>
                                   <AnchorLink
                                     link={subItem.link}
                                     label={subItem.label}
@@ -271,15 +310,22 @@ export default function Header({
 
             )}</AnimatePresence>
         </div>
+
+        <SearchMenu
+            isOpen={searchOpen}
+            onClose={() => setSearchOpen(false)}
+            searchPage={searchPage}
+            suggestedSearches={settings?.search_suggestions}
+        />
       </header>
 
       {mounted && createPortal(
         <AnimatePresence mode="wait">
-          {((openDropdownIndex !== null && !isMobile) || (isMobile && mobileMenuOpen)) && (
+          {((openDropdownIndex !== null && !isMobile) || (isMobile && mobileMenuOpen) || searchOpen) && (
             <motion.div
               key="header-overlay"
               onClick={() => closeMenu()}
-              className={cn('headerOverlay', { headerWhite: variant === 'white' })}
+              className={cn('headerOverlay', { headerWhite: variant === 'white', headerOverlaySearch: searchOpen })}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}

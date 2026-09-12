@@ -5,6 +5,8 @@
 @use "../../../styles" as *;
 
 .card {
+  cursor: default;
+
   &.cardLink {
     cursor: pointer;
     text-decoration: none;

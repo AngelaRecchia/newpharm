@@ -6,29 +6,70 @@
 
 .wrapper {
   position: relative;
-  min-height: 100dvh;
+  z-index: 2;
+  min-height: 100svh;
   overflow: clip;
+  background-color: $c-black;
+  isolation: isolate;
+
+  .container {
+    position: relative;
+    min-height: 100svh;
+  }
 
   .image {
     position: absolute;
     inset: 0;
+    z-index: 0;
+  }
+
+  .content-position {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    z-index: 1;
+    transform: translateY(-50%);
+    pointer-events: none;
+
+    > .content {
+      pointer-events: auto;
+    }
+
+    height: calc(208px + 80px);
+
+    @include md {
+      height: calc(208px + 128px);
+    }
   }
 
   .content {
     @include container-lg;
     max-width: none;
     position: absolute;
-    left: 0;
-    right: 0;
-    top: calc(50% - 208px / 2); // 208px is the height of the card box
-    z-index: 1;
     display: flex;
     align-items: baseline;
     gap: $s-16;
-    will-change: transform;
     width: fit-content;
+    will-change: transform;
     backface-visibility: hidden;
     -webkit-font-smoothing: antialiased;
-    transform: translateZ(0); // Forza accelerazione hardware
+
+    // Come Hero secondary: crescono per riempire 100vw, min = design
+    > * {
+      min-width: 20.5rem; // 328px
+      max-width: none;
+      width: calc(
+        (100vw - #{$s-24 * 2} - (var(--banner-card-count, 4) - 1) * #{$s-16}) /
+          var(--banner-card-count, 4)
+      );
+
+      @include md {
+        width: calc(
+          (100vw - #{$s-40 * 2} - (var(--banner-card-count, 4) - 1) * #{$s-16}) /
+            var(--banner-card-count, 4)
+        );
+      }
+    }
   }
 }

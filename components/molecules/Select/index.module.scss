@@ -48,7 +48,6 @@
   }
 
   &:hover,
-  &:focus,
   &:focus-visible {
     outline: none;
     border-bottom-color: $c-white;
@@ -65,7 +64,7 @@
     @include t-note;
   }
 
-  option[value=''] {
+  option[value=""] {
     color: white-alpha(0.6);
   }
 }
@@ -74,7 +73,6 @@
   border-bottom-color: $c-alert;
 
   &:hover,
-  &:focus,
   &:focus-visible {
     border-bottom-color: $c-alert;
   }

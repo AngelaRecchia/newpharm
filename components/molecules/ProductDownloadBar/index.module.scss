@@ -1,0 +1,185 @@
+@use "../../../styles" as *;
+
+.layout {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $s-24;
+  min-width: 0;
+  color: $c-white;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: $s-16;
+  min-width: 0;
+  flex: 1;
+}
+
+.thumb {
+  flex-shrink: 0;
+  width: 72px;
+  height: 72px;
+  overflow: hidden;
+  background-color: $c-white;
+
+  @include md {
+    width: 34px;
+    height: 34px;
+  }
+
+  > * {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: $s-16 $s-24;
+  min-width: 0;
+}
+
+.link {
+  @include t-note;
+  display: inline-flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: $s-8;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: $c-white;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.linkIcon {
+  color: $c-white;
+  flex-shrink: 0;
+}
+
+.right {
+  flex-shrink: 0;
+
+  [data-button] {
+    flex-shrink: 0;
+  }
+
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-width: 0;
+}
+
+.selectedCount,
+.selectedHint {
+  @include t-help;
+  margin: 0;
+  color: $c-white;
+}
+
+.selectedCount strong {
+  font-weight: 700;
+}
+
+.layout.multi {
+  .left {
+    gap: $s-16;
+  }
+}
+
+@include md {
+  .layout.multi {
+    flex-direction: row;
+    align-items: center;
+
+    .left {
+      align-items: center;
+    }
+
+    .right {
+      margin-top: 0;
+      padding-inline-end: 0;
+      align-self: center;
+    }
+  }
+}
+
+@include mobile {
+  .layout {
+    flex-direction: column;
+    align-items: stretch;
+    gap: $s-16;
+  }
+
+  .left {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $s-16;
+  }
+
+  .links {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $s-16;
+  }
+
+  .right {
+    align-self: flex-start;
+    padding-inline-end: $s-24;
+  }
+}
+
+.thumbs {
+  display: flex;
+  align-items: center;
+  gap: $s-8;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  flex-shrink: 0;
+}
+
+.thumbItem {
+  margin: 0;
+}
+
+.thumbButton {
+  display: block;
+  width: 72px;
+  height: 72px;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid rgba($c-white, 0.35);
+  background-color: $c-white;
+  cursor: pointer;
+
+  @include md {
+    width: 34px;
+    height: 34px;
+  }
+
+  > * {
+    width: 100%;
+    height: 100%;
+  }
+
+  &:hover {
+    border-color: $c-white;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $c-white;
+    outline-offset: 2px;
+  }
+}

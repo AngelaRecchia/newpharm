@@ -1,0 +1,81 @@
+# Cursor Rules for Git Commit Messages
+
+## Commit Message Format
+
+Follow Conventional Commits specification:
+
+```
+<type>(<scope>): <subject>
+
+<body>
+
+<footer>
+```
+
+## Commit Types
+
+- **feat**: A new feature
+- **fix**: A bug fix
+- **docs**: Documentation only changes
+- **style**: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
+- **refactor**: A code change that neither fixes a bug nor adds a feature
+- **perf**: A code change that improves performance
+- **test**: Adding missing tests or correcting existing tests
+- **chore**: Changes to the build process or auxiliary tools and libraries
+- **ci**: Changes to CI configuration files and scripts
+- **build**: Changes that affect the build system or external dependencies
+
+## Rules
+
+1. **Type is required** and must be lowercase
+2. **Scope is optional** but recommended (e.g., `api`, `components`, `styles`, `docs`)
+3. **Subject is required** and must be:
+   - Lowercase
+   - No period at the end
+   - Imperative mood ("add feature" not "added feature" or "adds feature")
+   - Max 72 characters
+   - Should be descriptive enough to understand the change
+4. **Body is NOT needed** - Only generate the subject line, no body or footer
+5. **Keep it simple** - One line commit message with type, scope (if applicable), and clear subject
+
+## Examples
+
+```
+feat(api): add RTL support for Arabic locale
+```
+
+```
+refactor(api): reorganize Storyblok API structure
+```
+
+```
+fix(components): correct Header RTL positioning
+```
+
+```
+docs: update setup guide with RTL configuration
+```
+
+```
+chore(agents): remove outdated documentation files
+```
+
+## Scope Examples
+
+- `api` - API functions
+- `components` - React components
+- `styles` - CSS/SCSS changes
+- `docs` - Documentation
+- `i18n` - Internationalization
+- `config` - Configuration files
+- `deps` - Dependencies
+
+## When Generating Commit Messages
+
+1. Analyze all changed files
+2. Group related changes together
+3. Use the most appropriate type
+4. Include scope when clear
+5. Write clear, concise subject (one line only)
+6. **DO NOT add body or footer** - keep it to a single line
+7. Make the subject descriptive enough to understand what changed

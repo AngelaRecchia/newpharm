@@ -1,0 +1,90 @@
+@use "../../../styles" as *;
+
+.backdrop {
+  padding: $s-16;
+
+  @include md {
+    padding: $s-40 $s-80;
+  }
+}
+
+.panel {
+  position: relative;
+  z-index: 1;
+  isolation: isolate;
+  max-width: 100%;
+}
+
+.frame {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $s-24;
+  width: auto;
+  max-width: 100%;
+
+  @include md {
+    gap: $s-32;
+  }
+}
+
+.stage {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  width: auto;
+  max-width: 100%;
+  line-height: 0;
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.photo {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: min(70vh, 46rem);
+  object-fit: contain;
+  -webkit-user-drag: none;
+
+  &:not(.isCurrent) {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    visibility: hidden;
+    pointer-events: none;
+  }
+}
+
+.empty {
+  @include t-body;
+  margin: 0;
+  text-align: center;
+}
+
+.nav {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  width: 246px;
+  max-width: 100%;
+}
+
+.close {
+  @include t-note;
+  justify-self: center;
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+
+  &:focus-visible {
+    outline: 2px solid $c-primary;
+    outline-offset: 2px;
+  }
+}
