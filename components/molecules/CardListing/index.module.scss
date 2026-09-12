@@ -35,13 +35,46 @@
     aspect-ratio: 1;
   }
 
+  &.empty {
+    background-color: $c-surface;
+  }
+
+  &.imageSafeArea {
+    padding-block: $s-24;
+    padding-inline: $s-20;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    @include md {
+      padding-block: $s-40;
+      padding-inline: $s-32;
+    }
+  }
+
   > * {
     transition: transform 500ms $ease-out;
+  }
+
+  &.imageSafeArea > :global([data-asset]) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 
 .linked .image > * {
   @include image-zoom-prepare(1.02);
+}
+
+.linked .image.imageSafeArea > * {
+  will-change: transform;
+  backface-visibility: hidden;
+  transform-origin: center center;
+  inset: auto;
+  width: 100%;
+  height: 100%;
+  transform: none;
 }
 
 .content-wrapper {
@@ -68,6 +101,11 @@
   .title {
     @include t-body;
     margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
   .subtitle {
@@ -79,7 +117,8 @@
     @include t-note;
     margin: 0;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
@@ -123,8 +162,12 @@
 @include md {
   .linked:hover,
   .linked:focus-within {
-    .image > * {
+    .image:not(.imageSafeArea) > * {
       @include image-zoom-active;
+    }
+
+    .image.imageSafeArea > * {
+      transform: scale(1.02);
     }
 
     .content-wrapper::before {

@@ -53,6 +53,7 @@ function RefCard({
       image={props.image}
       href={props.href}
       showDownload={variant === 'catalogo'}
+      imageSafeArea={variant === 'prodotto'}
       dark={dark}
     />
   )

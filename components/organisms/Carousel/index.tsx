@@ -243,6 +243,7 @@ const Carousel = ({
                                     description={card.description}
                                     image={card.image}
                                     href={card.href}
+                                    imageSafeArea
                                 />
                             </SwiperSlide>
                         ))}

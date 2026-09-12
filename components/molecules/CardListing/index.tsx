@@ -29,15 +29,15 @@ function normalizeAssetBlok(blok: AssetStoryblok): AssetStoryblok {
   }
 }
 
-function CardImage({ image }: { image: CardListingImage }) {
+function CardImage({ image, mode }: { image: CardListingImage; mode?: 'bg' | 'fit' }) {
   const source = Array.isArray(image) ? image[0] : image
   if (!source) return null
 
   if (isAssetStoryblok(source)) {
-    return <Asset blok={normalizeAssetBlok(source)} size="m" />
+    return <Asset blok={normalizeAssetBlok(source)} size="m" mode={mode} />
   }
 
-  return <Asset asset={source} size="m" />
+  return <Asset asset={source} size="m" mode={mode} />
 }
 
 function hasCardImage(image: CardListingImage): boolean {
@@ -72,9 +72,11 @@ export type CardListingProps = {
   link?: StoryblokLink | null
   dark?: boolean
   imageRatio?: 'square' | 'portrait'
+  imageSafeArea?: boolean
   showDownload?: boolean
   onActivate?: () => void
   titleOnlyWhenNoImage?: boolean
+  placeholderWhenNoImage?: boolean
 }
 
 export default function CardListing({
@@ -86,22 +88,32 @@ export default function CardListing({
   link,
   dark = false,
   imageRatio = 'portrait',
+  imageSafeArea = false,
   showDownload = false,
   onActivate,
   titleOnlyWhenNoImage = false,
+  placeholderWhenNoImage = false,
 }: CardListingProps) {
   const hasStoryblokLink = Boolean(getLinkUrl(link))
   const hrefValue = toCardHref(href)
   const hasCover = hasCardImage(image)
+  const showImagePlaceholder = placeholderWhenNoImage && !hasCover
   const isInteractive = Boolean(hasStoryblokLink || hrefValue || onActivate)
   const hideMeta = titleOnlyWhenNoImage && !hasCover
   const shownSubtitle = hideMeta ? undefined : subtitle
   const shownDescription = hideMeta ? undefined : description
   const inner = (
     <>
-      {hasCover ? (
-        <div className={cn('image', { square: imageRatio === 'square' })}>
-          <CardImage image={image} />
+      {hasCover || showImagePlaceholder ? (
+        <div
+          className={cn('image', {
+            square: imageRatio === 'square',
+            empty: showImagePlaceholder,
+            imageSafeArea,
+          })}
+          aria-hidden={showImagePlaceholder || undefined}
+        >
+          {hasCover ? <CardImage image={image} mode={imageSafeArea ? 'fit' : undefined} /> : null}
         </div>
       ) : null}
       <div className={cn('content-wrapper')}>
