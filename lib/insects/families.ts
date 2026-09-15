@@ -1,14 +1,21 @@
-﻿export const PEST_FAMILIES = [
-  'blatte',
-  'mosche',
-  'vespe',
-  'zanzare',
-  'formiche',
-] as const
+﻿import {
+  PEST_FAMILY_OPTIONS,
+  type PestFamily,
+} from './taxonomy'
 
-export type PestFamily = (typeof PEST_FAMILIES)[number]
+export type { PestFamily }
+
+export const PEST_FAMILIES: readonly PestFamily[] = PEST_FAMILY_OPTIONS.map(
+  (item) => item.value,
+)
 
 const FAMILY_SET = new Set<string>(PEST_FAMILIES)
+
+export type PestIconType = `pest-${PestFamily}`
+
+export const PEST_FAMILY_ICON = Object.fromEntries(
+  PEST_FAMILIES.map((family) => [family, `pest-${family}` as PestIconType]),
+) as Record<PestFamily, PestIconType>
 
 export function isPestFamily(value: string): value is PestFamily {
   return FAMILY_SET.has(value)
@@ -17,7 +24,7 @@ export function isPestFamily(value: string): value is PestFamily {
 export function parsePestFamily(raw: unknown): PestFamily | null {
   if (typeof raw !== 'string' || !raw.trim()) return null
 
-  const normalized = raw.trim().toLocaleLowerCase('it-IT')
+  const normalized = raw.trim().toLocaleLowerCase('it-IT').replace(/\s+/g, '_')
   const aliases: Record<string, PestFamily> = {
     blatta: 'blatte',
     blatte: 'blatte',
@@ -29,15 +36,34 @@ export function parsePestFamily(raw: unknown): PestFamily | null {
     zanzare: 'zanzare',
     formica: 'formiche',
     formiche: 'formiche',
+    calabrone: 'calabroni',
+    calabroni: 'calabroni',
+    scarafaggio: 'blatte',
+    scarafaggi: 'blatte',
+    pesciolini_dargento: 'pesciolini_d_argento',
+    "pesciolini_d'argento": 'pesciolini_d_argento',
+    termite: 'termiti',
+    termiti: 'termiti',
+    cimice: 'cimici',
+    cimici: 'cimici',
+    pulce: 'pulci',
+    pulci: 'pulci',
+    pidocchio: 'pidocchi',
+    pidocchi: 'pidocchi',
+    acaro: 'acari',
+    acari: 'acari',
+    tignola: 'tarme',
+    tarme: 'tarme',
+    zecca: 'zecche',
+    zecche: 'zecche',
+    piccione: 'piccioni',
+    piccioni: 'piccioni',
   }
 
-  return aliases[normalized] ?? (isPestFamily(normalized) ? normalized : null)
+  const resolved = aliases[normalized] ?? normalized
+  return isPestFamily(resolved) ? resolved : null
 }
 
-export const PEST_FAMILY_ICON: Record<PestFamily, `pest-${PestFamily}`> = {
-  blatte: 'pest-blatte',
-  mosche: 'pest-mosche',
-  vespe: 'pest-vespe',
-  zanzare: 'pest-zanzare',
-  formiche: 'pest-formiche',
+export function getPestFamilyLabel(value: PestFamily): string {
+  return PEST_FAMILY_OPTIONS.find((item) => item.value === value)?.label ?? value
 }

@@ -12,6 +12,8 @@
     "lint": "next lint",
     "generate:types": "tsx scripts/generate-storyblok-types.ts",
     "index:search": "tsx scripts/index-search.ts",
+    "configure:insect-taxonomy": "tsx scripts/configure-insect-taxonomy-fields.ts",
+    "import:pest-icons": "tsx scripts/import-pest-family-icons.ts",
     "postinstall": "patch-package"
   },
   "dependencies": {

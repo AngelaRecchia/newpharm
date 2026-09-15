@@ -16,6 +16,7 @@ import type { StoryblokLink } from "@/lib/api/utils/links";
 import type { StoryblokAsset } from '@/components/atoms/Asset'
 import type { ISbRichtext } from "@storyblok/react";
 import type { ProjectDivision } from "@/lib/projects/divisions";
+import type { InsectCategory } from "@/lib/insects/taxonomy";
 import type { PestFamily } from "@/lib/insects/families";
 import type { LinkActionValue } from "@/lib/link-action";
 import type { RelatedStory } from "@/lib/api/storyblok/stories";
@@ -44,13 +45,7 @@ export interface CatalogStoryblok extends Omit<Generated.CatalogStoryblok, "year
   year?: number | string | null;
 }
 
-export type InsectCategory =
-  | "volanti"
-  | "striscianti"
-  | "insetti_delle_derrate"
-  | "rettili_e_anfibi"
-  | "volatili"
-  | "roditori";
+export type { InsectCategory };
 
 export type TargetPestsPluginValue = {
   items: Array<{ uuid: string; text?: string }>;

@@ -101,6 +101,42 @@ Ogni voce in Storyblok ha un "tipo" che decide come viene usata:
 > **Attenzione**: `insect`, `downloadable` e `glossary` **non creano pagine**. Si usano
 > solo come ingredienti dentro altre pagine (card, filtri, schede prodotto).
 
+#### `insect` — macro categorie e famiglie
+
+Ogni scheda infestante ha due campi di tassonomia (select in Storyblok):
+
+| Campo | Uso |
+| --- | --- |
+| **Macro categoria** (`category`) | Filtri della pagina **Guida infestanti** |
+| **Famiglia / gruppo** (`famiglia`) | Icona SVG in scheda prodotto (`target_pests`) |
+
+**Macro categorie** (valori ammessi):
+
+- Insetti volanti
+- Insetti striscianti
+- Infestanti delle derrate
+- Rettili e anfibi
+- Uccelli
+- Roditori
+- Infestanti del legno
+- Ragni
+- Zeche e acari
+
+**Famiglie / gruppi** (valori ammessi):
+
+- Zanzare, Mosche, Vespe, Calabroni, Formiche, Blatte
+- Pesciolini d'argento, Termiti, Tarli cerambicidi, Tarli siricidi
+- Cimici dei letti, Cimici, Zeche, Pulci, Pidocchi, Acari, Acaro pollino
+- Tarme, Coleottero dei tappeti
+- Ratto grigio, Ratto nero, Topolino domestico, Piccioni
+- Insetti delle derrate
+
+> Dopo aggiornamenti alla lista, in dev eseguire `npm run configure:insect-taxonomy`
+> per allineare le opzioni del content type `insect` su Storyblok.
+>
+> Le icone per famiglia sono in `public/icons/pests/` (slug = valore `famiglia`).
+> Per reimportare da asset locali: `npm run import:pest-icons`.
+
 ---
 
 ## 3. I blocchi (moduli) del sito

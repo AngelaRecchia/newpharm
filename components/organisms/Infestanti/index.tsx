@@ -16,10 +16,12 @@ import { useRefreshPageScroll } from '@/lib/context/smooth-scroll-context'
 import { getEmptyMotion, getGridMotion } from '@/lib/animation/gridPresence'
 import { hasInsectGallery, insectOverlayImages } from '@/lib/listing/mapInsectToCard'
 import { mapStoryToCard } from '@/lib/listing/mapStoryToCard'
-import { INSECT_CATEGORIES, type InsectCategory } from '@/lib/insects/categories'
 import {
+  INSECT_CATEGORIES,
+  getInsectCategoryLabel,
   parseInsectCategory,
   sortInsectCategories,
+  type InsectCategory,
 } from '@/lib/insects/categories'
 import { filterInsectsByCategory } from '@/lib/insects/filterInsects'
 import {
@@ -133,6 +135,7 @@ function InfestantiInner({ blok }: { blok?: InfestantiStoryblok }) {
           onChange={handleCategoriesChange}
           ariaLabel="Infestanti"
           size="small"
+          getLabel={getInsectCategoryLabel}
         />
 
         {gridItems.length > 0 ? (

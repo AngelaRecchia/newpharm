@@ -2,6 +2,10 @@ import { getRequestConfig } from "next-intl/server";
 import { hasLocale, IntlErrorCode } from "next-intl";
 import { routing } from "./routing";
 import { getMessagesFromDatasource } from "../lib/api/storyblok/datasource";
+import {
+  INSECT_MACRO_CATEGORIES,
+  PEST_FAMILY_OPTIONS,
+} from "../lib/insects/taxonomy";
 
 /**
  * Request configuration for next-intl
@@ -26,6 +30,13 @@ export default getRequestConfig(async ({ requestLocale }) => {
   if (!locale || !hasLocale(routing.locales, locale)) {
     locale = routing.defaultLocale;
   }
+
+  const insectTaxonomyFallbacks = Object.fromEntries(
+    [...INSECT_MACRO_CATEGORIES, ...PEST_FAMILY_OPTIONS].map(({ value, label }) => [
+      value,
+      label,
+    ]),
+  );
 
   // Fallback translations for features not yet present in Storyblok datasource
   const searchFallbacks: Record<string, Record<string, string>> = {
@@ -88,6 +99,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
   // Fetch messages from Storyblok datasource
   const messages = {
     ...(await getMessagesFromDatasource("labels", locale)),
+    ...insectTaxonomyFallbacks,
     ...(searchFallbacks[locale] || searchFallbacks.en),
     accepts_terms:
       locale === "it"

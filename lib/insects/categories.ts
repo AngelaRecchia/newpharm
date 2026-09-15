@@ -1,15 +1,24 @@
-export const INSECT_CATEGORIES = [
-  'volanti',
-  'striscianti',
-  'insetti_delle_derrate',
-  'rettili_e_anfibi',
-  'volatili',
-  'roditori',
-] as const
+import {
+  INSECT_CATEGORY_ALIASES,
+  INSECT_MACRO_CATEGORIES,
+  type InsectCategory,
+} from './taxonomy'
 
-export type InsectCategory = (typeof INSECT_CATEGORIES)[number]
+export type { InsectCategory }
+
+export const INSECT_CATEGORIES: readonly InsectCategory[] = INSECT_MACRO_CATEGORIES.map(
+  (item) => item.value,
+)
 
 const CATEGORY_SET = new Set<string>(INSECT_CATEGORIES)
+
+function normalizeCategoryToken(raw: string): InsectCategory | null {
+  const trimmed = raw.trim()
+  if (!trimmed) return null
+
+  const aliased = INSECT_CATEGORY_ALIASES[trimmed] ?? trimmed
+  return CATEGORY_SET.has(aliased) ? (aliased as InsectCategory) : null
+}
 
 export function isInsectCategory(value: string): value is InsectCategory {
   return CATEGORY_SET.has(value)
@@ -35,10 +44,18 @@ export function parseInsectCategories(raw: unknown): InsectCategory[] {
     }
   }
 
-  return sortInsectCategories(tokens.filter(isInsectCategory))
+  const parsed = tokens
+    .map(normalizeCategoryToken)
+    .filter((value): value is InsectCategory => value !== null)
+
+  return sortInsectCategories([...new Set(parsed)])
 }
 
 export function parseInsectCategory(raw: unknown): InsectCategory | null {
   if (typeof raw !== 'string' || !raw.trim()) return null
-  return isInsectCategory(raw) ? raw : null
+  return normalizeCategoryToken(raw)
+}
+
+export function getInsectCategoryLabel(value: InsectCategory): string {
+  return INSECT_MACRO_CATEGORIES.find((item) => item.value === value)?.label ?? value
 }

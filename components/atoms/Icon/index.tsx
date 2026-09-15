@@ -1,5 +1,6 @@
 import React from 'react'
 import classNames from 'classnames'
+import type { PestIconType } from '@/lib/insects/families'
 import { icons } from './icons'
 import styles from './index.module.scss'
 
@@ -33,8 +34,10 @@ const logoVariantClasses: Record<LogoVariant, string> = {
   'primary-red': styles.logoVariantPrimaryRed,
 }
 
+export type IconType = keyof typeof icons | PestIconType
+
 interface IconProps {
-  type: keyof typeof icons
+  type: IconType
   size?: IconSize
   variant?: LogoVariant
   className?: string
