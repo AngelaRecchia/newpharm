@@ -5,63 +5,91 @@
   padding-block: $s-64;
   background-color: $c-white;
   color: $c-black;
+  overflow-x: clip;
+
+  &.hasQuery {
+    padding-block-start: 0;
+  }
 }
 
-.header {
+.pageHeader {
   display: flex;
   flex-direction: column;
-  gap: $s-24;
-  margin-bottom: $s-48;
+  gap: $s-16;
+  margin-block-end: $s-48;
 }
 
-.title {
+.pageTitle {
   @include t-h1;
   margin: 0;
 }
 
-.subtitle {
+.pageSubtitle {
   @include t-body;
   margin: 0;
   color: $c-gray-600;
 }
 
-.form {
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: $s-24;
+  margin-block-end: $s-48;
+}
+
+.headerMain {
+  display: flex;
+  flex-direction: column;
+  gap: $s-8;
+  width: 100%;
+}
+
+.countLabel {
+  @include t-note;
+  color: $c-black;
+}
+
+.countNumber {
+  font-weight: 700;
+}
+
+.searchForm {
   width: 100%;
 }
 
 .inputWrapper {
-  position: relative;
   display: flex;
   align-items: center;
   gap: $s-16;
-  padding: $s-16 $s-24;
-  border: 1px solid $c-border-light;
-  border-radius: 9999px;
-  background-color: $c-white;
+  width: 100%;
+  padding: 0 0 $s-16;
+  border-block-end: 1px solid $c-border-light;
+  background-color: transparent;
   transition: border-color 200ms ease;
+
+  @include md {
+    padding: 0 0 $s-24;
+  }
 
   &:focus-within {
     border-color: $c-primary;
   }
-
-  svg {
-    flex-shrink: 0;
-    color: $c-gray-600;
-  }
 }
 
-.input {
+.searchInput {
   flex: 1 1 auto;
   min-width: 0;
   border: 0;
   background: transparent;
   padding: 0;
-  @include t-body;
+  @include t-h1;
   color: $c-black;
   outline: none;
 
   &::placeholder {
-    color: $c-gray-600;
+    opacity: 0.3;
+    color: inherit;
   }
 
   &::-webkit-search-decoration,
@@ -70,44 +98,85 @@
   }
 }
 
-.clear {
+.inputClear {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: $s-32;
-  height: $s-32;
+  width: $s-20;
+  height: $s-20;
   border-radius: 50%;
   border: 0;
-  background-color: $c-surface;
-  color: $c-black;
+  background-color: $c-black;
+  color: $c-white;
   cursor: pointer;
   flex-shrink: 0;
 }
 
-.chips {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: $s-16;
+.tabsTrack {
+  box-sizing: border-box;
+  overflow: hidden;
+  width: calc(100% + 48px);
+  margin-inline-start: -24px;
+  margin-block-end: $s-48;
+  padding-inline: 0 24px;
+  padding-block: 4px;
+
+  @include md {
+    margin-inline: -40px;
+    width: calc(100% + 80px);
+    padding-inline: 0 40px;
+  }
 }
 
-.chipsLabel {
-  @include t-note;
-  color: $c-gray-600;
+.tabsSwiper {
+  overflow: visible;
+  padding-inline-start: 24px;
+
+  @include md {
+    padding-inline-start: 40px;
+  }
 }
 
-.chipsTrack {
-  display: flex;
-  flex-wrap: wrap;
-  gap: $s-8;
+.tabItem {
+  width: auto;
+  flex-shrink: 0;
+
+  .chip:focus-visible {
+    outline-color: $c-primary;
+  }
 }
 
-.loading,
-.empty {
+.loading {
   @include t-body;
   padding-block: $s-48;
   text-align: center;
   color: $c-gray-600;
+}
+
+.noResults {
+  display: flex;
+  align-items: flex-start;
+  gap: $s-12;
+  padding: $s-16;
+  background-color: $c-surface;
+
+  @include md {
+    flex-direction: row-reverse;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.noResultsIcon {
+  flex-shrink: 0;
+  color: $c-primary;
+}
+
+.noResultsText {
+  @include t-body;
+  margin: 0;
+  color: $c-black;
+  white-space: pre-line;
 }
 
 .results {
@@ -127,17 +196,82 @@
   margin: 0;
 }
 
+.sectionFooter {
+  display: flex;
+  justify-content: flex-start;
+  padding-block-start: $s-24;
+}
+
+.paginationFooter {
+  display: flex;
+  justify-content: center;
+  padding-block-start: $s-48;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  gap: $s-32;
+  margin-block-end: $s-48;
+}
+
+.suggested {
+  display: flex;
+  flex-direction: column;
+  gap: $s-16;
+}
+
+.suggestedLabel {
+  @include t-note;
+  color: $c-gray-600;
+}
+
+.tabsWrapper,
+.chipsWrapper {
+  overflow: visible;
+}
+
+.chipsTrack {
+  box-sizing: border-box;
+  overflow: hidden;
+  width: calc(100% + 48px);
+  margin-inline-start: -24px;
+  padding-inline: 0 24px;
+  padding-block: 4px;
+
+  @include md {
+    margin-inline: -40px;
+    width: calc(100% + 80px);
+    padding-inline: 0 40px;
+  }
+}
+
+.chipsSwiper {
+  overflow: visible;
+  padding-inline-start: 24px;
+
+  @include md {
+    padding-inline-start: 40px;
+  }
+}
+
+.chipItem {
+  width: auto;
+  flex-shrink: 0;
+
+  .chip:focus-visible {
+    outline-color: $c-primary;
+  }
+}
+
 .grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: minmax(0, 1fr);
   gap: $s-16;
 
   @include md {
-    grid-template-columns: repeat(3, 1fr);
     gap: $s-24;
   }
 
-  @include lg {
-    grid-template-columns: repeat(4, 1fr);
-  }
+  @include listing-grid-columns(4);
 }

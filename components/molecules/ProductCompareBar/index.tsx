@@ -82,10 +82,10 @@ export default function ProductCompareBar({
         </div>
         <div className={cn('right')}>
           <Button
-            variant="secondary"
+            variant="tertiary"
             size="small"
             label={compareLabel}
-            icon="right-small"
+            icon="right"
             iconAlwaysVisible
             href={compareHref}
             disabled={!compareHref}

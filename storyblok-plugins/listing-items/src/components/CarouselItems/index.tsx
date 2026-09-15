@@ -271,7 +271,7 @@ export function CarouselItems({ plugin, forceVariant }: CarouselItemsProps) {
     }
 
     const selected = value.items.includes(story.uuid)
-    if (!selected && value.items.length >= CAROUSEL_LIMIT) return
+    if (!isRelatedProducts && !selected && value.items.length >= CAROUSEL_LIMIT) return
 
     const items = selected
       ? value.items.filter((id) => id !== story.uuid)
@@ -648,7 +648,7 @@ export function CarouselItems({ plugin, forceVariant }: CarouselItemsProps) {
 
           {isRelatedProductsManual && (
             <p className="listing-items__hint">
-              Cerca e seleziona fino a {CAROUSEL_LIMIT} prodotti correlati.
+              Cerca e seleziona i prodotti correlati.
             </p>
           )}
 
@@ -780,7 +780,7 @@ export function CarouselItems({ plugin, forceVariant }: CarouselItemsProps) {
             />
           </div>
           <p className="listing-items__count">
-            {value.items.length} di {CAROUSEL_LIMIT} selezionati
+            {value.items.length} selezionati
           </p>
         </>
       )}
@@ -789,7 +789,8 @@ export function CarouselItems({ plugin, forceVariant }: CarouselItemsProps) {
         <div className="listing-items__results">
           {results.map((story) => {
             const selected = value.items.includes(story.uuid)
-            const disabled = !selected && value.items.length >= CAROUSEL_LIMIT
+            const disabled =
+              !isRelatedProducts && !selected && value.items.length >= CAROUSEL_LIMIT
             return (
               <button
                 key={story.uuid}

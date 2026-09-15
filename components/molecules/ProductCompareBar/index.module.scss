@@ -95,12 +95,12 @@
   border-radius: 999px;
 
   &[class*="iconAlwaysVisible"] [class*="buttonIcon"] {
-    background-color: $c-black;
-    color: $c-white;
-    transform: scale(1);
+    background-color: $c-black !important;
+    color: $c-white !important;
+    transform: scale(1) !important;
 
     svg {
-      opacity: 1;
+      opacity: 1 !important;
     }
   }
 }

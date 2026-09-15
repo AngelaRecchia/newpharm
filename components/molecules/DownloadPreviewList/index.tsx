@@ -2,9 +2,9 @@
 
 import { useCallback, useMemo, type ReactNode } from 'react'
 import classNames from 'classnames/bind'
-import { AnimatePresence, motion } from 'motion/react'
 import Asset from '@/components/atoms/Asset'
 import Button from '@/components/atoms/Button'
+import Icon from '@/components/atoms/Icon'
 import { countGroupedItems, sliceGroupedItems } from '@/lib/downloadable/group'
 import type { DownloadPreviewGroup, DownloadPreviewItem } from '@/lib/downloadable/types'
 import styles from './index.module.scss'
@@ -53,42 +53,42 @@ export default function DownloadPreviewList({
   }, [visibleGroups])
   const hasMore = visibleCount < totalCount
 
-  const previewItem = visibleItems[Math.min(previewIndex, Math.max(0, visibleItems.length - 1))]
-    ?? visibleItems[0]
-  const coverAsset = previewItem?.cover ?? null
-  const previewMotionKey = `${previewItem?.key ?? 'item'}-${previewIndex}`
+  const activeIndex = Math.min(previewIndex, Math.max(0, visibleItems.length - 1))
 
   const showPreview = useCallback(
     (index: number) => {
+      if (index === previewIndex) return
       if (index >= 0 && index < visibleItems.length) onPreview(index)
     },
-    [onPreview, visibleItems.length],
+    [onPreview, previewIndex, visibleItems.length],
   )
 
   const renderPreview = (variant: 'sticky' | 'mobile') => {
-    if (!coverAsset) return null
+    const hasCover = visibleItems.some((item) => item.cover)
+    if (!hasCover) return null
 
     return (
       <div className={cn('preview', variant)} aria-hidden={true}>
         <div className={cn('previewInner')}>
           <div className={cn('previewFrame')}>
-            <AnimatePresence mode="sync" initial={false}>
-              <motion.div
-                key={`${previewMotionKey}-${variant}`}
-                className={cn('previewMotion')}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
-              >
-                <Asset
-                  asset={coverAsset}
-                  size="l"
-                  mode="fit"
-                  className={cn('previewAsset')}
-                />
-              </motion.div>
-            </AnimatePresence>
+            {visibleItems.map((item, index) => {
+              if (!item.cover) return null
+              const isActive = index === activeIndex
+              return (
+                <div
+                  key={item.key}
+                  className={cn('previewLayer', { active: isActive })}
+                  aria-hidden={!isActive}
+                >
+                  <Asset
+                    asset={item.cover}
+                    size="l"
+                    mode="fit"
+                    className={cn('previewAsset')}
+                  />
+                </div>
+              )
+            })}
           </div>
         </div>
       </div>
@@ -147,12 +147,9 @@ export default function DownloadPreviewList({
                             <span className={cn('rowMeta')}>{item.meta}</span>
                           ) : null}
                         </span>
-                        <Button
-                          icon="download"
-                          inert
-                          variant="secondary"
-                          size="small"
-                        />
+                        <span className={cn('rowDownload')} aria-hidden>
+                          <Icon type="download" size="s" />
+                        </span>
                       </li>
                     )
                   })}

@@ -276,7 +276,7 @@ export function ListingItems() {
     return <p className="listing-items__loading">Caricamento editor...</p>
   }
 
-  if (isCarousel) {
+  if (isCarousel || isRelatedProductsField) {
     return <CarouselItems plugin={plugin} forceVariant={isRelatedProductsField ? 'related_products' : undefined} />
   }
 

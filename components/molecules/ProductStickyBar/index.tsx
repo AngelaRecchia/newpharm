@@ -108,7 +108,7 @@ export default function ProductStickyBar({
               variant="tertiary"
               size="small"
               label={compareLabel}
-              icon="right-small"
+              icon="right"
               iconAlwaysVisible
               href={compareUrl}
             />

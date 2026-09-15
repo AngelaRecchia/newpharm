@@ -317,6 +317,12 @@ function ProductsInner({ blok }: { blok?: ProductsStoryblok }) {
       style={{ '--products-bar-offset': barOffset } as CSSProperties}
       {...storyblokEditable(blok as any)}
     >
+      {(blok.title || blok.subtitle) ? (
+        <Container className={cn('hero')} flushBlock>
+          <HeroTertiary title={blok.title} subtitle={blok.subtitle} />
+        </Container>
+      ) : null}
+
       <div ref={filtersSentinelRef} className={cn('stickySentinel')} aria-hidden />
       <div ref={stickyFiltersRef} className={cn('stickyFilters', { stuck: filtersStuck })}>
         <Container className={cn('stickyFiltersInner')} flushBlock>
@@ -340,12 +346,6 @@ function ProductsInner({ blok }: { blok?: ProductsStoryblok }) {
       </div>
 
       <Container className={cn('content')} flushBlock>
-        {(blok.title || blok.subtitle) ? (
-          <div className={cn('head')}>
-            <HeroTertiary title={blok.title} subtitle={blok.subtitle} />
-          </div>
-        ) : null}
-
         {pageItems.length > 0 ? (
           <div
             ref={gridRef}

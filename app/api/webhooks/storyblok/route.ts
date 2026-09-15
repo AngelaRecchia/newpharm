@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import { revalidatePath } from 'next/cache'
 import { clearCacheVersion } from '@/lib/api/storyblok/config'
 import { clearStoriesByComponentCache } from '@/lib/api/storyblok/stories'
+import { invalidateSearchNameCaches } from '@/lib/search/document'
+import {
+  deleteStoryFromSearchIndex,
+  syncStoryBySlug,
+} from '@/lib/search/sync'
 
 /**
  * Storyblok Webhook Handler
@@ -46,6 +51,8 @@ export async function POST(request: NextRequest) {
 
     clearCacheVersion()
     clearStoriesByComponentCache()
+    // Se cambiano prodotti o insetti, invalida le cache usate dalla sync Algolia.
+    invalidateSearchNameCaches()
 
     // Determine what to revalidate based on the event
     if (action.startsWith('datasource')) {
@@ -55,6 +62,25 @@ export async function POST(request: NextRequest) {
       // Story change — revalidate the specific path + layout (for header/footer)
       revalidatePath(`/${storyFullSlug}`, 'page')
       revalidatePath('/', 'layout')
+
+      // Sync or remove the story from the Algolia search index
+      try {
+        const segments = storyFullSlug.split('/').filter(Boolean)
+        const locale = segments[0]
+        const slugWithoutLocale = segments.slice(1).join('/')
+
+        // Webhook events always reflect production state → sync prod index only
+        if (action.startsWith('published')) {
+          await syncStoryBySlug(slugWithoutLocale || '', locale, 'published')
+        } else if (
+          action.startsWith('unpublished') ||
+          action.startsWith('deleted')
+        ) {
+          await deleteStoryFromSearchIndex(storyFullSlug, 'published')
+        }
+      } catch (searchError) {
+        console.error('[Webhook] Search sync error:', searchError)
+      }
     } else {
       // Unknown event — revalidate everything
       revalidatePath('/', 'layout')

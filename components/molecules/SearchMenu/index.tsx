@@ -35,7 +35,7 @@ const EMPTY_RESULTS: SearchResults = {
   downloadables: [],
 }
 
-const PREVIEW_LIMIT = 8
+const PREVIEW_LIMIT = 4
 
 interface SearchMenuProps {
   isOpen: boolean
@@ -67,7 +67,8 @@ export default function SearchMenu({
 
   const performSearch = useCallback(
     async (term: string) => {
-      if (!term.trim()) {
+      const trimmedTerm = term.trim()
+      if (!trimmedTerm || trimmedTerm.length < 2) {
         setResults(EMPTY_RESULTS)
         return
       }
@@ -75,7 +76,7 @@ export default function SearchMenu({
       setLoading(true)
       try {
         const params = new URLSearchParams({
-          q: term.trim(),
+          q: trimmedTerm,
           ...(locale ? { locale } : {}),
           limit: String(PREVIEW_LIMIT),
         })
@@ -180,10 +181,13 @@ export default function SearchMenu({
     }
 
     const url = getLinkUrl(link)
-    return url || '/cerca'
+    if (!url) return '/cerca'
+
+    // Assicura che l'URL sia assoluto per evitare path relativi alla pagina corrente
+    return url.startsWith('/') ? url : `/${url}`
   }, [searchPage])
 
-  const allResultsHref = `${searchPageBaseUrl}${query ? `?q=${encodeURIComponent(query.trim())}` : ''}`
+  const allResultsHref = `${searchPageBaseUrl}${query.trim() ? `?q=${encodeURIComponent(query.trim())}` : ''}`
 
   const sections: { key: keyof SearchResults; label: string }[] = [
     { key: 'projects', label: t('search_solutions') },
@@ -198,11 +202,12 @@ export default function SearchMenu({
         <motion.div
           ref={wrapperRef}
           className={cn('wrapper')}
-          initial={{ opacity: 0, y: -12 }}
+          initial={false}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -12 }}
           transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
           onClick={(e) => e.stopPropagation()}
+          data-lenis-prevent
         >
           <div className={cn('inner')}>
             <div className={cn('content')}>
@@ -222,7 +227,11 @@ export default function SearchMenu({
               <button
                 type="button"
                 className={cn('clear')}
-                onClick={() => setQuery('')}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setQuery('')
+                  inputRef.current?.focus()
+                }}
                 aria-label={t('clear_search')}
               >
                 <Icon type="close" size="s" />
@@ -235,22 +244,27 @@ export default function SearchMenu({
           <div className={cn('suggested')}>
             <span className={cn('suggestedLabel')}>{t('most_searched')}</span>
             <div className={cn('chips')}>
-              {suggestedSearches.map((term) => (
-                <FilterChip
-                  key={term}
-                  label={term}
-                  size="small"
-                  onClick={() => handleChipClick(term)}
-                />
-              ))}
+              <div className={cn('chipsTrack')}>
+                {suggestedSearches.map((term) => (
+                  <FilterChip
+                    key={term}
+                    label={term}
+                    size="small"
+                    onClick={() => handleChipClick(term)}
+                  />
+                ))}
+              </div>
             </div>
           </div>
         )}
 
         {loading && <div className={cn('loading')}>{t('loading')}</div>}
 
-        {!loading && debouncedQuery.trim() && !hasResults && (
-          <div className={cn('empty')}>{t('search_no_results')}</div>
+        {!loading && debouncedQuery.trim().length >= 2 && !hasResults && (
+          <div className={cn('noResults')}>
+            <Icon type="info" size="m" className={cn('noResultsIcon')} />
+            <p className={cn('noResultsText')}>{t('search_no_results_hint')}</p>
+          </div>
         )}
 
         {!loading && hasResults && (
@@ -258,6 +272,10 @@ export default function SearchMenu({
             {sections.map(({ key, label }) => {
               const items = results[key]
               if (items.length === 0) return null
+
+              const showAllHref = `${searchPageBaseUrl}?q=${encodeURIComponent(
+                query.trim(),
+              )}&type=${key}`
 
               return (
                 <div key={key} className={cn('section')}>
@@ -275,12 +293,19 @@ export default function SearchMenu({
                       </li>
                     ))}
                   </ul>
+                  <SmartLink
+                    href={showAllHref}
+                    className={cn('showAll')}
+                    onClick={onClose}
+                  >
+                    {t('show_all')}
+                  </SmartLink>
                 </div>
               )
             })}
 
             <div className={cn('footer')}>
-              <SmartLink href={allResultsHref}>
+              <SmartLink href={allResultsHref} onClick={onClose}>
                 <Button label={t('all_results')} variant="secondary" inert />
               </SmartLink>
             </div>

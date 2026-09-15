@@ -33,6 +33,10 @@ export function getAssetFileUrl(raw: unknown): string | undefined {
   return typeof filename === 'string' && filename.length > 0 ? filename : undefined
 }
 
+export function isPdfFileUrl(url: string | undefined): boolean {
+  return Boolean(url && /\.pdf(?:$|[?#])/i.test(url.trim()))
+}
+
 /** Rende assoluto un URL Storyblok (`//a.storyblok.com/...` → `https://...`). */
 export function toAbsoluteHttpsUrl(url: string): string {
   const trimmed = url.trim()

@@ -22,7 +22,7 @@ interface StoryProps {
 const Story = ({ blok, relatedStories }: StoryProps) => {
 
     const t = useTranslations('');
-    const { title, author, reading_time, date, tag, asset, body, related_stories, related_products } = blok;
+    const { title, author, reading_time, date, tag, asset, body, related_stories } = blok;
     const format = useFormatter();
     const dateTime = date ? new Date(date) : null;
     const formattedDate = dateTime ? format.dateTime(dateTime, { dateStyle: 'medium' }) : null;
@@ -31,8 +31,6 @@ const Story = ({ blok, relatedStories }: StoryProps) => {
     const hasTitle = !isEmpty(title);
     const hasAuthor = !isEmpty(author);
     const hasReadingTime = !isEmpty(reading_time);
-
-    const relatedProductsItems = related_products?.resolved_items ?? [];
 
     return (
         <div  {...storyblokEditable(blok as any)}>
@@ -70,12 +68,6 @@ const Story = ({ blok, relatedStories }: StoryProps) => {
                 </div>
             )}
 
-            {/* Renderizza i prodotti correlati se presenti (ultimo modulo) */}
-            {relatedProductsItems.length > 0 && (
-                <div className={cn('related-products')}>
-                    <Carousel variant='prodotto' productItems={relatedProductsItems} title={t('related_products')} />
-                </div>
-            )}
         </div>
     )
 }

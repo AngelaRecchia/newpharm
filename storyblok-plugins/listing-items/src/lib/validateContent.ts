@@ -226,7 +226,7 @@ function normalizeCarouselRelatedProducts(
         : '',
     bestseller: selection_mode === 'dynamic' ? Boolean(value.bestseller) : false,
     tag: '',
-    items: selection_mode === 'manual' ? items.slice(0, 8) : [],
+    items: selection_mode === 'manual' ? items : [],
     context: 'carousel',
   }
 }

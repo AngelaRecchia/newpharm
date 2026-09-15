@@ -34,7 +34,7 @@ export default function DownloadGate({
         <div className={cn('layout')}>
           {cover ? (
             <div className={cn('cover')}>
-              <Asset asset={cover} size="m" />
+              <Asset asset={cover} size="m" mode="fit" className={cn('coverAsset')} />
             </div>
           ) : null}
           <div className={cn('formWrap')}>

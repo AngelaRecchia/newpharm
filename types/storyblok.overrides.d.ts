@@ -118,8 +118,6 @@ export interface ProductStoryblok extends Generated.ProductStoryblok {
   /** Iniettate server-side in page.tsx (non sono campi Storyblok) */
   product_uuid?: string | null;
   comparison_page_url?: string | null;
-  /** Popolato SSR: altri prodotti dello stesso progetto (manuale o per categoria), max 8 */
-  related_project_products?: ListingStoryResolved[] | null;
   /**
    * Popolato SSR: progetti correlati a questo prodotto (query inversa).
    * Non è più un campo CMS editabile, ma viene iniettato in page.tsx.
@@ -131,6 +129,8 @@ export interface ProductStoryblok extends Generated.ProductStoryblok {
     resolved_items?: ListingStoryResolved[] | null;
     [key: string]: unknown;
   } | null;
+  /** Popolato SSR: news che referenziano questo prodotto nel loro campo related_products. */
+  related_news?: RelatedStory[] | null;
 }
 
 /** full_banner — title richtext + asset come bloks Asset[] */
@@ -387,6 +387,8 @@ export interface ProjectStoryblok extends Omit<
     resolved_items?: ListingStoryResolved[] | null;
     [key: string]: unknown;
   } | null;
+  /** Se false nasconde il listing automatico dei prodotti correlati in pagina Progetto */
+  show_related_products_listing?: boolean | null;
 }
 
 /**

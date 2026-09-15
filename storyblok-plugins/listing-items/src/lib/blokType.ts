@@ -40,6 +40,14 @@ export function getParentBlokComponent(
   story: unknown,
   blockUid: string | undefined,
 ): string | undefined {
+  if (!blockUid && story && typeof story === 'object') {
+    const content = (story as { content?: unknown }).content
+    if (content && typeof content === 'object') {
+      const component = (content as { component?: unknown }).component
+      return typeof component === 'string' ? component : undefined
+    }
+  }
+
   const blok = getBlokByUid(story, blockUid)
   return typeof blok?.component === 'string' ? blok.component : undefined
 }

@@ -14,4 +14,7 @@ export const routing = defineRouting({
   locales: localeConfig.locales as readonly string[],
   defaultLocale: localeConfig.defaultLocale,
   localePrefix: "always",
+  // Rileva automaticamente la lingua preferita del browser (Accept-Language)
+  // e reindirizza verso la locale corrispondente se supportata.
+  localeDetection: true,
 });

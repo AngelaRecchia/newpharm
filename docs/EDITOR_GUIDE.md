@@ -385,6 +385,11 @@ L'elenco delle posizioni aperte: ogni voce è un'offerta pubblicata (`job`).
 
 #### `catalogs_download`
 
+Modulo per raccogliere cataloghi e brochure scaricabili. Nel campo di selezione sono
+disponibili solo i contenuti `catalog` e i `downloadable` di tipo **Catalogo** o
+**Brochure** che hanno un file PDF allegato. Il download richiede sempre la compilazione
+del form.
+
 La sezione con le card di download dei cataloghi.
 
 | Campo | Obbligatorio? | Note |
@@ -448,7 +453,7 @@ quelli esatti che trovi nello schema `product`):
 | Sicurezza | `safety_data_sheet` | Il file PDF della SDS |
 | Foto | `images` | Foto del prodotto |
 | Video | `video` | URL YouTube |
-| Prodotti correlati | `related_products` | Manuale (singoli prodotti) o dinamico per categoria/sottocategoria/application area — stesso campo plugin usato su Story e Project |
+| Prodotti correlati | `related_products` | Solo prodotti: selezione manuale o dinamica per categoria/sottocategoria/application area. Nelle news non crea un carosello: le news compaiono nel carosello delle schede prodotto referenziate. |
 | Evidenze | `bestseller` | Se attivo, appare nelle evidenze |
 | Risorse | `resources` | Documenti/risorse collegate |
 

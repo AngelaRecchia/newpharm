@@ -46,6 +46,11 @@
 
   .title {
     @include t-h2;
+    // Mantiene la larghezza del titolo pari a quella della card in stato chiuso,
+    // così in hover il testo non si riorganizza su più righe.
+    max-width: calc(
+      (100cqi - (var(--cards-count, 1) - 1) * #{$s-16}) / var(--cards-count, 1) - #{$s-24} * 2
+    );
   }
 
   &.hasImage {

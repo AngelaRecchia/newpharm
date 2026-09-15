@@ -355,6 +355,8 @@ const storiesByComponentCache = new Map<string, Promise<Story[]>>()
 
 export function clearStoriesByComponentCache() {
   storiesByComponentCache.clear()
+  relatedProjectsIndexCache.clear()
+  relatedNewsIndexCache.clear()
 }
 
 /**
@@ -876,5 +878,104 @@ export async function getRelatedProjectsByProduct(
   } catch (error) {
     console.error("[Storyblok] Error fetching related projects by product:", error);
     return [];
+  }
+}
+
+const relatedNewsIndexCache = new Map<string, Promise<Map<string, RelatedStory[]>>>()
+
+function toRelatedStory(story: Story): RelatedStory {
+  return {
+    full_slug: story.full_slug,
+    title: story.content?.title || story.name,
+    date: story.content?.date || story.published_at || story.created_at || null,
+    tag: story.content?.tag || null,
+    asset: asAssetArray(story.content?.asset),
+  }
+}
+
+function sortRelatedStories(stories: RelatedStory[]): RelatedStory[] {
+  return stories.toSorted((left, right) => {
+    const leftDate = left.date ? new Date(left.date).getTime() : 0
+    const rightDate = right.date ? new Date(right.date).getTime() : 0
+    return rightDate - leftDate
+  })
+}
+
+async function buildRelatedNewsIndex(
+  locale?: string,
+  options: GetStoryOptions = {},
+): Promise<Map<string, RelatedStory[]>> {
+  const [newsStories, productStories] = await Promise.all([
+    getStoriesByComponent('story', locale, options),
+    getStoriesByComponent('product', locale, options),
+  ])
+  const allProducts = productStories.map(mapStoryToListingResolvedLocal)
+  const index = new Map<string, RelatedStory[]>()
+
+  for (const newsStory of newsStories) {
+    const rawRelated = newsStory.content?.related_products
+    if (!rawRelated || typeof rawRelated !== 'object') continue
+
+    const parsed = parseCarouselVariant({
+      ...rawRelated,
+      variant: 'related_products',
+    })
+    const relatedProducts =
+      parsed.selection_mode === 'manual'
+        ? allProducts.filter((product) => parsed.items.includes(product.uuid))
+        : filterListingByVista(allProducts, {
+            selection_mode: 'dynamic',
+            vista: parsed.vista,
+            category: parsed.category,
+            subcategory: parsed.subcategory,
+            application_area: parsed.application_area,
+            bestseller: parsed.bestseller,
+          })
+
+    const relatedNews = toRelatedStory(newsStory)
+    for (const product of relatedProducts) {
+      const news = index.get(product.uuid) ?? []
+      news.push(relatedNews)
+      index.set(product.uuid, news)
+    }
+  }
+
+  for (const [productUuid, news] of index) {
+    index.set(productUuid, sortRelatedStories(news))
+  }
+
+  return index
+}
+
+function getRelatedNewsIndex(
+  locale?: string,
+  options: GetStoryOptions = {},
+): Promise<Map<string, RelatedStory[]>> {
+  const cacheKey = `${options.version || getStoryblokVersion()}:${locale ?? '__all__'}`
+  const cached = relatedNewsIndexCache.get(cacheKey)
+  if (cached) return cached
+
+  const promise = buildRelatedNewsIndex(locale, options)
+  relatedNewsIndexCache.set(cacheKey, promise)
+  return promise
+}
+
+/**
+ * Query inversa: trova le news che referenziano il prodotto nel loro campo
+ * `related_products`, sia manuale sia dinamico per categoria o application area.
+ */
+export async function getRelatedNewsByProduct(
+  productUuid: string,
+  locale?: string,
+  options: GetStoryOptions = {},
+): Promise<RelatedStory[]> {
+  if (!productUuid) return []
+
+  try {
+    const index = await getRelatedNewsIndex(locale, options)
+    return (index.get(productUuid) ?? []).slice(0, 8)
+  } catch (error) {
+    console.error('[Storyblok] Error fetching related news by product:', error)
+    return []
   }
 }

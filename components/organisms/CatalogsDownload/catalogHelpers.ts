@@ -1,4 +1,8 @@
-import { getAssetFileUrl, getCoverAsset } from '@/lib/downloadable/assets'
+import {
+  getAssetFileUrl,
+  getCoverAsset,
+  isPdfFileUrl,
+} from '@/lib/downloadable/assets'
 import { isCatalogContent } from '@/lib/downloadable/parse'
 
 export type CatalogLikeContent = {
@@ -41,7 +45,8 @@ export function firstCoverAsset(catalog: CatalogLikeContent) {
 }
 
 function getCatalogFileUrl(catalog: CatalogLikeContent): string | undefined {
-  return getAssetFileUrl(catalog.file)
+  const fileUrl = getAssetFileUrl(catalog.file)
+  return isPdfFileUrl(fileUrl) ? fileUrl : undefined
 }
 
 function mapToNewpharmUrl(url: string | undefined): string | undefined {

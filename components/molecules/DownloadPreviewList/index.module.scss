@@ -37,6 +37,7 @@
 
   &.mobile {
     height: 23rem;
+
     @include md {
       display: none;
     }
@@ -55,10 +56,12 @@
 }
 
 .previewFrame {
+  position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: minmax(0, auto);
+  grid-template-rows: minmax(0, 1fr);
   justify-items: center;
+  align-items: center;
   width: 100%;
   max-width: 70%;
   height: 100%;
@@ -76,17 +79,28 @@
     min-width: 250px;
     max-width: 60%;
     height: auto;
+    min-height: 320px;
   }
 }
 
-.previewMotion {
+.previewLayer {
   grid-area: 1 / 1;
   position: relative;
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  will-change: opacity;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 0;
+  // Layer inattivo: sparisce subito (niente crossfade = niente doppio flash)
+  transition: opacity 0s;
+
+  &.active {
+    opacity: 1;
+    z-index: 1;
+    transition: opacity 0.22s $ease-out;
+  }
 }
 
 .previewAsset {
@@ -132,7 +146,7 @@
     color: $c-white;
     transition: background-color $td-300 $ease-in-out;
 
-    [data-button] {
+    .rowDownload {
       color: $c-black;
       background-color: $c-white;
     }
@@ -162,6 +176,18 @@
 .rowMeta {
   @include t-note;
   opacity: 0.64;
+}
+
+.rowDownload {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: $s-24;
+  height: $s-24;
+  border-radius: 50%;
+  background-color: $c-black;
+  color: $c-white;
 }
 
 .footer {

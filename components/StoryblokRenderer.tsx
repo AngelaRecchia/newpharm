@@ -86,14 +86,14 @@ function preserveSsrEnrichment(source: unknown, target: unknown): unknown {
     if (Array.isArray(sourceRecord.related_category_products)) {
       merged.related_category_products = sourceRecord.related_category_products
     }
-    if (Array.isArray(sourceRecord.related_project_products)) {
-      merged.related_project_products = sourceRecord.related_project_products
-    }
     if (typeof sourceRecord.related_category_parent_slug === 'string') {
       merged.related_category_parent_slug = sourceRecord.related_category_parent_slug
     }
     if (Array.isArray(sourceRecord.related_stories)) {
       merged.related_stories = sourceRecord.related_stories
+    }
+    if (Array.isArray(sourceRecord.related_news)) {
+      merged.related_news = sourceRecord.related_news
     }
     if (Array.isArray(sourceRecord.resolved_target_pests)) {
       merged.resolved_target_pests = sourceRecord.resolved_target_pests
@@ -146,8 +146,8 @@ function preserveSsrEnrichment(source: unknown, target: unknown): unknown {
       key === 'auto_cta_box' ||
       key === 'related_category_products' ||
       key === 'related_category_parent_slug' ||
-      key === 'related_project_products' ||
       key === 'related_stories' ||
+      key === 'related_news' ||
       key === 'resolved_target_pests' ||
       key === 'comparison_page_url' ||
       key === 'product_uuid' ||

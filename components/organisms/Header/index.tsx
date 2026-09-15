@@ -55,11 +55,11 @@ export default function Header({
     setMounted(true)
   }, [])
 
-  const headerOverlayOpen =
-    (openDropdownIndex !== null && !isMobile) ||
-    (isMobile && mobileMenuOpen) ||
-    searchOpen
-  useBodyScrollLock(headerOverlayOpen)
+  // Blocca lo scroll solo per i dropdown desktop. Search e menu mobile
+  // rimangono scrollabili per evitare il saltino causato dall'header fixed
+  // quando la scrollbar scompare/riappare.
+  const shouldLockBodyScroll = openDropdownIndex !== null && !isMobile
+  useBodyScrollLock(shouldLockBodyScroll)
 
   const toggleDropdown = (index: number) => {
 
@@ -143,11 +143,15 @@ export default function Header({
 
 
 
+  // Se search o menu mobile sono aperti, l'header deve rimanere visibile
+  // (non applicare headerHidden) perché i relativi pannelli sono renderizzati
+  // al suo interno.
+  const isOverlayOpen = searchOpen || (isMobile && mobileMenuOpen)
   const headerClasses = cn('header', {
     headerWhite: headerVariant === 'white',
     headerTransparent: headerVariant === 'transparent',
-    headerHidden: !isHeaderVisible,
-    headerSearchOpen: searchOpen,
+    headerHidden: !isHeaderVisible && !isOverlayOpen,
+    headerSearchOpen: isOverlayOpen,
   })
 
   const handleEscape = (e: KeyboardEvent) => {
@@ -250,7 +254,7 @@ export default function Header({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
+                transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
               >
                 <ul className={cn('headerMobileNav')} >
                   {navItems.map((item, index) => {

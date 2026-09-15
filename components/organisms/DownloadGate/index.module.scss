@@ -30,17 +30,18 @@
 }
 
 .cover {
-  position: relative;
-  overflow: hidden;
-  border-radius: $s-4;
-  aspect-ratio: 259 / 340;
-  background-color: $c-surface;
+  width: 100%;
+  max-width: 16rem;
+}
+
+.coverAsset {
+  width: 100%;
+  height: auto;
 }
 
 .formWrap {
   background: $c-black;
   color: $c-white;
-  border-radius: $s-4;
   padding: $s-40 $s-24;
 
   @include md {

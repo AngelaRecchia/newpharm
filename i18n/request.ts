@@ -20,10 +20,10 @@ export default getRequestConfig(async ({ requestLocale }) => {
   // Typically corresponds to the `[locale]` segment
   let locale = await requestLocale;
 
-  // Validate locale against routing config default
+  // Validate locale against supported locales
   // Note: We can't validate against Storyblok locales here since
   // the middleware already does that, and this would create circular deps
-  if (!locale || !hasLocale([routing.defaultLocale], locale)) {
+  if (!locale || !hasLocale(routing.locales, locale)) {
     locale = routing.defaultLocale;
   }
 
@@ -37,10 +37,14 @@ export default getRequestConfig(async ({ requestLocale }) => {
       most_searched: "I più cercati",
       search_solutions: "Soluzioni",
       search_products: "Prodotti",
-      search_stories: "Approfondimenti",
+      search_stories: "Stories",
       search_downloads: "Download",
+      search_all: "Tutti",
+      search_results_for: "<b>{count}</b> risultati per:",
       search_no_results: "Nessun risultato",
+      search_no_results_hint: "Nessun risultato trovato.\nProva a modificare i termini di ricerca o usa i filtri per trovare ciò che cerchi.",
       all_results: "Tutti i risultati",
+      show_all: "Mostra tutti",
       loading: "Caricamento...",
     },
     en: {
@@ -51,10 +55,14 @@ export default getRequestConfig(async ({ requestLocale }) => {
       most_searched: "Most searched",
       search_solutions: "Solutions",
       search_products: "Products",
-      search_stories: "Insights",
+      search_stories: "Stories",
       search_downloads: "Downloads",
+      search_all: "All",
+      search_results_for: "<b>{count}</b> results for:",
       search_no_results: "No results found",
+      search_no_results_hint: "No results found.\nTry changing your search terms or use the filters to find what you're looking for.",
       all_results: "All results",
+      show_all: "Show all",
       loading: "Loading...",
     },
     ar: {
@@ -65,10 +73,14 @@ export default getRequestConfig(async ({ requestLocale }) => {
       most_searched: "الأكثر بحثًا",
       search_solutions: "حلول",
       search_products: "منتجات",
-      search_stories: "رؤى",
+      search_stories: "Stories",
       search_downloads: "تنزيلات",
+      search_all: "الكل",
+      search_results_for: "<b>{count}</b> نتيجة لـ:",
       search_no_results: "لا توجد نتائج",
+      search_no_results_hint: "لم يتم العثور على نتائج.\nحاول تغيير مصطلحات البحث أو استخدم الفلاتر للعثور على ما تبحث عنه.",
       all_results: "كل النتائج",
+      show_all: "عرض الكل",
       loading: "جار التحميل...",
     },
   };

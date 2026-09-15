@@ -146,7 +146,7 @@ export default function ProductRequestModal({
         variant="secondary"
         size="small"
         label={requestInfoLabel}
-        icon="right-small"
+        icon="right"
         iconAlwaysVisible
         onClick={() => {
           resetForm()

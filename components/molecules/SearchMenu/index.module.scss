@@ -10,6 +10,25 @@
   box-shadow: 0 1rem 2rem rgba($c-black, 0.08);
   transform-origin: top center;
   will-change: transform, opacity;
+
+  // Scroll verticale dei risultati su desktop
+  max-height: calc(100vh - var(--header-height, 4.25rem));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+
+  @include mobile {
+    // A mobile la search occupa tutto lo schermo sotto l'header
+    position: fixed;
+    top: var(--header-height, 4.25rem);
+    inset-inline: 0;
+    bottom: 0;
+    width: 100%;
+    min-height: calc(100vh - var(--header-height, 4.25rem));
+    max-height: none;
+    border-block-end: 0;
+    box-shadow: none;
+  }
 }
 
 .inner {
@@ -73,8 +92,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: $s-32;
-  height: $s-32;
+  width: $s-20;
+  height: $s-20;
   border-radius: 50%;
   border: 0;
   background-color: $c-black;
@@ -96,9 +115,28 @@
 }
 
 .chips {
-  display: flex;
-  flex-wrap: wrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  width: calc(100% + 48px);
+  margin-inline: -24px;
+  padding-inline: 24px;
+  overscroll-behavior-x: contain;
+  overscroll-behavior-y: none;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.chipsTrack {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  align-items: center;
   gap: $s-8;
+  min-width: min-content;
 }
 
 .loading,
@@ -106,6 +144,33 @@
   @include t-body;
   padding-block: $s-32;
   color: $c-gray-600;
+}
+
+.noResults {
+  display: flex;
+  align-items: flex-start;
+  gap: $s-12;
+  padding: $s-16;
+  background-color: $c-surface;
+  margin-block-start: $s-24;
+
+  @include md {
+    flex-direction: row-reverse;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.noResultsIcon {
+  flex-shrink: 0;
+  color: $c-primary;
+}
+
+.noResultsText {
+  @include t-body;
+  margin: 0;
+  color: $c-black;
+  white-space: pre-line;
 }
 
 .results {
@@ -142,15 +207,26 @@
   margin: 0;
   padding: 0;
   list-style: none;
-  max-height: 10rem;
-  overflow-y: auto;
-  overscroll-behavior: contain;
 }
 
 .item {
   @include t-body;
   color: $c-black;
   text-decoration: none;
+
+  &:hover,
+  &:focus-visible {
+    color: $c-primary;
+  }
+}
+
+.showAll {
+  @include t-note;
+  display: inline-block;
+  margin-block-start: $s-16;
+  color: $c-gray-600;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
 
   &:hover,
   &:focus-visible {

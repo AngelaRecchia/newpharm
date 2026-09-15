@@ -1,0 +1,100 @@
+.catalogs-download-items {
+  color: #18201b;
+  font-family: Arial, sans-serif;
+}
+
+.catalogs-download-items__hint,
+.catalogs-download-items__status,
+.catalogs-download-items__error {
+  margin: 0 0 12px;
+  font-size: 14px;
+}
+
+.catalogs-download-items__error {
+  color: #b42318;
+}
+
+.catalogs-download-items__warning {
+  color: #9a6700;
+}
+
+.catalogs-download-items__selected {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 16px;
+  padding: 0;
+  list-style: none;
+}
+
+.catalogs-download-items__row,
+.catalogs-download-items__result {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid #d0d5d2;
+  border-radius: 6px;
+  padding: 10px 12px;
+}
+
+.catalogs-download-items__row strong,
+.catalogs-download-items__result strong,
+.catalogs-download-items__row small,
+.catalogs-download-items__result small {
+  display: block;
+}
+
+.catalogs-download-items__row small,
+.catalogs-download-items__result small {
+  color: #667085;
+  font-size: 12px;
+}
+
+.catalogs-download-items__actions {
+  display: flex;
+  gap: 6px;
+}
+
+.catalogs-download-items button,
+.catalogs-download-items__input {
+  border: 1px solid #98a29b;
+  border-radius: 4px;
+  background: #fff;
+  padding: 6px 8px;
+  font: inherit;
+}
+
+.catalogs-download-items button {
+  cursor: pointer;
+}
+
+.catalogs-download-items button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.catalogs-download-items__label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.catalogs-download-items__input {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.catalogs-download-items__results {
+  display: grid;
+  gap: 6px;
+  max-height: 280px;
+  margin-top: 8px;
+  overflow-y: auto;
+}
+
+.catalogs-download-items__result {
+  width: 100%;
+  cursor: pointer;
+  text-align: left;
+}

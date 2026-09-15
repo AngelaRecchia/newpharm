@@ -46,6 +46,10 @@
   overflow: visible;
 }
 
+.hero {
+  padding-block-start: $s-40;
+}
+
 .content {
   display: flex;
   flex-direction: column;
@@ -53,10 +57,6 @@
   padding-block-end: calc(
     #{$s-80} + var(--products-bar-offset, 0px) + var(--products-mobile-nav-offset, 0px)
   );
-}
-
-.head {
-  padding-block-start: $s-40;
 }
 
 .filters {

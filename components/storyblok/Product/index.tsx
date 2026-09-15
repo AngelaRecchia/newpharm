@@ -53,7 +53,7 @@ const Product = ({ blok }: { blok: ProductStoryblok }) => {
     related_projects,
     related_category_products,
     related_category_parent_slug,
-    related_project_products,
+    related_news,
     auto_cta_box,
   } = blok as any
 
@@ -216,15 +216,6 @@ const Product = ({ blok }: { blok: ProductStoryblok }) => {
       {/* CTA automatiche prima delle sezioni/carousel automatici */}
       {auto_cta_box && <CtaBox blok={auto_cta_box} />}
 
-      {/* Carousel prodotti dello stesso progetto — query inversa */}
-      {related_project_products && related_project_products.length > 0 && (
-        <Carousel
-          variant="prodotto"
-          title={t('completa_collezione')}
-          productItems={related_project_products}
-        />
-      )}
-
       {related_category_products && related_category_products.length > 0 && (
         <Carousel
           variant="prodotto"
@@ -233,6 +224,10 @@ const Product = ({ blok }: { blok: ProductStoryblok }) => {
           ctaHref={related_category_parent_slug || undefined}
           ctaLabel={t('see_all')}
         />
+      )}
+
+      {related_news && related_news.length > 0 && (
+        <Carousel items={related_news} variant="news" />
       )}
 
     </section>

@@ -7,6 +7,7 @@
 .header {
   width: 100%;
   font-family: var(--font-sans);
+  will-change: background-color, transform;
   transition:
     background-color 300ms ease,
     transform 300ms ease;
@@ -51,7 +52,9 @@
 
   &SearchOpen {
     transform: none !important;
-    transition: background-color 300ms ease !important;
+    transition:
+      background-color 300ms ease,
+      transform 300ms ease !important;
   }
 
   &Content {
@@ -78,6 +81,10 @@
     position: relative;
     z-index: 1;
     flex: 1 1 50%;
+
+    a {
+      transition: color 300ms ease;
+    }
   }
 
   &Nav {
@@ -113,13 +120,14 @@
     top: 4.25rem; // header height 68px
     inset-inline: 0;
     bottom: 0;
-    z-index: 1;
+    z-index: 1001;
+    width: 100%;
+    min-height: calc(100vh - 4.25rem);
     overflow-x: clip;
     overflow-y: auto;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
     background-color: $c-white;
-    width: 100%;
 
     @include md {
       display: none;

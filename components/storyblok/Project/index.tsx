@@ -31,9 +31,11 @@ export default function Project({ blok }: { blok: ProjectStoryblok }) {
   }
 
   const relatedProductsItems = blok.related_products?.resolved_items ?? []
+  const showRelatedProductsListing = blok.show_related_products_listing !== false
 
   // Listing highlight: mostra TUTTI i prodotti del progetto (manuale o per categoria),
   // non limitato come il carousel (max 8 iniziali + "carica altri").
+  // È condizionato dal booleano `show_related_products_listing` del CMS.
   const productsListingBlok: ListingStoryblok = {
     _uid: `${blok._uid}-prodotti-in-progetto`,
     component: 'listing',
@@ -90,7 +92,7 @@ export default function Project({ blok }: { blok: ProjectStoryblok }) {
   body.forEach((nestedBlok, index) => {
     if (index === projectsHighlightIndex) {
       // Inietta listing prodotti e CTA box prima del projects_highlight finale
-      if (relatedProductsItems.length > 0) {
+      if (showRelatedProductsListing && relatedProductsItems.length > 0) {
         bodyNodes.push(
           <div
             key={`${blok._uid}-related-products`}
@@ -118,12 +120,14 @@ export default function Project({ blok }: { blok: ProjectStoryblok }) {
         {bodyNodes}
 
         {/* Fallback: se projects_highlight non è l'ultimo modulo, mostra i prodotti
-            correlati in fondo come comportamento precedente. */}
-        {projectsHighlightIndex === -1 && relatedProductsItems.length > 0 && (
-          <div className={cn('related-products')}>
-            <Listing blok={productsListingBlok} />
-          </div>
-        )}
+            correlati in fondo come comportamento precedente (solo se abilitato). */}
+        {showRelatedProductsListing &&
+          projectsHighlightIndex === -1 &&
+          relatedProductsItems.length > 0 && (
+            <div className={cn('related-products')}>
+              <Listing blok={productsListingBlok} />
+            </div>
+          )}
       </div>
     </div>
   )
