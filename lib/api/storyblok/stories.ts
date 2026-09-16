@@ -4,6 +4,7 @@
  * Functions for fetching stories from Storyblok CDN API.
  */
 
+import { cache } from "react";
 import { getStoryblokApi } from "./client";
 import { getStoryblokVersion, getCacheVersion } from "./config";
 import { STORYBLOK_RESOLVE_RELATIONS } from "./resolveRelations";
@@ -34,13 +35,55 @@ export interface Story {
   [key: string]: any;
 }
 
-const storyCache = new Map<string, Promise<Story | null>>();
-const allStoriesCache = new Map<string, Promise<Story[]>>();
+const EMPTY_STORY_OPTIONS: GetStoryOptions = {};
+const DRAFT_MEMORY_TTL_MS = 20_000;
+
+type Timed<T> = { expiresAt: number; value: Promise<T> };
+
+const storyCache = new Map<string, Timed<Story | null>>();
+const allStoriesCache = new Map<string, Timed<Story[]>>();
 
 function stableOptionsKey(options: Record<string, unknown>): string {
   return JSON.stringify(
     Object.entries(options).sort(([a], [b]) => a.localeCompare(b)),
   );
+}
+
+function readTimedCache<T>(
+  map: Map<string, Timed<T>>,
+  key: string,
+): Promise<T> | undefined {
+  const entry = map.get(key);
+  if (!entry) return undefined;
+  if (
+    entry.expiresAt !== Number.POSITIVE_INFINITY &&
+    Date.now() >= entry.expiresAt
+  ) {
+    map.delete(key);
+    return undefined;
+  }
+  return entry.value;
+}
+
+function remember<T>(
+  map: Map<string, Timed<T>>,
+  key: string,
+  version: "draft" | "published",
+  factory: () => Promise<T>,
+): Promise<T> {
+  const cached = readTimedCache(map, key);
+  if (cached) return cached;
+
+  const promise = factory();
+  const ttlMs = version === "published" ? null : DRAFT_MEMORY_TTL_MS;
+  map.set(key, {
+    expiresAt: ttlMs == null ? Number.POSITIVE_INFINITY : Date.now() + ttlMs,
+    value: promise,
+  });
+  promise.catch(() => {
+    map.delete(key);
+  });
+  return promise;
 }
 
 /**
@@ -66,26 +109,20 @@ export interface RelatedStory {
  * @param options - Opzioni aggiuntive per la richiesta
  * @returns La story o null se non trovata (404 ritorna null silenziosamente)
  */
-export async function getStory(
+export const getStory = cache(function getStory(
   slug: string,
   locale?: string,
-  options: GetStoryOptions = {}
+  options: GetStoryOptions = EMPTY_STORY_OPTIONS,
 ): Promise<Story | null> {
   const storyPath =
     locale && !slug.startsWith(locale + "/") ? `${locale}/${slug}` : slug;
   const version = options.version || getStoryblokVersion();
   const cacheKey = `${storyPath}:${version}:${stableOptionsKey(options)}`;
 
-  if (version === "published") {
-    const cached = storyCache.get(cacheKey);
-    if (cached) return cached;
-    const promise = fetchStory(storyPath, version, options);
-    storyCache.set(cacheKey, promise);
-    return promise;
-  }
-
-  return fetchStory(storyPath, version, options);
-}
+  return remember(storyCache, cacheKey, version, () =>
+    fetchStory(storyPath, version, options),
+  );
+});
 
 async function fetchStory(
   storyPath: string,
@@ -153,15 +190,9 @@ export async function getAllStories(
   const version = requestedVersion || getStoryblokVersion();
   const cacheKey = `${version}:${perPage}:${stableOptionsKey({ excludePaths })}`;
 
-  if (version === "published") {
-    const cached = allStoriesCache.get(cacheKey);
-    if (cached) return cached;
-    const promise = fetchAllStories(version, excludePaths, perPage);
-    allStoriesCache.set(cacheKey, promise);
-    return promise;
-  }
-
-  return fetchAllStories(version, excludePaths, perPage);
+  return remember(allStoriesCache, cacheKey, version, () =>
+    fetchAllStories(version, excludePaths, perPage),
+  );
 }
 
 async function fetchAllStories(
@@ -351,9 +382,11 @@ export async function getStoriesByUuids(
   }
 }
 
-const storiesByComponentCache = new Map<string, Promise<Story[]>>()
+const storiesByComponentCache = new Map<string, Timed<Story[]>>()
 
 export function clearStoriesByComponentCache() {
+  storyCache.clear()
+  allStoriesCache.clear()
   storiesByComponentCache.clear()
   relatedProjectsIndexCache.clear()
   relatedNewsIndexCache.clear()
@@ -368,18 +401,12 @@ export async function getStoriesByComponent(
   options: GetStoryOptions = {},
 ): Promise<Story[]> {
   const version = options.version || getStoryblokVersion()
-  if (version === 'draft') {
-    return fetchStoriesByComponent(component, locale, options)
-  }
-
   const cv = await getCacheVersion()
   const cacheKey = `${component}:${version}:${locale ?? '__all__'}:${cv ?? 'nocv'}`
-  const cached = storiesByComponentCache.get(cacheKey)
-  if (cached) return cached
 
-  const promise = fetchStoriesByComponent(component, locale, options)
-  storiesByComponentCache.set(cacheKey, promise)
-  return promise
+  return remember(storiesByComponentCache, cacheKey, version, () =>
+    fetchStoriesByComponent(component, locale, options),
+  )
 }
 
 async function fetchStoriesByComponent(
@@ -747,7 +774,7 @@ function mapStoryToListingResolvedLocal(story: Story): ListingStoryResolved {
 /** Indice invertito productUuid → progetti (una sola fetch paginata per locale) */
 const relatedProjectsIndexCache = new Map<
   string,
-  Promise<Map<string, RelatedProject[]>>
+  Timed<Map<string, RelatedProject[]>>
 >();
 
 async function buildRelatedProjectsIndex(
@@ -843,16 +870,11 @@ function getRelatedProjectsIndex(
   locale?: string,
   options: GetStoryOptions = {}
 ): Promise<Map<string, RelatedProject[]>> {
-  const cacheKey = `${options.version || getStoryblokVersion()}:${locale ?? "__all__"}`;
-  const cached = relatedProjectsIndexCache.get(cacheKey);
-
-  if (cached) {
-    return cached;
-  }
-
-  const promise = buildRelatedProjectsIndex(locale, options);
-  relatedProjectsIndexCache.set(cacheKey, promise);
-  return promise;
+  const version = options.version || getStoryblokVersion();
+  const cacheKey = `${version}:${locale ?? "__all__"}`;
+  return remember(relatedProjectsIndexCache, cacheKey, version, () =>
+    buildRelatedProjectsIndex(locale, options),
+  );
 }
 
 /**
@@ -881,7 +903,7 @@ export async function getRelatedProjectsByProduct(
   }
 }
 
-const relatedNewsIndexCache = new Map<string, Promise<Map<string, RelatedStory[]>>>()
+const relatedNewsIndexCache = new Map<string, Timed<Map<string, RelatedStory[]>>>()
 
 function toRelatedStory(story: Story): RelatedStory {
   return {
@@ -951,13 +973,11 @@ function getRelatedNewsIndex(
   locale?: string,
   options: GetStoryOptions = {},
 ): Promise<Map<string, RelatedStory[]>> {
-  const cacheKey = `${options.version || getStoryblokVersion()}:${locale ?? '__all__'}`
-  const cached = relatedNewsIndexCache.get(cacheKey)
-  if (cached) return cached
-
-  const promise = buildRelatedNewsIndex(locale, options)
-  relatedNewsIndexCache.set(cacheKey, promise)
-  return promise
+  const version = options.version || getStoryblokVersion()
+  const cacheKey = `${version}:${locale ?? '__all__'}`
+  return remember(relatedNewsIndexCache, cacheKey, version, () =>
+    buildRelatedNewsIndex(locale, options),
+  )
 }
 
 /**

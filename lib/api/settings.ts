@@ -5,6 +5,7 @@
  * from Storyblok layout-components story.
  */
 
+import { cache } from 'react'
 import { getStory } from './storyblok/stories'
 import { getLangs } from './storyblok/languages'
 
@@ -34,7 +35,7 @@ function parseSuggestedSearches(value: unknown): string[] {
  * @param locale - Locale per cui caricare i settings (default: 'it')
  * @returns Global settings object o null se non trovato
  */
-export async function getGlobalSettings(
+export const getGlobalSettings = cache(async function getGlobalSettings(
   locale: string = "it",
 ): Promise<GlobalSettings | null> {
   const [story, searchStory] = await Promise.all([
@@ -56,4 +57,4 @@ export async function getGlobalSettings(
   }
   
   return null
-}
+})

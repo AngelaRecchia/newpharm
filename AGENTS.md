@@ -88,3 +88,34 @@ In dev si usa `version=draft`; in build `version=published` (`lib/api/storyblok/
 - Il dev server parte con HTTPS per il bridge Storyblok (`--experimental-https`)
 - Prima di modificare un componente verificare se esiste già una versione in `molecules/` o `atoms/` riutilizzabile
 - I membri non usati o i commenti speculativi vanno evitati: codice pulito = contesto AI più efficiente
+
+## Chiamate API in sviluppo (quota Storyblok)
+
+In draft **la cache filesystem sulle stories resta disattivata** (`lib/api/storyblok/client.ts`, serve al Visual Editor). In RAM invece:
+
+- `React.cache()` coalesca `getStory` / `getGlobalSettings` **nella stessa request** (layout + page + metadata).
+- `remember()` tiene il risultato **20s in draft** (illimitato in `published`, come prima). Refresh/HMR ravvicinati non rifanno le GET. Il Visual Editor svuota la RAM via `POST /api/cache/invalidate`; i webhook Storyblok fanno lo stesso.
+
+Una sola navigazione può comunque fare molte GET al primo load: listing/carousel, e sulle pagine prodotto tutti i prodotti, progetti/news correlati, compare.
+
+### Comportamento obbligatorio per gli agenti
+
+Questa sezione **prevale** sulla verifica browser automatica post-edit.
+
+- **Non** aprire, navigare o ricaricare il browser dopo un edit (componente, SCSS, layout) se non esplicitamente richiesto.
+- Dopo un cambio UI **chiedere sempre**: «Vuoi che verifichi il componente nel browser?» — procedere solo con un sì.
+- **Non** fare round di verifica “di sicurezza” su più route, locale o viewport.
+- **Non** lanciare `fetch:storyblok`, `generate:types`, `configure:*`, script Management API o `index:search` se non chiesti.
+- Preferire lint, typecheck e il codice già in editor. Se la verifica è confermata: **una sola pagina**, una sola volta.
+
+### Ottimizzazioni
+
+1. **`React.cache()` su `getStory` / `getGlobalSettings`** — fatto. Nella stessa request layout, page e metadata condividono la story.
+2. **Cache in-memory in draft, TTL 20s** — fatto. `storyCache` / `allStoriesCache` / `storiesByComponentCache` e gli indici related. Invalidata da Visual Editor e webhook.
+3. **Cache filesystem sulle stories in draft, con TTL** — oggi è disabilitata per il Visual Editor. Si può abilitare con TTL e bypass se c’è `_storyblok` in query (iframe editor).
+4. **Alzare il TTL di `cv` in draft** — `cdn/spaces/me` ogni 5s (`CV_CACHE_TTL_DRAFT`). 30–60s basterebbe in locale.
+5. **Pagine prodotto più pigre** — `resolveProductStories`, compare, related news/projects e target pests partono tutti insieme; si possono deferire o spezzare.
+6. **`generateStaticParams` / `getAllStories` in `next dev`** — pagina tutte le stories. In dev si può short-circuitare (`dynamicParams` è già `true`).
+7. **`excluding_fields` più aggressivo** su listing/cataloghi quando il `content` completo non serve.
+
+Non applicare i punti 3–7 in un task di UI se non richiesti: sono debito di cache, non di componente.
