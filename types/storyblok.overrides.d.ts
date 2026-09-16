@@ -311,10 +311,16 @@ export interface GalleryStoryblok {
   _editable?: string;
 }
 
+/** card_cta_box — accetta asset nativo Storyblok o blok Asset (mobile/desktop) */
+export interface Card_cta_boxStoryblok
+  extends Omit<Generated.Card_cta_boxStoryblok, "image"> {
+  image?: AssetStoryblok | StoryblokAsset | null;
+}
+
 /** cta_box — riga di card CTA */
 export interface Cta_boxStoryblok {
   theme?: CtaBoxTheme | null;
-  cards?: Generated.Card_cta_boxStoryblok[] | null;
+  cards?: Card_cta_boxStoryblok[] | null;
   anchor_id?: string | null;
   _uid: string;
   component: string;

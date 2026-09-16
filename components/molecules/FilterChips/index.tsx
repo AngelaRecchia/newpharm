@@ -86,7 +86,7 @@ export default function FilterChips<T extends string>({
         {items.map((item, index) => (
           <ChipSwiperSlide key={item}>
             <FilterChip
-              label={getLabel ? getLabel(item) : t(item)}
+              label={getLabel ? getLabel(item) : t(item as never)}
               selected={value.includes(item)}
               size={size}
               dark={dark}

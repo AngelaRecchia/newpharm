@@ -25,7 +25,6 @@ export type {
   Banner_accordionStoryblok,
   Box_image_carouselStoryblok,
   Card_boxStoryblok,
-  Card_cta_boxStoryblok,
   Card_divisionStoryblok,
   Card_highlightStoryblok,
   Card_icon_textStoryblok,
@@ -77,6 +76,7 @@ export type {
   Projects_highlightStoryblok,
   GalleryStoryblok,
   GalleryTheme,
+  Card_cta_boxStoryblok,
   Cta_boxStoryblok,
   CtaBoxTheme,
   StoriesStoryblok,
@@ -115,7 +115,7 @@ export type StoryblokComponent =
   | Overrides.Box_imageStoryblok
   | Generated.Box_image_carouselStoryblok
   | Generated.Card_boxStoryblok
-  | Generated.Card_cta_boxStoryblok
+  | Overrides.Card_cta_boxStoryblok
   | Generated.Card_divisionStoryblok
   | Generated.Card_highlightStoryblok
   | Generated.Card_icon_textStoryblok
