@@ -29,7 +29,7 @@ export default function JobList({ blok }: { blok?: Job_listStoryblok }) {
       id={getStoryblokAnchorId(blok.anchor_id)}
       {...storyblokEditable(blok as never)}
     >
-      <Container className={cn('content')} flushBlock>
+      <Container className={cn('content')} size="md" flushBlock>
         {(blok.title || blok.subtitle) ? (
           <header className={cn('head')}>
             {blok.title ? <h3 className={cn('title')}>{blok.title}</h3> : null}

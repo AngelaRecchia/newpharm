@@ -19,13 +19,16 @@
 
   @include lg {
     grid-template-columns: 1fr 1fr;
-    gap: $s-64;
   }
 }
 
 .title {
   @include t-h3;
   margin: 0;
+
+  @include lg {
+    padding-inline-end: $s-64;
+  }
 }
 
 .subtitle {

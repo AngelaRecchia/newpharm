@@ -84,7 +84,7 @@ export async function resolveCarouselItems(
 ): Promise<ListingStoryResolved[]> {
   if (parsed.variant === 'editorial') return []
 
-  if (parsed.variant === 'insetto') {
+  if (parsed.variant === 'infestante') {
     const allStories = (await getStoriesByComponent('insect', locale)).map(
       mapStoryToListingResolved,
     )
@@ -124,22 +124,11 @@ export async function resolveCarouselItems(
     return sortStoriesByDate(allStories).slice(0, CAROUSEL_LIMIT)
   }
 
-  if (parsed.variant === 'related_products') {
+  if (parsed.variant === 'related_products' || parsed.variant === 'prodotto') {
     return resolveRelatedProductsVariant(parsed, locale, CAROUSEL_LIMIT)
   }
 
-  const allProducts = (await getStoriesByComponent('product', locale)).map(
-    mapStoryToListingResolved,
-  )
-  const filtered = filterListingByVista(allProducts, {
-    selection_mode: 'dynamic',
-    vista: parsed.vista,
-    category: parsed.category,
-    subcategory: parsed.subcategory,
-    application_area: parsed.application_area,
-    bestseller: parsed.bestseller,
-  })
-  return sortProductStories(filtered, 'recent').slice(0, CAROUSEL_LIMIT)
+  return []
 }
 
 export async function enrichCarouselBloks(

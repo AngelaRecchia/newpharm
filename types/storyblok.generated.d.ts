@@ -6,7 +6,7 @@
  * 
  * Per rigenerare: npm run generate:types
  * 
- * Generato il: 2026-09-14T16:07:16.778Z
+ * Generato il: 2026-09-16T22:45:31.172Z
  */
 
 
@@ -179,19 +179,6 @@ export interface CarouselStoryblok {
 }
 
 
-export interface CatalogStoryblok {
-  title?: string | null // Optional
-  qr_code?: any | null // Optional
-  file?: { id: number; alt: string; name: string; focus: string; title: string; filename: string; copyright: string; fieldtype: string; } | null // Optional
-  image?: any[] | null // Optional
-  short_description?: string | null // Optional
-  year: number
-  _uid: string
-  component: string
-  _editable?: string
-}
-
-
 export interface Catalogs_downloadStoryblok {
   title?: string | null // Optional
   items?: any | null // Optional
@@ -211,6 +198,7 @@ export interface CompareStoryblok {
 
 
 export interface Cta_boxStoryblok {
+  theme?: any | null // Optional
   cards?: any[] | null // Optional
   anchor_id?: string | null // Optional
   _uid: string
@@ -300,6 +288,7 @@ export interface Full_bannerStoryblok {
 
 
 export interface GalleryStoryblok {
+  theme?: any | null // Optional
   title?: string | null // Optional
   images?: any[] | null // Optional
   anchor_id?: string | null // Optional
@@ -391,7 +380,6 @@ export interface JobStoryblok {
   area?: string | null // Optional
   esperienza?: any | null // Optional
   description?: any[] | null // Optional
-  body?: any[] | null // Optional
   _uid: string
   component: string
   _editable?: string
@@ -716,7 +704,7 @@ export interface Video_ytStoryblok {
 /**
  * Union type di tutti i componenti Storyblok
  */
-export type StoryblokComponent = Accordion_itemStoryblok | Alphabetical_accordionStoryblok | Anchor_linkStoryblok | Article_bodyStoryblok | AssetStoryblok | Banner_accordionStoryblok | Box_imageStoryblok | Box_image_carouselStoryblok | Card_boxStoryblok | Card_cta_boxStoryblok | Card_divisionStoryblok | Card_highlightStoryblok | Card_icon_textStoryblok | Card_listing_editorialStoryblok | Card_slideshowStoryblok | CarouselStoryblok | CatalogStoryblok | Catalogs_downloadStoryblok | CompareStoryblok | Cta_boxStoryblok | DividerStoryblok | Division_boxStoryblok | DownloadableStoryblok | Downloadable_resourcesStoryblok | FaqsStoryblok | FooterStoryblok | Full_bannerStoryblok | GalleryStoryblok | GlossaryStoryblok | Glossary_itemStoryblok | HeaderStoryblok | HeroStoryblok | Icon_text_highlightStoryblok | InfestantiStoryblok | InsectStoryblok | JobStoryblok | Job_listStoryblok | LinkStoryblok | ListingStoryblok | Logo_itemStoryblok | MilestoneStoryblok | Milestone_itemStoryblok | Nav_itemStoryblok | PageStoryblok | PartnersStoryblok | ProductStoryblok | ProductsStoryblok | ProjectStoryblok | ProjectsStoryblok | Projects_highlightStoryblok | SearchStoryblok | SettingsStoryblok | SlideshowStoryblok | Social_itemStoryblok | Spec_tableStoryblok | Split_bannerStoryblok | Sticky_imageStoryblok | StoriesStoryblok | StoryStoryblok | TabsStoryblok | Target_pest_itemStoryblok | TeaserStoryblok | Text_revealStoryblok | Video_ytStoryblok
+export type StoryblokComponent = Accordion_itemStoryblok | Alphabetical_accordionStoryblok | Anchor_linkStoryblok | Article_bodyStoryblok | AssetStoryblok | Banner_accordionStoryblok | Box_imageStoryblok | Box_image_carouselStoryblok | Card_boxStoryblok | Card_cta_boxStoryblok | Card_divisionStoryblok | Card_highlightStoryblok | Card_icon_textStoryblok | Card_listing_editorialStoryblok | Card_slideshowStoryblok | CarouselStoryblok | Catalogs_downloadStoryblok | CompareStoryblok | Cta_boxStoryblok | DividerStoryblok | Division_boxStoryblok | DownloadableStoryblok | Downloadable_resourcesStoryblok | FaqsStoryblok | FooterStoryblok | Full_bannerStoryblok | GalleryStoryblok | GlossaryStoryblok | Glossary_itemStoryblok | HeaderStoryblok | HeroStoryblok | Icon_text_highlightStoryblok | InfestantiStoryblok | InsectStoryblok | JobStoryblok | Job_listStoryblok | LinkStoryblok | ListingStoryblok | Logo_itemStoryblok | MilestoneStoryblok | Milestone_itemStoryblok | Nav_itemStoryblok | PageStoryblok | PartnersStoryblok | ProductStoryblok | ProductsStoryblok | ProjectStoryblok | ProjectsStoryblok | Projects_highlightStoryblok | SearchStoryblok | SettingsStoryblok | SlideshowStoryblok | Social_itemStoryblok | Spec_tableStoryblok | Split_bannerStoryblok | Sticky_imageStoryblok | StoriesStoryblok | StoryStoryblok | TabsStoryblok | Target_pest_itemStoryblok | TeaserStoryblok | Text_revealStoryblok | Video_ytStoryblok
 
 /**
  * Helper type per il prop 'blok' nei componenti Storyblok

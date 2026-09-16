@@ -7,14 +7,14 @@ import {
   type CarouselVariantValue,
 } from './types'
 
-const VALID_VARIANTS: CarouselVariantSlug[] = ['story', 'prodotto', 'editorial', 'insetto', 'related_products']
+const VALID_VARIANTS: CarouselVariantSlug[] = ['story', 'prodotto', 'editorial', 'infestante', 'related_products']
 const VALID_STORY_MODES: CarouselStoryMode[] = ['dynamic', 'tag', 'manual']
 const VALID_INSECT_MODES: CarouselInsectMode[] = ['all', 'manual']
 const VALID_VISTAS: ListingProductVista[] = ['categoria', 'application_area']
 
 function normalizeVariant(raw: unknown): CarouselVariantSlug {
   if (raw === 'product') return 'prodotto'
-  if (raw === 'insect') return 'insetto'
+  if (raw === 'insect' || raw === 'insetto') return 'infestante'
   if (typeof raw === 'string' && VALID_VARIANTS.includes(raw as CarouselVariantSlug)) {
     return raw as CarouselVariantSlug
   }
@@ -83,21 +83,29 @@ export function parseCarouselVariant(raw: unknown): CarouselVariantValue {
   }
 
   if (variant === 'prodotto') {
+    const selection_mode =
+      value.selection_mode === 'manual' || value.selection_mode === 'dynamic'
+        ? value.selection_mode
+        : items.length > 0
+          ? 'manual'
+          : 'dynamic'
+    const isDynamic = selection_mode === 'dynamic'
+
     return {
       variant,
-      selection_mode: 'dynamic',
+      selection_mode,
       tag: '',
-      items: [],
-      vista: normalizeVista(value.vista, category),
-      category,
-      subcategory: typeof value.subcategory === 'string' ? value.subcategory : '',
+      items: selection_mode === 'manual' ? items : [],
+      vista: isDynamic ? normalizeVista(value.vista, category) : undefined,
+      category: isDynamic ? category : '',
+      subcategory: isDynamic && typeof value.subcategory === 'string' ? value.subcategory : '',
       application_area:
-        typeof value.application_area === 'string' ? value.application_area : '',
-      bestseller: Boolean(value.bestseller) || legacyBestsellerVista,
+        isDynamic && typeof value.application_area === 'string' ? value.application_area : '',
+      bestseller: isDynamic ? Boolean(value.bestseller) || legacyBestsellerVista : false,
     }
   }
 
-  if (variant === 'insetto') {
+  if (variant === 'infestante') {
     const selection_mode = normalizeInsectMode(value.selection_mode, items)
     return {
       variant,

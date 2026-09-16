@@ -1,11 +1,8 @@
 'use client'
 
-import { useCallback, useMemo, useRef } from 'react'
+import { useCallback, useMemo } from 'react'
 import classNames from 'classnames/bind'
-import { FreeMode, Mousewheel } from 'swiper/modules'
-import { Swiper, SwiperSlide } from 'swiper/react'
-import 'swiper/css'
-import FilterChip from '@/components/atoms/FilterChip'
+import FilterChips from '@/components/molecules/FilterChips'
 import {
   type FiltriEntry,
   getBundledFiltriEntries,
@@ -31,64 +28,6 @@ export type ProductFiltersProps = {
   className?: string
 }
 
-function FilterChipRow({
-  items,
-  selectedValues,
-  onToggle,
-}: {
-  items: { value: string; label: string }[]
-  selectedValues: string[]
-  onToggle: (value: string) => void
-}) {
-  const swiperRef = useRef<import('swiper').Swiper | null>(null)
-
-  const handleToggle = useCallback(
-    (value: string) => {
-      const isSelecting = !selectedValues.includes(value)
-      onToggle(value)
-      if (isSelecting) {
-        const index = items.findIndex((item) => item.value === value)
-        if (index >= 0) {
-          requestAnimationFrame(() => swiperRef.current?.slideTo(index))
-        }
-      }
-    },
-    [items, onToggle, selectedValues],
-  )
-
-  return (
-    <div className={cn('track')} role="group" aria-label="Sottocategorie" data-lenis-prevent>
-      <Swiper
-        className={cn('swiper')}
-        modules={[FreeMode, Mousewheel]}
-        freeMode
-        grabCursor
-        mousewheel={{ forceToAxis: true, sensitivity: 1 }}
-        slidesPerView="auto"
-        spaceBetween={12}
-        breakpoints={{ 768: { spaceBetween: 16 } }}
-        onSwiper={(swiper) => {
-          swiperRef.current = swiper
-        }}
-      >
-        {items.map((item) => {
-          const selected = selectedValues.includes(item.value)
-          return (
-            <SwiperSlide key={item.value} className={cn('trackItem')}>
-              <FilterChip
-                label={item.label}
-                selected={selected}
-                size="small"
-                onClick={() => handleToggle(item.value)}
-              />
-            </SwiperSlide>
-          )
-        })}
-      </Swiper>
-    </div>
-  )
-}
-
 export default function ProductFilters({
   value,
   onChange,
@@ -104,27 +43,29 @@ export default function ProductFilters({
 
   const subcategoryItems = useMemo(() => {
     if (!activeCategory) return []
-    return getSubfiltersForCategory(activeCategory, parsed).map((entry) => ({
-      value: entry.value,
-      label: getSubfilterLabel(entry.name),
-    }))
+    return getSubfiltersForCategory(activeCategory, parsed).map((entry) => entry.value)
   }, [activeCategory, parsed])
 
-  const handleSubcategoryToggle = useCallback(
+  const labelFor = useCallback(
     (subValue: string) => {
+      if (!activeCategory) return subValue
+      const entry = getSubfiltersForCategory(activeCategory, parsed).find(
+        (item) => item.value === subValue,
+      )
+      return entry ? getSubfilterLabel(entry.name) : subValue
+    },
+    [activeCategory, parsed],
+  )
+
+  const handleChange = useCallback(
+    (subcategories: string[]) => {
       if (!activeCategory) return
-
-      const isSelected = value.subcategories.includes(subValue)
-      const subcategories = isSelected
-        ? value.subcategories.filter((v) => v !== subValue)
-        : [...value.subcategories, subValue]
-
       onChange({
         category: activeCategory,
         subcategories,
       })
     },
-    [activeCategory, onChange, value.subcategories],
+    [activeCategory, onChange],
   )
 
   if (!activeCategory || subcategoryItems.length === 0) {
@@ -133,10 +74,14 @@ export default function ProductFilters({
 
   return (
     <div className={cn('wrapper', className)}>
-      <FilterChipRow
+      <FilterChips
         items={subcategoryItems}
-        selectedValues={value.subcategories}
-        onToggle={handleSubcategoryToggle}
+        value={value.subcategories}
+        onChange={handleChange}
+        size="s"
+        showAll={false}
+        ariaLabel="Sottocategorie"
+        getLabel={labelFor}
       />
     </div>
   )

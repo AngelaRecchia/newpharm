@@ -39,12 +39,6 @@ export interface StoryStoryblok extends Generated.StoryStoryblok {
   } | null;
 }
 
-/** Catalog — campi CMS oltre al generato */
-export interface CatalogStoryblok extends Omit<Generated.CatalogStoryblok, "year"> {
-  short_description?: string | null;
-  year?: number | string | null;
-}
-
 export type { InsectCategory };
 
 export type TargetPestsPluginValue = {
@@ -145,16 +139,6 @@ export interface HeroStoryblok extends Omit<
   background?: AssetStoryblok[] | null;
 }
 
-/** Story catalogo risolta da CDN (catalog legacy o downloadable kind=catalog) */
-export interface CatalogStoryResolved {
-  uuid: string;
-  name: string;
-  slug: string;
-  full_slug: string;
-  content: CatalogStoryblok | DownloadableStoryblok;
-  [key: string]: unknown;
-}
-
 /**
  * catalogs_download (nome tecnico Storyblok) — titolo + elenco cataloghi
  */
@@ -163,9 +147,7 @@ export interface CatalogsDownloadStoryblok {
   /** UUID non risolti, oppure oggetti story dopo resolve_relations */
   items?: Array<
     | string
-    | CatalogStoryblok
     | DownloadableStoryblok
-    | CatalogStoryResolved
     | ListingStoryResolved
   > | null;
   anchor_id?: string | null;
@@ -204,9 +186,7 @@ export interface DownloadableResourcesStoryblok extends Omit<
   "image"
 > {
   image?: AssetStoryblok[] | null;
-  /** Popolato SSR da enrichListingBloks — cataloghi */
-  resolved_catalogs?: ListingStoryResolved[] | null;
-  /** Popolato SSR da enrichListingBloks — brochure / app / altro */
+  /** Popolato SSR da enrichListingBloks */
   resolved_downloadables?: ListingStoryResolved[] | null;
 }
 
@@ -280,6 +260,8 @@ export interface Card_slideshowStoryblok {
 /** video_yt — componente Storyblok */
 export interface Video_ytStoryblok {
   video_id?: string | null;
+  /** Bloks Asset[] usati come cover finché non si fa play */
+  cover?: AssetStoryblok[] | null;
   anchor_id?: string | null;
   _uid: string;
   component: string;
@@ -315,6 +297,30 @@ export interface Card_listing_editorialStoryblok {
 export type ListingType = "editorial" | "hub" | "highlight";
 export type ListingImageRatio = "square" | "portrait";
 export type ListingTheme = "light" | "dark";
+export type GalleryTheme = ListingTheme;
+export type CtaBoxTheme = ListingTheme;
+
+/** gallery — carosello immagini */
+export interface GalleryStoryblok {
+  title?: string | null;
+  theme?: GalleryTheme | null;
+  images?: any[] | null;
+  anchor_id?: string | null;
+  _uid: string;
+  component: string;
+  _editable?: string;
+}
+
+/** cta_box — riga di card CTA */
+export interface Cta_boxStoryblok {
+  theme?: CtaBoxTheme | null;
+  cards?: Generated.Card_cta_boxStoryblok[] | null;
+  anchor_id?: string | null;
+  _uid: string;
+  component: string;
+  _editable?: string;
+}
+
 export type ListingVariantSlug =
   | "prodotto"
   | "progetto"
@@ -346,6 +352,7 @@ export interface ListingStoryResolved {
   created_at?: string | null;
   published_at?: string | null;
   first_published_at?: string | null;
+  updated_at?: string | null;
   content: Record<string, unknown>;
 }
 
@@ -470,18 +477,18 @@ export interface JobStoryblok extends Omit<
   Generated.JobStoryblok,
   "esperienza" | "body" | "description"
 > {
-  description?: Article_bodyStoryblok[] | null;
-  esperienza?: "stage" | "junior" | "middle" | "senior" | null;
-  /** Popolato SSR — ultime news */
-  latest_stories?: RelatedStory[] | null;
-  body?:
+  /** Bloks editoriali (testo, CTA, FAQ, divider, ecc.) */
+  description?:
     | Article_bodyStoryblok[]
     | Generated.FaqsStoryblok[]
-    | Generated.Cta_boxStoryblok[]
+    | Cta_boxStoryblok[]
     | LinkStoryblok[]
     | Generated.DividerStoryblok[]
     | HeroStoryblok[]
     | null;
+  esperienza?: "stage" | "junior" | "middle" | "senior" | null;
+  /** Popolato SSR — ultime news */
+  latest_stories?: RelatedStory[] | null;
 }
 
 /**
@@ -556,7 +563,7 @@ export interface CarouselStoryblok {
   title?: string | null;
   subtitle?: string | null;
   link?: LinkStoryblok[] | StoryblokLink | null;
-  /** Plugin: story | prodotto | editorial | insetto + filtri/selezione */
+  /** Plugin: story | prodotto | editorial | infestante + filtri/selezione */
   variant?: CarouselVariantValue | null;
   cards?: Card_listing_editorialStoryblok[] | null;
   resolved_items?: ListingStoryResolved[] | null;

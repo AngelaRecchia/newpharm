@@ -63,7 +63,12 @@
   }
 }
 
-.linked .image > * {
+.placeholderImage {
+  object-fit: cover;
+  object-position: center;
+}
+
+.linked .image:not(.imageSafeArea):not(.empty) > * {
   @include image-zoom-prepare(1.02);
 }
 
@@ -162,7 +167,7 @@
 @include md {
   .linked:hover,
   .linked:focus-within {
-    .image:not(.imageSafeArea) > * {
+    .image:not(.imageSafeArea):not(.empty) > * {
       @include image-zoom-active;
     }
 

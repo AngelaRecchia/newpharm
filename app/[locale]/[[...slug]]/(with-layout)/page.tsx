@@ -1,10 +1,9 @@
 import { getAllStories, getStory, getStoriesByComponent, getRelatedStoriesByTags, getRelatedNewsByProduct, getRelatedProjectsByProduct } from '@/lib/api/storyblok/stories'
 import { buildStoryblokNavigationHref } from '@/lib/api/utils/links'
-import { enrichListingBloks, resolveProductStories, resolveStoryStories } from '@/lib/listing/resolveListingItems'
+import { enrichJobBloks, enrichListingBloks, resolveProductStories } from '@/lib/listing/resolveListingItems'
 import { enrichCarouselBloks, resolveCarouselItems, resolveRelatedProductsVariant } from '@/lib/carousel/resolveCarouselItems'
 import { parseCarouselVariant } from '@/lib/carousel/parseCarouselVariant'
 import { CAROUSEL_LIMIT } from '@/lib/carousel/types'
-import { mapStoryToNewsCard, sortStoriesByDate } from '@/lib/carousel/mapStoryToNewsCard'
 import {
   getParentFullSlug,
   getRelatedCategoryProducts,
@@ -15,7 +14,7 @@ import StoryblokRenderer from '@/components/StoryblokRenderer'
 import DownloadGate from '@/components/organisms/DownloadGate'
 import { setRequestLocale, getTranslations } from 'next-intl/server'
 import { notFound } from 'next/navigation'
-import { PageStoryblok, StoryStoryblok, JobStoryblok, ProjectStoryblok } from '@/types/storyblok'
+import { PageStoryblok, StoryStoryblok, ProjectStoryblok } from '@/types/storyblok'
 import localeConfig from '@/i18n/locales.json'
 import { isDownloadGateContent, isNonRoutableComponent } from '@/lib/api/storyblok/routing'
 import { mapStoryToDownloadGate } from '@/lib/downloadable/map'
@@ -152,17 +151,6 @@ export default async function WithLayoutPage({ params }: PageProps) {
     story.content = nextContent
   }
 
-  // Se il content è un Job, fetcha le ultime news
-  if (story.content?.component === 'job') {
-    const stories = await resolveStoryStories(locale)
-    story.content = {
-      ...(story.content as JobStoryblok),
-      latest_stories: sortStoriesByDate(stories)
-        .slice(0, 8)
-        .map(mapStoryToNewsCard),
-    }
-  }
-
   // Se il content è un Project, risolvi TUTTI i prodotti correlati (stesso plugin di Story,
   // ma senza limite: la pagina Project mostra l'elenco completo, non un carousel troncato).
   // Il listing automatico può essere disabilitato dal campo `show_related_products_listing`.
@@ -252,6 +240,7 @@ export default async function WithLayoutPage({ params }: PageProps) {
     attachProductRelations,
     enrichListingBloks(story.content, locale),
     enrichCarouselBloks(story.content, locale),
+    enrichJobBloks(story.content, locale),
   ])
 
   return (

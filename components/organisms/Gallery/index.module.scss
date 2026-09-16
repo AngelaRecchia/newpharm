@@ -2,10 +2,16 @@
 
 .wrapper {
   overflow: clip;
+
+  &.dark {
+    background-color: $c-black;
+    color: $c-white;
+  }
 }
 
 .container {
   @include container-lg;
+  padding-block-end: 4.5rem;
 }
 
 .content {
@@ -19,18 +25,27 @@
 }
 
 .head {
-  @include md {
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $s-24;
+
+  @include lg {
+    grid-template-columns: 1fr 1fr;
+    gap: $s-64;
   }
 }
 
 .title {
   @include t-h3;
-  grid-column: 7 / -1;
+  margin: 0;
+
+  @include lg {
+    grid-column: 2/3;
+  }
 }
 
 .swiper-wrapper {
+  position: relative;
   height: 28.75rem;
 
   @include lg {
@@ -42,8 +57,21 @@
   position: relative;
   width: 100%;
   height: 100%;
-
   overflow: visible;
+
+  :global(.swiper-wrapper) {
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  :global(.swiper-slide) {
+    img,
+    picture,
+    [data-asset] {
+      -webkit-user-drag: none;
+      user-select: none;
+    }
+  }
 
   :global(.swiper-pagination) {
     position: relative;
@@ -61,6 +89,10 @@
     transition: opacity 300ms ease;
     cursor: pointer;
     margin: 0;
+
+    .dark & {
+      background-color: $c-white;
+    }
   }
 
   :global(.swiper-pagination-bullet-active) {
@@ -75,6 +107,7 @@
 }
 
 .swiper-slide {
+  position: relative;
   width: auto;
   height: 100%;
   max-width: 100%;
@@ -84,15 +117,14 @@
     &::after {
       content: "";
       position: absolute;
-      top: 0;
-      bottom: 0;
+      inset-block: 0;
       width: 120px;
-      z-index: 10;
+      z-index: 1;
       pointer-events: none;
     }
 
     &::before {
-      left: 0;
+      inset-inline-start: 0;
       background: linear-gradient(
         to left,
         rgba($c-black, 0) 0%,
@@ -101,7 +133,7 @@
     }
 
     &::after {
-      right: 0;
+      inset-inline-end: 0;
       background: linear-gradient(
         to right,
         rgba($c-black, 0) 0%,
@@ -124,6 +156,8 @@
     --asset-width: auto;
     max-width: 100%;
     --asset-object-fit: cover;
+    -webkit-user-drag: none;
+    pointer-events: none;
   }
 }
 
@@ -135,6 +169,7 @@
   display: flex;
   justify-content: space-between;
   z-index: 10;
+  pointer-events: none;
   padding-inline: $s-4;
 
   @include md {
@@ -143,5 +178,15 @@
 
   @include lg {
     padding-inline: $s-24;
+  }
+
+  button {
+    pointer-events: auto;
+
+    &[disabled] {
+      opacity: 0.5;
+      cursor: default;
+      pointer-events: none;
+    }
   }
 }

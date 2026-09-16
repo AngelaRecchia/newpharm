@@ -2,10 +2,12 @@
 
 import { useCallback, useMemo, type ReactNode } from 'react'
 import classNames from 'classnames/bind'
+import NextImage from 'next/image'
 import Asset from '@/components/atoms/Asset'
 import Button from '@/components/atoms/Button'
 import Icon from '@/components/atoms/Icon'
 import { countGroupedItems, sliceGroupedItems } from '@/lib/downloadable/group'
+import { DOWNLOADABLE_PLACEHOLDER_SRC } from '@/lib/downloadable/placeholder'
 import type { DownloadPreviewGroup, DownloadPreviewItem } from '@/lib/downloadable/types'
 import styles from './index.module.scss'
 
@@ -64,15 +66,13 @@ export default function DownloadPreviewList({
   )
 
   const renderPreview = (variant: 'sticky' | 'mobile') => {
-    const hasCover = visibleItems.some((item) => item.cover)
-    if (!hasCover) return null
+    if (visibleItems.length === 0) return null
 
     return (
       <div className={cn('preview', variant)} aria-hidden={true}>
         <div className={cn('previewInner')}>
           <div className={cn('previewFrame')}>
             {visibleItems.map((item, index) => {
-              if (!item.cover) return null
               const isActive = index === activeIndex
               return (
                 <div
@@ -80,12 +80,22 @@ export default function DownloadPreviewList({
                   className={cn('previewLayer', { active: isActive })}
                   aria-hidden={!isActive}
                 >
-                  <Asset
-                    asset={item.cover}
-                    size="l"
-                    mode="fit"
-                    className={cn('previewAsset')}
-                  />
+                  {item.cover ? (
+                    <Asset
+                      asset={item.cover}
+                      size="l"
+                      mode="fit"
+                      className={cn('previewAsset')}
+                    />
+                  ) : (
+                    <NextImage
+                      src={DOWNLOADABLE_PLACEHOLDER_SRC}
+                      alt=""
+                      width={259}
+                      height={340}
+                      className={cn('previewPlaceholder')}
+                    />
+                  )}
                 </div>
               )
             })}

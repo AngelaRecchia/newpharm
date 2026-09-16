@@ -1,9 +1,11 @@
 import classNames from 'classnames/bind'
+import NextImage from 'next/image'
 import Asset, { type StoryblokAsset } from '@/components/atoms/Asset'
 import Icon from '@/components/atoms/Icon'
 import SmartLink from '@/components/atoms/SmartLink'
 import { AssetStoryblok } from '@/types/storyblok'
 import { getLinkUrl, StoryblokLink } from '@/lib/api/utils/links'
+import { DOWNLOADABLE_PLACEHOLDER_SRC } from '@/lib/downloadable/placeholder'
 import styles from './index.module.scss'
 
 const cn = classNames.bind(styles)
@@ -109,11 +111,21 @@ export default function CardListing({
           className={cn('image', {
             square: imageRatio === 'square',
             empty: showImagePlaceholder,
-            imageSafeArea,
+            imageSafeArea: imageSafeArea && hasCover,
           })}
           aria-hidden={showImagePlaceholder || undefined}
         >
-          {hasCover ? <CardImage image={image} mode={imageSafeArea ? 'fit' : undefined} /> : null}
+          {hasCover ? (
+            <CardImage image={image} mode={imageSafeArea ? 'fit' : undefined} />
+          ) : (
+            <NextImage
+              src={DOWNLOADABLE_PLACEHOLDER_SRC}
+              alt=""
+              fill
+              sizes="(min-width: 1024px) 25vw, 50vw"
+              className={cn('placeholderImage')}
+            />
+          )}
         </div>
       ) : null}
       <div className={cn('content-wrapper')}>

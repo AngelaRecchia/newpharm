@@ -77,7 +77,7 @@ export function CatalogsDownloadItems() {
   return (
     <div className="catalogs-download-items">
       <p className="catalogs-download-items__hint">
-        Sono selezionabili solo cataloghi e downloadables di tipo Catalogo o Brochure con PDF allegato.
+        Sono selezionabili solo downloadable di tipo Catalogo o Brochure con PDF allegato.
       </p>
       {value.length > 0 ? (
         <ol className="catalogs-download-items__selected">

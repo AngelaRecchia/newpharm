@@ -43,12 +43,12 @@
   }
 
   &.dark {
-    background-color: #1a1a1a;
+    background-color: $c-surface-dark;
     color: $c-white;
 
     @media (hover: hover) and (pointer: fine) {
       &:hover:not(:disabled):not(.selected) {
-        background-color: #2a2a2a;
+        background-color: $c-surface-dark-hover;
       }
     }
 
@@ -63,13 +63,13 @@
     }
   }
 
-  &.large {
+  &.m {
     width: 11.5rem; // 184px
     height: 11.5rem;
     @include t-h6;
   }
 
-  &.small {
+  &.s {
     width: 8.5625rem; // 137px
     height: 8.5625rem;
     @include t-note;

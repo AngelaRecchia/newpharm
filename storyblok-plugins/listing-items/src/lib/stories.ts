@@ -5,6 +5,7 @@ const VARIANT_LABELS: Record<PluginVariantSlug, string> = {
   prodotto: 'Prodotto',
   progetto: 'Progetto',
   insetto: 'Insetto',
+  infestante: 'Infestante',
   catalogo: 'Catalogo',
   story: 'Story',
   editorial: 'Editorial',
@@ -164,23 +165,15 @@ export async function searchStories(
   if (!token) return []
 
   if (variant === 'catalogo') {
-    const [catalogs, downloadables] = await Promise.all([
-      fetchStoryPages(token, { content_type: 'catalog' }, search, locale),
-      fetchStoryPages(
-        token,
-        {
-          content_type: 'downloadable',
-          'filter_query[kind][in]': 'catalog',
-        },
-        search,
-        locale,
-      ),
-    ])
-    const byUuid = new Map<string, StoryOption>()
-    for (const story of [...catalogs, ...downloadables]) {
-      if (!byUuid.has(story.uuid)) byUuid.set(story.uuid, story)
-    }
-    return [...byUuid.values()]
+    return fetchStoryPages(
+      token,
+      {
+        content_type: 'downloadable',
+        'filter_query[kind][in]': 'catalog',
+      },
+      search,
+      locale,
+    )
   }
 
   return fetchStoryPages(

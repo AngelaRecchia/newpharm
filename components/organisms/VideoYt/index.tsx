@@ -8,6 +8,7 @@ import { Video_ytStoryblok } from '@/types/storyblok'
 import { getStoryblokAnchorId } from '@/lib/storyblok/anchor'
 import { useTranslations } from 'next-intl'
 import Icon from '@/components/atoms/Icon'
+import Asset from '@/components/atoms/Asset'
 
 const cn = classNames.bind(styles)
 
@@ -62,6 +63,7 @@ const VideoYt = ({ blok, videoId: directVideoId }: VideoYtProps) => {
 
     if (!videoId) return null
 
+    const coverBlok = blok?.cover?.[0]
     const thumbnailUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`
 
     return (
@@ -85,13 +87,22 @@ const VideoYt = ({ blok, videoId: directVideoId }: VideoYtProps) => {
                         onClick={handlePlay}
                         aria-label={t('play')}
                     >
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                            src={thumbnailUrl}
-                            alt=""
-                            className={cn('thumbnail-img')}
-                            loading="lazy"
-                        />
+                        {coverBlok ? (
+                            <Asset
+                                blok={coverBlok}
+                                size="l"
+                                hideControls
+                                className={cn('cover')}
+                            />
+                        ) : (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                                src={thumbnailUrl}
+                                alt=""
+                                className={cn('thumbnail-img')}
+                                loading="lazy"
+                            />
+                        )}
                         <div className={cn('play-btn')}>
                             <Icon type="play" size="l" weight="normal" />
                         </div>

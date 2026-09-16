@@ -29,12 +29,10 @@ export type {
   Card_divisionStoryblok,
   Card_highlightStoryblok,
   Card_icon_textStoryblok,
-  Cta_boxStoryblok,
   DividerStoryblok,
   Division_boxStoryblok,
   FaqsStoryblok,
   FooterStoryblok,
-  GalleryStoryblok,
   Icon_text_highlightStoryblok,
   Logo_itemStoryblok,
   MilestoneStoryblok,
@@ -56,8 +54,6 @@ export type {
   SlideshowStoryblok,
   Card_slideshowStoryblok,
   CatalogsDownloadStoryblok,
-  CatalogStoryResolved,
-  CatalogStoryblok,
   DownloadableStoryblok,
   DownloadableResourcesStoryblok,
   DownloadableKind,
@@ -79,6 +75,10 @@ export type {
   ProductsStoryblok,
   ProjectsStoryblok,
   Projects_highlightStoryblok,
+  GalleryStoryblok,
+  GalleryTheme,
+  Cta_boxStoryblok,
+  CtaBoxTheme,
   StoriesStoryblok,
   InfestantiStoryblok,
   JobStoryblok,
@@ -120,13 +120,13 @@ export type StoryblokComponent =
   | Generated.Card_highlightStoryblok
   | Generated.Card_icon_textStoryblok
   | Overrides.CarouselStoryblok
-  | Generated.Cta_boxStoryblok
+  | Overrides.Cta_boxStoryblok
   | Generated.DividerStoryblok
   | Generated.Division_boxStoryblok
   | Generated.FaqsStoryblok
   | Generated.FooterStoryblok
   | Overrides.Full_bannerStoryblok
-  | Generated.GalleryStoryblok
+  | Overrides.GalleryStoryblok
   | Overrides.HeaderStoryblok
   | Overrides.HeroStoryblok
   | Generated.Icon_text_highlightStoryblok
@@ -148,7 +148,6 @@ export type StoryblokComponent =
   | Generated.TabsStoryblok
   | Generated.TeaserStoryblok
   | Generated.Text_revealStoryblok
-  | Overrides.CatalogStoryblok
   | Overrides.DownloadableStoryblok
   | Overrides.DownloadableResourcesStoryblok
   | Overrides.PartnersStoryblok

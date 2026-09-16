@@ -12,7 +12,7 @@ import { parseLinkAction } from '@/lib/link-action';
 const cn = classNames.bind(styles);
 
 
-const CardCtaBox = ({ blok }: { blok?: Card_cta_boxStoryblok }) => {
+const CardCtaBox = ({ blok, dark = false }: { blok?: Card_cta_boxStoryblok; dark?: boolean }) => {
     if (!blok) return <></>;
 
     const { title, link, image, color } = blok;
@@ -24,7 +24,7 @@ const CardCtaBox = ({ blok }: { blok?: Card_cta_boxStoryblok }) => {
     const Tag = isHref ? SmartLink : 'div';
     const props = isHref && validLink ? { link: validLink.link } : {};
     return (
-        <Tag className={cn('wrapper', color, { hasImage })} {...storyblokEditable(blok as any)} {...props}>
+        <Tag className={cn('wrapper', color, { hasImage, dark })} {...storyblokEditable(blok as any)} {...props}>
 
             {hasImage && <Asset asset={image} size="l" />}
 

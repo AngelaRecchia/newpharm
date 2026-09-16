@@ -1,4 +1,4 @@
-﻿@use "../../../styles" as *;
+@use "../../../styles" as *;
 
 .wrapper {
   min-height: 60vh;
@@ -112,40 +112,6 @@
   flex-shrink: 0;
 }
 
-.tabsTrack {
-  box-sizing: border-box;
-  overflow: hidden;
-  width: calc(100% + 48px);
-  margin-inline-start: -24px;
-  margin-block-end: $s-48;
-  padding-inline: 0 24px;
-  padding-block: 4px;
-
-  @include md {
-    margin-inline: -40px;
-    width: calc(100% + 80px);
-    padding-inline: 0 40px;
-  }
-}
-
-.tabsSwiper {
-  overflow: visible;
-  padding-inline-start: 24px;
-
-  @include md {
-    padding-inline-start: 40px;
-  }
-}
-
-.tabItem {
-  width: auto;
-  flex-shrink: 0;
-
-  .chip:focus-visible {
-    outline-color: $c-primary;
-  }
-}
-
 .loading {
   @include t-body;
   padding-block: $s-48;
@@ -231,37 +197,12 @@
   overflow: visible;
 }
 
-.chipsTrack {
-  box-sizing: border-box;
-  overflow: hidden;
-  width: calc(100% + 48px);
-  margin-inline-start: -24px;
-  padding-inline: 0 24px;
+.tabsWrapper {
+  margin-block-end: $s-48;
+}
+
+.suggestedTrack {
   padding-block: 4px;
-
-  @include md {
-    margin-inline: -40px;
-    width: calc(100% + 80px);
-    padding-inline: 0 40px;
-  }
-}
-
-.chipsSwiper {
-  overflow: visible;
-  padding-inline-start: 24px;
-
-  @include md {
-    padding-inline-start: 40px;
-  }
-}
-
-.chipItem {
-  width: auto;
-  flex-shrink: 0;
-
-  .chip:focus-visible {
-    outline-color: $c-primary;
-  }
 }
 
 .grid {

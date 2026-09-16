@@ -55,16 +55,17 @@
   margin: 0;
 }
 
-.cta {
-  @include container-narrow;
-  padding-top: 0;
-  padding-bottom: $s-40;
+.description {
+  padding-top: $s-40;
+  display: flex;
+  flex-direction: column;
+  gap: $s-40;
 
   @include lg {
-    padding-bottom: $s-64;
+    padding-top: $s-56;
+    gap: $s-64;
   }
 }
-
 .carousel {
   padding-block-end: $s-40;
 

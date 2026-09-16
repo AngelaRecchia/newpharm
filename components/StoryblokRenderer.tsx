@@ -71,9 +71,6 @@ function preserveSsrEnrichment(source: unknown, target: unknown): unknown {
     if (Array.isArray(sourceRecord.resolved_items)) {
       merged.resolved_items = sourceRecord.resolved_items
     }
-    if (Array.isArray(sourceRecord.resolved_catalogs)) {
-      merged.resolved_catalogs = sourceRecord.resolved_catalogs
-    }
     if (Array.isArray(sourceRecord.resolved_downloadables)) {
       merged.resolved_downloadables = sourceRecord.resolved_downloadables
     }
@@ -94,6 +91,9 @@ function preserveSsrEnrichment(source: unknown, target: unknown): unknown {
     }
     if (Array.isArray(sourceRecord.related_news)) {
       merged.related_news = sourceRecord.related_news
+    }
+    if (Array.isArray(sourceRecord.latest_stories)) {
+      merged.latest_stories = sourceRecord.latest_stories
     }
     if (Array.isArray(sourceRecord.resolved_target_pests)) {
       merged.resolved_target_pests = sourceRecord.resolved_target_pests
@@ -140,7 +140,6 @@ function preserveSsrEnrichment(source: unknown, target: unknown): unknown {
   for (const key of Object.keys(merged)) {
     if (
       key === 'resolved_items' ||
-      key === 'resolved_catalogs' ||
       key === 'resolved_downloadables' ||
       key === 'related_projects' ||
       key === 'auto_cta_box' ||
@@ -148,6 +147,7 @@ function preserveSsrEnrichment(source: unknown, target: unknown): unknown {
       key === 'related_category_parent_slug' ||
       key === 'related_stories' ||
       key === 'related_news' ||
+      key === 'latest_stories' ||
       key === 'resolved_target_pests' ||
       key === 'comparison_page_url' ||
       key === 'product_uuid' ||

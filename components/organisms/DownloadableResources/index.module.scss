@@ -12,13 +12,8 @@
   z-index: 1;
   background-color: $c-white;
   padding-block-end: $s-80;
-}
 
-.content {
-  display: flex;
-  flex-direction: column;
-  gap: $s-64;
-
+  // Spazio sopra: sul body, non sul Container (flushBlock azzera padding-block).
   &.afterPrimary {
     padding-block-start: $s-32;
 
@@ -36,16 +31,18 @@
   }
 }
 
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: $s-64;
+}
+
 .head {
   padding-top: 5.625rem;
 
   @include lg {
     padding-top: 13.5rem;
   }
-}
-
-.chips {
-  margin-block: 40px;
 }
 
 .groups {

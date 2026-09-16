@@ -10,11 +10,10 @@ export function parseDownloadableKind(raw: unknown): DownloadableKind | null {
     : null
 }
 
-/** Catalog legacy (`component: catalog`) o downloadable scaricabile nel modulo cataloghi. */
+/** Downloadable catalogo o brochure, usati nel modulo cataloghi e nel download gate. */
 export function isCatalogContent(content: unknown): boolean {
   if (!content || typeof content !== 'object') return false
   const record = content as { component?: unknown; kind?: unknown }
-  if (record.component === 'catalog') return true
   const kind = parseDownloadableKind(record.kind)
   return (
     record.component === 'downloadable' &&

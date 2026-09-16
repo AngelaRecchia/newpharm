@@ -5,7 +5,13 @@ import styles from './index.module.scss'
 
 const cn = classNames.bind(styles)
 
-export type FilterChipSize = 'large' | 'small'
+/** `s` = compatta (search/tabs), `m` = card filtro (product/stories). */
+export type FilterChipSize = 's' | 'm' | 'small' | 'large'
+
+function normalizeSize(size: FilterChipSize): 's' | 'm' {
+  if (size === 'large' || size === 'm') return 'm'
+  return 's'
+}
 
 export type FilterChipProps = {
   label: string
@@ -21,17 +27,19 @@ export type FilterChipProps = {
 export default function FilterChip({
   label,
   selected = false,
-  size = 'large',
+  size = 'm',
   dark = false,
   hoverBlack = false,
   className,
   onClick,
   disabled = false,
 }: FilterChipProps) {
+  const resolved = normalizeSize(size)
+
   return (
     <button
       type="button"
-      className={cn('chip', size, { selected, dark, hoverBlack }, className)}
+      className={cn('chip', resolved, { selected, dark, hoverBlack }, className)}
       aria-pressed={selected}
       onClick={onClick}
       disabled={disabled}

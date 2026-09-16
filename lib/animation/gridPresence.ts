@@ -33,6 +33,19 @@ export function getGridMotion(index: number, reduceMotion: boolean | null) {
   }
 }
 
+/** Transizione pannello al cambio tab/filtro (Search, DownloadableResources, …). */
+export function getTabPanelMotion(reduceMotion: boolean | null) {
+  return {
+    initial: { opacity: 0, y: reduceMotion ? 0 : 16 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: reduceMotion ? 0 : -16 },
+    transition: {
+      duration: reduceMotion ? 0.01 : 0.3,
+      ease: GRID_EASE,
+    },
+  }
+}
+
 export function getEmptyMotion(reduceMotion: boolean | null) {
   return {
     initial: reduceMotion ? false : { opacity: 0, y: 8 },

@@ -4,7 +4,6 @@ export type ListingContentComponent =
   | 'product'
   | 'project'
   | 'insect'
-  | 'catalog'
   | 'downloadable'
   | 'job'
 
@@ -55,7 +54,7 @@ export const VARIANT_TO_COMPONENT: Record<ListingVariantSlug, ListingContentComp
   prodotto: 'product',
   progetto: 'project',
   insetto: 'insect',
-  catalogo: 'catalog', // dual-read: resolveCatalogListingStories aggiunge anche downloadable kind=catalog
+  catalogo: 'downloadable', // resolveCatalogListingStories filtra kind=catalog
 }
 
 export type ListingCardData = {
@@ -77,6 +76,7 @@ export type ListingStoryResolved = {
   created_at?: string | null
   published_at?: string | null
   first_published_at?: string | null
+  updated_at?: string | null
   content: Record<string, unknown>
 }
 

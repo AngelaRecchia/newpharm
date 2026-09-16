@@ -13,6 +13,7 @@ function popupLink(
   }
 }
 
+/** CTA box fisso in fondo pagina job, prima del carousel news. */
 export const JOB_PAGE_CTA_BOX: Cta_boxStoryblok = {
   _uid: 'job-page-cta-box',
   component: 'cta_box',

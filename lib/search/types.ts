@@ -36,7 +36,7 @@ export interface SearchDocument {
   registration?: string | null
   target_pests?: string[]
 
-  /** Downloadable / catalog */
+  /** Downloadable */
   kind?: string | null
 }
 

@@ -1,0 +1,31 @@
+@use "../../../styles" as *;
+
+.track {
+  box-sizing: border-box;
+  overflow: hidden;
+  width: calc(100% + 48px);
+  margin-inline-start: -24px;
+  padding-inline: 0 24px;
+
+  @include md {
+    margin-inline: -40px;
+    width: calc(100% + 80px);
+    padding-inline: 0 40px;
+  }
+}
+
+.swiper {
+  overflow: visible;
+  padding-inline-start: 24px;
+
+  @include md {
+    padding-inline-start: 40px;
+  }
+}
+
+// slidesPerView="auto": la slide deve restringersi al chip.
+// Su display:block, `width: auto` = 100% del track → una chip per viewport.
+.slide {
+  width: max-content !important;
+  flex-shrink: 0;
+}

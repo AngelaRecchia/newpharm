@@ -45,6 +45,59 @@ export function toAbsoluteHttpsUrl(url: string): string {
   return `https://${trimmed}`
 }
 
+function fileNameFromUrl(url: string): string {
+  try {
+    const path = new URL(toAbsoluteHttpsUrl(url)).pathname
+    const base = path.split('/').pop()
+    if (base && base.length > 0) return decodeURIComponent(base)
+  } catch {
+    /* ignore */
+  }
+  return 'download.pdf'
+}
+
+function ensureDownloadFileName(fileName: string | undefined, url: string): string {
+  const raw = fileName?.trim()
+  if (!raw) return fileNameFromUrl(url)
+  if (/\.[a-z0-9]{2,8}$/i.test(raw)) return raw
+  const fromUrl = fileNameFromUrl(url)
+  const ext = fromUrl.includes('.') ? fromUrl.slice(fromUrl.lastIndexOf('.')) : '.pdf'
+  return `${raw}${ext}`
+}
+
+/** Scarica un file remoto (es. PDF Storyblok) forzando il download, non la navigazione. */
+export async function downloadRemoteFile(
+  url: string,
+  fileName?: string,
+): Promise<void> {
+  if (typeof document === 'undefined') return
+  const absolute = toAbsoluteHttpsUrl(url)
+  const name = ensureDownloadFileName(fileName, absolute)
+
+  try {
+    const res = await fetch(absolute)
+    if (!res.ok) throw new Error(`download failed: ${res.status}`)
+    const blob = await res.blob()
+    const objectUrl = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = objectUrl
+    a.download = name
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+    URL.revokeObjectURL(objectUrl)
+  } catch {
+    const a = document.createElement('a')
+    a.href = absolute
+    a.download = name
+    a.target = '_blank'
+    a.rel = 'noopener noreferrer'
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+  }
+}
+
 export function getAssetName(raw: unknown): string | undefined {
   const asset = Array.isArray(raw) ? raw.find(isAsset) : isAsset(raw) ? raw : null
   const name = asset?.name

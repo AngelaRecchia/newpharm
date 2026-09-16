@@ -26,3 +26,16 @@ export function mapJobToCard(story: ListingStoryResolved): JobCardData {
     href: story.full_slug,
   }
 }
+
+function getJobSortTimestamp(story: ListingStoryResolved): number {
+  const raw = story.published_at ?? story.updated_at ?? null
+  return raw ? Date.parse(raw) : 0
+}
+
+export function sortJobsByPublishedAt(
+  stories: ListingStoryResolved[],
+): ListingStoryResolved[] {
+  return [...stories].sort(
+    (a, b) => getJobSortTimestamp(b) - getJobSortTimestamp(a),
+  )
+}

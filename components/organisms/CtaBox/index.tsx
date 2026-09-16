@@ -14,21 +14,22 @@ const CtaBox = ({ blok }: { blok?: Cta_boxStoryblok }) => {
 
     if (!blok) return <></>;
 
-    const { cards } = blok;
+    const { cards, theme } = blok;
+    const isDark = theme === 'dark';
 
     return (
         <section
-            className={cn('wrapper')}
+            className={cn('wrapper', { dark: isDark })}
             id={getStoryblokAnchorId(blok.anchor_id)}
             data-cta-box
             {...storyblokEditable(blok as any)}
             style={{ '--cards-count': cards?.length || 0 } as React.CSSProperties}
         >
-
-            {cards?.map((card, index) => (
-                <CardCtaBox key={card._uid ?? `cta-card-${index}`} blok={card} />
-            ))}
-
+            <div className={cn('container')}>
+                {cards?.map((card, index) => (
+                    <CardCtaBox key={card._uid ?? `cta-card-${index}`} blok={card} dark={isDark} />
+                ))}
+            </div>
         </section>
     );
 }

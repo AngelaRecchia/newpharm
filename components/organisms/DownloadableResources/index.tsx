@@ -12,20 +12,17 @@ import CardListing from '@/components/molecules/CardListing'
 import FilterChips from '@/components/molecules/FilterChips'
 import HeroTertiary from '@/components/molecules/HeroTertiary'
 import CatalogDownloadModal from '@/components/organisms/CatalogsDownload/CatalogDownloadModal'
-import { getEmptyMotion, getGridMotion } from '@/lib/animation/gridPresence'
+import { getEmptyMotion, getGridMotion, getTabPanelMotion } from '@/lib/animation/gridPresence'
 import { getStoryblokAnchorId } from '@/lib/storyblok/anchor'
 import { useRefreshPageScroll } from '@/lib/context/smooth-scroll-context'
 import { groupByDivision, groupByYear, sliceGroupedItems } from '@/lib/downloadable/group'
 import {
   filterDownloadablesByKind,
-  mapCatalogStoryToPreviewItem,
   mapDownloadableStoryToPreviewItem,
-  mergeListingStoriesByUuid,
   sortStoriesByContentDate,
 } from '@/lib/downloadable/map'
 import { requiresDownloadForm } from '@/lib/downloadable/form'
-import { toAbsoluteHttpsUrl } from '@/lib/downloadable/assets'
-import { parseDownloadableKind } from '@/lib/downloadable/parse'
+import { downloadRemoteFile, toAbsoluteHttpsUrl } from '@/lib/downloadable/assets'
 import {
   type DownloadPreviewItem,
   type ResourceTab,
@@ -53,9 +50,19 @@ const TAB_LABEL_KEY: Record<ResourceTab, string> = {
   press: 'resources_press',
 }
 
+const TAB_ORDER: ResourceTab[] = ['cataloghi', 'brochure', 'app', 'press', 'altro']
+
 function hasHeroAsset(image?: AssetStoryblok[] | null): boolean {
   const first = image?.[0]
   return Boolean(first?.desktop?.filename || first?.mobile?.filename)
+}
+
+/** Solo risorse effettivamente utilizzabili in lista (file o link app esterno). */
+function isListableItem(item: DownloadPreviewItem): boolean {
+  if (item.kind === 'app') {
+    return Boolean(item.href && /^https?:\/\//i.test(item.href.trim()))
+  }
+  return Boolean(item.fileUrl)
 }
 
 function ResourceCard({
@@ -67,7 +74,16 @@ function ResourceCard({
 }) {
   const fileUrl = item.fileUrl ? toAbsoluteHttpsUrl(item.fileUrl) : undefined
   const gated = Boolean(fileUrl) && requiresDownloadForm(item)
-  const href = gated ? undefined : fileUrl ?? item.href
+  const isApp = item.kind === 'app'
+  // App → link store. Con form → modal. Press/altro senza form → download PDF (non navigazione).
+  const href = isApp ? item.href : undefined
+  const onActivate = gated
+    ? () => onDownload(item)
+    : fileUrl
+      ? () => {
+          void downloadRemoteFile(fileUrl, item.modalFileName)
+        }
+      : undefined
   const showTitle = item.kind !== 'app' && item.kind !== 'altro'
 
   return (
@@ -77,8 +93,8 @@ function ResourceCard({
       image={item.cover}
       href={href}
       showDownload={Boolean(fileUrl)}
-      titleOnlyWhenNoImage
-      onActivate={gated ? () => onDownload(item) : undefined}
+      placeholderWhenNoImage
+      onActivate={onActivate}
     />
   )
 }
@@ -94,30 +110,25 @@ function DownloadableResourcesInner({
   const skipScrollRefresh = useRef(true)
   const downloadLabel = t('product_download')
 
-  const catalogs = useMemo(() => {
-    const catalogStories = sortStoriesByContentDate(
-      mergeListingStoriesByUuid(
-        blok.resolved_catalogs ?? [],
-        filterDownloadablesByKind(blok.resolved_downloadables ?? [], 'catalog'),
-      ),
-    )
-
-    return catalogStories
-      .map((story) =>
-        parseDownloadableKind(story.content.kind) === 'catalog'
-          ? mapDownloadableStoryToPreviewItem(story, downloadLabel)
-          : mapCatalogStoryToPreviewItem(story, downloadLabel),
-      )
-      .filter((item) => Boolean(item.fileUrl))
-  }, [blok.resolved_catalogs, blok.resolved_downloadables, downloadLabel])
-
   const resolvedDownloadables = blok.resolved_downloadables
+
+  const catalogs = useMemo(
+    () =>
+      sortStoriesByContentDate(
+        filterDownloadablesByKind(resolvedDownloadables ?? [], 'catalog'),
+      )
+        .map((story) => mapDownloadableStoryToPreviewItem(story, downloadLabel))
+        .filter(isListableItem),
+    [resolvedDownloadables, downloadLabel],
+  )
 
   const brochures = useMemo(
     () =>
       sortStoriesByContentDate(
         filterDownloadablesByKind(resolvedDownloadables ?? [], 'brochure'),
-      ).map((story) => mapDownloadableStoryToPreviewItem(story, downloadLabel)),
+      )
+        .map((story) => mapDownloadableStoryToPreviewItem(story, downloadLabel))
+        .filter(isListableItem),
     [resolvedDownloadables, downloadLabel],
   )
 
@@ -125,7 +136,9 @@ function DownloadableResourcesInner({
     () =>
       sortStoriesByContentDate(
         filterDownloadablesByKind(resolvedDownloadables ?? [], 'other'),
-      ).map((story) => mapDownloadableStoryToPreviewItem(story, downloadLabel)),
+      )
+        .map((story) => mapDownloadableStoryToPreviewItem(story, downloadLabel))
+        .filter(isListableItem),
     [resolvedDownloadables, downloadLabel],
   )
 
@@ -133,7 +146,9 @@ function DownloadableResourcesInner({
     () =>
       sortStoriesByContentDate(
         filterDownloadablesByKind(resolvedDownloadables ?? [], 'app'),
-      ).map((story) => mapDownloadableStoryToPreviewItem(story, downloadLabel)),
+      )
+        .map((story) => mapDownloadableStoryToPreviewItem(story, downloadLabel))
+        .filter(isListableItem),
     [resolvedDownloadables, downloadLabel],
   )
 
@@ -141,28 +156,11 @@ function DownloadableResourcesInner({
     () =>
       sortStoriesByContentDate(
         filterDownloadablesByKind(resolvedDownloadables ?? [], 'press'),
-      ).map((story) => mapDownloadableStoryToPreviewItem(story, downloadLabel)),
+      )
+        .map((story) => mapDownloadableStoryToPreviewItem(story, downloadLabel))
+        .filter(isListableItem),
     [resolvedDownloadables, downloadLabel],
   )
-
-  const available = useMemo(() => {
-    const tabs: ResourceTab[] = []
-    if (catalogs.length > 0) tabs.push('cataloghi')
-    if (brochures.length > 0) tabs.push('brochure')
-    if (apps.length > 0) tabs.push('app')
-    if (press.length > 0) tabs.push('press')
-    if (others.length > 0) tabs.push('altro')
-    return tabs
-  }, [apps.length, brochures.length, catalogs.length, others.length, press.length])
-
-  const { kind, setKind } = useResourcesTabUrl(available)
-
-  const [visibleCount, setVisibleCount] = useState(INITIAL_COUNT)
-  const [downloadModal, setDownloadModal] = useState<{
-    url: string
-    name: string
-    subtitle?: string
-  } | null>(null)
 
   const itemsByKind = useMemo(
     (): Record<ResourceTab, DownloadPreviewItem[]> => ({
@@ -175,6 +173,20 @@ function DownloadableResourcesInner({
     [apps, brochures, catalogs, others, press],
   )
 
+  const available = useMemo(
+    () => TAB_ORDER.filter((tab) => itemsByKind[tab].length > 0),
+    [itemsByKind],
+  )
+
+  const { kind, setKind } = useResourcesTabUrl(available)
+
+  const [visibleCount, setVisibleCount] = useState(INITIAL_COUNT)
+  const [downloadModal, setDownloadModal] = useState<{
+    url: string
+    name: string
+    subtitle?: string
+  } | null>(null)
+
   const filteredItems = useMemo(() => {
     if (!kind) return []
     return itemsByKind[kind]
@@ -186,6 +198,10 @@ function DownloadableResourcesInner({
         groupByDivision(filteredItems, (division) => t(division)),
         visibleCount,
       )
+    }
+    // App / press / altro: lista piatta, senza titoli di sezione (anno, ecc.).
+    if (kind === 'app' || kind === 'press' || kind === 'altro') {
+      return sliceGroupedItems([{ items: filteredItems }], visibleCount)
     }
     return sliceGroupedItems(groupByYear(filteredItems), visibleCount)
   }, [filteredItems, kind, t, visibleCount])
@@ -238,7 +254,8 @@ function DownloadableResourcesInner({
   const hasImage = hasHeroAsset(blok.image)
   const showPrimaryHero = hasTitle && hasImage
   const showTertiaryHero = hasTitle && !hasImage
-  const showChips = available.length > 0
+  // Chip solo per categorie con item; la barra serve se c'è almeno una scelta.
+  const showChips = available.length > 1
 
   const primaryHeroBlok = useMemo((): HeroStoryblok | null => {
     if (!showPrimaryHero) return null
@@ -265,14 +282,13 @@ function DownloadableResourcesInner({
         onClose={closeDownloadModal}
       />
       {primaryHeroBlok ? <Hero blok={primaryHeroBlok} /> : null}
-      <div className={cn('body')}>
-      <Container
-        className={cn('content', {
+      <div
+        className={cn('body', {
           afterPrimary: showPrimaryHero,
           noHero: !hasTitle,
         })}
-        flushBlock
       >
+      <Container className={cn('content')} flushBlock>
         {showTertiaryHero ? (
           <div className={cn('head')}>
             <HeroTertiary title={title} as="h1" />
@@ -281,63 +297,61 @@ function DownloadableResourcesInner({
 
         {showChips ? (
           <FilterChips
-            className={cn('chips')}
             items={available}
             value={kind ? [kind] : []}
             onChange={handleKindsChange}
-            size="large"
             showAll={false}
+            size="m"
             exclusive
-            hoverBlack
             ariaLabel={t('resources_tablist')}
             getLabel={(item) => t(TAB_LABEL_KEY[item])}
           />
         ) : null}
 
-        {groups.some((group) => group.items.length > 0) ? (
-          <div className={cn('groups')}>
-            {groups.map((group) => {
-              const groupKey = group.heading ?? 'ungrouped'
-              return (
-                <section key={groupKey} className={cn('group')}>
-                  {group.heading ? (
-                    <h2 className={cn('groupHeading')}>{group.heading}</h2>
-                  ) : null}
-                  <div className={cn('grid')}>
-                    <AnimatePresence
-                      mode="popLayout"
-                      initial={false}
-                      onExitComplete={handleGridExitComplete}
-                    >
-                      {group.items.map((item, index) => (
-                        <motion.div
-                          key={item.key}
-                          className={cn('gridItem')}
-                          {...getGridMotion(index, reduceMotion)}
-                        >
-                          <ResourceCard
-                            item={item}
-                            onDownload={openDownload}
-                          />
-                        </motion.div>
-                      ))}
-                    </AnimatePresence>
-                  </div>
-                </section>
-              )
-            })}
-          </div>
-        ) : (
-          <AnimatePresence mode="wait" initial={false}>
+        <AnimatePresence mode="wait" initial={false} onExitComplete={handleGridExitComplete}>
+          {groups.some((group) => group.items.length > 0) ? (
+            <motion.div
+              key={kind ?? 'empty-kind'}
+              className={cn('groups')}
+              {...getTabPanelMotion(reduceMotion)}
+            >
+              {groups.map((group) => {
+                const groupKey = group.heading ?? 'ungrouped'
+                return (
+                  <section key={groupKey} className={cn('group')}>
+                    {group.heading ? (
+                      <h2 className={cn('groupHeading')}>{group.heading}</h2>
+                    ) : null}
+                    <div className={cn('grid')}>
+                      <AnimatePresence mode="popLayout" initial={false}>
+                        {group.items.map((item, index) => (
+                          <motion.div
+                            key={item.key}
+                            className={cn('gridItem')}
+                            {...getGridMotion(index, reduceMotion)}
+                          >
+                            <ResourceCard
+                              item={item}
+                              onDownload={openDownload}
+                            />
+                          </motion.div>
+                        ))}
+                      </AnimatePresence>
+                    </div>
+                  </section>
+                )
+              })}
+            </motion.div>
+          ) : (
             <motion.p
-              key="empty"
+              key={`empty-${kind ?? 'none'}`}
               className={cn('empty')}
               {...getEmptyMotion(reduceMotion)}
             >
               {t('no_events')}
             </motion.p>
-          </AnimatePresence>
-        )}
+          )}
+        </AnimatePresence>
 
         {hasMore ? (
           <div className={cn('footer')}>

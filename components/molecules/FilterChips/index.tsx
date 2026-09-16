@@ -1,9 +1,11 @@
 'use client'
 
-import { useCallback } from 'react'
+import { useCallback, useRef } from 'react'
 import classNames from 'classnames/bind'
 import { useTranslations } from 'next-intl'
+import type { SwiperClass } from 'swiper/react'
 import FilterChip, { type FilterChipSize } from '@/components/atoms/FilterChip'
+import ChipSwiper, { ChipSwiperSlide } from '@/components/molecules/ChipSwiper'
 import styles from './index.module.scss'
 
 const cn = classNames.bind(styles)
@@ -14,6 +16,7 @@ export type FilterChipsProps<T extends string> = {
   onChange: (value: T[]) => void
   className?: string
   dark?: boolean
+  /** `s` search/tabs, `m` listing filtri (product/stories). Default `s`. */
   size?: FilterChipSize
   ariaLabel?: string
   getLabel?: (item: T) => string
@@ -28,7 +31,7 @@ export default function FilterChips<T extends string>({
   onChange,
   className,
   dark = false,
-  size = 'large',
+  size = 's',
   ariaLabel,
   getLabel,
   showAll = true,
@@ -36,6 +39,7 @@ export default function FilterChips<T extends string>({
   hoverBlack = false,
 }: FilterChipsProps<T>) {
   const t = useTranslations('')
+  const swiperRef = useRef<SwiperClass | null>(null)
   const allSelected = showAll && value.length === 0
 
   const handleAll = useCallback(() => {
@@ -43,10 +47,11 @@ export default function FilterChips<T extends string>({
   }, [onChange])
 
   const handleToggle = useCallback(
-    (item: T) => {
+    (item: T, slideIndex: number) => {
       if (exclusive) {
         if (value.length === 1 && value[0] === item) return
         onChange([item])
+        requestAnimationFrame(() => swiperRef.current?.slideTo(slideIndex))
         return
       }
 
@@ -54,47 +59,43 @@ export default function FilterChips<T extends string>({
       onChange(
         selected ? value.filter((current) => current !== item) : [...value, item],
       )
+      if (!selected) {
+        requestAnimationFrame(() => swiperRef.current?.slideTo(slideIndex))
+      }
     },
     [exclusive, onChange, value],
   )
 
+  const allSlideOffset = showAll ? 1 : 0
+
   return (
-    <div className={cn('wrapper', className)}>
-      <div
-        className={cn('track')}
-        role="group"
-        aria-label={ariaLabel}
-      >
-        <div className={cn('trackInner')}>
-          {showAll ? (
-            <div className={cn('trackItem')}>
-              <FilterChip
-                label={t('all')}
-                selected={allSelected}
-                size={size}
-                dark={dark}
-                hoverBlack={hoverBlack}
-                onClick={handleAll}
-              />
-            </div>
-          ) : null}
-          {items.map((item) => {
-            const key: string = item
-            return (
-            <div key={item} className={cn('trackItem')}>
-              <FilterChip
-                label={getLabel ? getLabel(item) : t(key)}
-                selected={value.includes(item)}
-                size={size}
-                dark={dark}
-                hoverBlack={hoverBlack}
-                onClick={() => handleToggle(item)}
-              />
-            </div>
-            )
-          })}
-        </div>
-      </div>
+    <div className={cn('wrapper', className)} role="group" aria-label={ariaLabel}>
+      <ChipSwiper size={size} swiperRef={swiperRef}>
+        {showAll ? (
+          <ChipSwiperSlide>
+            <FilterChip
+              label={t('all')}
+              selected={allSelected}
+              size={size}
+              dark={dark}
+              hoverBlack={hoverBlack}
+              onClick={handleAll}
+            />
+          </ChipSwiperSlide>
+        ) : null}
+        {items.map((item, index) => (
+          <ChipSwiperSlide key={item}>
+            <FilterChip
+              label={getLabel ? getLabel(item) : t(item)}
+              selected={value.includes(item)}
+              size={size}
+              dark={dark}
+              hoverBlack={hoverBlack}
+              onClick={() => handleToggle(item, index + allSlideOffset)}
+            />
+          </ChipSwiperSlide>
+        ))}
+      </ChipSwiper>
     </div>
   )
 }

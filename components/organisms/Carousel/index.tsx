@@ -104,7 +104,10 @@ const Carousel = ({
     const navId = blok?._uid ?? (isRelatedProducts ? 'related-products' : 'related');
     const resolvedItems = blok?.resolved_items ?? [];
 
-    const computedTitle = isRelatedNews ? t('news') : resolvedTitle;
+    /** Caroselli news iniettati (Story/Product/Job): variant="news" + prop `items`. */
+    const computedTitle = isRelatedNews
+        ? (title ?? t('you_might_be_interested_in'))
+        : resolvedTitle;
 
     const computedRelatedHref = useMemo(() => {
         if (!isRelatedNews || items.length === 0) return undefined;
@@ -124,14 +127,15 @@ const Carousel = ({
     const productCards = useMemo(() => {
         const source = isRelatedProducts
             ? (productItems ?? [])
-            : parsedVariant?.variant === 'prodotto'
+            : parsedVariant?.variant === 'prodotto' ||
+                parsedVariant?.variant === 'related_products'
                 ? resolvedItems
                 : [];
         return source.map(mapProductStoryToCard);
     }, [isRelatedProducts, productItems, parsedVariant?.variant, resolvedItems]);
 
     const insectCards = useMemo(() => {
-        if (parsedVariant?.variant !== 'insetto') return [];
+        if (parsedVariant?.variant !== 'infestante') return [];
         return resolvedItems.map(mapInsectStoryToCard);
     }, [parsedVariant?.variant, resolvedItems]);
 
@@ -170,7 +174,10 @@ const Carousel = ({
                         {!isEmpty(resolvedSubtitle) && <p className={cn('subtitle')}>{resolvedSubtitle}</p>}
 
                         {showRelatedCta && (
-                            <Button href={computedRelatedHref} label={computedTitle} />
+                            <Button
+                                href={computedRelatedHref}
+                                label={ctaLabel ?? t('see_all')}
+                            />
                         )}
                         {showInjectedCta && (
                             <Button href={ctaHref} label={ctaLabel ?? t('see_all')} />
@@ -276,7 +283,7 @@ const Carousel = ({
                 </div>
             </div>
 
-            {parsedVariant?.variant === 'insetto' ? (
+            {parsedVariant?.variant === 'infestante' ? (
                 <InsectGalleryModal
                     open={Boolean(openInsect)}
                     onClose={() => setOpenInsect(null)}

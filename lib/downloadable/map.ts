@@ -13,39 +13,6 @@ import {
 } from './parse'
 import type { AppCardData, DownloadPreviewItem } from './types'
 
-export function mapCatalogStoryToPreviewItem(
-  story: ListingStoryResolved,
-  fallbackLabel: string,
-): DownloadPreviewItem {
-  const content = story.content
-  const fileUrl = getAssetFileUrl(content.file)
-  const assetName = getAssetName(content.file)
-  const title =
-    typeof content.title === 'string' && content.title.trim()
-      ? content.title.trim()
-      : story.name
-  const label = title || assetName || fallbackLabel
-  const rawDesc = content.short_description
-  const shortDescription =
-    typeof rawDesc === 'string' && rawDesc.trim().length > 0
-      ? rawDesc.trim()
-      : undefined
-
-  return {
-    key: story.uuid,
-    kind: 'cataloghi',
-    label,
-    cover: getCoverAsset(content.image),
-    fileUrl,
-    modalFileName: assetName || label,
-    shortDescription,
-    year: parseYear(
-      content.year,
-      story.first_published_at ?? story.published_at ?? story.created_at,
-    ),
-  }
-}
-
 export function mapDownloadableStoryToPreviewItem(
   story: ListingStoryResolved,
   fallbackLabel: string,
@@ -144,18 +111,6 @@ export function filterDownloadablesByKind(
   kind: DownloadableKind,
 ): ListingStoryResolved[] {
   return stories.filter((story) => parseDownloadableKind(story.content.kind) === kind)
-}
-
-export function mergeListingStoriesByUuid(
-  ...groups: ListingStoryResolved[][]
-): ListingStoryResolved[] {
-  const byUuid = new Map<string, ListingStoryResolved>()
-  for (const stories of groups) {
-    for (const story of stories) {
-      byUuid.set(story.uuid, story)
-    }
-  }
-  return [...byUuid.values()]
 }
 
 export type DownloadGateData = {

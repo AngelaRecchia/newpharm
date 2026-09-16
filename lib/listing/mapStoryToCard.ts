@@ -16,7 +16,6 @@ export function mapStoryToCard(
   switch (storyComponent) {
     case 'product':
       return mapProductStoryToCard(story)
-    case 'catalog':
     case 'downloadable':
       return mapCatalogStoryToCard(story)
     case 'insect':

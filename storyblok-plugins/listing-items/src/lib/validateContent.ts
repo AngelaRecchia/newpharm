@@ -3,6 +3,7 @@ import {
   EMPTY_VALUE,
   PROJECT_DIVISIONS,
   STORY_TAGS,
+  CAROUSEL_LIMIT,
   type CarouselStoryMode,
   type ListingImageRatio,
   type ListingProductVista,
@@ -132,17 +133,26 @@ function normalizeProjectsHighlight(
 function normalizeCarouselProdotto(value: Record<string, unknown>, items: string[]): PluginVariantValue {
   const category = typeof value.category === 'string' ? value.category : ''
   const legacyBestsellerVista = value.vista === 'bestseller'
+  const rawMode = value.selection_mode
+  const selection_mode =
+    rawMode === 'manual' || rawMode === 'dynamic'
+      ? rawMode
+      : items.length > 0
+        ? 'manual'
+        : 'dynamic'
+  const isDynamic = selection_mode === 'dynamic'
 
   return {
     variant: 'prodotto',
-    selection_mode: 'dynamic',
-    vista: normalizeVista(value.vista, category),
-    category,
-    subcategory: typeof value.subcategory === 'string' ? value.subcategory : '',
-    application_area: typeof value.application_area === 'string' ? value.application_area : '',
-    bestseller: Boolean(value.bestseller) || legacyBestsellerVista,
+    selection_mode,
+    vista: isDynamic ? normalizeVista(value.vista, category) : undefined,
+    category: isDynamic ? category : '',
+    subcategory: isDynamic && typeof value.subcategory === 'string' ? value.subcategory : '',
+    application_area:
+      isDynamic && typeof value.application_area === 'string' ? value.application_area : '',
+    bestseller: isDynamic ? Boolean(value.bestseller) || legacyBestsellerVista : false,
     tag: '',
-    items: [],
+    items: selection_mode === 'manual' ? items.slice(0, CAROUSEL_LIMIT) : [],
     image_ratio: normalizeImageRatio(value.image_ratio),
     context: 'carousel',
   }
@@ -166,7 +176,7 @@ function normalizeCarouselStory(value: Record<string, unknown>, items: string[])
     variant: 'story',
     selection_mode,
     tag: selection_mode === 'tag' ? tag : '',
-    items: selection_mode === 'manual' ? items.slice(0, 8) : [],
+    items: selection_mode === 'manual' ? items.slice(0, CAROUSEL_LIMIT) : [],
     category: '',
     subcategory: '',
     application_area: '',
@@ -176,7 +186,7 @@ function normalizeCarouselStory(value: Record<string, unknown>, items: string[])
   }
 }
 
-function normalizeCarouselInsetto(
+function normalizeCarouselInfestante(
   value: Record<string, unknown>,
   items: string[],
 ): PluginVariantValue {
@@ -189,7 +199,7 @@ function normalizeCarouselInsetto(
         : 'all'
 
   return {
-    variant: 'insetto',
+    variant: 'infestante',
     selection_mode,
     tag: '',
     items,
@@ -246,7 +256,12 @@ export function normalizeContent(content: unknown): PluginVariantValue {
   const raw = value.variant ?? value.content_variant
   const items = asItems(value.items)
   const isProjectsHighlightContext = value.context === 'projects_highlight'
-  const isCarouselContext = value.context === 'carousel' || raw === 'story' || raw === 'editorial'
+  const isCarouselContext =
+    value.context === 'carousel' ||
+    raw === 'story' ||
+    raw === 'editorial' ||
+    raw === 'infestante' ||
+    raw === 'related_products'
 
   if (isProjectsHighlightContext) {
     return normalizeProjectsHighlight(value, items)
@@ -263,8 +278,8 @@ export function normalizeContent(content: unknown): PluginVariantValue {
     if (raw === 'prodotto' || raw === 'product') {
       return normalizeCarouselProdotto(value, items)
     }
-    if (raw === 'insetto' || raw === 'insect') {
-      return normalizeCarouselInsetto(value, items)
+    if (raw === 'infestante' || raw === 'insetto' || raw === 'insect') {
+      return normalizeCarouselInfestante(value, items)
     }
     if (raw === 'related_products') {
       return normalizeCarouselRelatedProducts(value, items)

@@ -1,6 +1,7 @@
 @use "../../../styles" as *;
 
 .wrapper {
+  width: 100%;
   background-color: $c-surface;
 
   &.white {

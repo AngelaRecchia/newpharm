@@ -18,7 +18,7 @@ export function isNonRoutableComponent(component: unknown): boolean {
   return typeof component === 'string' && NON_ROUTABLE_SET.has(component)
 }
 
-/** Cataloghi (legacy o downloadable kind=catalog): slug pubblico con form, non 307 al PDF. */
+/** Downloadable catalogo/brochure: slug pubblico con form, non 307 al PDF. */
 export function isDownloadGateContent(content: unknown): boolean {
   return isCatalogContent(content)
 }

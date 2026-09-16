@@ -56,6 +56,8 @@ export default getRequestConfig(async ({ requestLocale }) => {
       search_no_results_hint: "Nessun risultato trovato.\nProva a modificare i termini di ricerca o usa i filtri per trovare ciò che cerchi.",
       all_results: "Tutti i risultati",
       show_all: "Mostra tutti",
+      see_all: "Vedi tutti",
+      you_might_be_interested_in: "Potrebbero interessarti anche:",
       loading: "Caricamento...",
     },
     en: {
@@ -74,6 +76,8 @@ export default getRequestConfig(async ({ requestLocale }) => {
       search_no_results_hint: "No results found.\nTry changing your search terms or use the filters to find what you're looking for.",
       all_results: "All results",
       show_all: "Show all",
+      see_all: "See all",
+      you_might_be_interested_in: "You might also be interested in:",
       loading: "Loading...",
     },
     ar: {
@@ -92,6 +96,8 @@ export default getRequestConfig(async ({ requestLocale }) => {
       search_no_results_hint: "لم يتم العثور على نتائج.\nحاول تغيير مصطلحات البحث أو استخدم الفلاتر للعثور على ما تبحث عنه.",
       all_results: "كل النتائج",
       show_all: "عرض الكل",
+      see_all: "عرض الكل",
+      you_might_be_interested_in: "قد يهمك أيضًا:",
       loading: "جار التحميل...",
     },
   };

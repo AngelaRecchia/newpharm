@@ -148,7 +148,6 @@ function StoriesInner({ blok }: { blok?: StoriesStoryblok }) {
           value={tags}
           onChange={handleTagsChange}
           ariaLabel="Stories"
-          size="small"
         />
 
         {visibleItems.length > 0 ? (

@@ -1,20 +1,20 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import classNames from 'classnames/bind'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { useTranslations } from 'next-intl'
-import { FreeMode, Mousewheel } from 'swiper/modules'
-import { Swiper, SwiperSlide } from 'swiper/react'
-import 'swiper/css'
 import { useDebounce } from '@/lib/use-debounce'
 import { useRefreshPageScroll } from '@/lib/context/smooth-scroll-context'
+import { getTabPanelMotion } from '@/lib/animation/gridPresence'
 import Container from '@/components/atoms/Container'
 import Icon from '@/components/atoms/Icon'
 import FilterChip from '@/components/atoms/FilterChip'
 import Button from '@/components/atoms/Button'
 import CardListing from '@/components/molecules/CardListing'
+import ChipSwiper, { ChipSwiperSlide } from '@/components/molecules/ChipSwiper'
+import FilterChips from '@/components/molecules/FilterChips'
 import PaginationNumbers from '@/components/molecules/PaginationNumbers'
 import styles from './index.module.scss'
 
@@ -52,33 +52,6 @@ interface SearchProps {
   suggestedSearches?: string[] | null
 }
 
-function ChipSwiper({
-  trackClass,
-  swiperClass,
-  children,
-}: {
-  trackClass: string
-  swiperClass: string
-  children: ReactNode
-}) {
-  return (
-    <div className={trackClass} data-lenis-prevent>
-      <Swiper
-        className={swiperClass}
-        modules={[FreeMode, Mousewheel]}
-        freeMode
-        grabCursor
-        mousewheel={{ forceToAxis: true, sensitivity: 1 }}
-        slidesPerView="auto"
-        spaceBetween={8}
-        breakpoints={{ 768: { spaceBetween: 12 } }}
-      >
-        {children}
-      </Swiper>
-    </div>
-  )
-}
-
 function SuggestedChips({
   terms,
   onClick,
@@ -87,36 +60,11 @@ function SuggestedChips({
   onClick: (term: string) => void
 }) {
   return (
-    <ChipSwiper trackClass={cn('chipsTrack')} swiperClass={cn('chipsSwiper')}>
+    <ChipSwiper size="s" className={cn('suggestedTrack')}>
       {terms.map((term) => (
-        <SwiperSlide key={term} className={cn('chipItem')}>
-          <FilterChip label={term} size="small" onClick={() => onClick(term)} />
-        </SwiperSlide>
-      ))}
-    </ChipSwiper>
-  )
-}
-
-function SearchTabs({
-  tabs,
-  selectedType,
-  onSelect,
-}: {
-  tabs: { key: keyof SearchResults | null; label: string }[]
-  selectedType: keyof SearchResults | null
-  onSelect: (key: keyof SearchResults | null) => void
-}) {
-  return (
-    <ChipSwiper trackClass={cn('tabsTrack')} swiperClass={cn('tabsSwiper')}>
-      {tabs.map(({ key, label }) => (
-        <SwiperSlide key={key ?? 'all'} className={cn('tabItem')}>
-          <FilterChip
-            label={label}
-            size="small"
-            selected={selectedType === key}
-            onClick={() => onSelect(key)}
-          />
-        </SwiperSlide>
+        <ChipSwiperSlide key={term}>
+          <FilterChip label={term} size="s" onClick={() => onClick(term)} />
+        </ChipSwiperSlide>
       ))}
     </ChipSwiper>
   )
@@ -221,11 +169,16 @@ export default function Search({ title, subtitle, suggestedSearches }: SearchPro
   ]
 
   const availableSections = sections.filter(({ key }) => results[key].length > 0)
-
-  const tabs = [
-    { key: null as keyof SearchResults | null, label: t('search_all') },
-    ...availableSections,
-  ]
+  const availableSectionKeys = availableSections.map(({ key }) => key)
+  const sectionLabels = useMemo(
+    () =>
+      Object.fromEntries(sections.map(({ key, label }) => [key, label])) as Record<
+        keyof SearchResults,
+        string
+      >,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [t],
+  )
 
   const handleClear = () => {
     setQuery('')
@@ -234,12 +187,15 @@ export default function Search({ title, subtitle, suggestedSearches }: SearchPro
     inputRef.current?.focus()
   }
 
-  const handleTabClick = (key: keyof SearchResults | null) => {
-    const nextType = selectedType === key ? null : key
-    setSelectedType(nextType)
-    setCurrentPage(1)
-    updateUrl(query, nextType)
-  }
+  const handleKindsChange = useCallback(
+    (next: Array<keyof SearchResults>) => {
+      const nextType = next[0] ?? null
+      setSelectedType(nextType)
+      setCurrentPage(1)
+      updateUrl(query, nextType)
+    },
+    [query, updateUrl],
+  )
 
   const handleShowAll = (key: keyof SearchResults) => {
     setSelectedType(key)
@@ -378,7 +334,15 @@ export default function Search({ title, subtitle, suggestedSearches }: SearchPro
 
         {!loading && hasResults && (
           <div className={cn('tabsWrapper')}>
-            <SearchTabs tabs={tabs} selectedType={selectedType} onSelect={handleTabClick} />
+            <FilterChips
+              items={availableSectionKeys}
+              value={selectedType ? [selectedType] : []}
+              onChange={handleKindsChange}
+              size="s"
+              exclusive
+              ariaLabel={t('search_all')}
+              getLabel={(key) => sectionLabels[key]}
+            />
           </div>
         )}
 
@@ -396,10 +360,7 @@ export default function Search({ title, subtitle, suggestedSearches }: SearchPro
             <motion.div
               key={selectedType ?? 'all'}
               className={cn('results')}
-              initial={{ opacity: 0, y: reduceMotion ? 0 : 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: reduceMotion ? 0 : -16 }}
-              transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+              {...getTabPanelMotion(reduceMotion)}
             >
               {selectedType ? (
                 <div className={cn('section')}>

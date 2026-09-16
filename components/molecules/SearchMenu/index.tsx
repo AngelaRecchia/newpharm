@@ -249,7 +249,7 @@ export default function SearchMenu({
                   <FilterChip
                     key={term}
                     label={term}
-                    size="small"
+                    size="s"
                     onClick={() => handleChipClick(term)}
                   />
                 ))}

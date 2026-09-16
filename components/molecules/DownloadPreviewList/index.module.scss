@@ -109,6 +109,15 @@
   height: auto;
 }
 
+.previewPlaceholder {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 259 / 340;
+  object-fit: cover;
+  background-color: $c-surface;
+}
+
 .list,
 .rows {
   list-style: none;

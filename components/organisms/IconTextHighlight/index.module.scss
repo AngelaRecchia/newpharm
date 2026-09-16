@@ -3,61 +3,75 @@
 .wrapper {
   background-color: $c-white;
   color: $c-black;
-  .container {
-    @include container-md;
-    display: flex;
-    flex-direction: column;
-    gap: $s-40;
+}
 
-    @include lg {
-      gap: $s-80;
-    }
+.container {
+  @include container-md;
+  display: flex;
+  flex-direction: column;
+  gap: $s-40;
+
+  @include lg {
+    gap: $s-80;
   }
+}
 
-  .head {
-    display: flex;
-    flex-direction: column;
-    gap: $s-16;
+.head {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $s-24;
 
-    @include lg {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-    }
+  @include lg {
+    grid-template-columns: 1fr 1fr;
+    gap: $s-64;
   }
+}
 
-  .title {
-    @include t-h3;
+.title {
+  @include t-h3;
+  margin: 0;
+}
+
+.description {
+  @include t-h6;
+  margin: 0;
+
+  @include lg {
+    padding-inline-end: $s-40;
   }
+}
 
-  .items {
-    --cols: 4;
-    display: grid;
-    grid-template-columns: repeat(min(2, var(--cols)), 1fr);
-    gap: $s-24;
-    @include md {
-      grid-template-columns: repeat(min(4, var(--cols)), 1fr);
-      column-gap: $s-64;
-    }
+.items {
+  --cols: 4;
+  display: grid;
+  grid-template-columns: repeat(min(2, var(--cols)), 1fr);
+  gap: $s-24;
 
-    .item {
-      display: flex;
-      flex-direction: column;
-      gap: $s-8;
-
-      .item-image {
-        width: 6.25rem;
-        height: 6.25rem;
-        margin-bottom: $s-8;
-        position: relative;
-      }
-
-      .item-title {
-        @include t-h6;
-      }
-
-      .item-description {
-        @include t-note;
-      }
-    }
+  @include md {
+    grid-template-columns: repeat(min(4, var(--cols)), 1fr);
+    column-gap: $s-64;
   }
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: $s-8;
+}
+
+.item-image {
+  width: 6.25rem;
+  height: 6.25rem;
+  margin-bottom: $s-8;
+  position: relative;
+}
+
+.item-title {
+  @include t-h6;
+  margin: 0;
+}
+
+.item-description {
+  @include t-note;
+  margin: 0;
 }

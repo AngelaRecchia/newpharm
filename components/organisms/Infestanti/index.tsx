@@ -134,7 +134,6 @@ function InfestantiInner({ blok }: { blok?: InfestantiStoryblok }) {
           value={categories}
           onChange={handleCategoriesChange}
           ariaLabel="Infestanti"
-          size="small"
           getLabel={getInsectCategoryLabel}
         />
 

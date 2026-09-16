@@ -19,11 +19,11 @@ import {
   getStoriesByUuids,
   type Story,
 } from '@/lib/api/storyblok/stories'
-import { sortStoriesByDate } from '@/lib/carousel/mapStoryToNewsCard'
+import { mapStoryToNewsCard, sortStoriesByDate } from '@/lib/carousel/mapStoryToNewsCard'
+import { sortJobsByPublishedAt } from '@/lib/jobs/mapJobToCard'
 import { filterProjectsByDivisions } from '@/lib/projects/filterProjects'
 import { parseProjectDivisions } from '@/lib/projects/divisions'
 import { enrichProductsTargetPests } from '@/lib/products/targetPests'
-import { mergeListingStoriesByUuid } from '@/lib/downloadable/map'
 import { parseDownloadableKind } from '@/lib/downloadable/parse'
 import type { ListingStoryResolved } from './types'
 
@@ -36,6 +36,7 @@ export function mapStoryToListingResolved(story: Story): ListingStoryResolved {
     created_at: story.created_at ?? null,
     published_at: story.published_at ?? null,
     first_published_at: story.first_published_at ?? null,
+    updated_at: story.updated_at ?? null,
     content: (story.content ?? {}) as Record<string, unknown>,
   }
 }
@@ -106,18 +107,12 @@ export async function resolveListingProductItems(
 export async function resolveCatalogListingStories(
   locale?: string,
 ): Promise<ListingStoryResolved[]> {
-  const [catalogs, downloadables] = await Promise.all([
-    getStoriesByComponent('catalog', locale),
-    getStoriesByComponent('downloadable', locale),
-  ])
+  const downloadables = await getStoriesByComponent('downloadable', locale)
   const catalogDownloadables = downloadables.filter(
     (story) => parseDownloadableKind(story.content?.kind) === 'catalog',
   )
   return sortResolvedListingStories(
-    mergeListingStoriesByUuid(
-      catalogs.map(mapStoryToListingResolved),
-      catalogDownloadables.map(mapStoryToListingResolved),
-    ),
+    catalogDownloadables.map(mapStoryToListingResolved),
   )
 }
 
@@ -247,7 +242,7 @@ export async function enrichListingBloks(
 
       if (blok.component === 'job_list') {
         const resolved = await resolveJobStories(locale)
-        blok.resolved_items = sortResolvedListingStories(resolved)
+        blok.resolved_items = sortJobsByPublishedAt(resolved)
         return
       }
 
@@ -257,11 +252,7 @@ export async function enrichListingBloks(
       }
 
       if (blok.component === 'downloadable_resources') {
-        const [catalogs, downloadables] = await Promise.all([
-          getStoriesByComponent('catalog', locale),
-          getStoriesByComponent('downloadable', locale),
-        ])
-        blok.resolved_catalogs = catalogs.map(mapStoryToListingResolved)
+        const downloadables = await getStoriesByComponent('downloadable', locale)
         blok.resolved_downloadables = downloadables.map(mapStoryToListingResolved)
         return
       }
@@ -283,4 +274,30 @@ export async function enrichListingBloks(
       blok.resolved_items = await resolveListingRefItems(parsed, locale)
     }),
   )
+}
+
+/** Ultime news per ogni blok `job` (root o annidato) — popola `latest_stories` SSR. */
+export async function enrichJobBloks(
+  content: BlokRecord | null | undefined,
+  locale?: string,
+): Promise<void> {
+  if (!content) return
+
+  const jobBloks: BlokRecord[] = []
+  walkBloks(content, (blok) => {
+    if (blok.component === 'job') {
+      jobBloks.push(blok)
+    }
+  })
+
+  if (jobBloks.length === 0) return
+
+  const stories = await resolveStoryStories(locale)
+  const latestStories = sortStoriesByDate(stories)
+    .slice(0, 8)
+    .map(mapStoryToNewsCard)
+
+  for (const blok of jobBloks) {
+    blok.latest_stories = latestStories
+  }
 }

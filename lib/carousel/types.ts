@@ -2,11 +2,11 @@ import type { ListingProductVista } from '@/lib/listing/types'
 
 export const CAROUSEL_LIMIT = 8
 
-export type CarouselVariantSlug = 'story' | 'prodotto' | 'editorial' | 'insetto' | 'related_products'
+export type CarouselVariantSlug = 'story' | 'prodotto' | 'editorial' | 'infestante' | 'related_products'
 
 export type CarouselStoryMode = 'dynamic' | 'tag' | 'manual'
 
-/** insetto: all | manual — come listing */
+/** infestante: all | manual — come listing insetto */
 export type CarouselInsectMode = 'all' | 'manual'
 
 export type CarouselSelectionMode = CarouselStoryMode | CarouselInsectMode

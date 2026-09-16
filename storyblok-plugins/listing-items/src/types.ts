@@ -1,6 +1,6 @@
 export type ListingVariantSlug = 'prodotto' | 'progetto' | 'insetto' | 'catalogo'
 
-export type CarouselVariantSlug = 'story' | 'prodotto' | 'editorial' | 'insetto' | 'related_products'
+export type CarouselVariantSlug = 'story' | 'prodotto' | 'editorial' | 'infestante' | 'related_products'
 
 export type PluginVariantSlug = ListingVariantSlug | CarouselVariantSlug
 
@@ -115,12 +115,13 @@ export const EMPTY_CAROUSEL_VALUE: PluginVariantValue = {
   context: 'carousel',
 }
 
-export const VARIANT_TO_COMPONENT: Record<ListingVariantSlug | 'story', string> = {
+export const VARIANT_TO_COMPONENT: Record<ListingVariantSlug | 'story' | 'infestante', string> = {
   prodotto: 'product',
   progetto: 'project',
   insetto: 'insect',
-  /** Search catalogo: content_type catalog + downloadable kind=catalog */
-  catalogo: 'catalog',
+  infestante: 'insect',
+  /** Search catalogo: downloadable kind=catalog */
+  catalogo: 'downloadable',
   story: 'story',
 }
 

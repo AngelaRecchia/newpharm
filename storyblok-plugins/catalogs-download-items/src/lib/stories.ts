@@ -28,13 +28,9 @@ function isPdf(file: { filename?: unknown } | undefined): boolean {
   return /\.pdf(?:$|[?#])/i.test(filename.trim())
 }
 
-function mapCatalog(story: RawStory, downloadable: boolean): CatalogOption | null {
+function mapCatalog(story: RawStory): CatalogOption | null {
   if (!story.uuid || !isPdf(story.content?.file)) return null
-  if (
-    downloadable &&
-    story.content?.kind !== 'catalog' &&
-    story.content?.kind !== 'brochure'
-  ) {
+  if (story.content?.kind !== 'catalog' && story.content?.kind !== 'brochure') {
     return null
   }
 
@@ -47,11 +43,7 @@ function mapCatalog(story: RawStory, downloadable: boolean): CatalogOption | nul
   }
 }
 
-async function fetchPages(
-  token: string,
-  contentType: 'catalog' | 'downloadable',
-  locale?: string,
-): Promise<RawStory[]> {
+async function fetchPages(token: string, locale?: string): Promise<RawStory[]> {
   const stories: RawStory[] = []
   let page = 1
 
@@ -62,7 +54,7 @@ async function fetchPages(
       per_page: String(PER_PAGE),
       page: String(page),
       sort_by: 'name:asc',
-      content_type: contentType,
+      content_type: 'downloadable',
     })
     if (locale) params.set('starts_with', `${locale}/`)
 
@@ -82,18 +74,11 @@ export async function fetchPdfCatalogs(
 ): Promise<CatalogOption[]> {
   if (!token) return []
 
-  const [catalogs, downloadables] = await Promise.all([
-    fetchPages(token, 'catalog', locale),
-    fetchPages(token, 'downloadable', locale),
-  ])
+  const downloadables = await fetchPages(token, locale)
   const byUuid = new Map<string, CatalogOption>()
 
-  for (const story of catalogs) {
-    const catalog = mapCatalog(story, false)
-    if (catalog) byUuid.set(catalog.uuid, catalog)
-  }
   for (const story of downloadables) {
-    const catalog = mapCatalog(story, true)
+    const catalog = mapCatalog(story)
     if (catalog) byUuid.set(catalog.uuid, catalog)
   }
 
