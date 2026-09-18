@@ -178,6 +178,7 @@ export default function Header({
   if (!blok) return <></>
 
   const searchPage = blok.search_page
+  const downloadPage = blok.download_page
 
   return (
     <>
@@ -213,7 +214,13 @@ export default function Header({
 
             {/* Actions */}
             <div className={cn('headerActions')}>
-              <Button icon="download" aria-label={t('download')} variant={isMobile ? 'tertiary' : 'primary'} className={isMobile ? 'bg-surface' : ''} />
+              <Button
+                icon="download"
+                aria-label={t('download')}
+                variant={isMobile ? 'tertiary' : 'primary'}
+                className={isMobile ? 'bg-surface' : ''}
+                link={downloadPage}
+              />
               <Button
                 icon={searchOpen ? 'close' : 'search'}
                 aria-label={searchOpen ? t('close') : t('search')}

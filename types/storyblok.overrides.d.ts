@@ -23,9 +23,10 @@ import type { RelatedStory } from "@/lib/api/storyblok/stories";
 import type { CarouselVariantValue } from "@/lib/carousel/types";
 import type { ListingStoryResolved } from "@/lib/listing/types";
 
-/** Header — campo per link alla pagina di ricerca */
+/** Header — link a pagina ricerca e pagina download */
 export interface HeaderStoryblok extends Generated.HeaderStoryblok {
   search_page?: (StoryblokLink & { anchor?: string }) | LinkStoryblok | LinkStoryblok[] | null;
+  download_page?: (StoryblokLink & { anchor?: string }) | LinkStoryblok | LinkStoryblok[] | null;
 }
 
 /** story — content type contenuto editoriale con prodotti correlati opzionali */
