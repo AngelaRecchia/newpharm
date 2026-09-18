@@ -227,7 +227,7 @@ export function hasDedicatedLinkAction(
 }
 
 export function findActionableLinkStoryblok(
-  link?: SmartLinkLikeInput | SmartLinkLikeInput[] | null,
+  link?: unknown,
 ): (LinkStoryblokLike & { _uid: string }) | null {
   if (!link) return null;
 
@@ -278,14 +278,6 @@ export function getLinkUrlFromStoryblokInput(value: unknown): string | null {
 
   return getLinkUrl(value as StoryblokLink & { anchor?: string });
 }
-
-type SmartLinkLikeInput =
-  | StoryblokLink
-  | (StoryblokLink & { anchor?: string })
-  | LinkStoryblokLike
-  | (LinkStoryblokLike & { _uid: string })
-  | null
-  | undefined;
 
 /**
  * Verifica se un oggetto è un blok Link (ha label, link e _uid)

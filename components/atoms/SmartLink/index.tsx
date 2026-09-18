@@ -71,18 +71,16 @@ const SmartLink = forwardRef<HTMLAnchorElement | HTMLDivElement | HTMLButtonElem
     }, [actionLink, copyPageLink, glossary])
 
     if (actionLink) {
-        const { target, replace, href: _href, ...buttonProps } = props as SmartLinkProps & {
-            target?: string
-            replace?: boolean
-        }
+        const { className, 'aria-label': ariaLabel } = props
+
         return (
             <button
                 ref={ref as React.Ref<HTMLButtonElement>}
                 type="button"
-                {...buttonProps}
+                className={className}
+                aria-label={ariaLabel}
                 onClick={(event) => {
                     event.stopPropagation()
-                    buttonProps.onClick?.(event as never)
                     runLinkAction()
                 }}
             >
