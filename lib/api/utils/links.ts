@@ -187,6 +187,107 @@ type LinkStoryblokLike = {
 }
 
 /**
+ * Normalizza righe CMS (footer, nav, link nested) in forma LinkStoryblok.
+ */
+export function coerceToLinkStoryblok(
+  value: unknown,
+): (LinkStoryblokLike & { _uid: string; component?: string }) | null {
+  if (!value || typeof value !== "object") return null;
+
+  if (isLinkStoryblokBlok(value)) {
+    return value as LinkStoryblokLike & { _uid: string; component?: string };
+  }
+
+  const row = value as Record<string, unknown>;
+  if (!("link" in row) && !("action" in row) && row.component !== "link") {
+    return null;
+  }
+
+  const uid =
+    typeof row._uid === "string" && row._uid.length > 0
+      ? row._uid
+      : "inline-link";
+
+  return {
+    _uid: uid,
+    component: "link",
+    label: typeof row.label === "string" ? row.label : null,
+    link: (row.link as StoryblokLink | null | undefined) ?? null,
+    action: row.action,
+  };
+}
+
+export function hasDedicatedLinkAction(
+  linkStoryblok?: LinkStoryblokLike | null,
+): boolean {
+  if (!linkStoryblok) return false;
+  const action = parseLinkAction(linkStoryblok.action);
+  if (action.type === "copy") return true;
+  return action.type === "popup" && Boolean(action.popup);
+}
+
+export function findActionableLinkStoryblok(
+  link?: SmartLinkLikeInput | SmartLinkLikeInput[] | null,
+): (LinkStoryblokLike & { _uid: string }) | null {
+  if (!link) return null;
+
+  const candidates = Array.isArray(link) ? link : [link];
+  for (const candidate of candidates) {
+    const blok = coerceToLinkStoryblok(candidate);
+    if (!blok || !hasDedicatedLinkAction(blok)) continue;
+    if (!isLinkStoryblokValid(blok)) continue;
+    return blok;
+  }
+
+  return null;
+}
+
+function isStoryblokMultilink(value: unknown): value is StoryblokLink {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  const row = value as Record<string, unknown>;
+  return (
+    typeof row.linktype === "string" ||
+    row.fieldtype === "multilink" ||
+    typeof row.cached_url === "string"
+  );
+}
+
+/** URL di navigazione da multilink o riga CMS (ignora copy/popup configurati). */
+export function getLinkUrlFromStoryblokInput(value: unknown): string | null {
+  if (!value) return null;
+
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      const url = getLinkUrlFromStoryblokInput(item);
+      if (url) return url;
+    }
+    return null;
+  }
+
+  if (isStoryblokMultilink(value)) {
+    return getLinkUrl(value);
+  }
+
+  const linkBlok = coerceToLinkStoryblok(value);
+  if (linkBlok) {
+    if (hasDedicatedLinkAction(linkBlok)) return null;
+    return getLinkUrl(linkBlok.link);
+  }
+
+  if (typeof value !== "object") return null;
+
+  return getLinkUrl(value as StoryblokLink & { anchor?: string });
+}
+
+type SmartLinkLikeInput =
+  | StoryblokLink
+  | (StoryblokLink & { anchor?: string })
+  | LinkStoryblokLike
+  | (LinkStoryblokLike & { _uid: string })
+  | null
+  | undefined;
+
+/**
  * Verifica se un oggetto è un blok Link (ha label, link e _uid)
  */
 export function isLinkStoryblokBlok(
@@ -220,7 +321,10 @@ export function isLinkStoryblokValid(
 
   const action = parseLinkAction(linkStoryblok.action);
   if (action.type === "copy") return true;
-  if (action.type === "popup") return Boolean(action.popup);
+  if (action.type === "popup") {
+    if (action.popup) return true;
+    return !isLinkEmpty(linkStoryblok.link);
+  }
   return !isLinkEmpty(linkStoryblok.link);
 }
 

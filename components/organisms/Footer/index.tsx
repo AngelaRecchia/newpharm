@@ -11,6 +11,7 @@ import TextField from '@/components/atoms/TextField'
 import SocialItem from '../../atoms/SocialItem'
 import classNames from 'classnames/bind'
 import SmartLink from '@/components/atoms/SmartLink'
+import { coerceToLinkStoryblok } from '@/lib/api/utils/links'
 import { useGlobalSettings } from '@/lib/context/global-settings-context'
 import Select from '@/components/molecules/Select'
 
@@ -48,13 +49,16 @@ export default function Footer({ blok }: FooterProps) {
 
           <div className={cn('linksContainer')}>
             <ul className={cn('links')}>
-              {items?.map((item, index) => (
-                <li key={item._uid ?? `footer-link-${index}`} className={cn('linkItem')}>
-                  <SmartLink className={cn('link')} link={item.link}>
-                    {item.label}
-                  </SmartLink>
-                </li>
-              ))}
+              {items?.map((item, index) => {
+                const linkBlok = coerceToLinkStoryblok(item)
+                return (
+                  <li key={item._uid ?? `footer-link-${index}`} className={cn('linkItem')}>
+                    <SmartLink className={cn('link')} link={linkBlok ?? item.link}>
+                      {linkBlok?.label ?? item.label}
+                    </SmartLink>
+                  </li>
+                )
+              })}
             </ul>
 
             <ul className={cn('socials')}>
@@ -74,11 +78,16 @@ export default function Footer({ blok }: FooterProps) {
 
           <div className={cn('bottomLinksContainer')}>
             <ul className={cn('bottomLinks')}>
-              {bottom_links?.map((link, index) => (
-                <li key={link._uid ?? `bottom-link-${index}`}>
-                  <SmartLink link={link.link}>{link.label}</SmartLink>
-                </li>
-              ))}
+              {bottom_links?.map((link, index) => {
+                const linkBlok = coerceToLinkStoryblok(link)
+                return (
+                  <li key={link._uid ?? `bottom-link-${index}`}>
+                    <SmartLink link={linkBlok ?? link.link}>
+                      {linkBlok?.label ?? link.label}
+                    </SmartLink>
+                  </li>
+                )
+              })}
             </ul>
 
             <div className={cn('langs')}>

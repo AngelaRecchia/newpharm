@@ -122,6 +122,16 @@
       .link {
         white-space: nowrap;
         transition: all 400ms $ease-smooth;
+
+        &:is(button) {
+          background: none;
+          border: none;
+          color: inherit;
+          font: inherit;
+          cursor: pointer;
+          padding: 0;
+          text-align: inherit;
+        }
       }
 
       .linkItem::before {
@@ -199,7 +209,16 @@
       }
 
       .bottomLinks {
-        text-decoration: underline;
+        a,
+        button {
+          text-decoration: underline;
+          background: none;
+          border: none;
+          color: inherit;
+          font: inherit;
+          cursor: pointer;
+          padding: 0;
+        }
         @include mobile {
           display: grid;
           grid-template-columns: repeat(2, 1fr);

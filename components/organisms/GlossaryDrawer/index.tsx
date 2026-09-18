@@ -1,6 +1,13 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type PointerEvent as ReactPointerEvent,
+} from 'react'
 import { createPortal } from 'react-dom'
 import classNames from 'classnames/bind'
 import { useLocale, useTranslations } from 'next-intl'
@@ -100,6 +107,7 @@ const GlossaryDrawer = ({
   const rowRefs = useRef(new Map<string, HTMLDivElement>())
   const dragRef = useRef<DragSession | null>(null)
   const ignoreScrollExpand = useRef(true)
+  const wasOpenRef = useRef(false)
   const [mounted, setMounted] = useState(false)
   const [visible, setVisible] = useState(false)
   const [closing, setClosing] = useState(false)
@@ -123,8 +131,31 @@ const GlossaryDrawer = ({
     setMounted(true)
   }, [])
 
+  const beginClose = useCallback(() => {
+    if (closing) return
+
+    const reduceMotionClose = window.matchMedia(
+      '(prefers-reduced-motion: reduce)',
+    ).matches
+    if (reduceMotionClose) {
+      clearDragStyle()
+      setVisible(false)
+      setClosing(false)
+      setExpanded(false)
+      setEntered(false)
+      setDragging(false)
+      onClose()
+      return
+    }
+
+    setClosing(true)
+  }, [clearDragStyle, closing, onClose])
+
   useEffect(() => {
-    if (open) {
+    const opening = open && !wasOpenRef.current
+    wasOpenRef.current = open
+
+    if (opening) {
       const reduceMotion = window.matchMedia(
         '(prefers-reduced-motion: reduce)',
       ).matches
@@ -140,20 +171,17 @@ const GlossaryDrawer = ({
       clearDragStyle()
       return
     }
-    if (!visible) return
 
-    const reduceMotionClose = window.matchMedia(
-      '(prefers-reduced-motion: reduce)',
-    ).matches
-    if (reduceMotionClose) {
-      setVisible(false)
-      setClosing(false)
-      setExpanded(false)
-      setEntered(false)
-      return
+    if (!open && visible && !closing) {
+      beginClose()
     }
-    setClosing(true)
-  }, [open, visible, clearDragStyle])
+  }, [open, visible, closing, beginClose, clearDragStyle])
+
+  useLayoutEffect(() => {
+    if (!open && visible && closing) {
+      clearDragStyle()
+    }
+  }, [open, visible, closing, clearDragStyle])
 
   useBodyScrollLock(visible)
 
@@ -183,18 +211,18 @@ const GlossaryDrawer = ({
   }, [open, activeUid])
 
   useEffect(() => {
-    if (dragging) return
+    if (dragging || closing) return
     clearDragStyle()
   }, [dragging, expanded, closing, clearDragStyle])
 
   useEffect(() => {
     if (!open) return
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose()
+      if (event.key === 'Escape') beginClose()
     }
     document.addEventListener('keydown', onKey)
     return () => document.removeEventListener('keydown', onKey)
-  }, [open, onClose])
+  }, [open, beginClose])
 
   useEffect(() => {
     if (!open) return
@@ -237,7 +265,8 @@ const GlossaryDrawer = ({
     setExpanded(false)
     setEntered(false)
     setDragging(false)
-  }, [clearDragStyle])
+    onClose()
+  }, [clearDragStyle, onClose])
 
   const expandSheet = useCallback(() => {
     if (!isSheet || closing) return
@@ -326,7 +355,7 @@ const GlossaryDrawer = ({
 
       if (expanded) {
         if (y > peek + CLOSE_PX || (y > peek && flickedDown)) {
-          onClose()
+          beginClose()
           return
         }
         if (y > EXPAND_PX || flickedDown) {
@@ -338,14 +367,14 @@ const GlossaryDrawer = ({
       }
 
       if (y > peek + CLOSE_PX || flickedDown) {
-        onClose()
+        beginClose()
         return
       }
       if (y < peek - EXPAND_PX || flickedUp) {
         setExpanded(true)
       }
     },
-    [expandSheet, expanded, onClose, peekY],
+    [beginClose, expandSheet, expanded, peekY],
   )
 
   if (!mounted || !visible) return null
@@ -357,7 +386,7 @@ const GlossaryDrawer = ({
       data-lenis-prevent
       onClick={(event) => {
         if (closing) return
-        if (event.target === event.currentTarget) onClose()
+        if (event.target === event.currentTarget) beginClose()
       }}
     >
       <div
@@ -408,7 +437,7 @@ const GlossaryDrawer = ({
               ref={closeRef}
               type="button"
               className={cn('close')}
-              onClick={onClose}
+              onClick={beginClose}
               aria-label={t('close')}
             >
               <Icon type="close" size="l" weight="normal" />

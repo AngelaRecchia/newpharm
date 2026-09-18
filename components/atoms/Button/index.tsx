@@ -61,8 +61,6 @@ const Button = forwardRef<HTMLButtonElement | HTMLDivElement, ButtonProps>(({ ic
     const glossary = useGlossary()
     const action = resolveLinkAction(link, blok, pageAction)
 
-    const editableProps = blok ? storyblokEditable(blok as any) : {}
-
     let extractedLabel: string | undefined = labelProp
     let extractedLink: (StoryblokLink & { anchor?: string }) | null = null
 
@@ -89,6 +87,8 @@ const Button = forwardRef<HTMLButtonElement | HTMLDivElement, ButtonProps>(({ ic
     const isCopy = action.type === 'copy'
     const isPopup = action.type === 'popup'
     const isActionButton = isCopy || isPopup
+    const editableProps =
+        blok && action.type === 'link' ? storyblokEditable(blok as any) : {}
     const navigableHref =
         (extractedLink ? getLinkUrl(extractedLink) : null) || href || null
 
@@ -203,7 +203,10 @@ const Button = forwardRef<HTMLButtonElement | HTMLDivElement, ButtonProps>(({ ic
             ref={ref as React.Ref<HTMLButtonElement>}
             type={type ?? 'button'}
             disabled={disabled}
-            onClick={handleClick}
+            onClick={(event) => {
+                event.stopPropagation()
+                handleClick()
+            }}
             {...sharedProps}
         >
             {children}

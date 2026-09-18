@@ -10,7 +10,8 @@ $glossary-sheet-peek: 30%;
   animation: glossary-fade-in $td-400 ease-out;
 
   &.closing {
-    animation: glossary-fade-out $td-400 ease-in;
+    animation: glossary-fade-out $td-400 ease-in forwards;
+    pointer-events: none;
   }
 }
 
@@ -51,6 +52,7 @@ $glossary-sheet-peek: 30%;
     &.closing {
       animation: glossary-sheet-out $td-400 $ease-in forwards;
       transition: none;
+      will-change: transform;
 
       &.expanded {
         animation-name: glossary-sheet-out-full;
@@ -65,7 +67,8 @@ $glossary-sheet-peek: 30%;
     animation: glossary-slide-in $td-400 ease-out;
 
     &.closing {
-      animation: glossary-slide-out $td-400 ease-in;
+      animation: glossary-slide-out $td-400 ease-in forwards;
+      will-change: transform;
     }
   }
 }

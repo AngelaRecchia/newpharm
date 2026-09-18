@@ -1,5 +1,6 @@
 'use client'
 
+import { storyblokEditable } from '@storyblok/react'
 import { LinkStoryblok } from '@/types/storyblok'
 import Button from '@/components/atoms/Button'
 
@@ -19,11 +20,12 @@ export default function Link({ blok }: { blok?: LinkStoryblok }) {
                 'primary'
 
     return (
-        <Button
-            blok={blok}
-            label={blok.label || undefined}
-            link={blok}
-            variant={buttonVariant}
-        />
+        <span {...storyblokEditable(blok as never)}>
+            <Button
+                label={blok.label || undefined}
+                link={blok}
+                variant={buttonVariant}
+            />
+        </span>
     )
 }

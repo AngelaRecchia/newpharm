@@ -20,8 +20,14 @@ function isActionType(value: unknown): value is LinkActionType {
   return typeof value === 'string' && LINK_ACTIONS.includes(value as LinkActionType)
 }
 
+function normalizePopupId(value: unknown): LinkPopupId | null {
+  if (typeof value !== 'string') return null
+  const normalized = value.trim().toLowerCase()
+  return LINK_POPUPS.find((id) => id === normalized) ?? null
+}
+
 function isPopupId(value: unknown): value is LinkPopupId {
-  return typeof value === 'string' && LINK_POPUPS.includes(value as LinkPopupId)
+  return normalizePopupId(value) !== null
 }
 
 export function parseLinkAction(raw: unknown): LinkActionValue {
@@ -44,8 +50,9 @@ export function parseLinkAction(raw: unknown): LinkActionValue {
 
   const value = raw as Partial<LinkActionValue> & { action?: unknown }
 
-  if (isPopupId(value.popup)) {
-    return { type: 'popup', popup: value.popup }
+  const popupFromField = normalizePopupId(value.popup)
+  if (popupFromField) {
+    return { type: 'popup', popup: popupFromField }
   }
 
   const type = isActionType(value.type)
@@ -60,7 +67,7 @@ export function parseLinkAction(raw: unknown): LinkActionValue {
 
   return {
     type,
-    popup: type === 'popup' && isPopupId(value.popup) ? value.popup : null,
+    popup: type === 'popup' ? normalizePopupId(value.popup) : null,
   }
 }
 

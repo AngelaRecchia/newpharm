@@ -87,12 +87,11 @@ const BoxImage = ({
                 <Button variant={buttonVariant} inert />
             </div>
         ) : clickTarget === 'button' ? (
-            <div className={cn('link-wrapper')}>
-                <Button
-                    blok={linkBlok}
-                    link={linkBlok}
-                    variant={buttonVariant}
-                />
+            <div
+                className={cn('link-wrapper')}
+                {...(linkBlok ? storyblokEditable(linkBlok as never) : {})}
+            >
+                <Button link={linkBlok} variant={buttonVariant} />
             </div>
         ) : null
 

@@ -4,7 +4,13 @@ import type {
   Box_imageStoryblok,
   LinkStoryblok,
 } from '@/types/storyblok'
-import { getLinkUrl, isEmpty, isLinkEmpty } from '@/lib/api/utils/links'
+import {
+  getLinkUrl,
+  isEmpty,
+  isLinkEmpty,
+  isLinkStoryblokValid,
+} from '@/lib/api/utils/links'
+import { parseLinkAction } from '@/lib/link-action'
 
 export type BoxImageClickTarget = 'module' | 'button' | null
 
@@ -70,8 +76,34 @@ function isUsableLinkBlok(linkBlok?: LinkStoryblok | null): linkBlok is LinkStor
     linkBlok.variant === 'black' ||
     linkBlok.variant === 'blue' ||
     !isEmpty(linkBlok.label) ||
-    !isLinkEmpty(linkBlok.link)
+    !isLinkEmpty(linkBlok.link) ||
+    isLinkStoryblokValid(linkBlok)
   )
+}
+
+function resolveLinkClickTarget(
+  linkBlok?: LinkStoryblok,
+): Pick<BoxImageResolvedContent, 'linkBlok' | 'href' | 'clickTarget'> {
+  if (!isUsableLinkBlok(linkBlok) || !isLinkStoryblokValid(linkBlok)) {
+    return { linkBlok: undefined, href: null, clickTarget: null }
+  }
+
+  const action = parseLinkAction(linkBlok.action)
+  if (action.type === 'copy' || action.type === 'popup') {
+    return { linkBlok, href: null, clickTarget: 'button' }
+  }
+
+  const href = getLinkUrl(linkBlok.link)
+  if (!href) {
+    return { linkBlok: undefined, href: null, clickTarget: null }
+  }
+
+  const hasLabel = !isEmpty(linkBlok.label)
+  return {
+    linkBlok,
+    href,
+    clickTarget: hasLabel ? 'button' : 'module',
+  }
 }
 
 function resolveRef(blok: Box_imageStoryblok): {
@@ -92,6 +124,7 @@ export function resolveBoxImageContent(
 ): BoxImageResolvedContent {
   const rawLink = blok.link?.[0]
   const linkBlok = isUsableLinkBlok(rawLink) ? rawLink : undefined
+  const linkCta = resolveLinkClickTarget(linkBlok)
   const ref = resolveRef(blok)
 
   if (ref) {
@@ -110,21 +143,18 @@ export function resolveBoxImageContent(
       subtitle: overrideText(blok.subtitle, storySubtitle),
       firstAsset: firstAssetFrom(blok.asset) ?? storyImage(ref.kind, content),
       href: ref.story.full_slug,
-      linkBlok,
-      clickTarget: 'module',
+      linkBlok: linkCta.linkBlok,
+      clickTarget:
+        linkCta.clickTarget === 'button' ? 'button' : 'module',
     }
   }
-
-  const href = linkBlok ? getLinkUrl(linkBlok.link) : null
-  const hasUrl = Boolean(linkBlok && !isLinkEmpty(linkBlok.link) && href)
-  const hasLabel = !isEmpty(linkBlok?.label)
 
   return {
     title: isEmpty(blok.title) ? null : (blok.title ?? null),
     subtitle: isEmpty(blok.subtitle) ? null : (blok.subtitle ?? null),
     firstAsset: firstAssetFrom(blok.asset),
-    href: hasUrl ? href : null,
-    linkBlok,
-    clickTarget: hasUrl ? (hasLabel ? 'button' : 'module') : null,
+    href: linkCta.href,
+    linkBlok: linkCta.linkBlok,
+    clickTarget: linkCta.clickTarget,
   }
 }

@@ -3,37 +3,8 @@ import { getGlobalSettings } from '@/lib/api/settings'
 import { GlobalSettingsProvider } from '@/lib/context/global-settings-context'
 import Footer from '@/components/organisms/Footer'
 import { getStory } from '@/lib/api/storyblok/stories'
-import { HeroStoryblok, PageStoryblok } from '@/types/storyblok'
 import Header from '@/components/organisms/Header'
-
-/**
- * Determina la variante dell'header in base al primo blocco nel body della page
- * Se il primo blocco è hero primary/secondary, division_box, full_banner o projects,
- * oppure il content type è project (hero primary in testa), l'header è transparent.
- */
-function getHeaderVariant(firstBlock: any): 'transparent' | 'white' {
-  if (!firstBlock) {
-    return 'white'
-  }
-
-  // Controlla se è un hero con variant primary o secondary
-  if (firstBlock.component === 'hero') {
-    const heroBlock = firstBlock as HeroStoryblok
-    if (heroBlock.variant === 'primary' || heroBlock.variant === 'secondary') {
-      return 'transparent'
-    }
-  }
-
-  if (
-    firstBlock.component === 'division_box' ||
-    firstBlock.component === 'full_banner' ||
-    firstBlock.component === 'projects'
-  ) {
-    return 'transparent'
-  }
-
-  return 'white'
-}
+import { getHeaderVariantFromStoryContent } from '@/lib/storyblok/headerVariant'
 
 interface LocaleLayoutProps {
   children: ReactNode
@@ -55,21 +26,7 @@ export default async function LocaleLayout({
   // Carica i global settings una volta per locale (con caching)
   const settings = await getGlobalSettings(locale)
 
-  // Determina la variante dell'header in base al primo blocco del body
-  let headerVariant: 'transparent' | 'white' = 'white'
-
-  if (story?.content) {
-    if (story.content.component === 'project') {
-      headerVariant = 'transparent'
-    } else {
-      const pageContent = story.content as PageStoryblok
-
-      if (pageContent.body && pageContent.body.length > 0) {
-        const firstBlock = pageContent.body[0]
-        headerVariant = getHeaderVariant(firstBlock)
-      }
-    }
-  }
+  const headerVariant = getHeaderVariantFromStoryContent(story?.content)
 
 
 
