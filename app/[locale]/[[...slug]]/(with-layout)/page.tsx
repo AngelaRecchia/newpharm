@@ -12,6 +12,7 @@ import { enrichProductTargetPests } from '@/lib/products/targetPests'
 import { buildProductPageCtaBox } from '@/lib/products/productPageCtaBox'
 import StoryblokRenderer from '@/components/StoryblokRenderer'
 import DownloadGate from '@/components/organisms/DownloadGate'
+import { unstable_noStore as noStore } from 'next/cache'
 import { setRequestLocale, getTranslations } from 'next-intl/server'
 import { notFound } from 'next/navigation'
 import { PageStoryblok, StoryStoryblok, ProjectStoryblok } from '@/types/storyblok'
@@ -74,8 +75,14 @@ export async function generateStaticParams() {
 }
 
 export const dynamicParams = true
-export const dynamic = shouldPrebuildStoryPaths() ? 'auto' : 'force-dynamic'
-export const revalidate = shouldPrebuildStoryPaths() ? 3600 : 0
+export const revalidate = 3600
+
+/** Next richiede segment config statici; in draft disabilitiamo la cache pagina a runtime. */
+function ensureFreshStoryblokContent(): void {
+  if (!shouldPrebuildStoryPaths()) {
+    noStore()
+  }
+}
 
 /**
  * Risolve il campo plugin `related_products` (listing-items, variante related_products)
@@ -112,6 +119,8 @@ async function resolveRelatedProductsField(
  * Page per route con header/footer (route normali)
  */
 export default async function WithLayoutPage({ params }: PageProps) {
+  ensureFreshStoryblokContent()
+
   const { locale, slug } = await params
 
   // Enable static rendering
@@ -262,6 +271,8 @@ export default async function WithLayoutPage({ params }: PageProps) {
  * Generate metadata with locale support for static rendering
  */
 export async function generateMetadata({ params }: PageProps) {
+  ensureFreshStoryblokContent()
+
   const { locale, slug } = await params
 
   const storySlug = slug && slug.length > 0 ? slug.join('/') : ''
