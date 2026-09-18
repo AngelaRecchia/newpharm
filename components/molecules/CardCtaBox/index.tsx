@@ -19,12 +19,17 @@ const CardCtaBox = ({ blok, dark = false }: { blok?: Card_cta_boxStoryblok; dark
     const validLink = getFirstValidLink(link);
     const action = parseLinkAction(validLink?.action);
     const isHref = Boolean(validLink && action.type === 'link');
+    const isCardAction = Boolean(validLink && action.type !== 'link');
     const hasImage = Boolean(getAssetSrc(image));
 
     const Tag = isHref ? SmartLink : 'div';
     const props = isHref && validLink ? { link: validLink.link } : {};
     return (
-        <Tag className={cn('wrapper', color, { hasImage, dark })} {...storyblokEditable(blok as any)} {...props}>
+        <Tag
+            className={cn('wrapper', color, { hasImage, dark, cardAction: isCardAction })}
+            {...storyblokEditable(blok as any)}
+            {...props}
+        >
 
             {hasImage && <Asset asset={image} size="l" />}
 

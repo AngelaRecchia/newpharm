@@ -82,4 +82,12 @@
   &:focus-visible {
     --button-hover: 1;
   }
+
+  &.cardAction {
+    cursor: default;
+
+    [data-button] {
+      cursor: pointer;
+    }
+  }
 }

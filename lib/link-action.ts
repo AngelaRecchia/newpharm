@@ -43,11 +43,20 @@ export function parseLinkAction(raw: unknown): LinkActionValue {
   if (!raw || typeof raw !== 'object') return { ...EMPTY_LINK_ACTION }
 
   const value = raw as Partial<LinkActionValue> & { action?: unknown }
+
+  if (isPopupId(value.popup)) {
+    return { type: 'popup', popup: value.popup }
+  }
+
   const type = isActionType(value.type)
     ? value.type
     : isActionType(value.action)
       ? value.action
       : 'link'
+
+  if (type === 'copy') {
+    return { type: 'copy', popup: null }
+  }
 
   return {
     type,

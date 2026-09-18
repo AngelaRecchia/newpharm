@@ -12,7 +12,8 @@ const cn = classNames.bind(styles);
 import { icons } from '../Icon/icons'
 import Icon from '../Icon'
 import SmartLink from '../SmartLink'
-import { StoryblokLink, getFirstValidLink, isLinkStoryblokBlok, isLinkStoryblokValid } from '@/lib/api/utils/links'
+import { StoryblokLink, getFirstValidLink, getLinkUrl, isLinkStoryblokBlok, isLinkStoryblokValid } from '@/lib/api/utils/links'
+import { useGlossary } from '@/lib/glossary/context'
 import { openPopup, parseLinkAction, type LinkActionValue } from '@/lib/link-action'
 import { useCopyPageLink } from '@/lib/use-copy-page-link'
 
@@ -57,6 +58,7 @@ function resolveLinkAction(link: ButtonProps['link'], blok?: LinkStoryblok, page
 const Button = forwardRef<HTMLButtonElement | HTMLDivElement, ButtonProps>(({ icon = 'right-small', label: labelProp, onClick, onFocus, className, href, target, link, variant = 'primary', size = 'medium', weight = 'bold', animated = false, inert = false, iconAlwaysVisible = false, iconPlain = false, iconRotate = false, 'aria-label': ariaLabel, blok, pageAction, type, disabled, ...props }, ref) => {
     const t = useTranslations('')
     const { copied, copyPageLink } = useCopyPageLink()
+    const glossary = useGlossary()
     const action = resolveLinkAction(link, blok, pageAction)
 
     const editableProps = blok ? storyblokEditable(blok as any) : {}
@@ -73,8 +75,9 @@ const Button = forwardRef<HTMLButtonElement | HTMLDivElement, ButtonProps>(({ ic
             }
         }
         else if (isLinkStoryblokBlok(link)) {
-            if (isLinkStoryblokValid(link)) {
-                extractedLabel = extractedLabel || link.label || undefined
+            extractedLabel = extractedLabel || link.label || undefined
+            const linkAction = parseLinkAction(link.action)
+            if (linkAction.type === 'link' && isLinkStoryblokValid(link)) {
                 extractedLink = link.link as StoryblokLink & { anchor?: string }
             }
         }
@@ -86,6 +89,8 @@ const Button = forwardRef<HTMLButtonElement | HTMLDivElement, ButtonProps>(({ ic
     const isCopy = action.type === 'copy'
     const isPopup = action.type === 'popup'
     const isActionButton = isCopy || isPopup
+    const navigableHref =
+        (extractedLink ? getLinkUrl(extractedLink) : null) || href || null
 
     if (isCopy) {
         extractedLabel = copied ? t('link_copied') : (extractedLabel || t('copy_link'))
@@ -147,6 +152,14 @@ const Button = forwardRef<HTMLButtonElement | HTMLDivElement, ButtonProps>(({ ic
             void copyPageLink()
             return
         }
+        if (isPopup && action.popup === 'glossario') {
+            if (glossary) {
+                glossary.open()
+            } else {
+                openPopup('glossario')
+            }
+            return
+        }
         if (isPopup && action.popup) {
             openPopup(action.popup)
             return
@@ -171,12 +184,12 @@ const Button = forwardRef<HTMLButtonElement | HTMLDivElement, ButtonProps>(({ ic
         )
     }
 
-    if (!isActionButton && (extractedLink || href)) {
+    if (!isActionButton && action.type === 'link' && navigableHref) {
         return (
             <SmartLink
                 ref={ref as React.Ref<HTMLAnchorElement | HTMLDivElement>}
                 link={extractedLink}
-                href={href}
+                href={navigableHref}
                 target={linkTarget}
                 {...sharedProps}
             >

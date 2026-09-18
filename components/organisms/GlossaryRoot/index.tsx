@@ -45,7 +45,7 @@ export default function GlossaryRoot({
   return (
     <GlossaryProvider items={items} open={open}>
       {children}
-      {items.length > 0 ? (
+      {items.length > 0 || isOpen ? (
         <GlossaryDrawer
           items={items}
           open={isOpen}

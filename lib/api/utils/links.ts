@@ -234,9 +234,10 @@ export function getFirstValidLink<T extends LinkStoryblokLike>(
     return null;
   }
 
-  const firstLink = links[0];
-  if (isLinkStoryblokValid(firstLink)) {
-    return firstLink;
+  for (const item of links) {
+    if (isLinkStoryblokValid(item)) {
+      return item;
+    }
   }
 
   return null;
