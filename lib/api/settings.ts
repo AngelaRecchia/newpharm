@@ -6,8 +6,8 @@
  */
 
 import { cache } from 'react'
+import localeConfig from '@/i18n/locales.json'
 import { getStory } from './storyblok/stories'
-import { getLangs } from './storyblok/languages'
 
 const SEARCH_SLUGS: Record<string, string> = {
   it: 'cerca',
@@ -44,8 +44,7 @@ export const getGlobalSettings = cache(async function getGlobalSettings(
   ])
 
   if (story?.content) {
-    // Fetch available locales and add to settings
-    const locales = (await getLangs()) || []
+    const locales = [...localeConfig.locales]
 
     return {
       ...story.content,

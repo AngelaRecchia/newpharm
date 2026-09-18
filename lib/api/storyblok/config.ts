@@ -36,6 +36,11 @@ export function getStoryblokVersion(): "draft" | "published" {
   return getStoryblokMode();
 }
 
+/** Pre-genera tutte le route in build (SSG/ISR). In draft: on-demand per ridurre quota API. */
+export function shouldPrebuildStoryPaths(): boolean {
+  return getStoryblokMode() === "published";
+}
+
 export function shouldEnableBridge(): boolean {
   return getStoryblokMode() === "draft";
 }

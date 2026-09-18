@@ -115,7 +115,8 @@ Questa sezione **prevale** sulla verifica browser automatica post-edit.
 3. **Cache filesystem sulle stories in draft, con TTL** — oggi è disabilitata per il Visual Editor. Si può abilitare con TTL e bypass se c’è `_storyblok` in query (iframe editor).
 4. **Alzare il TTL di `cv` in draft** — `cdn/spaces/me` ogni 5s (`CV_CACHE_TTL_DRAFT`). 30–60s basterebbe in locale.
 5. **Pagine prodotto più pigre** — `resolveProductStories`, compare, related news/projects e target pests partono tutti insieme; si possono deferire o spezzare.
-6. **`generateStaticParams` / `getAllStories` in `next dev`** — pagina tutte le stories. In dev si può short-circuitare (`dynamicParams` è già `true`).
-7. **`excluding_fields` più aggressivo** su listing/cataloghi quando il `content` completo non serve.
+6. **`generateStaticParams` / `getAllStories` in draft** — skip se `NEXT_PUBLIC_STORYBLOK_VERSION !== published` (`shouldPrebuildStoryPaths()`); route on-demand + `force-dynamic`.
+7. **`excluding_fields` su `getStoriesByComponent`** — mappa in `lib/api/storyblok/componentExcludingFields.ts` (listing/compare; non il dettaglio prodotto via `getStory`).
+8. **`getGlobalSettings`**: locale switcher da `i18n/locales.json` (allineato a middleware), non `getLangs()` a runtime.
 
-Non applicare i punti 3–7 in un task di UI se non richiesti: sono debito di cache, non di componente.
+Non applicare i punti 3–5 in un task di UI se non richiesti: sono debito di cache, non di componente.

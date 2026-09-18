@@ -19,6 +19,7 @@ import localeConfig from '@/i18n/locales.json'
 import { isDownloadGateContent, isNonRoutableComponent } from '@/lib/api/storyblok/routing'
 import { mapStoryToDownloadGate } from '@/lib/downloadable/map'
 import { tSafe } from '@/lib/i18n/tSafe'
+import { shouldPrebuildStoryPaths } from '@/lib/api/storyblok/config'
 
 interface PageProps {
   params: Promise<{
@@ -30,9 +31,13 @@ interface PageProps {
 /**
  * Generate static params for all locale + slug combinations.
  * Locales come from i18n/locales.json (generated at build time).
- * Stories are fetched from Storyblok CDN API.
+ * In draft: skip prebuild (on-demand) per ridurre chiamate CDN in dev/preview.
  */
 export async function generateStaticParams() {
+  if (!shouldPrebuildStoryPaths()) {
+    return []
+  }
+
   try {
     const locales = localeConfig.locales
     const stories = await getAllStories()
@@ -69,7 +74,8 @@ export async function generateStaticParams() {
 }
 
 export const dynamicParams = true
-export const revalidate = 3600
+export const dynamic = shouldPrebuildStoryPaths() ? 'auto' : 'force-dynamic'
+export const revalidate = shouldPrebuildStoryPaths() ? 3600 : 0
 
 /**
  * Risolve il campo plugin `related_products` (listing-items, variante related_products)

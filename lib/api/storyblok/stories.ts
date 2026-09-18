@@ -7,6 +7,7 @@
 import { cache } from "react";
 import { getStoryblokApi } from "./client";
 import { getStoryblokVersion, getCacheVersion } from "./config";
+import { getExcludingFieldsForComponent } from "./componentExcludingFields";
 import { STORYBLOK_RESOLVE_RELATIONS } from "./resolveRelations";
 import { AssetStoryblok } from "@/types/storyblok";
 import { NON_ROUTABLE_COMPONENTS, isNonRoutableComponent } from "./routing";
@@ -402,10 +403,18 @@ export async function getStoriesByComponent(
 ): Promise<Story[]> {
   const version = options.version || getStoryblokVersion()
   const cv = await getCacheVersion()
-  const cacheKey = `${component}:${version}:${locale ?? '__all__'}:${cv ?? 'nocv'}`
+  const excluding =
+    typeof options.excluding_fields === "string"
+      ? options.excluding_fields
+      : getExcludingFieldsForComponent(component)
+  const fetchOptions: GetStoryOptions =
+    excluding && options.excluding_fields === undefined
+      ? { ...options, excluding_fields: excluding }
+      : options
+  const cacheKey = `${component}:${version}:${locale ?? '__all__'}:${cv ?? 'nocv'}:${fetchOptions.excluding_fields ?? ''}`
 
   return remember(storiesByComponentCache, cacheKey, version, () =>
-    fetchStoriesByComponent(component, locale, options),
+    fetchStoriesByComponent(component, locale, fetchOptions),
   )
 }
 
