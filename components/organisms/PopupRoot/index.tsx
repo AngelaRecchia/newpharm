@@ -24,6 +24,11 @@ export default function PopupRoot() {
     const onPopup = (event: Event) => {
       const detail = (event as CustomEvent<PopupDetail>).detail
       if (!detail?.popup) return
+      if (detail.popup === 'glossario') {
+        setActivePopup(null)
+        setJobTitle(undefined)
+        return
+      }
       setActivePopup(detail.popup)
       setJobTitle(detail.jobTitle)
     }

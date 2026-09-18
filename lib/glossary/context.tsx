@@ -5,7 +5,7 @@ import type { GlossaryItem } from './types'
 
 type GlossaryContextValue = {
   items: GlossaryItem[]
-  open: (uid: string) => void
+  open: (uid?: string) => void
 }
 
 const GlossaryContext = createContext<GlossaryContextValue | null>(null)
@@ -20,7 +20,7 @@ export function GlossaryProvider({
   children,
 }: {
   items: GlossaryItem[]
-  open: (uid: string) => void
+  open: (uid?: string) => void
   children: ReactNode
 }) {
   const value = useMemo(() => ({ items, open }), [items, open])

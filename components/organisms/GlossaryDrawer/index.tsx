@@ -158,8 +158,8 @@ const GlossaryDrawer = ({
   useBodyScrollLock(visible)
 
   useEffect(() => {
-    if (!open || !activeUid) return
-    setExpandedUids(new Set([activeUid]))
+    if (!open) return
+    setExpandedUids(activeUid ? new Set([activeUid]) : new Set())
   }, [open, activeUid])
 
   useEffect(() => {

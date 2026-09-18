@@ -12,7 +12,7 @@ Campo `action` del blok **link**: sceglie se il bottone è un link, copia il lin
 ```
 
 - `type`: `link` | `copy` | `popup`
-- `popup`: `contattaci` | `job` | `corso` (solo se `type` è `popup`)
+- `popup`: `contattaci` | `job` | `corso` | `glossario` (solo se `type` è `popup`)
 
 ## Sviluppo locale
 

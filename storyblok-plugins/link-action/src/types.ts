@@ -2,7 +2,7 @@ export const LINK_ACTIONS = ['link', 'copy', 'popup'] as const
 
 export type LinkActionType = (typeof LINK_ACTIONS)[number]
 
-export const LINK_POPUPS = ['contattaci', 'job', 'corso'] as const
+export const LINK_POPUPS = ['contattaci', 'job', 'corso', 'glossario'] as const
 
 export type LinkPopupId = (typeof LINK_POPUPS)[number]
 
@@ -26,4 +26,5 @@ export const POPUP_LABELS: Record<LinkPopupId, string> = {
   contattaci: 'Contattaci',
   job: 'Job',
   corso: 'Corso',
+  glossario: 'Glossario',
 }

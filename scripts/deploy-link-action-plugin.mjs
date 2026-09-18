@@ -8,7 +8,7 @@
  */
 
 import { spawnSync } from 'child_process'
-import { existsSync, readFileSync } from 'fs'
+import { readFileSync } from 'fs'
 import { dirname, join } from 'path'
 import { fileURLToPath } from 'url'
 import { config as loadEnv } from 'dotenv'
@@ -63,15 +63,13 @@ if (!token) {
   process.exit(1)
 }
 
-if (!existsSync(join(PLUGIN_DIR, 'dist', 'index.js'))) {
-  console.log('Build plugin...')
-  const build = spawnSync('npm', ['run', 'build'], {
-    cwd: PLUGIN_DIR,
-    stdio: 'inherit',
-    shell: true,
-  })
-  if (build.status !== 0) process.exit(build.status ?? 1)
-}
+console.log('Build plugin...')
+const build = spawnSync('npm', ['run', 'build'], {
+  cwd: PLUGIN_DIR,
+  stdio: 'inherit',
+  shell: true,
+})
+if (build.status !== 0) process.exit(build.status ?? 1)
 
 console.log('Deploy link-action...')
 const deploy = spawnSync(
