@@ -2,6 +2,13 @@ import { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 
 const nextConfig: NextConfig = {
+  // Font/logo PDF scheda tecnica: path assoluti sotto assets/ (non importati da TS).
+  outputFileTracingIncludes: {
+    "/api/products/[uuid]/scheda-tecnica": [
+      "./assets/fonts/inter/**/*",
+      "./assets/pdf/**/*",
+    ],
+  },
   eslint: {
     ignoreDuringBuilds: true,
   },

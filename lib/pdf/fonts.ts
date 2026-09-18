@@ -1,4 +1,5 @@
 import { Font } from '@react-pdf/renderer'
+import { existsSync } from 'fs'
 import { join } from 'path'
 
 /**
@@ -17,7 +18,6 @@ let registered = false
 /** Registra i pesi di Inter usati dalla scheda (400, 500, 600, 700). */
 export function registerSheetFonts(): void {
   if (registered) return
-  registered = true
 
   const weights: Array<{ weight: number; style: 'normal' | 'italic'; file: string }> = [
     { weight: 400, style: 'normal', file: 'Inter-Regular.ttf' },
@@ -27,6 +27,16 @@ export function registerSheetFonts(): void {
     { weight: 700, style: 'normal', file: 'Inter-Bold.ttf' },
   ]
 
+  for (const { file } of weights) {
+    const fontPath = join(FONT_DIR, file)
+    if (!existsSync(fontPath)) {
+      throw new Error(
+        `[Sheet] Missing font "${file}" at ${fontPath}. ` +
+          'On Vercel, ensure outputFileTracingIncludes covers assets/fonts/inter.',
+      )
+    }
+  }
+
   Font.register({
     family: 'Inter',
     fonts: weights.map(({ weight, style, file }) => ({
@@ -35,4 +45,5 @@ export function registerSheetFonts(): void {
       fontStyle: style,
     })),
   })
+  registered = true
 }

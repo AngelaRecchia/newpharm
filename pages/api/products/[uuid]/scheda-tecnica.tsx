@@ -1,3 +1,5 @@
+import { existsSync } from 'fs'
+import { join } from 'path'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { renderToBuffer } from '@react-pdf/renderer'
 import { createElement } from 'react'
@@ -72,6 +74,13 @@ export default async function handler(
 
     if (!localeConfig.locales.includes(locale)) {
       res.status(400).json({ error: 'Invalid locale' })
+      return
+    }
+
+    const logoPath = join(process.cwd(), 'assets', 'pdf', 'newpharm-logo.svg')
+    if (!existsSync(logoPath)) {
+      console.error('[Sheet] Missing logo at', logoPath)
+      res.status(500).json({ error: 'PDF assets not deployed' })
       return
     }
 
