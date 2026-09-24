@@ -56,6 +56,7 @@ export type {
   DownloadableStoryblok,
   DownloadableResourcesStoryblok,
   DownloadableKind,
+  Resource_category_imageStoryblok,
   Box_imageStoryblok,
   BoxImageStoryResolved,
   InsectStoryblok,
@@ -150,6 +151,7 @@ export type StoryblokComponent =
   | Generated.Text_revealStoryblok
   | Overrides.DownloadableStoryblok
   | Overrides.DownloadableResourcesStoryblok
+  | Overrides.Resource_category_imageStoryblok
   | Overrides.PartnersStoryblok
   | Overrides.SlideshowStoryblok
   | Overrides.Card_slideshowStoryblok

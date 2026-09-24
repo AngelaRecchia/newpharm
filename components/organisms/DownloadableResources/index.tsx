@@ -13,6 +13,7 @@ import FilterChips from '@/components/molecules/FilterChips'
 import HeroTertiary from '@/components/molecules/HeroTertiary'
 import CatalogDownloadModal from '@/components/organisms/CatalogsDownload/CatalogDownloadModal'
 import { getEmptyMotion, getGridMotion, getTabPanelMotion } from '@/lib/animation/gridPresence'
+import { hasHeroAsset, resolveDownloadableHeroImage } from '@/lib/downloadable/hero'
 import { getStoryblokAnchorId } from '@/lib/storyblok/anchor'
 import { useRefreshPageScroll } from '@/lib/context/smooth-scroll-context'
 import { groupByDivision, groupByYear, sliceGroupedItems } from '@/lib/downloadable/group'
@@ -29,7 +30,6 @@ import {
 } from '@/lib/downloadable/types'
 import { useResourcesTabUrl } from '@/lib/downloadable/useResourcesTabUrl'
 import type {
-  AssetStoryblok,
   DownloadableResourcesStoryblok,
   HeroStoryblok,
 } from '@/types/storyblok'
@@ -51,11 +51,6 @@ const TAB_LABEL_KEY: Record<ResourceTab, string> = {
 }
 
 const TAB_ORDER: ResourceTab[] = ['cataloghi', 'brochure', 'app', 'press', 'altro']
-
-function hasHeroAsset(image?: AssetStoryblok[] | null): boolean {
-  const first = image?.[0]
-  return Boolean(first?.desktop?.filename || first?.mobile?.filename)
-}
 
 /** Solo risorse effettivamente utilizzabili in lista (file o link app esterno). */
 function isListableItem(item: DownloadPreviewItem): boolean {
@@ -251,7 +246,11 @@ function DownloadableResourcesInner({
 
   const title = typeof blok.title === 'string' ? blok.title.trim() : ''
   const hasTitle = title.length > 0
-  const hasImage = hasHeroAsset(blok.image)
+  const heroImage = useMemo(
+    () => resolveDownloadableHeroImage(blok, kind),
+    [blok, kind],
+  )
+  const hasImage = hasHeroAsset(heroImage)
   const showPrimaryHero = hasTitle && hasImage
   const showTertiaryHero = hasTitle && !hasImage
   // Chip solo per categorie con item; la barra serve se c'è almeno una scelta.
@@ -264,9 +263,9 @@ function DownloadableResourcesInner({
       component: 'hero',
       variant: 'primary',
       title,
-      background: blok.image,
+      background: heroImage,
     }
-  }, [blok._uid, blok.image, showPrimaryHero, title])
+  }, [blok._uid, heroImage, showPrimaryHero, title])
 
   return (
     <section
