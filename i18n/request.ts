@@ -2,10 +2,7 @@ import { getRequestConfig } from "next-intl/server";
 import { hasLocale, IntlErrorCode } from "next-intl";
 import { routing } from "./routing";
 import { getMessagesFromDatasource } from "../lib/api/storyblok/datasource";
-import {
-  INSECT_MACRO_CATEGORIES,
-  PEST_FAMILY_OPTIONS,
-} from "../lib/insects/taxonomy";
+import { INSECT_MACRO_CATEGORIES } from "../lib/insects/taxonomy";
 
 /**
  * Request configuration for next-intl
@@ -32,7 +29,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
   }
 
   const insectTaxonomyFallbacks = Object.fromEntries(
-    [...INSECT_MACRO_CATEGORIES, ...PEST_FAMILY_OPTIONS].map(({ value, label }) => [
+    INSECT_MACRO_CATEGORIES.map(({ value, label }) => [
       value,
       label,
     ]),

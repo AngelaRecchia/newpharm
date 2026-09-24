@@ -1,6 +1,6 @@
 /**
- * Tassonomia infestanti (Guida infestanti + scheda `insect`).
- * Slug stabili per CMS, filtri URL e i18n (chiave = value).
+ * Macro categorie della Guida infestanti.
+ * Le famiglie sono story `insect_family`, non un elenco in codice.
  */
 
 export const INSECT_MACRO_CATEGORIES = [
@@ -15,35 +15,7 @@ export const INSECT_MACRO_CATEGORIES = [
   { value: 'zecche_e_acari', label: 'Zeche e acari' },
 ] as const
 
-export const PEST_FAMILY_OPTIONS = [
-  { value: 'zanzare', label: 'Zanzare' },
-  { value: 'mosche', label: 'Mosche' },
-  { value: 'vespe', label: 'Vespe' },
-  { value: 'calabroni', label: 'Calabroni' },
-  { value: 'formiche', label: 'Formiche' },
-  { value: 'blatte', label: 'Blatte' },
-  { value: 'pesciolini_d_argento', label: "Pesciolini d'argento" },
-  { value: 'termiti', label: 'Termiti' },
-  { value: 'tarli_cerambicidi', label: 'Tarli cerambicidi' },
-  { value: 'tarli_siricidi', label: 'Tarli siricidi' },
-  { value: 'cimici_dei_letti', label: 'Cimici dei letti' },
-  { value: 'cimici', label: 'Cimici' },
-  { value: 'zecche', label: 'Zeche' },
-  { value: 'pulci', label: 'Pulci' },
-  { value: 'pidocchi', label: 'Pidocchi' },
-  { value: 'acari', label: 'Acari' },
-  { value: 'acaro_pollino', label: 'Acaro pollino' },
-  { value: 'tarme', label: 'Tarme' },
-  { value: 'coleottero_dei_tappeti', label: 'Coleottero dei tappeti' },
-  { value: 'ratto_grigio', label: 'Ratto grigio' },
-  { value: 'ratto_nero', label: 'Ratto nero' },
-  { value: 'topolino_domestico', label: 'Topolino domestico' },
-  { value: 'piccioni', label: 'Piccioni' },
-  { value: 'insetti_delle_derrate', label: 'Insetti delle derrate' },
-] as const
-
 export type InsectCategory = (typeof INSECT_MACRO_CATEGORIES)[number]['value']
-export type PestFamily = (typeof PEST_FAMILY_OPTIONS)[number]['value']
 
 /** Valori legacy → slug attuali (macro categoria). */
 export const INSECT_CATEGORY_ALIASES: Record<string, InsectCategory> = {
