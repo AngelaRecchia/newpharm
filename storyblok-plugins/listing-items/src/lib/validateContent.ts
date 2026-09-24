@@ -29,9 +29,20 @@ function normalizeImageRatio(raw: unknown): ListingImageRatio {
 
 function asItems(value: unknown): string[] {
   if (typeof value === 'string' && value.length > 0) return [value]
-  return Array.isArray(value)
-    ? value.filter((item): item is string => typeof item === 'string' && item.length > 0)
-    : []
+  if (!Array.isArray(value)) return []
+
+  const items: string[] = []
+  for (const item of value) {
+    if (typeof item === 'string' && item.length > 0) {
+      items.push(item)
+      continue
+    }
+    if (item && typeof item === 'object') {
+      const uuid = (item as { uuid?: unknown }).uuid
+      if (typeof uuid === 'string' && uuid.length > 0) items.push(uuid)
+    }
+  }
+  return items
 }
 
 function sameStringList(a: string[] | undefined, b: string[] | undefined): boolean {

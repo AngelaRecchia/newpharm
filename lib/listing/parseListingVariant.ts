@@ -7,6 +7,7 @@ import type {
   ListingVariantValue,
   ListingStoryResolved,
 } from './types'
+import { asStoryUuids } from './selectStories'
 import {
   EMPTY_PROJECTS_HIGHLIGHT_VALUE,
   EMPTY_VARIANT_VALUE,
@@ -86,9 +87,7 @@ export function parseListingVariant(raw: unknown): ListingVariantValue {
     const value = raw as Record<string, unknown>
     const variantSource = value.variant ?? value.content_variant
     const variant = normalizeVariant(variantSource)
-    const items = Array.isArray(value.items)
-      ? value.items.filter((id): id is string => typeof id === 'string' && id.length > 0)
-      : []
+    const items = asStoryUuids(value.items)
     const category = typeof value.category === 'string' ? value.category : ''
     const tag = normalizeTag(value.tag)
     const legacyBestsellerVista = value.vista === 'bestseller'

@@ -129,6 +129,7 @@ export type StoryOption = {
   uuid: string
   name: string
   full_slug: string
+  group_id?: string | null
   published_at?: string | null
   created_at?: string | null
 }

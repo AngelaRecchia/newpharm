@@ -3,6 +3,7 @@ import NextImage from 'next/image'
 import Asset, { type StoryblokAsset } from '@/components/atoms/Asset'
 import Icon from '@/components/atoms/Icon'
 import SmartLink from '@/components/atoms/SmartLink'
+import ProductTransitionImage from '@/components/atoms/ProductTransitionImage'
 import { AssetStoryblok } from '@/types/storyblok'
 import { getLinkUrl, StoryblokLink } from '@/lib/api/utils/links'
 import { DOWNLOADABLE_PLACEHOLDER_SRC } from '@/lib/downloadable/placeholder'
@@ -79,6 +80,8 @@ export type CardListingProps = {
   onActivate?: () => void
   titleOnlyWhenNoImage?: boolean
   placeholderWhenNoImage?: boolean
+  /** uuid story prodotto: morph immagine verso dettaglio */
+  productTransitionId?: string
 }
 
 export default function CardListing({
@@ -95,6 +98,7 @@ export default function CardListing({
   onActivate,
   titleOnlyWhenNoImage = false,
   placeholderWhenNoImage = false,
+  productTransitionId,
 }: CardListingProps) {
   const hasStoryblokLink = Boolean(getLinkUrl(link))
   const hrefValue = toCardHref(href)
@@ -104,15 +108,25 @@ export default function CardListing({
   const hideMeta = titleOnlyWhenNoImage && !hasCover
   const shownSubtitle = hideMeta ? undefined : subtitle
   const shownDescription = hideMeta ? undefined : description
-  const inner = (
-    <>
-      {hasCover || showImagePlaceholder ? (
+  const imageClassName = cn('image', {
+    square: imageRatio === 'square',
+    empty: showImagePlaceholder,
+    imageSafeArea: imageSafeArea && hasCover,
+  })
+
+  const imageBlock =
+    hasCover || showImagePlaceholder ? (
+      productTransitionId && hasCover ? (
+        <ProductTransitionImage
+          uuid={productTransitionId}
+          role="source"
+          className={imageClassName}
+        >
+          <CardImage image={image} mode={imageSafeArea ? 'fit' : undefined} />
+        </ProductTransitionImage>
+      ) : (
         <div
-          className={cn('image', {
-            square: imageRatio === 'square',
-            empty: showImagePlaceholder,
-            imageSafeArea: imageSafeArea && hasCover,
-          })}
+          className={imageClassName}
           aria-hidden={showImagePlaceholder || undefined}
         >
           {hasCover ? (
@@ -127,7 +141,12 @@ export default function CardListing({
             />
           )}
         </div>
-      ) : null}
+      )
+    ) : null
+
+  const inner = (
+    <>
+      {imageBlock}
       <div className={cn('content-wrapper')}>
         <div className={cn('content')}>
           {title ? <h3 className={cn('title')}>{title}</h3> : null}
@@ -155,7 +174,12 @@ export default function CardListing({
 
   if (hasStoryblokLink) {
     return (
-      <SmartLink link={link} className={className}>
+      <SmartLink
+        link={link}
+        className={className}
+        productTransitionId={productTransitionId}
+        data-product-card
+      >
         {inner}
       </SmartLink>
     )
@@ -163,11 +187,20 @@ export default function CardListing({
 
   if (hrefValue) {
     return (
-      <SmartLink href={hrefValue} className={className}>
+      <SmartLink
+        href={hrefValue}
+        className={className}
+        productTransitionId={productTransitionId}
+        data-product-card
+      >
         {inner}
       </SmartLink>
     )
   }
 
-  return <article className={className}>{inner}</article>
+  return (
+    <article className={className} data-product-card>
+      {inner}
+    </article>
+  )
 }

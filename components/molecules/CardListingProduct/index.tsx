@@ -7,6 +7,7 @@ import styles from './index.module.scss'
 import Asset, { type StoryblokAsset } from '@/components/atoms/Asset'
 import Button from '@/components/atoms/Button'
 import SmartLink from '@/components/atoms/SmartLink'
+import ProductTransitionImage from '@/components/atoms/ProductTransitionImage'
 
 const cn = classNames.bind(styles)
 
@@ -125,6 +126,7 @@ export default function CardListingProduct(props: CardListingRefProps) {
 }
 
 export function CardListingRef({
+  uuid,
   title,
   description,
   image,
@@ -147,23 +149,34 @@ export function CardListingRef({
   const addLabel = t('add')
   const productHref = href ? `/${href}` : undefined
 
+  const transitionId = uuid || undefined
+
   if (layout === 'list') {
     return (
-      <article className={cn('wrapper', 'listLayout')}>
+      <article className={cn('wrapper', 'listLayout')} data-product-card>
         {productHref ? (
-          <SmartLink href={productHref} className={cn('listImageLink')} aria-label={title}>
-            <div className={cn('listImage')}>
+          <SmartLink
+            href={productHref}
+            className={cn('listImageLink')}
+            aria-label={title}
+            productTransitionId={transitionId}
+          >
+            <ProductTransitionImage uuid={transitionId} role="source" className={cn('listImage')}>
               {image && <Asset asset={image} size="m" mode="fit" />}
-            </div>
+            </ProductTransitionImage>
           </SmartLink>
         ) : (
-          <div className={cn('listImage')}>
+          <ProductTransitionImage uuid={transitionId} role="source" className={cn('listImage')}>
             {image && <Asset asset={image} size="m" mode="fit" />}
-          </div>
+          </ProductTransitionImage>
         )}
         <div className={cn('listBody')}>
           {productHref ? (
-            <SmartLink href={productHref} className={cn('listTitle')}>
+            <SmartLink
+              href={productHref}
+              className={cn('listTitle')}
+              productTransitionId={transitionId}
+            >
               {title}
             </SmartLink>
           ) : (
@@ -194,9 +207,9 @@ export function CardListingRef({
 
   const gridInner = (
     <>
-      <div className={cn('image')}>
+      <ProductTransitionImage uuid={transitionId} role="source" className={cn('image')}>
         {image && <Asset asset={image} size="m" mode="fit" />}
-      </div>
+      </ProductTransitionImage>
       <div className={cn('footer')}>
         <div className={cn('dot')} aria-hidden />
         <div className={cn('content')}>
@@ -209,11 +222,20 @@ export function CardListingRef({
 
   if (productHref) {
     return (
-      <SmartLink href={productHref} className={cn('wrapper')}>
+      <SmartLink
+        href={productHref}
+        className={cn('wrapper')}
+        productTransitionId={transitionId}
+        data-product-card
+      >
         {gridInner}
       </SmartLink>
     )
   }
 
-  return <article className={cn('wrapper')}>{gridInner}</article>
+  return (
+    <article className={cn('wrapper')} data-product-card>
+      {gridInner}
+    </article>
+  )
 }

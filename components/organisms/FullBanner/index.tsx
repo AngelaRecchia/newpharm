@@ -46,9 +46,10 @@ const FullBanner = ({ blok }: { blok?: Full_bannerStoryblok }) => {
 
                 assetRef.current.style.setProperty('--parallax-shift', `${parallaxDistance}px`);
 
-                const target = assetRef.current.firstElementChild as HTMLElement | null;
+                // Solo il media: il play/pause resta fermo nell'overlay, come il testo
+                const targets = assetRef.current.querySelectorAll('video, img');
 
-                if (!target) return;
+                if (targets.length === 0) return;
 
                 const tl = gsap.timeline({
                     scrollTrigger: {
@@ -61,13 +62,13 @@ const FullBanner = ({ blok }: { blok?: Full_bannerStoryblok }) => {
                 });
 
                 // Primo tween: da -n a 0 (progress 0 → 0.5)
-                tl.fromTo(target,
+                tl.fromTo(targets,
                     { y: -parallaxDistance, force3D: true }, // force3D usa GPU acceleration
                     { y: 0, duration: 0.5, ease: 'none', force3D: true }
                 );
 
                 // Secondo tween: da 0 a +n (progress 0.5 → 1)
-                tl.to(target,
+                tl.to(targets,
                     { y: parallaxDistance, duration: 0.5, ease: 'none', force3D: true }
                 );
 

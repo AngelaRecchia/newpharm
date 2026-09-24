@@ -42,6 +42,8 @@ export interface ButtonProps {
     blok?: LinkStoryblok
     /** Copia/share del link della pagina, come l’azione CMS `copy` */
     pageAction?: 'copy'
+    /** Morph immagine prodotto (uuid story) verso il dettaglio */
+    productTransitionId?: string
 }
 
 function resolveLinkAction(link: ButtonProps['link'], blok?: LinkStoryblok, pageAction?: ButtonProps['pageAction']): LinkActionValue {
@@ -55,7 +57,7 @@ function resolveLinkAction(link: ButtonProps['link'], blok?: LinkStoryblok, page
     return parseLinkAction(undefined)
 }
 
-const Button = forwardRef<HTMLButtonElement | HTMLDivElement, ButtonProps>(({ icon = 'right-small', label: labelProp, onClick, onFocus, className, href, target, link, variant = 'primary', size = 'medium', weight = 'bold', animated = false, inert = false, iconAlwaysVisible = false, iconPlain = false, iconRotate = false, 'aria-label': ariaLabel, blok, pageAction, type, disabled, ...props }, ref) => {
+const Button = forwardRef<HTMLButtonElement | HTMLDivElement, ButtonProps>(({ icon = 'right-small', label: labelProp, onClick, onFocus, className, href, target, link, variant = 'primary', size = 'medium', weight = 'bold', animated = false, inert = false, iconAlwaysVisible = false, iconPlain = false, iconRotate = false, 'aria-label': ariaLabel, blok, pageAction, productTransitionId, type, disabled, ...props }, ref) => {
     const t = useTranslations('')
     const { copied, copyPageLink } = useCopyPageLink()
     const glossary = useGlossary()
@@ -191,6 +193,7 @@ const Button = forwardRef<HTMLButtonElement | HTMLDivElement, ButtonProps>(({ ic
                 link={extractedLink}
                 href={navigableHref}
                 target={linkTarget}
+                productTransitionId={productTransitionId}
                 {...sharedProps}
             >
                 {children}

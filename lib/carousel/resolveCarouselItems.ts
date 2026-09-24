@@ -2,6 +2,7 @@ import { getStoriesByComponent, getStoriesByUuids } from '@/lib/api/storyblok/st
 import { filterListingByVista } from '@/lib/listing/filterListingByVista'
 import { sortResolvedListingStories } from '@/lib/listing/parseListingVariant'
 import { mapStoryToListingResolved } from '@/lib/listing/resolveListingItems'
+import { filterStoriesBySelection } from '@/lib/listing/selectStories'
 import type { ListingStoryResolved } from '@/lib/listing/types'
 import { sortProductStories } from '@/lib/products/filterProducts'
 import { parseCarouselVariant } from './parseCarouselVariant'
@@ -85,22 +86,28 @@ export async function resolveCarouselItems(
   if (parsed.variant === 'editorial') return []
 
   if (parsed.variant === 'infestante') {
-    const allStories = (await getStoriesByComponent('insect', locale)).map(
-      mapStoryToListingResolved,
+    const [allStories, selectedStories] = await Promise.all([
+      getStoriesByComponent('insect', locale).then((stories) =>
+        stories.map(mapStoryToListingResolved),
+      ),
+      parsed.items.length > 0
+        ? getStoriesByUuids(parsed.items).then((stories) =>
+            stories.map(mapStoryToListingResolved),
+          )
+        : Promise.resolve([]),
+    ])
+
+    const selected = filterStoriesBySelection(
+      allStories,
+      parsed.items,
+      parsed.selection_mode === 'manual' ? 'manual' : 'all',
+      selectedStories,
+      { preserveItemOrder: parsed.selection_mode === 'manual' },
     )
 
-    if (parsed.selection_mode === 'manual') {
-      if (parsed.items.length === 0) return []
-      const included = new Set(parsed.items)
-      return sortResolvedListingStories(
-        allStories.filter((story) => included.has(story.uuid)),
-      )
-    }
-
-    const excluded = new Set(parsed.items)
-    return sortResolvedListingStories(
-      allStories.filter((story) => !excluded.has(story.uuid)),
-    )
+    return parsed.selection_mode === 'manual'
+      ? selected
+      : sortResolvedListingStories(selected)
   }
 
   if (parsed.variant === 'story') {

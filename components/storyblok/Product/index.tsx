@@ -1,9 +1,11 @@
 ﻿'use client'
 
+import { useEffect } from 'react'
 import classNames from 'classnames/bind'
 import styles from './index.module.scss'
 import { ProductStoryblok } from '@/types/storyblok'
 import Asset from '@/components/atoms/Asset'
+import ProductTransitionImage from '@/components/atoms/ProductTransitionImage'
 import { useTranslations } from 'next-intl'
 import Tag from '@/components/atoms/Tag'
 import Breadcrumbs from '@/components/atoms/Breadcrumbs'
@@ -58,6 +60,12 @@ const Product = ({ blok }: { blok: ProductStoryblok }) => {
   } = blok as any
 
   const targetPests = mapTargetPests(blok.resolved_target_pests ?? blok.target_pests)
+  const productUuid = (blok as { product_uuid?: string }).product_uuid ?? ''
+
+  useEffect(() => {
+    if (!productUuid) return
+    window.scrollTo(0, 0)
+  }, [productUuid])
 
   const categorySlug = getProductCategorySlug(product_filtri, category)
 
@@ -120,7 +128,7 @@ const Product = ({ blok }: { blok: ProductStoryblok }) => {
   ].filter((item) => hasContent(item.content, item.type))
 
   return (
-    <section className={cn('wrapper')}>
+    <section className={cn('wrapper')} data-product-detail={productUuid || undefined}>
 
       <ProductStickyBar
         uuid={blok.product_uuid ?? ''}
@@ -137,9 +145,13 @@ const Product = ({ blok }: { blok: ProductStoryblok }) => {
               <Tag tag={t(categorySlug)} variant="primary" />
             </div>
           )}
-          <div className={cn('product-image')}>
+          <ProductTransitionImage
+            uuid={productUuid}
+            role="destination"
+            className={cn('product-image')}
+          >
             <Asset asset={mainImage} mode="fit" priority={true} />
-          </div>
+          </ProductTransitionImage>
         </div>
 
         {/* Colonna destra — contenuto */}

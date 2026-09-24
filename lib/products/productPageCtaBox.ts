@@ -55,16 +55,13 @@ export interface ProductPageCtaBoxLabels {
  *
  * @param relatedProjects progetti che referenziano il prodotto (query inversa)
  * @param labels label/traduzioni per le card
- * @returns blok Cta_boxStoryblok con due card fisse e una card progetto opzionale
+ * @returns blok Cta_boxStoryblok con due card fisse e una card progetto se presente
  */
 export function buildProductPageCtaBox(
   relatedProjects: RelatedProject[],
   labels: ProductPageCtaBoxLabels,
-): Cta_boxStoryblok | null {
-  if (!relatedProjects || relatedProjects.length === 0) {
-    return null;
-  }
-  const project = relatedProjects[0]
+): Cta_boxStoryblok {
+  const project = relatedProjects?.[0]
 
   const baseUid = 'product-page-auto-cta'
 

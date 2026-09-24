@@ -1,4 +1,5 @@
 import type { ListingProductVista } from '@/lib/listing/types'
+import { asStoryUuids } from '@/lib/listing/selectStories'
 import {
   EMPTY_CAROUSEL_VARIANT,
   type CarouselInsectMode,
@@ -61,9 +62,7 @@ export function parseCarouselVariant(raw: unknown): CarouselVariantValue {
 
   const value = raw as Record<string, unknown>
   const variant = normalizeVariant(value.variant ?? value.content_variant)
-  const items = Array.isArray(value.items)
-    ? value.items.filter((id): id is string => typeof id === 'string' && id.length > 0)
-    : []
+  const items = asStoryUuids(value.items)
   const tag = normalizeTag(value.tag)
   const category = typeof value.category === 'string' ? value.category : ''
   const legacyBestsellerVista = value.vista === 'bestseller'

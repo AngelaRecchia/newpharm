@@ -5,33 +5,7 @@ import { useEffect, useState } from 'react'
 import { getStoryblokVersion } from '@/lib/api/storyblok/config'
 import { STORYBLOK_RESOLVE_RELATIONS } from '@/lib/api/storyblok/resolveRelations'
 import { isInsideStoryblokEditor } from '@/lib/api/storyblok/config'
-import { parseCarouselVariant } from '@/lib/carousel/parseCarouselVariant'
-
-function hasSameRelatedProductsConfig(
-  source: Record<string, unknown>,
-  target: Record<string, unknown>,
-): boolean {
-  const sourceVariant =
-    source.variant && typeof source.variant === 'object'
-      ? source.variant
-      : { ...source, variant: 'related_products' }
-  const targetVariant =
-    target.variant && typeof target.variant === 'object'
-      ? target.variant
-      : { ...target, variant: 'related_products' }
-  const sourceConfig = parseCarouselVariant(sourceVariant)
-  const targetConfig = parseCarouselVariant(targetVariant)
-
-  return (
-    sourceConfig.selection_mode === targetConfig.selection_mode &&
-    sourceConfig.items.join(',') === targetConfig.items.join(',') &&
-    sourceConfig.vista === targetConfig.vista &&
-    sourceConfig.category === targetConfig.category &&
-    sourceConfig.subcategory === targetConfig.subcategory &&
-    sourceConfig.application_area === targetConfig.application_area &&
-    sourceConfig.bestseller === targetConfig.bestseller
-  )
-}
+import { usePluginLivePreview, withPluginOverrides } from '@/lib/preview/usePluginLivePreview'
 
 /**
  * Copia `resolved_items` (e altri campi SSR) dal contenuto statico al live editor.
@@ -122,15 +96,9 @@ function preserveSsrEnrichment(source: unknown, target: unknown): unknown {
           ? (targetRecord.related_products as Record<string, unknown>)
           : {}
       if (Array.isArray(sourceRelatedProducts.resolved_items)) {
-        const preserveResolvedItems = hasSameRelatedProductsConfig(
-          sourceRelatedProducts,
-          targetRelatedProducts,
-        )
         merged.related_products = {
           ...targetRelatedProducts,
-          resolved_items: preserveResolvedItems
-            ? sourceRelatedProducts.resolved_items
-            : [],
+          resolved_items: sourceRelatedProducts.resolved_items,
           variant: targetRelatedProducts.variant ?? sourceRelatedProducts.variant,
         }
       }
@@ -196,12 +164,14 @@ function VisualEditorRenderer({ blok, story }: StoryblokRendererProps) {
     STORYBLOK_CDN_PARAMS,
     STORYBLOK_BRIDGE_PARAMS,
   )
+  const pluginOverrides = usePluginLivePreview(blok, liveStory?.content, story?.full_slug)
 
   if (!blok || !blok.component) return null
 
-  // Usa il contenuto live mantenendo enrichment SSR (resolved_items)
+  // Contenuto live del bridge, con resolved_* SSR finché il plugin non cambia.
+  // Se un field plugin cambia prima del save, gli override sostituiscono quel resolved_*.
   const content = liveStory?.content
-    ? preserveSsrEnrichment(blok, liveStory.content)
+    ? withPluginOverrides(preserveSsrEnrichment(blok, liveStory.content), pluginOverrides)
     : blok
 
   return <StoryblokComponent blok={content} />

@@ -30,8 +30,9 @@
 
 .stage {
   position: relative;
-  display: flex;
-  justify-content: center;
+  display: grid;
+  justify-items: center;
+  align-items: center;
   width: auto;
   max-width: 100%;
   line-height: 0;
@@ -40,6 +41,7 @@
 }
 
 .photo {
+  grid-area: 1 / 1;
   display: block;
   width: auto;
   height: auto;
@@ -49,10 +51,6 @@
   -webkit-user-drag: none;
 
   &:not(.isCurrent) {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
     visibility: hidden;
     pointer-events: none;
   }

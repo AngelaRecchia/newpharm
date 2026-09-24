@@ -24,6 +24,7 @@ import { sortJobsByPublishedAt } from '@/lib/jobs/mapJobToCard'
 import { filterProjectsByDivisions } from '@/lib/projects/filterProjects'
 import { parseProjectDivisions } from '@/lib/projects/divisions'
 import { enrichProductsTargetPests } from '@/lib/products/targetPests'
+import { filterStoriesBySelection } from '@/lib/listing/selectStories'
 import { parseDownloadableKind } from '@/lib/downloadable/parse'
 import type { ListingStoryResolved } from './types'
 
@@ -33,6 +34,7 @@ export function mapStoryToListingResolved(story: Story): ListingStoryResolved {
     name: story.name,
     slug: story.slug,
     full_slug: story.full_slug,
+    group_id: typeof story.group_id === 'string' ? story.group_id : null,
     created_at: story.created_at ?? null,
     published_at: story.published_at ?? null,
     first_published_at: story.first_published_at ?? null,
@@ -125,12 +127,6 @@ export async function resolveListingRefItems(
       ? await resolveCatalogListingStories(locale)
       : await resolveStoriesByComponent(variantToComponent(parsed.variant), locale)
 
-  if (parsed.selection_mode === 'manual') {
-    if (parsed.items.length === 0) return []
-    const included = new Set(parsed.items)
-    return sortResolvedListingStories(allStories.filter((story) => included.has(story.uuid)))
-  }
-
   if (parsed.selection_mode === 'tag') {
     const tag = parsed.tag
     if (!tag) return []
@@ -141,8 +137,15 @@ export async function resolveListingRefItems(
     return sortResolvedListingStories(tagged)
   }
 
-  const excluded = new Set(parsed.items)
-  return sortResolvedListingStories(allStories.filter((story) => !excluded.has(story.uuid)))
+  const selectedStories =
+    parsed.items.length > 0
+      ? (await getStoriesByUuids(parsed.items)).map(mapStoryToListingResolved)
+      : []
+  const mode = parsed.selection_mode === 'manual' ? 'manual' : 'all'
+
+  return sortResolvedListingStories(
+    filterStoriesBySelection(allStories, parsed.items, mode, selectedStories),
+  )
 }
 
 type BlokRecord = Record<string, unknown> & {

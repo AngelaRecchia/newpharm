@@ -224,6 +224,7 @@ export default function Search({ title, subtitle, suggestedSearches }: SearchPro
       href={item.href}
       showDownload={key === 'downloadables'}
       imageSafeArea={key === 'products'}
+      productTransitionId={key === 'products' ? item.uuid : undefined}
       placeholderWhenNoImage
     />
   )

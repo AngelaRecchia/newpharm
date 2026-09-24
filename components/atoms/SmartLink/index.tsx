@@ -11,12 +11,15 @@ import {
 import { useGlossary } from '@/lib/glossary/context'
 import { openPopup, parseLinkAction } from '@/lib/link-action'
 import { useCopyPageLink } from '@/lib/use-copy-page-link'
+import { useProductViewTransition } from '@/lib/context/product-view-transition-context'
 type LinkProps = ComponentProps<typeof Link>
 
 interface SmartLinkProps extends Omit<LinkProps, 'href'> {
     href?: string
     link?: unknown
     children?: React.ReactNode
+    /** Abilita morph immagine prodotto verso il dettaglio (uuid story). */
+    productTransitionId?: string
 }
 
 /**
@@ -46,10 +49,11 @@ interface SmartLinkProps extends Omit<LinkProps, 'href'> {
  * - link={[link1, link2]} → Uses the first valid link from the array
  * - No valid href/link → <div> (non-clickable)
  */
-const SmartLink = forwardRef<HTMLAnchorElement | HTMLDivElement | HTMLButtonElement, SmartLinkProps>(({ href, link, children, ...props }, ref) => {
+const SmartLink = forwardRef<HTMLAnchorElement | HTMLDivElement | HTMLButtonElement, SmartLinkProps>(({ href, link, children, productTransitionId, onClick, ...props }, ref) => {
     const locales = routing.locales
     const glossary = useGlossary()
     const { copyPageLink } = useCopyPageLink()
+    const productViewTransition = useProductViewTransition()
 
     const actionLink = useMemo(() => findActionableLinkStoryblok(link), [link])
 
@@ -112,6 +116,36 @@ const SmartLink = forwardRef<HTMLAnchorElement | HTMLDivElement | HTMLButtonElem
         linkUrl = href
     }
 
+    const handleProductTransitionClick = (
+        event: React.MouseEvent<HTMLAnchorElement>,
+        navigationHref: string,
+    ) => {
+        onClick?.(event)
+        if (event.defaultPrevented || !productTransitionId || !productViewTransition) return
+
+        event.preventDefault()
+        const root =
+            event.currentTarget.closest('article') ??
+            event.currentTarget.closest('[data-product-card]') ??
+            event.currentTarget
+        const sourceImage = root.querySelector<HTMLElement>(
+            `[data-vt-product-image="${productTransitionId}"]`,
+        )
+        productViewTransition.navigateToProduct(
+            navigationHref,
+            productTransitionId,
+            sourceImage,
+        )
+    }
+
+    const linkClickProps = (navigationHref: string) =>
+        productTransitionId
+            ? {
+                  onClick: (event: React.MouseEvent<HTMLAnchorElement>) =>
+                      handleProductTransitionClick(event, navigationHref),
+              }
+            : { onClick }
+
     // Se non c'è URL valido, renderizza un div
     // Rimuovi le props specifiche di link/anchor che non sono valide per un div
     if (!linkUrl) {
@@ -126,7 +160,7 @@ const SmartLink = forwardRef<HTMLAnchorElement | HTMLDivElement | HTMLButtonElem
     // Se è un anchor link (inizia con #), passa direttamente
     if (linkUrl.startsWith('#')) {
         return (
-            <Link ref={ref as React.Ref<HTMLAnchorElement>} href={linkUrl} {...props}>
+            <Link ref={ref as React.Ref<HTMLAnchorElement>} href={linkUrl} {...props} onClick={onClick}>
                 {children}
             </Link>
         )
@@ -135,7 +169,7 @@ const SmartLink = forwardRef<HTMLAnchorElement | HTMLDivElement | HTMLButtonElem
     // Se è un URL esterno (http/https), passa direttamente
     if (linkUrl.match(/^https?:\/\//i)) {
         return (
-            <a ref={ref as React.Ref<HTMLAnchorElement>} href={linkUrl} {...props} target="_blank" rel="noopener noreferrer">
+            <a ref={ref as React.Ref<HTMLAnchorElement>} href={linkUrl} {...props} onClick={onClick} target="_blank" rel="noopener noreferrer">
                 {children}
             </a>
         )
@@ -144,7 +178,7 @@ const SmartLink = forwardRef<HTMLAnchorElement | HTMLDivElement | HTMLButtonElem
     // Se l'URL inizia con www., trattalo come URL esterno
     if (linkUrl.match(/^www\./i)) {
         return (
-            <a ref={ref as React.Ref<HTMLAnchorElement>} href={`https://${linkUrl}`} {...props} target="_blank" rel="noopener noreferrer">
+            <a ref={ref as React.Ref<HTMLAnchorElement>} href={`https://${linkUrl}`} {...props} onClick={onClick} target="_blank" rel="noopener noreferrer">
                 {children}
             </a>
         )
@@ -169,7 +203,14 @@ const SmartLink = forwardRef<HTMLAnchorElement | HTMLDivElement | HTMLButtonElem
             }
 
             return (
-                <Link ref={ref as React.Ref<HTMLAnchorElement>} href={pathWithoutLocale} locale={detectedLocale} {...props}>
+                <Link
+                    ref={ref as React.Ref<HTMLAnchorElement>}
+                    href={pathWithoutLocale}
+                    locale={detectedLocale}
+                    prefetch={productTransitionId ? true : undefined}
+                    {...props}
+                    {...linkClickProps(linkUrl)}
+                >
                     {children}
                 </Link>
             )
@@ -180,7 +221,13 @@ const SmartLink = forwardRef<HTMLAnchorElement | HTMLDivElement | HTMLButtonElem
     if (linkUrl.startsWith('/')) {
         // Regular internal link without locale prefix
         return (
-            <Link ref={ref as React.Ref<HTMLAnchorElement>} href={linkUrl} {...props}>
+            <Link
+                ref={ref as React.Ref<HTMLAnchorElement>}
+                href={linkUrl}
+                prefetch={productTransitionId ? true : undefined}
+                {...props}
+                {...linkClickProps(linkUrl)}
+            >
                 {children}
             </Link>
         )
@@ -190,7 +237,13 @@ const SmartLink = forwardRef<HTMLAnchorElement | HTMLDivElement | HTMLButtonElem
     // Normalizzalo aggiungendo / all'inizio per renderlo assoluto
     const normalizedUrl = linkUrl.startsWith('/') ? linkUrl : '/' + linkUrl
     return (
-        <Link ref={ref as React.Ref<HTMLAnchorElement>} href={normalizedUrl} {...props}>
+        <Link
+            ref={ref as React.Ref<HTMLAnchorElement>}
+            href={normalizedUrl}
+            prefetch={productTransitionId ? true : undefined}
+            {...props}
+            {...linkClickProps(normalizedUrl)}
+        >
             {children}
         </Link>
     )

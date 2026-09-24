@@ -5,6 +5,7 @@
 @use "../../../styles" as *;
 
 .header {
+  view-transition-name: site-header;
   width: 100%;
   font-family: var(--font-sans);
   will-change: background-color, transform;

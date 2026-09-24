@@ -41,6 +41,7 @@ function RefCard({
 }: {
   variant: string
   dark?: boolean
+  uuid?: string
   title: string
   description?: string
   image?: import('@/components/atoms/Asset').StoryblokAsset | null
@@ -54,6 +55,7 @@ function RefCard({
       href={props.href}
       showDownload={variant === 'catalogo'}
       imageSafeArea={variant === 'prodotto'}
+      productTransitionId={variant === 'prodotto' ? props.uuid : undefined}
       dark={dark}
     />
   )

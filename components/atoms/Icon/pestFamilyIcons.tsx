@@ -1,20 +1,34 @@
-import { PEST_FAMILIES, type PestIconType } from '@/lib/insects/families'
+import { PEST_FAMILIES, type PestFamily, type PestIconType } from '@/lib/insects/families'
+import styles from './index.module.scss'
 
-/** Icone famiglia infestante (PNG in /public/icons/pests). */
+/** Famiglie con icona vettoriale (le PNG originali erano 25–36px e si sgranavano). */
+const PEST_SVG_FAMILIES = new Set<PestFamily>([
+  'blatte',
+  'formiche',
+  'mosche',
+  'vespe',
+  'zanzare',
+])
+
+function pestIconSrc(family: PestFamily): string {
+  const ext = PEST_SVG_FAMILIES.has(family) ? 'svg' : 'png'
+  return `/icons/pests/${family}.${ext}`
+}
+
+/** Icone famiglia infestante in /public/icons/pests. */
 export const pestFamilyIcons = Object.fromEntries(
   PEST_FAMILIES.map((family) => {
     const iconKey = `pest-${family}` as PestIconType
     return [
       iconKey,
-      // eslint-disable-next-line @next/next/no-img-element
-      <img
+      <span
         key={iconKey}
-        src={`/icons/pests/${family}.png`}
-        alt=""
-        width={24}
-        height={24}
+        className={styles.pest}
         aria-hidden
-        draggable={false}
+        style={{
+          WebkitMaskImage: `url(${pestIconSrc(family)})`,
+          maskImage: `url(${pestIconSrc(family)})`,
+        }}
       />,
     ]
   }),

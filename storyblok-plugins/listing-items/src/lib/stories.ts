@@ -37,6 +37,7 @@ type RawStory = {
   uuid: string
   name: string
   full_slug: string
+  group_id?: string | null
   published_at?: string | null
   created_at?: string | null
   content?: {
@@ -98,6 +99,7 @@ function mapStory(story: RawStory): StoryOption | null {
     uuid: story.uuid,
     name: story.name,
     full_slug: story.full_slug,
+    group_id: story.group_id ?? null,
     published_at: story.published_at ?? null,
     created_at: story.created_at ?? null,
   }
@@ -154,6 +156,64 @@ async function fetchStoryPages(
   }
 
   return [...byUuid.values()]
+}
+
+export async function fetchStoriesByUuids(
+  token: string,
+  uuids: string[],
+): Promise<StoryOption[]> {
+  if (!token || uuids.length === 0) return []
+
+  const unique = [...new Set(uuids.filter(Boolean))]
+  const cv = await getCacheVersion(token)
+  const byUuid = new Map<string, StoryOption>()
+
+  for (let i = 0; i < unique.length; i += PER_PAGE) {
+    const chunk = unique.slice(i, i + PER_PAGE)
+    const params = new URLSearchParams({
+      token,
+      version: 'draft',
+      by_uuids: chunk.join(','),
+      per_page: String(chunk.length),
+    })
+    if (cv !== undefined) params.set('cv', String(cv))
+
+    const res = await fetch(`${STORIES_URL}?${params}`)
+    if (!res.ok) throw new Error(`CDN ${res.status}`)
+
+    const data = (await res.json()) as { stories?: RawStory[] }
+    for (const story of data.stories ?? []) {
+      const mapped = mapStory(story)
+      if (mapped) byUuid.set(mapped.uuid, mapped)
+    }
+  }
+
+  return unique.map((uuid) => byUuid.get(uuid)).filter(Boolean) as StoryOption[]
+}
+
+export function storySelectionIds(
+  story: Pick<StoryOption, 'uuid' | 'group_id'>,
+  selected: Array<Pick<StoryOption, 'uuid' | 'group_id'>>,
+): string[] {
+  const ids = new Set<string>([story.uuid])
+  if (story.group_id) {
+    for (const item of selected) {
+      if (item.group_id === story.group_id) ids.add(item.uuid)
+    }
+  }
+  return [...ids]
+}
+
+export function isStorySelected(
+  uuid: string,
+  items: string[],
+  selected: Array<Pick<StoryOption, 'uuid' | 'group_id'>>,
+  results: Array<Pick<StoryOption, 'uuid' | 'group_id'>>,
+): boolean {
+  if (items.includes(uuid)) return true
+  const story = results.find((item) => item.uuid === uuid)
+  if (!story?.group_id) return false
+  return selected.some((item) => item.group_id === story.group_id)
 }
 
 export async function searchStories(

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 32" fill="currentColor">
+  <path d="M10.15 3.35C8.05.95 5.55.15 3.2.4M13.85 3.35c2.1-2.4 4.6-3.2 6.95-2.95" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linecap="round"/>
+  <ellipse cx="12" cy="5.15" rx="1.85" ry="1.7"/>
+  <path d="M12 6.55c3.85 0 6.85 4.55 6.85 11.15 0 6.85-2.85 12.55-6.85 12.55s-6.85-5.7-6.85-12.55C5.15 11.1 8.15 6.55 12 6.55Z"/>
+  <path d="M6.85 9.35C4.15 8.15 2.05 6.05 1.15 4.25M17.15 9.35c2.7-1.2 4.8-3.3 5.7-5.1M6.15 13.85C3.35 13.15 1.45 11.35.7 9.55M17.85 13.85c2.8-.7 4.7-2.5 5.45-4.3M6.55 18.85c-2.55.95-4.25 2.85-4.75 4.55M17.45 18.85c2.55.95 4.25 2.85 4.75 4.55" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linecap="round"/>
+</svg>

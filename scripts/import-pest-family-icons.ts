@@ -2,6 +2,15 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 /** Slug famiglia → prefisso nome file negli asset Cursor (prima dell’UUID). */
+/** Famiglie con SVG in public/icons/pests: non sovrascrivere con PNG sgranate. */
+const SVG_FAMILIES = new Set([
+  'zanzare',
+  'mosche',
+  'vespe',
+  'formiche',
+  'blatte',
+])
+
 const SOURCE_KEY_BY_FAMILY: Record<string, string> = {
   zanzare: 'zanzara',
   mosche: 'mosca',
@@ -69,6 +78,7 @@ function main() {
   const missing: string[] = []
 
   for (const [family, key] of Object.entries(SOURCE_KEY_BY_FAMILY)) {
+    if (SVG_FAMILIES.has(family)) continue
     const source = findSourceFile(assetsDir, key)
     if (!source) {
       missing.push(family)

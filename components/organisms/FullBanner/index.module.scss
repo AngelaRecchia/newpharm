@@ -55,21 +55,10 @@
       overflow: hidden;
     }
 
-    .asset-video-control-wrapper {
-      position: sticky;
-
-      top: calc(100svh - $s-32 - $s-40);
-      padding: $s-24;
-      display: flex;
-      justify-content: flex-end;
-      z-index: 10;
-    }
-
     .asset-wrapper {
       position: absolute;
       inset: 0;
       overflow: hidden;
-      will-change: transform;
       z-index: 0;
 
       > :global(*) {
@@ -80,12 +69,27 @@
         height: 100%;
         top: 0;
       }
+
+      img,
+      video {
+        will-change: transform;
+      }
     }
 
     .content {
       position: relative;
       z-index: 1;
       height: 100svh;
+      pointer-events: none;
+    }
+
+    .title {
+      pointer-events: auto;
+    }
+
+    :global([data-video-controls]) {
+      z-index: 2;
+      pointer-events: auto;
     }
   }
 
@@ -107,7 +111,6 @@
       inset: 0;
       position: absolute;
       overflow: hidden;
-      will-change: transform;
 
       > :global(*) {
         inset: auto;
@@ -124,15 +127,8 @@
       }
     }
 
-    .asset-video-control-wrapper {
-      position: absolute;
-      bottom: $s-64;
-      inset-inline-end: $s-48;
-
-      @include lg {
-        bottom: calc($s-64 + $s-24);
-        inset-inline-end: calc($s-40 + $s-24);
-      }
+    :global([data-video-controls]) {
+      z-index: 2;
     }
   }
 }

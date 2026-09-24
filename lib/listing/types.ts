@@ -73,6 +73,7 @@ export type ListingStoryResolved = {
   name: string
   slug: string
   full_slug: string
+  group_id?: string | null
   created_at?: string | null
   published_at?: string | null
   first_published_at?: string | null

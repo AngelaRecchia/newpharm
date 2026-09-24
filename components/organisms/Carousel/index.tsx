@@ -2,8 +2,8 @@
 
 import classNames from 'classnames/bind';
 import styles from './index.module.scss';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation } from 'swiper/modules';
+import { Swiper, SwiperSlide, type SwiperClass } from 'swiper/react';
+import { FreeMode, Mousewheel, Navigation } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import CardNews from '@/components/molecules/CardNews';
@@ -195,12 +195,37 @@ const Carousel = ({
 
                 <div className={cn('carousel-wrapper')}>
                     <Swiper
-                        modules={[Navigation]}
+                        modules={[Navigation, Mousewheel, FreeMode]}
                         spaceBetween={16}
                         slidesPerView="auto"
                         simulateTouch
                         grabCursor
                         touchReleaseOnEdges
+                        freeMode={{
+                            enabled: true,
+                            momentum: true,
+                            momentumRatio: 0.8,
+                            momentumVelocityRatio: 0.75,
+                            momentumBounce: false,
+                        }}
+                        mousewheel={{
+                            forceToAxis: true,
+                            releaseOnEdges: true,
+                            sensitivity: 0.9,
+                        }}
+                        onSwiper={(swiper: SwiperClass) => {
+                            const syncMousewheel = () => {
+                                if (swiper.isLocked) swiper.mousewheel.disable()
+                                else swiper.mousewheel.enable()
+                            }
+
+                            requestAnimationFrame(() => {
+                                swiper.update()
+                                syncMousewheel()
+                            })
+                            swiper.on('resize', syncMousewheel)
+                            swiper.on('update', syncMousewheel)
+                        }}
                         navigation={{
                             nextEl: `.carousel-next-${navId}`,
                             prevEl: `.carousel-prev-${navId}`,
@@ -251,6 +276,7 @@ const Carousel = ({
                                     image={card.image}
                                     href={card.href}
                                     imageSafeArea
+                                    productTransitionId={card.uuid}
                                 />
                             </SwiperSlide>
                         ))}

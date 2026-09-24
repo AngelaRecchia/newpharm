@@ -9,10 +9,13 @@ import {
   getSubfiltersForCategory,
 } from '../../lib/filtri'
 import {
+  fetchStoriesByUuids,
   getVariantLabel,
+  isStorySelected as isUuidInSelection,
   localeFromPluginStory,
   searchStories,
   sortStoryOptions,
+  storySelectionIds,
 } from '../../lib/stories'
 import type {
   ApplicationAreaEntry,
@@ -132,10 +135,16 @@ function carouselSelectValue(variant: PluginVariantValue['variant']): CarouselVa
   return isCarouselVariant(variant) ? variant : 'story'
 }
 
-function isInsectSelected(value: PluginVariantValue, uuid: string): boolean {
+function isInsectSelected(
+  value: PluginVariantValue,
+  uuid: string,
+  selectedStories: StoryOption[],
+  results: StoryOption[],
+): boolean {
   const items = Array.isArray(value.items) ? value.items : []
-  if (value.selection_mode === 'manual') return items.includes(uuid)
-  return !items.includes(uuid)
+  const inSelection = isUuidInSelection(uuid, items, selectedStories, results)
+  if (value.selection_mode === 'manual') return inSelection
+  return !inSelection
 }
 
 type CarouselPlugin = ReturnType<typeof useFieldPlugin<PluginVariantValue>>
@@ -149,6 +158,7 @@ type CarouselItemsProps = {
 export function CarouselItems({ plugin, forceVariant }: CarouselItemsProps) {
   const [search, setSearch] = useState('')
   const [results, setResults] = useState<StoryOption[]>([])
+  const [selectedStories, setSelectedStories] = useState<StoryOption[]>([])
   const [categories, setCategories] = useState<FiltriEntry[]>([])
   const [filtriEntries, setFiltriEntries] = useState<FiltriEntry[]>([])
   const [loading, setLoading] = useState(false)
@@ -297,22 +307,25 @@ export function CarouselItems({ plugin, forceVariant }: CarouselItemsProps) {
 
   const toggleItem = (story: StoryOption) => {
     if (isPestVariant(value.variant)) {
-      const selected = isInsectSelected(value, story.uuid)
+      const selected = isInsectSelected(value, story.uuid, selectedStories, results)
+      const relatedIds = new Set(
+        storySelectionIds(story, [...selectedStories, ...results, story]),
+      )
       const items =
         value.selection_mode === 'manual'
           ? selected
-            ? value.items.filter((id) => id !== story.uuid)
+            ? value.items.filter((id) => !relatedIds.has(id))
             : [...value.items, story.uuid]
           : selected
-            ? [...value.items, story.uuid]
-            : value.items.filter((id) => id !== story.uuid)
+            ? [...value.items.filter((id) => !relatedIds.has(id)), story.uuid]
+            : value.items.filter((id) => !relatedIds.has(id))
 
       setContent({ ...value, items })
       return
     }
 
     const selected = value.items.includes(story.uuid)
-    if (!isRelatedProducts && !selected && value.items.length >= CAROUSEL_LIMIT) return
+    if (!isRelatedProducts && !isPestVariant(value.variant) && !selected && value.items.length >= CAROUSEL_LIMIT) return
 
     const items = selected
       ? value.items.filter((id) => id !== story.uuid)
@@ -341,6 +354,19 @@ export function CarouselItems({ plugin, forceVariant }: CarouselItemsProps) {
     (isInsect && (value.selection_mode === 'all' || value.selection_mode === 'manual')) ||
     isProductManual ||
     isRelatedProductsManual
+
+  const visibleResults = useMemo(() => {
+    if (!isInsect || value.selection_mode !== 'manual') return results
+    const index = new Map(value.items.map((id, position) => [id, position]))
+    return [...results].sort((a, b) => {
+      const aIndex = index.get(a.uuid)
+      const bIndex = index.get(b.uuid)
+      if (aIndex != null && bIndex != null) return aIndex - bIndex
+      if (aIndex != null) return -1
+      if (bIndex != null) return 1
+      return 0
+    })
+  }, [results, isInsect, value.selection_mode, value.items])
 
   useEffect(() => {
     if (plugin.type !== 'loaded' || (!isProduct && !isRelatedProducts)) return
@@ -404,6 +430,28 @@ export function CarouselItems({ plugin, forceVariant }: CarouselItemsProps) {
       window.clearTimeout(timeout)
     }
   }, [plugin.type, showPicker, isRelatedProducts, isProduct, isInsect, cdnToken, search, locale])
+
+  const itemUuids = Array.isArray(value.items) ? value.items.join(',') : ''
+
+  useEffect(() => {
+    if (plugin.type !== 'loaded' || !isInsect || !cdnToken || !itemUuids) {
+      setSelectedStories([])
+      return
+    }
+
+    let cancelled = false
+    fetchStoriesByUuids(cdnToken, itemUuids.split(',').filter(Boolean))
+      .then((stories) => {
+        if (!cancelled) setSelectedStories(stories)
+      })
+      .catch(() => {
+        if (!cancelled) setSelectedStories([])
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [plugin.type, isInsect, cdnToken, itemUuids])
 
   if (plugin.type !== 'loaded') {
     return <p className="listing-items__loading">Caricamento editor...</p>
@@ -534,6 +582,12 @@ export function CarouselItems({ plugin, forceVariant }: CarouselItemsProps) {
             Solo selezionati manualmente
           </label>
         </fieldset>
+      )}
+
+      {isInsect && value.selection_mode === 'manual' && (
+        <p className="listing-items__hint">
+          L'ordine è quello di selezione.
+        </p>
       )}
 
       {isProduct && (
@@ -834,23 +888,23 @@ export function CarouselItems({ plugin, forceVariant }: CarouselItemsProps) {
           </div>
           <p className="listing-items__count">
             {isInsectAllMode
-              ? `${Math.max(results.length - value.items.length, 0)} di ${results.length} selezionati`
-              : isRelatedProducts
+              ? `${results.filter((story) => isInsectSelected(value, story.uuid, selectedStories, results)).length} di ${results.length} selezionati`
+              : isInsect || isRelatedProducts
                 ? `${value.items.length} selezionati`
                 : `${value.items.length} di ${CAROUSEL_LIMIT} selezionati`}
           </p>
         </>
       )}
 
-      {showPicker && results.length > 0 && (
+      {showPicker && visibleResults.length > 0 && (
         <div className="listing-items__results">
-          {results.map((story) => {
+          {visibleResults.map((story) => {
             const selected = isInsect
-              ? isInsectSelected(value, story.uuid)
+              ? isInsectSelected(value, story.uuid, selectedStories, results)
               : value.items.includes(story.uuid)
             const disabled =
               !isRelatedProducts &&
-              !isInsectAllMode &&
+              !isInsect &&
               !selected &&
               value.items.length >= CAROUSEL_LIMIT
             return (
