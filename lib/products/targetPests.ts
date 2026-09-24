@@ -1,12 +1,14 @@
 ﻿import { getStoriesByUuids, type Story } from '@/lib/api/storyblok/stories'
-import { parsePestFamily, type PestFamily } from '@/lib/insects/families'
+import { readInsectFamily, type TargetPestFamilyView } from '@/lib/insects/family'
 import type { ListingStoryResolved } from '@/lib/listing/types'
 import type { InsectStoryblok, InsectStoryResolved } from '@/types/storyblok'
+
+export type { TargetPestFamilyView }
 
 export type TargetPestView = {
   uid: string
   title: string
-  family: PestFamily | null
+  family: TargetPestFamilyView | null
   text?: string
 }
 
@@ -76,7 +78,7 @@ function viewFromInsect(
   return {
     uid,
     title: insect.title,
-    family: parsePestFamily(insect.famiglia),
+    family: readInsectFamily(insect.famiglia),
     text,
   }
 }
@@ -100,7 +102,7 @@ export function mapTargetPests(items: unknown): TargetPestView[] {
         return [{
           uid: record.uid,
           title: record.title,
-          family: parsePestFamily(record.family ?? record.famiglia),
+          family: readInsectFamily(record.family ?? record.famiglia),
           text: typeof record.text === 'string' ? record.text : undefined,
         }]
       })

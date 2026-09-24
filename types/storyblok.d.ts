@@ -61,6 +61,8 @@ export type {
   BoxImageStoryResolved,
   InsectStoryblok,
   InsectStoryResolved,
+  InsectFamilyStoryblok,
+  InsectFamilyStoryResolved,
   Target_pest_itemStoryblok,
   ProductStoryblok,
   Full_bannerStoryblok,
