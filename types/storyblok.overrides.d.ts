@@ -22,6 +22,7 @@ import type { LinkActionValue } from "@/lib/link-action";
 import type { RelatedStory } from "@/lib/api/storyblok/stories";
 import type { CarouselVariantValue } from "@/lib/carousel/types";
 import type { ListingStoryResolved } from "@/lib/listing/types";
+import type { ResourceTab } from "@/lib/downloadable/types";
 
 /** Header — link a pagina ricerca e pagina download */
 export interface HeaderStoryblok extends Generated.HeaderStoryblok {
@@ -182,11 +183,22 @@ export interface DownloadableStoryblok extends Omit<
   component: "downloadable";
 }
 
+/** resource_category_image — hero di un tab delle risorse scaricabili */
+export interface Resource_category_imageStoryblok {
+  category?: ResourceTab | null;
+  image?: AssetStoryblok[] | null;
+  _uid: string;
+  component: "resource_category_image";
+  _editable?: string;
+}
+
 export interface DownloadableResourcesStoryblok extends Omit<
   Generated.Downloadable_resourcesStoryblok,
-  "image"
+  "image" | "category_images"
 > {
   image?: AssetStoryblok[] | null;
+  /** Un’immagine hero per tab; se assente si usa image */
+  category_images?: Resource_category_imageStoryblok[] | null;
   /** Popolato SSR da enrichListingBloks */
   resolved_downloadables?: ListingStoryResolved[] | null;
 }

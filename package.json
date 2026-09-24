@@ -13,6 +13,7 @@
     "generate:types": "tsx scripts/generate-storyblok-types.ts",
     "index:search": "tsx scripts/index-search.ts",
     "configure:insect-taxonomy": "tsx scripts/configure-insect-taxonomy-fields.ts",
+    "configure:downloadable-category-images": "tsx scripts/configure-downloadable-category-images.ts",
     "import:pest-icons": "tsx scripts/import-pest-family-icons.ts",
     "postinstall": "patch-package"
   },

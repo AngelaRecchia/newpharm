@@ -4,18 +4,14 @@ import type {
   HeroStoryblok,
   PageStoryblok,
 } from '@/types/storyblok'
+import { hasAnyDownloadableHeroImage } from '@/lib/downloadable/hero'
 
-function hasDownloadableHeroAsset(image?: AssetStoryblok[] | null): boolean {
-  const first = image?.[0]
-  return Boolean(first?.desktop?.filename || first?.mobile?.filename)
-}
-
-/** Allineato a DownloadableResources: Hero primary in testa (titolo + immagine). */
+/** Allineato a DownloadableResources: Hero primary in testa (titolo + almeno un’immagine). */
 export function downloadableResourcesHasPrimaryHero(
-  blok: Pick<DownloadableResourcesStoryblok, 'title' | 'image'>,
+  blok: Pick<DownloadableResourcesStoryblok, 'title' | 'image' | 'category_images'>,
 ): boolean {
   const title = typeof blok.title === 'string' ? blok.title.trim() : ''
-  return title.length > 0 && hasDownloadableHeroAsset(blok.image ?? null)
+  return title.length > 0 && hasAnyDownloadableHeroImage(blok)
 }
 
 export function getHeaderVariantFromFirstBlock(firstBlock: unknown): 'transparent' | 'white' {
