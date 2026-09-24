@@ -73,8 +73,13 @@ const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 const ICONS_DIR = path.join(process.cwd(), 'public', 'icons', 'pests')
+const DATA_FOLDER_SLUG = 'data'
 const FAMILY_FOLDER_SLUG = 'insect-families'
 const ROOT_LOCALE = ''
+
+function familyStoryFullSlug(locale: string, familySlug: string): string {
+  return [locale, DATA_FOLDER_SLUG, FAMILY_FOLDER_SLUG, familySlug].filter(Boolean).join('/')
+}
 
 type MgmtStory = {
   id: number
@@ -386,22 +391,27 @@ async function main() {
     })
   }
 
-  async function ensureFolder(parentId: number | null, slug: string, name: string): Promise<MgmtStory> {
+  async function ensureFolder(
+    parentId: number | null,
+    slug: string,
+    name: string,
+    defaultRoot: string | null = 'insect_family',
+  ): Promise<MgmtStory> {
     const existing = findFolder(parentId, slug)
     if (existing) return existing
+
+    const story: Record<string, unknown> = {
+      name,
+      slug,
+      is_folder: true,
+      parent_id: parentId ?? 0,
+    }
+    if (defaultRoot) story.default_root = defaultRoot
 
     const response = await request(`${root}/stories`, {
       method: 'POST',
       headers,
-      body: JSON.stringify({
-        story: {
-          name,
-          slug,
-          is_folder: true,
-          parent_id: parentId ?? 0,
-          default_root: 'insect_family',
-        },
-      }),
+      body: JSON.stringify({ story }),
     })
     const created = await readJson<{ story: MgmtStory }>(response, `Cartella ${slug}`)
     folders.push({ ...created.story, is_folder: true })
@@ -414,7 +424,7 @@ async function main() {
 
   if (presentLocales.length === 0) {
     localeFolderId.set(ROOT_LOCALE, null)
-    console.log('Nessuna cartella lingua in root: le famiglie vanno in /insect-families.')
+    console.log('Nessuna cartella lingua in root: le famiglie vanno in /data/insect-families.')
   } else {
     for (const locale of presentLocales) {
       const folder = findFolder(null, locale) ?? findFolder(0, locale)
@@ -422,18 +432,53 @@ async function main() {
     }
   }
 
+  async function moveFolder(folder: MgmtStory, parentId: number): Promise<void> {
+    const response = await request(`${root}/stories/${folder.id}`, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify({
+        force_update: 1,
+        story: {
+          name: folder.name,
+          slug: folder.slug,
+          is_folder: true,
+          parent_id: parentId,
+        },
+      }),
+    })
+    await readJson(response, `Spostamento cartella ${folder.full_slug}`)
+    folder.parent_id = parentId
+  }
+
   const familyUuidByLocale = new Map<string, Map<string, string>>()
 
   for (const [locale, parentId] of localeFolderId) {
+    const dataFolder = await ensureFolder(parentId, DATA_FOLDER_SLUG, 'Data', null)
+
+    const legacyFolder = findFolder(parentId, FAMILY_FOLDER_SLUG)
+    if (legacyFolder) {
+      const oldPrefix = legacyFolder.full_slug
+      await moveFolder(legacyFolder, dataFolder.id)
+      const newPrefix = [locale, DATA_FOLDER_SLUG, FAMILY_FOLDER_SLUG].filter(Boolean).join('/')
+      legacyFolder.full_slug = newPrefix
+      for (const story of familyStories) {
+        if (story.full_slug === oldPrefix || story.full_slug.startsWith(`${oldPrefix}/`)) {
+          story.full_slug = newPrefix + story.full_slug.slice(oldPrefix.length)
+          story.parent_id = legacyFolder.id
+        }
+      }
+      console.log(`Cartella spostata: ${oldPrefix} → ${newPrefix}`)
+    }
+
     const familiesFolder = await ensureFolder(
-      parentId,
+      dataFolder.id,
       FAMILY_FOLDER_SLUG,
       'Famiglie infestanti',
     )
     const bySlug = new Map<string, string>()
 
     for (const family of FAMILY_SEED) {
-      const fullSlug = [locale, FAMILY_FOLDER_SLUG, family.value].filter(Boolean).join('/')
+      const fullSlug = familyStoryFullSlug(locale, family.value)
       const listed = familyStories.find((story) => story.full_slug === fullSlug)
       const existing = listed?.content ? listed : listed ? await getStory(listed.id) : undefined
       const existingAsset = assetRefFromContent(existing?.content)

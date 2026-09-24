@@ -126,7 +126,7 @@ Ogni voce in Storyblok ha un "tipo" che decide come viene usata:
 
 #### `insect_family` — famiglia infestante
 
-Story senza pagina, in `{lingua}/insect-families/`.
+Story senza pagina, in `{lingua}/data/insect-families/`.
 
 | Campo | Uso |
 | --- | --- |
