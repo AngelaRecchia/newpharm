@@ -1,7 +1,5 @@
 import classNames from 'classnames/bind'
-import { useTranslations } from 'next-intl'
-import Icon from '@/components/atoms/Icon'
-import { PEST_FAMILY_ICON } from '@/lib/insects/families'
+import type { TargetPestFamilyView } from '@/lib/insects/family'
 import type { TargetPestView } from '@/lib/products/mapTargetPests'
 import styles from './index.module.scss'
 
@@ -11,30 +9,41 @@ type TargetPestsProps = {
   items: TargetPestView[]
 }
 
-export default function TargetPests({ items }: TargetPestsProps) {
-  const t = useTranslations('')
+type FamilyGroup = {
+  family: TargetPestFamilyView | null
+  items: TargetPestView[]
+}
 
+export default function TargetPests({ items }: TargetPestsProps) {
   if (items.length === 0) return null
 
-  const groupedItems = new Map<TargetPestView['family'], TargetPestView[]>()
+  const groupedItems = new Map<string | null, FamilyGroup>()
 
   for (const item of items) {
-    const group = groupedItems.get(item.family) ?? []
-    group.push(item)
-    groupedItems.set(item.family, group)
+    const key = item.family?.uid ?? null
+    const group = groupedItems.get(key) ?? { family: item.family, items: [] }
+    group.items.push(item)
+    groupedItems.set(key, group)
   }
 
   return (
     <ul className={cn('list')}>
-      {[...groupedItems.entries()].map(([family, familyItems]) => (
-        <li key={family ?? 'unknown'} className={cn('row')}>
-          {family ? (
+      {[...groupedItems.values()].map(({ family, items: familyItems }) => (
+        <li key={family?.uid ?? 'unknown'} className={cn('row')}>
+          {family?.iconUrl ? (
             <span className={cn('icon')}>
-              <Icon type={PEST_FAMILY_ICON[family]} size="l" />
+              <span
+                className={cn('mask')}
+                aria-hidden
+                style={{
+                  WebkitMaskImage: `url("${family.iconUrl}")`,
+                  maskImage: `url("${family.iconUrl}")`,
+                }}
+              />
             </span>
           ) : null}
           <p className={cn('copy')}>
-            {family ? <strong className={cn('title')}>{t(family)}</strong> : null}
+            {family ? <strong className={cn('title')}>{family.title}</strong> : null}
             <span className={cn('text')}>
               {' ('}
               {familyItems.map((item) => item.title).join(', ')}

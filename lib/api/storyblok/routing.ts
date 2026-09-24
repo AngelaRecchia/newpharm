@@ -7,6 +7,7 @@ import { isCatalogContent } from '@/lib/downloadable/parse'
 export const NON_ROUTABLE_COMPONENTS = [
   'glossary',
   'insect',
+  'insect_family',
   'downloadable',
 ] as const
 

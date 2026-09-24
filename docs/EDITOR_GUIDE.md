@@ -95,20 +95,19 @@ Ogni voce in Storyblok ha un "tipo" che decide come viene usata:
 | `job` | Le offerte di lavoro | ✅ Sì |
 | `project` | Casi studio / progetti | ✅ Sì |
 | `insect` | Schede su scarafaggi, formiche, ecc. | ❌ No (serve per i filtri) |
+| `insect_family` | Famiglia infestante: titolo e icona | ❌ No (raggruppa i target pest) |
 | `downloadable` | Cataloghi, brochure, schede di sicurezza | ❌ No (appare solo come card) |
 | `glossary` | Voci di glossario | ❌ No (usata dal glossario) |
 
-> **Attenzione**: `insect`, `downloadable` e `glossary` **non creano pagine**. Si usano
+> **Attenzione**: `insect`, `insect_family`, `downloadable` e `glossary` **non creano pagine**. Si usano
 > solo come ingredienti dentro altre pagine (card, filtri, schede prodotto).
 
 #### `insect` — macro categorie e famiglie
 
-Ogni scheda infestante ha due campi di tassonomia (select in Storyblok):
-
 | Campo | Uso |
 | --- | --- |
-| **Macro categoria** (`category`) | Filtri della pagina **Guida infestanti** |
-| **Famiglia / gruppo** (`famiglia`) | Icona SVG in scheda prodotto (`target_pests`) |
+| **Macro categoria** (`category`) | Filtri della pagina **Guida infestanti** (select fisso) |
+| **Famiglia / gruppo** (`famiglia`) | Riferimento a una story `insect_family`. Nome e icona in scheda prodotto (`target_pests`) |
 
 **Macro categorie** (valori ammessi):
 
@@ -122,20 +121,19 @@ Ogni scheda infestante ha due campi di tassonomia (select in Storyblok):
 - Ragni
 - Zeche e acari
 
-**Famiglie / gruppi** (valori ammessi):
+> Per riallineare solo il select delle macro categorie: `npm run configure:insect-taxonomy`.
+> Lo stesso comando crea le famiglie mancanti e collega gli infestanti che hanno ancora lo slug vecchio.
 
-- Zanzare, Mosche, Vespe, Calabroni, Formiche, Blatte
-- Pesciolini d'argento, Termiti, Tarli cerambicidi, Tarli siricidi
-- Cimici dei letti, Cimici, Zeche, Pulci, Pidocchi, Acari, Acaro pollino
-- Tarme, Coleottero dei tappeti
-- Ratto grigio, Ratto nero, Topolino domestico, Piccioni
-- Insetti delle derrate
+#### `insect_family` — famiglia infestante
 
-> Dopo aggiornamenti alla lista, in dev eseguire `npm run configure:insect-taxonomy`
-> per allineare le opzioni del content type `insect` su Storyblok.
->
-> Le icone per famiglia sono in `public/icons/pests/` (slug = valore `famiglia`).
-> Per reimportare da asset locali: `npm run import:pest-icons`.
+Story senza pagina, in `{lingua}/insect-families/`.
+
+| Campo | Uso |
+| --- | --- |
+| **Titolo** | Nome del gruppo in scheda prodotto (traducibile) |
+| **Icona** | Sagoma monocromatica SVG o PNG. In pagina è una maschera colorata come il testo, non un’illustrazione a colori |
+
+Per aggiungere una famiglia: nuova story di tipo **Famiglia infestante**, poi selezionala nel campo Famiglia dell’infestante. Il target pest sul prodotto continua a puntare all’infestante.
 
 ---
 

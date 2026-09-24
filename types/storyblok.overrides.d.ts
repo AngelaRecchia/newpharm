@@ -17,7 +17,7 @@ import type { StoryblokAsset } from '@/components/atoms/Asset'
 import type { ISbRichtext } from "@storyblok/react";
 import type { ProjectDivision } from "@/lib/projects/divisions";
 import type { InsectCategory } from "@/lib/insects/taxonomy";
-import type { PestFamily } from "@/lib/insects/families";
+import type { TargetPestFamilyView } from "@/lib/insects/family";
 import type { LinkActionValue } from "@/lib/link-action";
 import type { RelatedStory } from "@/lib/api/storyblok/stories";
 import type { CarouselVariantValue } from "@/lib/carousel/types";
@@ -49,11 +49,37 @@ export type TargetPestsPluginValue = {
 export type TargetPestView = {
   uid: string;
   title: string;
-  family: PestFamily | null;
+  family: TargetPestFamilyView | null;
   text?: string;
 };
 
-/** insect — famiglia per icone SVG + media listing */
+/** insect_family — titolo e icona editoriali, senza pagina */
+export interface InsectFamilyStoryblok {
+  title?: string | null;
+  icon?: {
+    id?: number | null;
+    alt?: string | null;
+    name?: string | null;
+    focus?: string | null;
+    title?: string | null;
+    filename?: string | null;
+    copyright?: string | null;
+    fieldtype?: string;
+  } | null;
+  _uid?: string;
+  component: "insect_family";
+  _editable?: string;
+}
+
+export interface InsectFamilyStoryResolved {
+  uuid: string;
+  name: string;
+  slug: string;
+  full_slug?: string;
+  content: InsectFamilyStoryblok;
+}
+
+/** insect — famiglia risolta + media listing */
 export interface InsectStoryblok extends Omit<
   Generated.InsectStoryblok,
   "icon" | "visibility" | "famiglia" | "category"
@@ -61,7 +87,7 @@ export interface InsectStoryblok extends Omit<
   image_hover?: AssetStoryblok | null;
   gallery?: AssetStoryblok[] | null;
   category?: InsectCategory | null;
-  famiglia?: PestFamily | null;
+  famiglia?: string | InsectFamilyStoryResolved | null;
 }
 
 /** Story Insect risolta da CDN */
