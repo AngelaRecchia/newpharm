@@ -2,9 +2,14 @@ import { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 
 const nextConfig: NextConfig = {
-  // Font/logo PDF scheda tecnica: path assoluti sotto assets/ (non importati da TS).
+  // Font e logo della scheda: path assoluti, non importati da TS.
+  // La chiave non usa [uuid]: in glob è una classe di caratteri e non matcha la route.
   outputFileTracingIncludes: {
-    "/api/products/[uuid]/scheda-tecnica": [
+    "/pages/api/products/**/*": [
+      "./assets/fonts/inter/**/*",
+      "./assets/pdf/**/*",
+    ],
+    "/api/products/**/*": [
       "./assets/fonts/inter/**/*",
       "./assets/pdf/**/*",
     ],

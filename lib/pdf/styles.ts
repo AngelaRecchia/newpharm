@@ -29,13 +29,13 @@ export const sheetStyles = StyleSheet.create({
     color: INK,
   },
 
-  // Assoluto rispetto alla pagina (non al padding). Solo prima pagina.
+  // Assoluto rispetto alla pagina. Senza altezza fissa: 748 pt superava
+  // il bordo utile (pagina − padding) e react-pdf apriva una pagina vuota.
   leftColumn: {
     position: 'absolute',
     top: 0,
     left: 0,
     width: 283.5,
-    height: 748,
     flexDirection: 'column',
   },
   hero: {

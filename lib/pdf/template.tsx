@@ -29,7 +29,10 @@ export type SheetImageSource =
 const DEFAULT_DISCLAIMER =
   'Tale pubblicazione è strettamente riservata alla forza vendita, ai rivenditori ed ai tecnici specializzati. Le informazioni ivi riportate sono a carattere puramente informativo. L’utilizzatore deve pertanto leggere attentamente quanto riportato sulla confezione ed attenersi alle indicazioni presenti sull’etichetta dei singoli prodotti per il loro corretto utilizzo e per evitare danni a piante, persone ed animali. Newpharm S.r.l. declina ogni responsabilità per l’uso improprio dei prodotti o nel caso in cui gli stessi venissero impiegati in violazione di qualsiasi norma.'
 const LOGO_PATH = join(process.cwd(), 'assets', 'pdf', 'newpharm-logo.png')
-const LOGO_SRC = { data: readFileSync(LOGO_PATH), format: 'png' as const }
+
+function loadLogo(): { data: Buffer; format: 'png' } {
+  return { data: readFileSync(LOGO_PATH), format: 'png' }
+}
 
 const LEFT_KINDS = new Set<SheetSection['kind']>(['targetPests', 'composition', 'units'])
 const RIGHT_AFTER_INTRO: SheetSection['kind'][] = ['dosage', 'application', 'specifications']
@@ -99,7 +102,7 @@ export function TechnicalSheetDocument({
       language={data.locale}
     >
       <Page size="A4" style={sheetStyles.page}>
-        <View style={sheetStyles.leftColumn}>
+        <View style={sheetStyles.leftColumn} wrap={false}>
           <View style={imageSource ? sheetStyles.hero : [sheetStyles.hero, { height: 72 }]}>
             {data.categoryLabel ? (
               <View style={sheetStyles.chip}>
@@ -135,7 +138,9 @@ export function TechnicalSheetDocument({
         </View>
 
         {data.registration ? (
-          <Text style={sheetStyles.registrationPin}>{data.registration}</Text>
+          <Text style={sheetStyles.registrationPin} wrap={false}>
+            {data.registration}
+          </Text>
         ) : null}
 
         <View style={imageSource ? sheetStyles.intro : undefined}>
@@ -161,10 +166,10 @@ export function TechnicalSheetDocument({
           />
         ))}
 
-        <View style={sheetStyles.footer} fixed>
+        <View style={sheetStyles.footer} fixed wrap={false}>
           <View style={sheetStyles.footerLeft}>
             {/* eslint-disable-next-line jsx-a11y/alt-text */}
-            <Image src={LOGO_SRC} style={sheetStyles.logo} />
+            <Image src={loadLogo()} style={sheetStyles.logo} />
             <View style={sheetStyles.footerMeta}>
               <Text style={sheetStyles.footerAddress}>{data.footerCompany}</Text>
               {data.footerUpdated ? (

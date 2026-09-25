@@ -48,6 +48,13 @@ function isRateLimited(ip: string): boolean {
  * così la UI (ProductDownloadBar, Compare) non cambia di una riga.
  */
 
+export const config = {
+  maxDuration: 60,
+  api: {
+    responseLimit: false,
+  },
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
@@ -177,6 +184,7 @@ export default async function handler(
 
     const sendPdf = (buffer: Buffer, cache: 'hit' | 'miss' | 'bypass') => {
       res.setHeader('Content-Type', 'application/pdf')
+      res.setHeader('Content-Length', buffer.length)
       res.setHeader('Content-Disposition', disposition)
       res.setHeader(
         'Cache-Control',

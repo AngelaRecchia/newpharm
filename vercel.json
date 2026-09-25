@@ -1,6 +1,7 @@
 {
   "functions": {
-    "pages/api/products/[uuid]/scheda-tecnica.tsx": {
+    "pages/api/products/**/*.tsx": {
+      "maxDuration": 60,
       "includeFiles": "assets/**"
     }
   }
