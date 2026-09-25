@@ -2,16 +2,21 @@ import { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 
 const nextConfig: NextConfig = {
-  // Font e logo della scheda: path assoluti, non importati da TS.
+  // Font, logo e standard font di pdfkit: path dinamici, il tracer non li segue.
+  // pdfkit carica Helvetica.cjs via import map `#standard-fonts/*`.
   // La chiave non usa [uuid]: in glob è una classe di caratteri e non matcha la route.
   outputFileTracingIncludes: {
     "/pages/api/products/**/*": [
       "./assets/fonts/inter/**/*",
       "./assets/pdf/**/*",
+      "./node_modules/pdfkit/js/standard-fonts/**/*",
+      "./node_modules/pdfkit/js/data/**/*",
     ],
     "/api/products/**/*": [
       "./assets/fonts/inter/**/*",
       "./assets/pdf/**/*",
+      "./node_modules/pdfkit/js/standard-fonts/**/*",
+      "./node_modules/pdfkit/js/data/**/*",
     ],
   },
   eslint: {
