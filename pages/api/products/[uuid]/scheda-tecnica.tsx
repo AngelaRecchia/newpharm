@@ -77,7 +77,7 @@ export default async function handler(
       return
     }
 
-    const logoPath = join(process.cwd(), 'assets', 'pdf', 'newpharm-logo.svg')
+    const logoPath = join(process.cwd(), 'assets', 'pdf', 'newpharm-logo.png')
     if (!existsSync(logoPath)) {
       console.error('[Sheet] Missing logo at', logoPath)
       res.status(500).json({ error: 'PDF assets not deployed' })
@@ -159,7 +159,7 @@ export default async function handler(
           ? hashContent(data.image.data.toString('base64'))
           : null
     const contentHash = hashContent(
-      JSON.stringify({ ...data, image: imageForHash }),
+      JSON.stringify({ template: 'mastro-20260904', ...data, image: imageForHash }),
     )
     const storage = getSheetStorage()
     const key = sheetCacheKey(uuid, locale, contentHash)
@@ -175,18 +175,32 @@ export default async function handler(
     const filenameStar = `filename*=UTF-8''${encodeURIComponent(`scheda-tecnica-${data.title}.pdf`)}`
     const disposition = `attachment; filename="${asciiName}"; ${filenameStar}`
 
-    // Cache hit -> stream
-    const cached = await storage.getPdf(key)
-    if (cached) {
+    const sendPdf = (buffer: Buffer, cache: 'hit' | 'miss' | 'bypass') => {
       res.setHeader('Content-Type', 'application/pdf')
       res.setHeader('Content-Disposition', disposition)
-      res.setHeader('Cache-Control', 'private, max-age=3600')
-      res.setHeader('X-Sheet-Cache', 'hit')
-      res.send(cached)
-      return
+      res.setHeader(
+        'Cache-Control',
+        cache === 'bypass' ? 'private, no-store' : 'private, max-age=3600',
+      )
+      res.setHeader('X-Sheet-Cache', cache)
+      res.send(buffer)
     }
 
-    // Cache miss -> genera il PDF.
+    // Senza credenziali S3: niente cache, download on-demand.
+    // Con credenziali: hit dal bucket. Un errore di lettura non blocca la generazione.
+    if (storage) {
+      try {
+        const cached = await storage.getPdf(key)
+        if (cached) {
+          sendPdf(cached, 'hit')
+          return
+        }
+      } catch (error) {
+        console.error('[Sheet] Cache read failed', error)
+      }
+    }
+
+    // Cache miss o storage assente -> genera il PDF.
     // Passa un ELEMENTO del componente (react-pdf lo renderizza per trovare il Document).
     // `createElement` restituisce il tipo tipizzato sulla function, ma react-pdf
     // si aspetta l'elemento del <Document> ritornato da TechnicalSheetDocument:
@@ -198,10 +212,12 @@ export default async function handler(
         const generated = await renderToBuffer(
           doc as unknown as Parameters<typeof renderToBuffer>[0],
         )
-        try {
-          await storage.putPdf(key, generated)
-        } catch (error) {
-          console.error('[Sheet] Cache write failed', error)
+        if (storage) {
+          try {
+            await storage.putPdf(key, generated)
+          } catch (error) {
+            console.error('[Sheet] Cache write failed', error)
+          }
         }
         return generated
       })()
@@ -212,12 +228,7 @@ export default async function handler(
     }
     const buffer = await generation
 
-    // Salva in cache (best-effort: se S3 non è configurato, resta in-memory)
-    res.setHeader('Content-Type', 'application/pdf')
-    res.setHeader('Content-Disposition', disposition)
-    res.setHeader('Cache-Control', 'private, max-age=3600')
-    res.setHeader('X-Sheet-Cache', 'miss')
-    res.send(buffer)
+    sendPdf(buffer, storage ? 'miss' : 'bypass')
   } catch (error) {
     console.error(
       '[Sheet] PDF generation error',

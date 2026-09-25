@@ -1,210 +1,187 @@
 import { StyleSheet } from '@react-pdf/renderer'
-import type { Style } from '@react-pdf/types'
 
 /**
- * Stili della scheda tecnica.
- * Fedeli al template PDF di esempio (Newpharm):
- * intestazione grigia, box con etichette, corpo in Inter.
+ * Griglia del template Mastro (A4, misure in pt dal PDF del 4 settembre 2026).
+ * Colonna sinistra 283.5 a filo pagina; testi a destra da x=311.8.
+ * Inter Regular ovunque: nel template i titoli non sono bold.
  */
 
-const BASE_FONT = 'Inter'
+const FONT = 'Inter'
+const INK = '#231f20'
+const MUTED = '#939598'
+const PANEL = '#f3f2f1'
 
-/** Grigio dell'intestazione — dal template (header grigio). */
-const PRIMARY = '#006fb2'
-const ALERT = '#e2071c'
-const HEADER_BG = '#f3f4f6'
-const BORDER = '#d9dde2'
-const BODY_COLOR = '#263238'
-const DISCLAIMER_COLOR = '#66717a'
+/** paddingLeft della pagina: i testi scorrono nella colonna destra su ogni pagina. */
+export const PAGE_PAD_LEFT = 312
+export const PAGE_PAD_TOP = 76
+export const PAGE_PAD_RIGHT = 28
+export const PAGE_PAD_BOTTOM = 96
 
 export const sheetStyles = StyleSheet.create({
-  // ===== Document / Page =====
   page: {
-    paddingTop: 30,
-    paddingHorizontal: 38,
-    paddingBottom: 58,
-    fontSize: 9.5,
-    fontFamily: BASE_FONT,
-    color: BODY_COLOR,
+    paddingTop: PAGE_PAD_TOP,
+    paddingLeft: PAGE_PAD_LEFT,
+    paddingRight: PAGE_PAD_RIGHT,
+    paddingBottom: PAGE_PAD_BOTTOM,
+    fontFamily: FONT,
+    fontSize: 7,
+    lineHeight: 1.2,
+    color: INK,
   },
 
-  // ===== Brand / header =====
-  brandBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingBottom: 10,
-    borderBottomWidth: 2,
-    borderBottomColor: PRIMARY,
+  // Assoluto rispetto alla pagina (non al padding). Solo prima pagina.
+  leftColumn: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: 283.5,
+    height: 748,
+    flexDirection: 'column',
   },
-  brand: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  hero: {
+    height: 300,
+    backgroundColor: PANEL,
+    paddingTop: 28,
+    paddingHorizontal: 28,
   },
-  logo: {
-    width: 145,
-    height: 27,
-    objectFit: 'contain',
-  },
-  documentType: {
-    fontSize: 8,
-    fontFamily: BASE_FONT,
-    fontWeight: 600,
-    color: PRIMARY,
-    letterSpacing: 1,
-  },
-  header: {
-    backgroundColor: HEADER_BG,
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-    marginTop: 16,
-    marginBottom: 14,
-    borderLeftWidth: 4,
-    borderLeftColor: ALERT,
-  },
-  headerCategory: {
-    fontSize: 9,
-    color: PRIMARY,
-    fontFamily: BASE_FONT,
-    fontWeight: 600,
-    textTransform: 'uppercase',
-    letterSpacing: 0.6,
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontFamily: BASE_FONT,
-    fontWeight: 700,
-    color: '#111820',
-    marginTop: 4,
-  },
-  headerSubtitle: {
-    fontSize: 11,
-    fontFamily: BASE_FONT,
-    fontWeight: 400,
-    color: '#52606a',
-    marginTop: 4,
-  },
-
-  // ===== Product overview =====
-  productRow: {
-    flexDirection: 'row',
-    alignItems: 'stretch',
-    marginBottom: 16,
-  },
-  imageBox: {
-    width: '34%',
-    minHeight: 150,
-    padding: 12,
+  chip: {
+    alignSelf: 'flex-start',
     backgroundColor: '#ffffff',
-    borderWidth: 1,
-    borderColor: BORDER,
-    justifyContent: 'center',
+    borderRadius: 8,
+    paddingTop: 2,
+    paddingBottom: 1,
+    paddingHorizontal: 6,
+  },
+  chipText: {
+    fontFamily: FONT,
+    fontSize: 7,
+    lineHeight: 1.15,
+    color: INK,
+  },
+  imageWrap: {
+    marginTop: 10,
+    height: 210,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   image: {
-    width: '100%',
-    height: 145,
+    width: 180,
+    height: 202,
     objectFit: 'contain',
   },
-  contentColumn: {
-    width: '66%',
-    paddingLeft: 18,
-    paddingRight: 2,
+
+  meta: {
+    paddingTop: 13,
+    paddingLeft: 28,
+    paddingRight: 0,
   },
-  summary: {
-    fontSize: 10,
-    lineHeight: 1.45,
-    color: BODY_COLOR,
-    marginBottom: 10,
+  metaRow: {
+    flexDirection: 'row',
   },
-  registration: {
-    paddingTop: 8,
-    borderTopWidth: 1,
-    borderTopColor: BORDER,
-    fontSize: 9,
-    color: PRIMARY,
-    fontFamily: BASE_FONT,
-    fontWeight: 600,
+  metaCol: {
+    width: 135,
+    flexShrink: 0,
+  },
+  metaBelow: {
+    marginTop: 18,
+    width: 240,
   },
 
-  // ===== Sections =====
+  // Blocco titolo + caratteristiche: altezza minima fino alla quota y=313 del template.
+  intro: {
+    minHeight: 237,
+  },
+  title: {
+    fontFamily: FONT,
+    fontSize: 26,
+    lineHeight: 1.15,
+    color: INK,
+  },
+  subtitle: {
+    marginTop: 2,
+    fontFamily: FONT,
+    fontSize: 8,
+    lineHeight: 1.2,
+    color: INK,
+  },
   section: {
-    flexDirection: 'row',
-    paddingVertical: 8,
-    borderTopWidth: 1,
-    borderTopColor: BORDER,
+    marginTop: 16,
+  },
+  sectionFlush: {
+    marginTop: 0,
+  },
+  characteristics: {
+    marginTop: 88,
+  },
+  characteristicsAfterSubtitle: {
+    marginTop: 68,
   },
   sectionLabel: {
-    width: '28%',
-    paddingRight: 10,
-    fontSize: 9,
-    fontFamily: BASE_FONT,
-    fontWeight: 600,
-    color: PRIMARY,
-    textTransform: 'uppercase',
-    letterSpacing: 0.35,
-  },
-  sectionBody: {
-    width: '72%',
-    fontSize: 9.5,
+    fontFamily: FONT,
+    fontSize: 8,
     lineHeight: 1.4,
-    fontFamily: BASE_FONT,
-    color: BODY_COLOR,
+    color: INK,
+    marginBottom: 4,
   },
-  sectionBodyList: {
-    width: '72%',
-    fontSize: 9.5,
-    lineHeight: 1.4,
-    fontFamily: BASE_FONT,
-    color: BODY_COLOR,
+  body: {
+    fontFamily: FONT,
+    fontSize: 7,
+    lineHeight: 1.2,
+    color: INK,
   },
 
-  // ===== Specifiche (lista chiave: valore) =====
-  specRow: {
-    flexDirection: 'row',
-    marginBottom: 2,
-  },
-  specKey: {
-    width: '40%',
-    fontSize: 9,
-    fontFamily: BASE_FONT,
-    fontWeight: 600,
-    color: BODY_COLOR,
-  },
-  specValue: {
-    width: '60%',
-    fontSize: 9,
-    fontFamily: BASE_FONT,
-    color: BODY_COLOR,
+  registrationPin: {
+    position: 'absolute',
+    left: 28,
+    bottom: 112,
+    width: 240,
+    fontFamily: FONT,
+    fontSize: 7,
+    lineHeight: 1.2,
+    color: INK,
   },
 
-  // ===== Footer =====
   footer: {
     position: 'absolute',
-    left: 38,
-    right: 38,
-    bottom: 24,
-    paddingTop: 7,
-    borderTopWidth: 1,
-    borderTopColor: BORDER,
-    fontSize: 8,
-    fontFamily: BASE_FONT,
-    color: DISCLAIMER_COLOR,
+    left: 28,
+    right: 28,
+    bottom: 14,
+    height: 68,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
   },
-  footerBrand: {
-    color: PRIMARY,
-    fontSize: 8,
-    fontFamily: BASE_FONT,
-    fontWeight: 600,
-    marginBottom: 3,
+  footerLeft: {
+    width: 284,
   },
-  footerLine: {
-    fontSize: 7.5,
-    fontFamily: BASE_FONT,
-    color: DISCLAIMER_COLOR,
-    lineHeight: 1.25,
-    marginBottom: 1,
+  logo: {
+    width: 118,
+    height: 22,
+    objectFit: 'contain',
+  },
+  footerMeta: {
+    marginTop: 12,
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+  },
+  footerAddress: {
+    width: 128,
+    fontFamily: FONT,
+    fontSize: 6,
+    lineHeight: 1.2,
+    color: MUTED,
+  },
+  footerDate: {
+    marginLeft: 8,
+    fontFamily: FONT,
+    fontSize: 6,
+    lineHeight: 1.2,
+    color: MUTED,
+  },
+  footerDisclaimer: {
+    width: 255,
+    fontFamily: FONT,
+    fontSize: 6,
+    lineHeight: 1.2,
+    color: MUTED,
   },
 })
-
-export type SheetStyle = Style

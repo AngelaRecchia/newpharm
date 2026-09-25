@@ -4,7 +4,7 @@
  * Functions for fetching stories from Storyblok CDN API.
  */
 
-import { cache } from "react";
+import { cache as reactCache } from "react";
 import { getStoryblokApi } from "./client";
 import { getStoryblokVersion, getCacheVersion } from "./config";
 import { getExcludingFieldsForComponent } from "./componentExcludingFields";
@@ -35,6 +35,16 @@ export interface Story {
   full_slug: string;
   [key: string]: any;
 }
+
+/**
+ * `React.cache` esiste nel bundle App Router. La route Pages della scheda
+ * tecnica carica questo modulo con il React delle API, dove `cache` non c'è.
+ * In quel caso la dedup resta su `remember()`.
+ */
+const cache =
+  typeof reactCache === "function"
+    ? reactCache
+    : <T extends (...args: never[]) => unknown>(fn: T): T => fn;
 
 const EMPTY_STORY_OPTIONS: GetStoryOptions = {};
 const DRAFT_MEMORY_TTL_MS = 20_000;

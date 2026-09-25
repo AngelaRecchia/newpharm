@@ -9,14 +9,13 @@ import type { S3Client as S3ClientType } from '@aws-sdk/client-s3'
 /**
  * Storage per i PDF delle schede tecniche.
  *
- * Architectura portabile: S3-compatible (funziona con Cloudflare R2, AWS S3,
- * Backblaze B2...). Su Vercel e su qualsiasi server Node.
+ * S3-compatible (Cloudflare R2, AWS S3, Backblaze B2). Su Vercel e su
+ * qualsiasi server Node.
  *
- * Se le env non sono configurate, fa un fallback in-memory (senza cache
- * persistente) per sviluppo locale — cos la feature funziona subito e si
- * attiva S3 quando si aggiunge il provider.
+ * Se endpoint, chiavi e bucket non sono tutti compilati, lo storage non
+ * c'è: la route genera il PDF e lo manda in download, senza cache.
  *
- * Env richieste (vedi .env.example):
+ * Env (vedi .env.example):
  *   PDF_STORAGE_ENDPOINT   https://<account>.r2.cloudflarestorage.com (o S3)
  *   PDF_STORAGE_REGION     auto per R2 / es. eu-central-1 per S3
  *   PDF_STORAGE_ACCESS_KEY_ID
@@ -24,12 +23,16 @@ import type { S3Client as S3ClientType } from '@aws-sdk/client-s3'
  *   PDF_STORAGE_BUCKET
  */
 
-function isConfigured(): boolean {
+function envValue(name: string): string {
+  return process.env[name]?.trim() ?? ''
+}
+
+export function isPdfStorageConfigured(): boolean {
   return Boolean(
-    process.env.PDF_STORAGE_ENDPOINT &&
-      process.env.PDF_STORAGE_ACCESS_KEY_ID &&
-      process.env.PDF_STORAGE_SECRET_ACCESS_KEY &&
-      process.env.PDF_STORAGE_BUCKET,
+    envValue('PDF_STORAGE_ENDPOINT') &&
+      envValue('PDF_STORAGE_ACCESS_KEY_ID') &&
+      envValue('PDF_STORAGE_SECRET_ACCESS_KEY') &&
+      envValue('PDF_STORAGE_BUCKET'),
   )
 }
 
@@ -38,18 +41,18 @@ let client: S3ClientType | null = null
 function getClient(): S3ClientType {
   if (client) return client
   client = new S3Client({
-    region: process.env.PDF_STORAGE_REGION || 'auto',
-    endpoint: process.env.PDF_STORAGE_ENDPOINT,
+    region: envValue('PDF_STORAGE_REGION') || 'auto',
+    endpoint: envValue('PDF_STORAGE_ENDPOINT'),
     credentials: {
-      accessKeyId: process.env.PDF_STORAGE_ACCESS_KEY_ID || '',
-      secretAccessKey: process.env.PDF_STORAGE_SECRET_ACCESS_KEY || '',
+      accessKeyId: envValue('PDF_STORAGE_ACCESS_KEY_ID'),
+      secretAccessKey: envValue('PDF_STORAGE_SECRET_ACCESS_KEY'),
     },
     forcePathStyle: true,
   })
   return client
 }
 
-const BUCKET = (): string => process.env.PDF_STORAGE_BUCKET || ''
+const BUCKET = (): string => envValue('PDF_STORAGE_BUCKET')
 
 /**
  * Cache key del PDF: uuid + locale + hash del contenuto.
@@ -70,19 +73,9 @@ export interface SheetStorage {
   putPdf(key: string, buffer: Buffer): Promise<void>
 }
 
-const inMemory = new Map<string, Buffer>()
-
-const memoryStorage: SheetStorage = {
-  async getPdf(key) {
-    return inMemory.get(key) ?? null
-  },
-  async putPdf(key, buffer) {
-    inMemory.set(key, buffer)
-  },
-}
-
-export function getSheetStorage(): SheetStorage {
-  if (isConfigured()) {
+/** Client S3 se le credenziali sono compilate, altrimenti null (download on-demand). */
+export function getSheetStorage(): SheetStorage | null {
+  if (isPdfStorageConfigured()) {
     return {
       async getPdf(key) {
         try {
@@ -124,5 +117,5 @@ export function getSheetStorage(): SheetStorage {
     }
   }
 
-  return memoryStorage
+  return null
 }

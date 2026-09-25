@@ -2,6 +2,7 @@ import type { AssetStoryblok, ProductStoryblok } from '@/types/storyblok'
 import type { ISbRichtext } from '@storyblok/react'
 import { mapTargetPests, type TargetPestView } from '@/lib/products/targetPests'
 import { getAssetSrc } from '@/lib/assets/getAssetSrc'
+import { getBundledFiltriEntries, getCategoryLabel } from '@/lib/filtri'
 
 /**
  * Modello dati della scheda tecnica PDF.
@@ -32,6 +33,8 @@ export type TechnicalSheetData = {
   sourceUpdatedAt?: string
   /** Slug/i18n della categoria ("accessori-roditori", "monitoraggio"...). */
   categorySlug?: string
+  /** Etichetta categoria come nel template (es. "Insetticidi e acaricidi"). */
+  categoryLabel?: string
   /** Nome prodotto (titolo). */
   title: string
   /** Sottotitolo (2 righe nel template). */
@@ -57,6 +60,21 @@ export type TechnicalSheetData = {
 }
 
 /** Prefissi etichetta per sezioni — ereditate dal template. */
+const COMPANY_FOOTER =
+  'Newpharm s.r.l. - Via Tremarende 22,\n35010 Santa Giustina in Colle (PD) - Italy'
+
+const BLOCK_TYPES = new Set(['paragraph', 'heading', 'blockquote'])
+
+/** Etichetta umana della categoria, dal datasource filtri. */
+function resolveCategoryLabel(slug?: string): string | undefined {
+  if (!slug) return undefined
+  const value = slug.startsWith('category__') ? slug : `category__${slug}`
+  const entry = getBundledFiltriEntries().find((item) => item.value === value)
+  if (entry) return getCategoryLabel(entry)
+  const human = slug.replace(/^category__/, '').replace(/-/g, ' ')
+  return human.charAt(0).toUpperCase() + human.slice(1)
+}
+
 const DEFAULT_LABELS: Record<SheetSectionKind, string> = {
   characteristics: 'Caratteristiche',
   application: "Campi d'impiego",
@@ -84,16 +102,23 @@ function richtextToPlainText(
     for (const node of nodes) {
       if (!node || typeof node !== 'object') continue
       const record = node as { type?: string; text?: string; content?: unknown[] }
+      if (record.type === 'hard_break') {
+        parts.push('\n')
+      }
+      if (record.type && BLOCK_TYPES.has(record.type) && parts.length > 0) {
+        parts.push('\n')
+      }
       if (typeof record.text === 'string' && record.text) {
         parts.push(record.text)
-      } else if (Array.isArray(record.content)) {
+      }
+      if (Array.isArray(record.content)) {
         walk(record.content)
       }
     }
   }
 
   walk(content.content)
-  return parts.join('')
+  return parts.join('').replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim()
 }
 
 /**
@@ -132,12 +157,16 @@ export function mapProductToSheet(
   // Campi d'impiego.
   addPlainSection('application', content.application_areas_text)
 
-  // Dosi e modalità d'uso (nel template è un blocco unico con dosaggi).
+  // Biocidi: "Dosi e modalità d'uso". Attrezzature e accessori: solo "Modalità d'uso".
   const dosage = richtextToPlainText(content.dosage_and_application).trim()
   const usage = richtextToPlainText(content.usage).trim()
   if (dosage || usage) {
     const body = [dosage, usage].filter(Boolean).join('\n\n')
-    sections.push({ kind: 'dosage', label: labels.dosage, body })
+    sections.push({
+      kind: 'dosage',
+      label: dosage ? labels.dosage : "Modalità d'uso",
+      body,
+    })
   }
 
   // Composizione.
@@ -155,8 +184,9 @@ export function mapProductToSheet(
   // Specifiche: nel template è per prodotti non chimici (dimensioni, peso...).
   addPlainSection('specifications', content.dimensions)
 
-  // Riepilogo breve (paragrafo iniziale) — da short_description se presente.
-  const summary = content.short_description?.trim() || undefined
+  // Nel template il sottotitolo è la riga sotto il nome (secondary_title o short_description).
+  const secondary = content.secondary_title?.trim() || ''
+  const summaryText = content.short_description?.trim() || ''
 
   // Prima immagine prodotto.
   // Gli asset Storyblok sono oggetti con `mobile`/`desktop` (o asset diretto):
@@ -171,13 +201,14 @@ export function mapProductToSheet(
     uuid: story.uuid,
     sourceUpdatedAt: story.updated_at,
     categorySlug: opts.categorySlug,
+    categoryLabel: resolveCategoryLabel(opts.categorySlug),
     title: content.title || story.name,
-    subtitle: content.secondary_title?.trim() || undefined,
+    subtitle: secondary || summaryText || undefined,
     image: imageSrc,
-    summary,
+    summary: secondary && summaryText && summaryText !== secondary ? summaryText : undefined,
     sections,
     registration: content.registration?.trim() || undefined,
-    footerCompany: opts.footerCompany || 'Newpharm S.r.l. - Via Tremarende 22, 35010 Santa Giustina in Colle (PD) - Italy',
+    footerCompany: opts.footerCompany || COMPANY_FOOTER,
     footerUpdated: opts.footerUpdated || '',
     locale: opts.locale || 'it',
   }

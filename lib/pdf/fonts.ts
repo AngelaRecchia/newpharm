@@ -17,6 +17,8 @@ let registered = false
 
 /** Registra i pesi di Inter usati dalla scheda (400, 500, 600, 700). */
 export function registerSheetFonts(): void {
+  // Il template Mastro va a capo solo sugli spazi, senza sillabazione.
+  Font.registerHyphenationCallback((word) => [word])
   if (registered) return
 
   const weights: Array<{ weight: number; style: 'normal' | 'italic'; file: string }> = [

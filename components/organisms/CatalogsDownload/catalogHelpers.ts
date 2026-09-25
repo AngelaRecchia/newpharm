@@ -2,6 +2,7 @@ import {
   getAssetFileUrl,
   getCoverAsset,
   isPdfFileUrl,
+  toAbsoluteHttpsUrl,
 } from '@/lib/downloadable/assets'
 import { isCatalogContent } from '@/lib/downloadable/parse'
 
@@ -49,11 +50,6 @@ function getCatalogFileUrl(catalog: CatalogLikeContent): string | undefined {
   return isPdfFileUrl(fileUrl) ? fileUrl : undefined
 }
 
-function mapToNewpharmUrl(url: string | undefined): string | undefined {
-  if (!url) return undefined
-  return url.replace('//a.storyblok.com/', '//www.newpharm.it/')
-}
-
 export function getCatalogRowMeta(
   catalog: CatalogLikeContent,
   productDownloadFallback: string,
@@ -70,7 +66,7 @@ export function getCatalogRowMeta(
   return {
     label,
     modalFileName: label,
-    fileUrl: mapToNewpharmUrl(fileUrl),
+    fileUrl: fileUrl ? toAbsoluteHttpsUrl(fileUrl) : undefined,
     shortDescription,
   }
 }
