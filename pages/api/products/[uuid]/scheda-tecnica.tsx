@@ -14,7 +14,7 @@ import localeConfig from '@/i18n/locales.json'
 
 const RATE_WINDOW_MS = 60_000
 const MAX_REQUESTS_PER_WINDOW = 20
-const IMAGE_TIMEOUT_MS = 10_000
+const IMAGE_TIMEOUT_MS = 20_000
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024
 const requestWindows = new Map<string, { startedAt: number; count: number }>()
 const generationInFlight = new Map<string, Promise<Buffer>>()
@@ -124,12 +124,14 @@ export default async function handler(
 
     // Pre-download dell'immagine prodotto: react-pdf fa il fetch a runtime e in
     // Next Pages Router quel fetch fallisce ("fetch failed"). Scarichiamo noi
-    // (che funziona) e passiamo il buffer al template — evita fetch a runtime.
+    // e passiamo il buffer. Se il download non riesce, la scheda esce senza foto:
+    // lasciare l'URL farebbe rilanciare il fetch interno e rispondere 500.
     if (data.image && typeof data.image === 'string') {
+      const source = data.image.startsWith('http') ? data.image : `https:${data.image}`
       const controller = new AbortController()
       const timeout = setTimeout(() => controller.abort(), IMAGE_TIMEOUT_MS)
+      let embedded: { data: Buffer; format: 'png' | 'jpg' } | null = null
       try {
-        const source = data.image.startsWith('http') ? data.image : `https:${data.image}`
         const response = await fetch(source, { signal: controller.signal })
         if (response.ok) {
           const contentLength = Number(response.headers.get('content-length') || 0)
@@ -140,10 +142,17 @@ export default async function handler(
           if (arrayBuffer.byteLength > MAX_IMAGE_BYTES) {
             throw new Error('Product image exceeds the maximum allowed size')
           }
-          const buffer = Buffer.from(arrayBuffer)
-          const mime = response.headers.get('content-type') || 'image/png'
-          const format = mime.includes('jpeg') || mime.includes('jpg') ? 'jpg' : 'png'
-          data.image = { data: buffer, format }
+          const mime = `${response.headers.get('content-type') || ''} ${source}`.toLowerCase()
+          const format = mime.includes('png')
+            ? 'png'
+            : mime.includes('jpeg') || mime.includes('jpg')
+              ? 'jpg'
+              : null
+          if (format) {
+            embedded = { data: Buffer.from(arrayBuffer), format }
+          } else {
+            console.log(`[Sheet] unsupported image type url=${source.slice(0, 80)}`)
+          }
         } else {
           console.log(
             `[Sheet] image download failed status=${response.status} url=${source.slice(0, 80)}`,
@@ -156,6 +165,7 @@ export default async function handler(
       } finally {
         clearTimeout(timeout)
       }
+      data.image = embedded
     }
 
     // Cache key: il contenuto ne guida la versione
@@ -242,6 +252,7 @@ export default async function handler(
       '[Sheet] PDF generation error',
       error instanceof Error ? error.stack || error.message : error,
     )
-    res.status(500).json({ error: 'Failed to generate technical sheet' })
+    const detail = error instanceof Error ? error.message : 'Unknown error'
+    res.status(500).json({ error: 'Failed to generate technical sheet', detail })
   }
 }

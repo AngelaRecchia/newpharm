@@ -1,5 +1,5 @@
 import { Font } from '@react-pdf/renderer'
-import { existsSync } from 'fs'
+import { existsSync, readFileSync } from 'fs'
 import { join } from 'path'
 
 /**
@@ -11,7 +11,23 @@ import { join } from 'path'
  * variabili di Inter ("Offset is outside the bounds of the DataView").
  */
 
-const FONT_DIR = join(process.cwd(), 'assets', 'fonts', 'inter')
+/**
+ * Path letterali (non un nome file in variabile): il file tracer di Vercel
+ * include solo i file il cui path è statico, come già fa per il logo PNG.
+ */
+const FONT_REGULAR = join(process.cwd(), 'assets', 'fonts', 'inter', 'Inter-Regular.ttf')
+const FONT_ITALIC = join(process.cwd(), 'assets', 'fonts', 'inter', 'Inter-Italic.ttf')
+const FONT_MEDIUM = join(process.cwd(), 'assets', 'fonts', 'inter', 'Inter-Medium.ttf')
+const FONT_SEMIBOLD = join(process.cwd(), 'assets', 'fonts', 'inter', 'Inter-SemiBold.ttf')
+const FONT_BOLD = join(process.cwd(), 'assets', 'fonts', 'inter', 'Inter-Bold.ttf')
+
+const FONT_SOURCES: Array<{ weight: number; style: 'normal' | 'italic'; src: string }> = [
+  { weight: 400, style: 'normal', src: FONT_REGULAR },
+  { weight: 400, style: 'italic', src: FONT_ITALIC },
+  { weight: 500, style: 'normal', src: FONT_MEDIUM },
+  { weight: 600, style: 'normal', src: FONT_SEMIBOLD },
+  { weight: 700, style: 'normal', src: FONT_BOLD },
+]
 
 let registered = false
 
@@ -21,28 +37,26 @@ export function registerSheetFonts(): void {
   Font.registerHyphenationCallback((word) => [word])
   if (registered) return
 
-  const weights: Array<{ weight: number; style: 'normal' | 'italic'; file: string }> = [
-    { weight: 400, style: 'normal', file: 'Inter-Regular.ttf' },
-    { weight: 400, style: 'italic', file: 'Inter-Italic.ttf' },
-    { weight: 500, style: 'normal', file: 'Inter-Medium.ttf' },
-    { weight: 600, style: 'normal', file: 'Inter-SemiBold.ttf' },
-    { weight: 700, style: 'normal', file: 'Inter-Bold.ttf' },
-  ]
-
-  for (const { file } of weights) {
-    const fontPath = join(FONT_DIR, file)
-    if (!existsSync(fontPath)) {
+  for (const { src } of FONT_SOURCES) {
+    if (!existsSync(src)) {
       throw new Error(
-        `[Sheet] Missing font "${file}" at ${fontPath}. ` +
+        `[Sheet] Missing font at ${src}. ` +
           'On Vercel, ensure outputFileTracingIncludes covers assets/fonts/inter.',
       )
     }
   }
 
+  // Lettura esplicita: stesso pattern del logo, così il tracer copia i TTF nella lambda.
+  readFileSync(FONT_REGULAR)
+  readFileSync(FONT_ITALIC)
+  readFileSync(FONT_MEDIUM)
+  readFileSync(FONT_SEMIBOLD)
+  readFileSync(FONT_BOLD)
+
   Font.register({
     family: 'Inter',
-    fonts: weights.map(({ weight, style, file }) => ({
-      src: join(FONT_DIR, file),
+    fonts: FONT_SOURCES.map(({ weight, style, src }) => ({
+      src,
       fontWeight: weight,
       fontStyle: style,
     })),
