@@ -76,14 +76,6 @@ export function TargetPests() {
     setSearch('')
   }
 
-  const updateText = (uuid: string, text: string) => {
-    setContent({
-      items: value.items.map((item) =>
-        item.uuid === uuid ? { ...item, text: text.trim() || undefined } : item,
-      ),
-    })
-  }
-
   const removeItem = (uuid: string) => {
     setContent({
       items: value.items.filter((item) => item.uuid !== uuid),
@@ -148,13 +140,6 @@ export function TargetPests() {
                     </button>
                   </div>
                 </div>
-                <textarea
-                  className="target-pests__textarea"
-                  rows={2}
-                  placeholder="Testo opzionale per questo prodotto"
-                  value={item.text ?? ''}
-                  onChange={(event) => updateText(item.uuid, event.target.value)}
-                />
               </li>
             )
           })}

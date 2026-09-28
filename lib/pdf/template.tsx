@@ -5,7 +5,10 @@ import { join } from 'path'
 import { sheetStyles } from './styles'
 import type { Style } from '@react-pdf/types'
 import type { SheetSection, TechnicalSheetData } from './document'
-import type { TargetPestView } from '@/lib/products/targetPests'
+import {
+  targetPestParentheticalLabel,
+  type TargetPestView,
+} from '@/lib/products/targetPests'
 
 /**
  * Sorgente immagine per react-pdf:
@@ -40,7 +43,7 @@ const RIGHT_AFTER_INTRO: SheetSection['kind'][] = ['dosage', 'application', 'spe
 function sectionToText(section: SheetSection): string {
   if (section.kind === 'targetPests' && Array.isArray(section.body)) {
     return (section.body as TargetPestView[])
-      .map((pest) => pest.title)
+      .map((pest) => targetPestParentheticalLabel(pest))
       .filter(Boolean)
       .join(', ')
   }

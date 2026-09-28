@@ -65,11 +65,23 @@ function shouldUseFsCache(endpoint: string): boolean {
   return true
 }
 
+/**
+ * Token CDN solo server. Fallback a NEXT_PUBLIC_ per .env.local esistenti
+ * (non referenziato dai client components → non finisce nel bundle).
+ */
+export function getStoryblokAccessToken(): string {
+  return (
+    process.env.STORYBLOK_ACCESS_TOKEN ||
+    process.env.NEXT_PUBLIC_STORYBLOK_ACCESS_TOKEN ||
+    ''
+  )
+}
+
 export function getStoryblokApi() {
   // eslint-disable-next-line
   const StoryblokClient = require('storyblok-js-client')
   const client = new StoryblokClient({
-    accessToken: process.env.NEXT_PUBLIC_STORYBLOK_ACCESS_TOKEN || '',
+    accessToken: getStoryblokAccessToken(),
     space: process.env.NEXT_PUBLIC_STORYBLOK_SPACE_ID,
   })
 

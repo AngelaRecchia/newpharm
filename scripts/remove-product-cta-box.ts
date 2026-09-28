@@ -14,14 +14,14 @@
 
 import * as dotenv from 'dotenv'
 import StoryblokClient from 'storyblok-js-client'
-import { getStoryblokApi } from '../lib/api/storyblok/client'
+import { getStoryblokAccessToken, getStoryblokApi } from '../lib/api/storyblok/client'
 
 dotenv.config({ path: '.env.local' })
 
 const DRY_RUN = process.env.DRY_RUN !== 'false'
 const SPACE_ID = process.env.NEXT_PUBLIC_STORYBLOK_SPACE_ID || ''
 const MANAGEMENT_TOKEN = process.env.STORYBLOK_MANAGEMENT_TOKEN || ''
-const ACCESS_TOKEN = process.env.NEXT_PUBLIC_STORYBLOK_ACCESS_TOKEN || ''
+const ACCESS_TOKEN = getStoryblokAccessToken()
 
 const MANAGEMENT_DELAY_MS = 400 // sotto il rate limit Starter (3 req/sec)
 
@@ -29,7 +29,7 @@ if (!SPACE_ID || !MANAGEMENT_TOKEN || !ACCESS_TOKEN) {
   console.error('❌ Variabili d\'ambiente mancanti:')
   console.error('   - NEXT_PUBLIC_STORYBLOK_SPACE_ID')
   console.error('   - STORYBLOK_MANAGEMENT_TOKEN')
-  console.error('   - NEXT_PUBLIC_STORYBLOK_ACCESS_TOKEN')
+  console.error('   - STORYBLOK_ACCESS_TOKEN')
   process.exit(1)
 }
 

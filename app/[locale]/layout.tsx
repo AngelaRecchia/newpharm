@@ -4,7 +4,6 @@ import '@/app/app.scss'
 import { StoryblokProvider } from '@/lib/storyblok'
 import { ViewportProvider } from '@/lib/context/viewport-context'
 import { SmoothScrollProvider } from '@/lib/context/smooth-scroll-context'
-import { ProductViewTransitionProvider } from '@/lib/context/product-view-transition-context'
 import { IntlProvider } from '@/lib/intl-provider'
 import { getMessages, setRequestLocale } from 'next-intl/server'
 import { notFound } from 'next/navigation'
@@ -62,12 +61,10 @@ export default async function RootLayout({ children, params }: Props) {
           <IntlProvider locale={locale} messages={messages}>
             <ViewportProvider>
               <SmoothScrollProvider>
-                <ProductViewTransitionProvider>
-                  <GlossaryRoot items={glossaryItems}>
-                    {children}
-                    <PopupRoot />
-                  </GlossaryRoot>
-                </ProductViewTransitionProvider>
+                <GlossaryRoot items={glossaryItems}>
+                  {children}
+                  <PopupRoot />
+                </GlossaryRoot>
               </SmoothScrollProvider>
             </ViewportProvider>
           </IntlProvider>

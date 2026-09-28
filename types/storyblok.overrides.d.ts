@@ -44,14 +44,14 @@ export interface StoryStoryblok extends Generated.StoryStoryblok {
 export type { InsectCategory };
 
 export type TargetPestsPluginValue = {
-  items: Array<{ uuid: string; text?: string }>;
+  items: Array<{ uuid: string }>;
 };
 
 export type TargetPestView = {
   uid: string;
   title: string;
+  scientificName?: string;
   family: TargetPestFamilyView | null;
-  text?: string;
 };
 
 /** insect_family — titolo e icona editoriali, senza pagina */
@@ -85,6 +85,7 @@ export interface InsectStoryblok extends Omit<
   Generated.InsectStoryblok,
   "icon" | "visibility" | "famiglia" | "category"
 > {
+  nome_scientifico?: string | null;
   image_hover?: AssetStoryblok | null;
   gallery?: AssetStoryblok[] | null;
   category?: InsectCategory | null;
@@ -101,7 +102,7 @@ export interface InsectStoryResolved {
   [key: string]: unknown;
 }
 
-/** target_pest_item — insetto catalogo + testo custom sul prodotto (legacy) */
+/** target_pest_item — insetto catalogo (legacy, sostituito dal plugin target_pests) */
 export interface Target_pest_itemStoryblok extends Omit<
   Generated.Target_pest_itemStoryblok,
   "insect"

@@ -4,7 +4,7 @@ function asItems(value: unknown): TargetPestsPluginItem[] {
   if (!Array.isArray(value)) return []
   return value.flatMap((item) => {
     if (!item || typeof item !== 'object') return []
-    const record = item as { uuid?: unknown; text?: unknown; insect?: unknown }
+    const record = item as { uuid?: unknown; insect?: unknown }
     const uuid =
       typeof record.uuid === 'string'
         ? record.uuid
@@ -12,8 +12,7 @@ function asItems(value: unknown): TargetPestsPluginItem[] {
           ? record.insect
           : ''
     if (!uuid) return []
-    const text = typeof record.text === 'string' ? record.text.trim() : ''
-    return [{ uuid, text: text || undefined }]
+    return [{ uuid }]
   })
 }
 

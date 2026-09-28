@@ -319,7 +319,7 @@ function ProductsInner({ blok }: { blok?: ProductsStoryblok }) {
     >
       {(blok.title || blok.subtitle) ? (
         <Container className={cn('hero')} flushBlock>
-          <HeroTertiary title={blok.title} subtitle={blok.subtitle} />
+          <HeroTertiary title={blok.title} subtitle={blok.subtitle} as="h1" />
         </Container>
       ) : null}
 

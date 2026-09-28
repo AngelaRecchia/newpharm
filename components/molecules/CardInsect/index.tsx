@@ -13,6 +13,7 @@ type CardInsectProps = ListingCardData & {
 
 export default function CardInsect({
   title,
+  scientificName,
   description,
   image,
   imageHover,
@@ -39,6 +40,9 @@ export default function CardInsect({
       <span className={cn('content-wrapper')}>
         <span className={cn('content')}>
           {title ? <span className={cn('title')}>{title}</span> : null}
+          {scientificName ? (
+            <span className={cn('scientific')}>{scientificName}</span>
+          ) : null}
           {description ? <span className={cn('description')}>{description}</span> : null}
         </span>
       </span>

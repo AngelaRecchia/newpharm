@@ -22,8 +22,9 @@ Vedi [`.env.example`](./.env.example) per l'elenco completo. Obbligatorie:
 
 | Variabile | Uso |
 | --- | --- |
-| `NEXT_PUBLIC_STORYBLOK_ACCESS_TOKEN` | CDN Token (Settings → Access Tokens) |
+| `STORYBLOK_ACCESS_TOKEN` | CDN Token, solo server (Settings → Access Tokens) |
 | `NEXT_PUBLIC_STORYBLOK_SPACE_ID` | Space ID (Settings → General) |
+| `NEXT_PUBLIC_STORYBLOK_VERSION` | `draft` (locale/preview) o `published` (prod) |
 | `STORYBLOK_MANAGEMENT_TOKEN` | Management API (locales/types) |
 
 ## Comandi utili

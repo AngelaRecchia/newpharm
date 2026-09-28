@@ -8,13 +8,22 @@ export type { TargetPestFamilyView }
 export type TargetPestView = {
   uid: string
   title: string
+  scientificName?: string
   family: TargetPestFamilyView | null
-  text?: string
+}
+
+function readScientificName(insect: InsectStoryblok): string | undefined {
+  const value = insect.nome_scientifico?.trim()
+  return value || undefined
+}
+
+/** Etichetta tra parentesi in scheda prodotto: nome scientifico, altrimenti titolo. */
+export function targetPestParentheticalLabel(item: TargetPestView): string {
+  return item.scientificName?.trim() || item.title
 }
 
 export type TargetPestsPluginItem = {
   uuid: string
-  text?: string
 }
 
 export type TargetPestsPluginValue = {
@@ -51,10 +60,9 @@ export function parseTargetPestsValue(raw: unknown): TargetPestsPluginItem[] {
     if (!Array.isArray(items)) return []
     return items.flatMap((item) => {
       if (!item || typeof item !== 'object') return []
-      const record = item as { uuid?: unknown; text?: unknown }
+      const record = item as { uuid?: unknown }
       if (typeof record.uuid !== 'string' || !record.uuid) return []
-      const text = typeof record.text === 'string' ? record.text.trim() : ''
-      return [{ uuid: record.uuid, text: text || undefined }]
+      return [{ uuid: record.uuid }]
     })
   }
 
@@ -62,32 +70,30 @@ export function parseTargetPestsValue(raw: unknown): TargetPestsPluginItem[] {
 
   return raw.flatMap((item) => {
     if (!item || typeof item !== 'object') return []
-    const blok = item as { insect?: unknown; text?: unknown }
+    const blok = item as { insect?: unknown }
     const uuid = insectUuidFromLegacy(blok.insect)
     if (!uuid) return []
-    const text = typeof blok.text === 'string' ? blok.text.trim() : ''
-    return [{ uuid, text: text || undefined }]
+    return [{ uuid }]
   })
 }
 
-function viewFromInsect(
-  uid: string,
-  insect: InsectStoryblok,
-  text?: string,
-): TargetPestView {
+function viewFromInsect(uid: string, insect: InsectStoryblok): TargetPestView {
   return {
     uid,
     title: insect.title,
+    scientificName: readScientificName(insect),
     family: readInsectFamily(insect.famiglia),
-    text,
   }
 }
 
-function viewFromStory(item: TargetPestsPluginItem, story: Story | undefined): TargetPestView | null {
+function viewFromStory(
+  item: TargetPestsPluginItem,
+  story: Story | undefined,
+): TargetPestView | null {
   if (!story?.content) return null
   const insect = story.content as InsectStoryblok
   if (!insect.title && insect.component !== 'insect') return null
-  return viewFromInsect(item.uuid, insect, item.text)
+  return viewFromInsect(item.uuid, insect)
 }
 
 /** Mapping da campo CMS (plugin JSON, bloks legacy, o view già risolte). */
@@ -102,8 +108,11 @@ export function mapTargetPests(items: unknown): TargetPestView[] {
         return [{
           uid: record.uid,
           title: record.title,
+          scientificName:
+            typeof record.scientificName === 'string'
+              ? record.scientificName.trim() || undefined
+              : undefined,
           family: readInsectFamily(record.family ?? record.famiglia),
-          text: typeof record.text === 'string' ? record.text : undefined,
         }]
       })
     }
@@ -114,15 +123,13 @@ export function mapTargetPests(items: unknown): TargetPestView[] {
   const out: TargetPestView[] = []
   for (const item of items) {
     if (!item || typeof item !== 'object') continue
-    const blok = item as { _uid?: unknown; insect?: unknown; text?: unknown }
+    const blok = item as { _uid?: unknown; insect?: unknown }
     const insect = getInsectBlok(blok.insect)
     if (!insect) continue
-    const text = typeof blok.text === 'string' ? blok.text.trim() : ''
     out.push(
       viewFromInsect(
         typeof blok._uid === 'string' ? blok._uid : insect.title,
         insect,
-        text || undefined,
       ),
     )
   }

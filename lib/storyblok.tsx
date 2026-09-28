@@ -1,9 +1,9 @@
 'use client'
 
-import { storyblokInit, apiPlugin, loadStoryblokBridge } from '@storyblok/react'
+import { storyblokInit, loadStoryblokBridge } from '@storyblok/react'
 import { ReactNode, useEffect } from 'react'
 import dynamic from 'next/dynamic'
-import { shouldEnableBridge, isInsideStoryblokEditor } from './api/storyblok/config'
+import { shouldEnableBridge, isInsideStoryblokEditor } from './api/storyblok/version'
 
 // Lightweight components — static imports
 import Page from '@/components/storyblok/Page'
@@ -112,14 +112,11 @@ const components = {
   footer: Footer,
 }
 
-// Initialize Storyblok at module level (runs once when module loads)
-// This ensures components are registered before any rendering occurs
-// Bridge is enabled in draft mode - loadStoryblokBridge() will activate it when in editor
+// Register components only. No accessToken / apiPlugin: the CDN token stays server-side.
+// Live preview uses the Visual Editor bridge (postMessage), not client GET to Storyblok.
 storyblokInit({
-  accessToken: process.env.NEXT_PUBLIC_STORYBLOK_ACCESS_TOKEN || '',
-  use: [apiPlugin],
   components,
-  bridge: shouldEnableBridge(), // Enable bridge in draft mode for live editing
+  bridge: shouldEnableBridge(),
 })
 
 /**

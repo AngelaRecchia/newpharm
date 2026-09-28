@@ -1,5 +1,5 @@
 import { algoliasearch } from 'algoliasearch'
-import { getStoryblokVersion } from '@/lib/api/storyblok/config'
+import { getStoryblokVersion } from '@/lib/api/storyblok/version'
 
 function requireEnv(name: string): string {
   const value = process.env[name]

@@ -18,8 +18,7 @@
   font-size: 13px;
 }
 
-.target-pests__input,
-.target-pests__textarea {
+.target-pests__input {
   width: 100%;
   padding: 8px 10px;
   border: 1px solid #c7c7c7;

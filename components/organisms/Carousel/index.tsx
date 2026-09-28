@@ -276,7 +276,6 @@ const Carousel = ({
                                     image={card.image}
                                     href={card.href}
                                     imageSafeArea
-                                    productTransitionId={card.uuid}
                                 />
                             </SwiperSlide>
                         ))}

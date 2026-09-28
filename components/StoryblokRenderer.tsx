@@ -1,10 +1,12 @@
 'use client'
 
-import { StoryblokComponent, useStoryblok } from '@storyblok/react'
+import { StoryblokComponent, useStoryblokState } from '@storyblok/react'
 import { useEffect, useState } from 'react'
-import { getStoryblokVersion } from '@/lib/api/storyblok/config'
 import { STORYBLOK_RESOLVE_RELATIONS } from '@/lib/api/storyblok/resolveRelations'
-import { isInsideStoryblokEditor } from '@/lib/api/storyblok/config'
+import {
+  getStoryblokVersion,
+  isInsideStoryblokEditor,
+} from '@/lib/api/storyblok/version'
 import { usePluginLivePreview, withPluginOverrides } from '@/lib/preview/usePluginLivePreview'
 
 /**
@@ -137,12 +139,6 @@ interface StoryblokRendererProps {
   story?: any
 }
 
-const STORYBLOK_CDN_PARAMS = {
-  version: getStoryblokVersion(),
-  resolve_relations: STORYBLOK_RESOLVE_RELATIONS,
-  resolve_links: 'url' as const,
-}
-
 const STORYBLOK_BRIDGE_PARAMS = {
   resolveRelations: STORYBLOK_RESOLVE_RELATIONS,
   resolveLinks: 'url' as const,
@@ -155,15 +151,8 @@ function PublishedRenderer({ blok }: { blok: any }) {
 }
 
 function VisualEditorRenderer({ blok, story }: StoryblokRendererProps) {
-  // Slug CDN: sempre da story (SSR/CSR allineati). Non usare '_' come placeholder:
-  // useStoryblok fa comunque GET /v2/cdn/stories/{slug} e 'stories/_' → 404.
-  const storySlug = (story?.full_slug || '').trim()
-
-  const liveStory = useStoryblok(
-    storySlug,
-    STORYBLOK_CDN_PARAMS,
-    STORYBLOK_BRIDGE_PARAMS,
-  )
+  // Bridge only: no client GET to cdn/stories (token stays server-side).
+  const liveStory = useStoryblokState(story ?? null, STORYBLOK_BRIDGE_PARAMS)
   const pluginOverrides = usePluginLivePreview(blok, liveStory?.content, story?.full_slug)
 
   if (!blok || !blok.component) return null
@@ -196,7 +185,7 @@ function DraftRenderer({ blok, story }: StoryblokRendererProps) {
  * StoryblokRenderer
  *
  * In produzione (published): renderizza il contenuto SSR senza alcuna chiamata client-side.
- * In draft: rileva il Visual Editor solo lato client e, solo se necessario, attiva useStoryblok.
+ * In draft: rileva il Visual Editor solo lato client e, solo se necessario, attiva useStoryblokState.
  */
 export default function StoryblokRenderer({ blok, story }: StoryblokRendererProps) {
   // Decisione SSR-safe: in build published non montiamo mai la logica live.

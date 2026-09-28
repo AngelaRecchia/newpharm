@@ -5,7 +5,7 @@
  */
 
 // Client & Config
-export { getStoryblokApi } from "./client";
+export { getStoryblokAccessToken, getStoryblokApi } from "./client";
 export {
   isProduction,
   getStoryblokVersion,

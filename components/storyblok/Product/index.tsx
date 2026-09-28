@@ -5,7 +5,6 @@ import classNames from 'classnames/bind'
 import styles from './index.module.scss'
 import { ProductStoryblok } from '@/types/storyblok'
 import Asset from '@/components/atoms/Asset'
-import ProductTransitionImage from '@/components/atoms/ProductTransitionImage'
 import { useTranslations } from 'next-intl'
 import Tag from '@/components/atoms/Tag'
 import Breadcrumbs from '@/components/atoms/Breadcrumbs'
@@ -116,19 +115,20 @@ const Product = ({ blok }: { blok: ProductStoryblok }) => {
     return !!content
   }
 
+  // Ordine allineato allo schema Storyblok (content type product).
   const accordionItems: AccordionItemData[] = [
-    { label: t('product_application-areas'), content: application_areas_text, type: 'richtext' as const },
     { label: t('product_composition'), content: composition, type: 'richtext' as const },
-    { label: t('product_target-pests'), content: targetPests, type: 'pests' as const },
+    { label: t('product_application-areas'), content: application_areas_text, type: 'richtext' as const },
     { label: t('product_dosage'), content: dosage_and_application, type: 'richtext' as const },
     { label: t('product_usage'), content: usage, type: 'richtext' as const },
+    { label: t('product_target-pests'), content: targetPests, type: 'pests' as const },
     { label: t('product_dimensions'), content: dimensions, type: 'richtext' as const },
     { label: t('product_units-per-carton'), content: units_per_carton, type: 'richtext' as const },
     { label: t('product_download'), content: safety_data_sheet, type: 'file' as const },
   ].filter((item) => hasContent(item.content, item.type))
 
   return (
-    <section className={cn('wrapper')} data-product-detail={productUuid || undefined}>
+    <section className={cn('wrapper')}>
 
       <ProductStickyBar
         uuid={blok.product_uuid ?? ''}
@@ -145,13 +145,9 @@ const Product = ({ blok }: { blok: ProductStoryblok }) => {
               <Tag tag={t(categorySlug)} variant="primary" />
             </div>
           )}
-          <ProductTransitionImage
-            uuid={productUuid}
-            role="destination"
-            className={cn('product-image')}
-          >
+          <div className={cn('product-image')}>
             <Asset asset={mainImage} mode="fit" priority={true} />
-          </ProductTransitionImage>
+          </div>
         </div>
 
         {/* Colonna destra — contenuto */}
@@ -202,7 +198,6 @@ const Product = ({ blok }: { blok: ProductStoryblok }) => {
             </div>
           )}
 
-          {/* Note — registrazione + tipo prodotto */}
           {(registration || product_type) && (
             <div className={cn('note')}>
               {registration && <span>{registration}</span>}

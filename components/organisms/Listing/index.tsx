@@ -55,7 +55,6 @@ function RefCard({
       href={props.href}
       showDownload={variant === 'catalogo'}
       imageSafeArea={variant === 'prodotto'}
-      productTransitionId={variant === 'prodotto' ? props.uuid : undefined}
       dark={dark}
     />
   )

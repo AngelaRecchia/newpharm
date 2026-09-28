@@ -60,6 +60,8 @@ export const VARIANT_TO_COMPONENT: Record<ListingVariantSlug, ListingContentComp
 export type ListingCardData = {
   uuid?: string
   title: string
+  /** Nome scientifico (listing/carousel infestanti) */
+  scientificName?: string
   description?: string
   image: import('@/components/atoms/Asset').StoryblokAsset | null
   imageHover?: import('@/components/atoms/Asset').StoryblokAsset | null

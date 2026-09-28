@@ -4,6 +4,7 @@ import type { ListingCardData, ListingStoryResolved } from './types'
 
 type InsectContent = {
   title?: string | null
+  nome_scientifico?: string | null
   short_description?: string | null
   image?: StoryblokAsset[] | StoryblokAsset | null
   image_hover?: StoryblokAsset[] | StoryblokAsset | null
@@ -39,9 +40,12 @@ export function mapInsectStoryToCard(story: ListingStoryResolved): ListingCardDa
   const imageHover = getCoverAsset(content.image_hover)
   const gallery = asGallery(content.gallery)
 
+  const scientificName = content.nome_scientifico?.trim()
+
   return {
     uuid: story.uuid,
     title: content.title || story.name,
+    scientificName: scientificName || undefined,
     description: content.short_description || undefined,
     image,
     imageHover,

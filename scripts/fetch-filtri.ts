@@ -7,7 +7,7 @@
  *   npx tsx scripts/fetch-filtri.ts
  *
  * Requires env vars (from .env.local):
- *   NEXT_PUBLIC_STORYBLOK_ACCESS_TOKEN
+ *   STORYBLOK_ACCESS_TOKEN (fallback: NEXT_PUBLIC_STORYBLOK_ACCESS_TOKEN)
  */
 
 import { config } from 'dotenv'
@@ -46,9 +46,9 @@ function readExistingEntries(): FiltriEntry[] {
 async function main() {
   let entries: FiltriEntry[] = []
 
-  if (!process.env.NEXT_PUBLIC_STORYBLOK_ACCESS_TOKEN) {
+  if (!process.env.STORYBLOK_ACCESS_TOKEN && !process.env.NEXT_PUBLIC_STORYBLOK_ACCESS_TOKEN) {
     console.warn(
-      '⚠ Missing NEXT_PUBLIC_STORYBLOK_ACCESS_TOKEN — keeping existing filtri-entries.json',
+      '⚠ Missing STORYBLOK_ACCESS_TOKEN — keeping existing filtri-entries.json',
     )
   } else {
     try {

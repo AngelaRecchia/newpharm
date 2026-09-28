@@ -6,9 +6,7 @@ Field plugin per il content type **product**: selezione infestanti dal catalogo 
 
 ```json
 {
-  "items": [
-    { "uuid": "story-uuid", "text": "testo opzionale" }
-  ]
+  "items": [{ "uuid": "story-uuid" }]
 }
 ```
 

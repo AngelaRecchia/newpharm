@@ -19,7 +19,7 @@ export function localeFromFullSlug(fullSlug: unknown): string {
 }
 
 /**
- * Nel Visual Editor, `useStoryblok` riceve il JSON del field plugin prima del save.
+ * Nel Visual Editor, `useStoryblokState` riceve il JSON del field plugin prima del save.
  * I `resolved_*` SSR restano quelli vecchi: qui si ricalcolano solo i plugin cambiati.
  */
 export function usePluginLivePreview(

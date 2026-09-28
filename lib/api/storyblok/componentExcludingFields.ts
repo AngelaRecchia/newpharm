@@ -14,16 +14,13 @@ const STORY_LISTING_EXCLUDE = 'body,author,reading_time'
 
 const JOB_LISTING_EXCLUDE = 'description,short_description'
 
-const INSECT_LISTING_EXCLUDE = 'category'
-
-/** Downloadable: payload già piccolo — nessuna esclusione. */
+/** Downloadable / insect: nessuna esclusione (insect.category serve ai filtri Infestanti). */
 
 const EXCLUDING_BY_COMPONENT: Record<string, string | undefined> = {
   product: PRODUCT_LISTING_EXCLUDE,
   project: PROJECT_LISTING_EXCLUDE,
   story: STORY_LISTING_EXCLUDE,
   job: JOB_LISTING_EXCLUDE,
-  insect: INSECT_LISTING_EXCLUDE,
 }
 
 export function getExcludingFieldsForComponent(component: string): string | undefined {

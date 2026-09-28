@@ -8,7 +8,7 @@ describe('normalizeContent', () => {
         items: [{ uuid: 'a', text: ' note ' }, { uuid: '' }],
       }),
     ).toEqual({
-      items: [{ uuid: 'a', text: 'note' }],
+      items: [{ uuid: 'a' }],
     })
   })
 
@@ -18,7 +18,7 @@ describe('normalizeContent', () => {
         { component: 'target_pest_item', insect: 'uuid-1', text: 'custom' },
       ]),
     ).toEqual({
-      items: [{ uuid: 'uuid-1', text: 'custom' }],
+      items: [{ uuid: 'uuid-1' }],
     })
   })
 

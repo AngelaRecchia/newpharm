@@ -70,12 +70,14 @@ npm run fetch:filtri           # aggiorna datasource filtri
 
 | Variabile | Uso |
 | --- | --- |
-| `NEXT_PUBLIC_STORYBLOK_ACCESS_TOKEN` | CDN (read) — obbligatoria |
+| `STORYBLOK_ACCESS_TOKEN` | CDN (read) — obbligatoria, **solo server** (Public in prod, Preview in draft) |
 | `NEXT_PUBLIC_STORYBLOK_SPACE_ID` | Space ID — obbligatoria |
+| `NEXT_PUBLIC_STORYBLOK_VERSION` | `draft` (locale/preview) o `published` (produzione) |
 | `STORYBLOK_MANAGEMENT_TOKEN` | Management API (locales/types) — obbligatoria |
 | `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` / `RECAPTCHA_SECRET_KEY` | reCAPTCHA v2 (download cataloghi) |
 
-In dev si usa `version=draft`; in build `version=published` (`lib/api/storyblok/config.ts`).
+In dev si usa `version=draft`; in build `version=published` (`lib/api/storyblok/version.ts`).
+Il token CDN non va in `NEXT_PUBLIC_`: il Visual Editor usa `useStoryblokState` + bridge, senza GET dal browser.
 
 ## Da NON modificare senza motivo
 

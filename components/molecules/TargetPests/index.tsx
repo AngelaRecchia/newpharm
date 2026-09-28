@@ -1,6 +1,9 @@
 import classNames from 'classnames/bind'
 import type { TargetPestFamilyView } from '@/lib/insects/family'
-import type { TargetPestView } from '@/lib/products/mapTargetPests'
+import {
+  targetPestParentheticalLabel,
+  type TargetPestView,
+} from '@/lib/products/mapTargetPests'
 import styles from './index.module.scss'
 
 const cn = classNames.bind(styles)
@@ -46,7 +49,14 @@ export default function TargetPests({ items }: TargetPestsProps) {
             {family ? <strong className={cn('title')}>{family.title}</strong> : null}
             <span className={cn('text')}>
               {' ('}
-              {familyItems.map((item) => item.title).join(', ')}
+              {familyItems.map((item, index) => (
+                <span key={item.uid}>
+                  {index > 0 ? ', ' : null}
+                  <em className={cn('scientific')}>
+                    {targetPestParentheticalLabel(item)}
+                  </em>
+                </span>
+              ))}
               {')'}
             </span>
           </p>

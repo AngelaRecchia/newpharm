@@ -11,7 +11,7 @@
  * Requires env vars (from .env.local):
  *   STORYBLOK_MANAGEMENT_TOKEN
  *   NEXT_PUBLIC_STORYBLOK_SPACE_ID
- *   NEXT_PUBLIC_STORYBLOK_ACCESS_TOKEN
+ *   STORYBLOK_ACCESS_TOKEN (fallback: NEXT_PUBLIC_STORYBLOK_ACCESS_TOKEN)
  */
 
 import { config } from 'dotenv'

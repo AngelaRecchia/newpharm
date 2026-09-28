@@ -5,7 +5,6 @@ import classNames from 'classnames/bind'
 import { storyblokEditable } from '@storyblok/react'
 import { useLocale, useTranslations } from 'next-intl'
 import Asset from '@/components/atoms/Asset'
-import ProductTransitionImage from '@/components/atoms/ProductTransitionImage'
 import Button from '@/components/atoms/Button'
 import Icon from '@/components/atoms/Icon'
 import SmartLink from '@/components/atoms/SmartLink'
@@ -238,13 +237,9 @@ function CompareInner({ blok }: { blok?: CompareStoryblok }) {
               ) : (
                 <div className={cn('imageFrame', 'filled')}>
                   {product.image ? (
-                    <ProductTransitionImage
-                      uuid={product.uuid}
-                      role="source"
-                      className={cn('imageInner')}
-                    >
+                    <div className={cn('imageInner')}>
                       <Asset asset={product.image} mode="fit" />
-                    </ProductTransitionImage>
+                    </div>
                   ) : null}
                 </div>
               ),
@@ -267,7 +262,6 @@ function CompareInner({ blok }: { blok?: CompareStoryblok }) {
                       size="small"
                       label={discoverMoreLabel}
                       href={product.href}
-                      productTransitionId={product.uuid}
                     />
                   </div>,
                   `intro-${slotIndex}`,
@@ -335,7 +329,6 @@ function CompareInner({ blok }: { blok?: CompareStoryblok }) {
                       size="small"
                       label={discoverMoreLabel}
                       href={product.href}
-                      productTransitionId={product.uuid}
                     />
                   </div>,
                   `footer-${slotIndex}`,

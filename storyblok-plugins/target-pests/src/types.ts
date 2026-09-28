@@ -5,7 +5,6 @@ export type InsectOption = {
 
 export type TargetPestsPluginItem = {
   uuid: string
-  text?: string
 }
 
 export type TargetPestsPluginValue = {

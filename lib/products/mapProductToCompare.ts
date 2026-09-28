@@ -1,8 +1,10 @@
-﻿import { hasRichTextContent } from '@/lib/api/utils/richtext'
+﻿import type { StoryblokAsset } from '@/lib/assets/getAssetSrc'
+import { hasRichTextContent } from '@/lib/api/utils/richtext'
 import { getProductCategorySlug } from '@/lib/product-filtri'
 import type { ProductFiltriValue } from '@/lib/product-filtri'
+import { getCoverAsset } from '@/lib/downloadable/assets'
 import type { ListingStoryResolved } from '@/lib/listing/types'
-import type { AssetStoryblok, LinkStoryblok, ProductStoryblok } from '@/types/storyblok'
+import type { LinkStoryblok, ProductStoryblok } from '@/types/storyblok'
 import type { ISbRichtext } from '@storyblok/react'
 import { mapTargetPests, type TargetPestView } from '@/lib/products/mapTargetPests'
 
@@ -10,7 +12,7 @@ export type CompareProductView = {
   uuid: string
   title: string
   href: string
-  image: AssetStoryblok | null
+  image: StoryblokAsset | null
   shortDescription?: string
   category: string | null
   applicationAreasText?: ISbRichtext
@@ -20,15 +22,6 @@ export type CompareProductView = {
   unitsPerCarton?: ISbRichtext
   safetySheetHref?: string
   resources: LinkStoryblok[]
-}
-
-function firstImage(images: unknown): AssetStoryblok | null {
-  if (!Array.isArray(images) || images.length === 0) return null
-  const first = images[0]
-  if (first && typeof first === 'object' && 'filename' in first) {
-    return first as AssetStoryblok
-  }
-  return null
 }
 
 export function mapProductStoryToCompare(story: ListingStoryResolved): CompareProductView {
@@ -42,7 +35,7 @@ export function mapProductStoryToCompare(story: ListingStoryResolved): ComparePr
     uuid: story.uuid,
     title: content.title || story.name,
     href: `/${story.full_slug}`,
-    image: firstImage(content.images),
+    image: getCoverAsset(content.images),
     shortDescription: content.short_description || undefined,
     category: getProductCategorySlug(content.product_filtri, content.category) ?? null,
     applicationAreasText: content.application_areas_text as ISbRichtext | undefined,

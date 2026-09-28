@@ -47,7 +47,12 @@
 }
 
 .hero {
-  padding-block-start: $s-40;
+  padding-top: 5.625rem;
+  padding-bottom: $s-64;
+
+  @include lg {
+    padding-top: 13.5rem;
+  }
 }
 
 .content {

@@ -71,6 +71,11 @@
   @include t-body;
 }
 
+.scientific {
+  @include t-note;
+  font-style: italic;
+}
+
 .description {
   @include t-note;
   display: -webkit-box;

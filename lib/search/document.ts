@@ -189,7 +189,7 @@ function resolveInsectName(
   return null
 }
 
-/** Estrae nomi insetti + testo custom dal campo target_pests. */
+/** Estrae nomi insetti dal campo target_pests. */
 export function extractTargetPests(
   targetPests: unknown,
   insectByUuid: Map<string, string> = new Map(),
@@ -198,21 +198,15 @@ export function extractTargetPests(
 
   const results = new Set<string>()
 
-  const addText = (text: unknown) => {
-    const plain = normalizeText(text)
-    if (plain) results.add(plain)
-  }
-
-  // Plugin listing-items: { items: [{ uuid, text? }] }
+  // Plugin target_pests: { items: [{ uuid }] }
   if (typeof targetPests === 'object' && !Array.isArray(targetPests)) {
     const plugin = targetPests as { items?: unknown[] }
     if (Array.isArray(plugin.items)) {
       for (const item of plugin.items) {
         if (item && typeof item === 'object') {
-          const entry = item as { uuid?: unknown; text?: unknown }
+          const entry = item as { uuid?: unknown }
           const name = resolveInsectName(entry.uuid, insectByUuid)
           if (name) results.add(name)
-          addText(entry.text)
         }
       }
     }
@@ -223,10 +217,9 @@ export function extractTargetPests(
   if (Array.isArray(targetPests)) {
     for (const item of targetPests) {
       if (!item || typeof item !== 'object') continue
-      const entry = item as { insect?: unknown; text?: unknown }
+      const entry = item as { insect?: unknown }
       const name = resolveInsectName(entry.insect, insectByUuid)
       if (name) results.add(name)
-      addText(entry.text)
     }
   }
 
