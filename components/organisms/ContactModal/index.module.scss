@@ -5,15 +5,55 @@
   @return color.change($c-white, $alpha: $a);
 }
 
+.panel {
+  max-width: 56rem;
+  border-radius: 0;
+  padding: $s-40 $s-24;
+
+  @include md {
+    padding: $s-40;
+  }
+}
+
+.head {
+  display: grid;
+  row-gap: $s-40;
+  column-gap: $s-40;
+  margin-bottom: $s-40;
+
+  @include md {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+}
+
+.headMain {
+  min-width: 0;
+}
+
 .title {
-  @include t-h6;
-  margin: 0 0 $s-8;
+  @include t-h3;
+  margin: 0;
   padding-right: $s-40;
-  font-weight: $font-weight-semibold;
+  font-weight: 400;
   color: $c-white;
 }
 
 .intro {
+  @include t-note;
+  margin: 0;
+  color: $c-white;
+  padding-inline-end: $s-40;
+}
+
+.successTitle {
+  @include t-h3;
+  margin: 0 0 $s-16;
+  font-weight: 400;
+  color: $c-white;
+}
+
+.successCopy {
   @include t-note;
   margin: 0 0 $s-24;
   color: white-alpha(0.65);
@@ -22,7 +62,22 @@
 .form {
   display: flex;
   flex-direction: column;
-  gap: $s-24;
+  gap: $s-40;
+}
+
+.fieldGrid {
+  display: grid;
+  row-gap: $s-40;
+  column-gap: $s-40;
+  grid-template-columns: 1fr;
+
+  @include md {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.fullWidth {
+  grid-column: 1 / -1;
 }
 
 .textareaField {
@@ -38,18 +93,51 @@
 
 .textarea {
   width: 100%;
-  min-height: 6rem;
+  min-height: calc(#{$s-12} * 2 + 1.2em);
   padding: $s-12 0;
   border: none;
-  border-bottom: 1px solid white-alpha(0.6);
+  border-bottom: 1px solid white-alpha(0.2);
   background: transparent;
   color: $c-white;
   resize: vertical;
   @include t-note;
   font-family: inherit;
+  border-radius: 0;
+  line-height: 1.2;
 
+  @include md {
+    padding: $s-12 $s-16;
+  }
+
+  &::placeholder {
+    color: $c-white;
+    opacity: 0.6;
+  }
+
+  &:hover,
   &:focus-visible {
     outline: none;
     border-bottom-color: $c-white;
   }
+}
+
+.recaptchaError,
+.formError {
+  @include t-note;
+  margin: (-$s-8) 0 0;
+  color: $c-alert;
+}
+
+.recaptchaPlaceholder {
+  min-height: 4.75rem;
+}
+
+.checkboxGroup {
+  display: flex;
+  flex-direction: column;
+  gap: $s-16;
+}
+
+.actions {
+  margin-top: $s-8;
 }
