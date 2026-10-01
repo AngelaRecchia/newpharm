@@ -1,9 +1,18 @@
-export type InsectOption = {
+export type FamilyOption = {
   uuid: string
   name: string
 }
 
+export type InsectOption = {
+  uuid: string
+  name: string
+  familyUuid: string | null
+}
+
+export type TargetPestsPluginKind = 'insect' | 'family'
+
 export type TargetPestsPluginItem = {
+  kind: TargetPestsPluginKind
   uuid: string
 }
 

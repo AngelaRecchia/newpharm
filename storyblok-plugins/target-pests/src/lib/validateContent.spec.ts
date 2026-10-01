@@ -2,13 +2,22 @@ import { describe, expect, it } from 'vitest'
 import { normalizeContent } from './validateContent'
 
 describe('normalizeContent', () => {
-  it('accetta il JSON del plugin', () => {
+  it('accetta il JSON del plugin con kind', () => {
     expect(
       normalizeContent({
-        items: [{ uuid: 'a', text: ' note ' }, { uuid: '' }],
+        items: [
+          { kind: 'family', uuid: 'fam-1' },
+          { kind: 'insect', uuid: 'ins-1' },
+          { uuid: 'legacy-ins', text: ' note ' },
+          { kind: 'insect', uuid: '' },
+        ],
       }),
     ).toEqual({
-      items: [{ uuid: 'a' }],
+      items: [
+        { kind: 'family', uuid: 'fam-1' },
+        { kind: 'insect', uuid: 'ins-1' },
+        { kind: 'insect', uuid: 'legacy-ins' },
+      ],
     })
   })
 
@@ -18,7 +27,7 @@ describe('normalizeContent', () => {
         { component: 'target_pest_item', insect: 'uuid-1', text: 'custom' },
       ]),
     ).toEqual({
-      items: [{ uuid: 'uuid-1' }],
+      items: [{ kind: 'insect', uuid: 'uuid-1' }],
     })
   })
 

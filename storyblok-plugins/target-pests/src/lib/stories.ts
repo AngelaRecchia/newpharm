@@ -1,4 +1,4 @@
-import type { InsectOption } from '../types'
+import type { FamilyOption, InsectOption } from '../types'
 
 const LOCALE_FOLDERS = new Set(['it', 'en'])
 const PER_PAGE = 100
@@ -23,6 +23,7 @@ type RawStory = {
   full_slug: string
   content?: {
     title?: string
+    famiglia?: unknown
   }
 }
 
@@ -74,7 +75,16 @@ async function getCacheVersion(token: string): Promise<number | undefined> {
   }
 }
 
-function mapStory(story: RawStory): InsectOption | null {
+function familyUuidFromContent(famiglia: unknown): string | null {
+  if (typeof famiglia === 'string' && famiglia.trim()) return famiglia.trim()
+  if (famiglia && typeof famiglia === 'object' && 'uuid' in famiglia) {
+    const uuid = (famiglia as { uuid?: unknown }).uuid
+    if (typeof uuid === 'string' && uuid.trim()) return uuid.trim()
+  }
+  return null
+}
+
+function mapFamilyStory(story: RawStory): FamilyOption | null {
   if (!story.uuid) return null
   return {
     uuid: story.uuid,
@@ -82,14 +92,22 @@ function mapStory(story: RawStory): InsectOption | null {
   }
 }
 
-export async function fetchInsectStories(
-  token: string,
-  locale?: string,
-): Promise<InsectOption[]> {
-  if (!token) return []
+function mapInsectStory(story: RawStory): InsectOption | null {
+  if (!story.uuid) return null
+  return {
+    uuid: story.uuid,
+    name: story.content?.title || story.name,
+    familyUuid: familyUuidFromContent(story.content?.famiglia),
+  }
+}
 
+async function fetchStoriesByContentType(
+  token: string,
+  contentType: string,
+  locale?: string,
+): Promise<RawStory[]> {
   const cv = await getCacheVersion(token)
-  const byUuid = new Map<string, InsectOption>()
+  const all: RawStory[] = []
   let page = 1
 
   while (true) {
@@ -99,7 +117,7 @@ export async function fetchInsectStories(
       per_page: String(PER_PAGE),
       page: String(page),
       sort_by: 'name:asc',
-      content_type: 'insect',
+      content_type: contentType,
     })
 
     if (cv !== undefined) params.set('cv', String(cv))
@@ -110,15 +128,46 @@ export async function fetchInsectStories(
 
     const data = (await res.json()) as { stories?: RawStory[] }
     const batch = data.stories ?? []
-
-    for (const story of batch) {
-      const mapped = mapStory(story)
-      if (!mapped || byUuid.has(mapped.uuid)) continue
-      byUuid.set(mapped.uuid, mapped)
-    }
+    all.push(...batch)
 
     if (batch.length < PER_PAGE) break
     page += 1
+  }
+
+  return all
+}
+
+export async function fetchInsectFamilyStories(
+  token: string,
+  locale?: string,
+): Promise<FamilyOption[]> {
+  if (!token) return []
+
+  const stories = await fetchStoriesByContentType(token, 'insect_family', locale)
+  const byUuid = new Map<string, FamilyOption>()
+
+  for (const story of stories) {
+    const mapped = mapFamilyStory(story)
+    if (!mapped || byUuid.has(mapped.uuid)) continue
+    byUuid.set(mapped.uuid, mapped)
+  }
+
+  return [...byUuid.values()].sort((a, b) => a.name.localeCompare(b.name, 'it'))
+}
+
+export async function fetchInsectStories(
+  token: string,
+  locale?: string,
+): Promise<InsectOption[]> {
+  if (!token) return []
+
+  const stories = await fetchStoriesByContentType(token, 'insect', locale)
+  const byUuid = new Map<string, InsectOption>()
+
+  for (const story of stories) {
+    const mapped = mapInsectStory(story)
+    if (!mapped || byUuid.has(mapped.uuid)) continue
+    byUuid.set(mapped.uuid, mapped)
   }
 
   return [...byUuid.values()].sort((a, b) => a.name.localeCompare(b.name, 'it'))

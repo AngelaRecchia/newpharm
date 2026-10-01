@@ -9,7 +9,7 @@ import { getAlgoliaAdminClient, getSearchIndexName } from '@/lib/search/client'
 import {
   storyToSearchDocument,
   buildProductNameIndex,
-  buildInsectNameIndex,
+  buildTargetPestNameIndex,
 } from '@/lib/search/document'
 import type { SearchDocument, SearchDocumentType } from '@/lib/search/types'
 import localeConfig from '@/i18n/locales.json'
@@ -27,7 +27,7 @@ async function fetchDocumentsForLocale(
 ): Promise<SearchDocument[]> {
   const [productByUuid, insectByUuid] = await Promise.all([
     buildProductNameIndex(locale, version),
-    buildInsectNameIndex(locale, version),
+    buildTargetPestNameIndex(locale, version),
   ])
 
   const context = { productByUuid, insectByUuid }

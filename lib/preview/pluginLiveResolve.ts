@@ -66,14 +66,16 @@ function targetPestsFingerprint(raw: unknown): string {
   return items
     .map((item) => {
       if (!item || typeof item !== 'object') return ''
-      const record = item as { uuid?: unknown; insect?: unknown }
+      const record = item as { uuid?: unknown; insect?: unknown; kind?: unknown }
       const uuid =
         typeof record.uuid === 'string'
           ? record.uuid
           : typeof record.insect === 'string'
             ? record.insect
             : ''
-      return uuid || ''
+      if (!uuid) return ''
+      const kind = record.kind === 'family' ? 'family' : 'insect'
+      return `${kind}:${uuid}`
     })
     .filter(Boolean)
     .join('|')

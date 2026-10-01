@@ -44,7 +44,7 @@ export interface StoryStoryblok extends Generated.StoryStoryblok {
 export type { InsectCategory };
 
 export type TargetPestsPluginValue = {
-  items: Array<{ uuid: string }>;
+  items: Array<{ kind: "insect" | "family"; uuid: string }>;
 };
 
 export type TargetPestView = {
@@ -52,6 +52,7 @@ export type TargetPestView = {
   title: string;
   scientificName?: string;
   family: TargetPestFamilyView | null;
+  familyOnly?: boolean;
 };
 
 /** insect_family — titolo e icona editoriali, senza pagina */

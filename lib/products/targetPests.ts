@@ -1,15 +1,22 @@
 ﻿import { getStoriesByUuids, type Story } from '@/lib/api/storyblok/stories'
 import { readInsectFamily, type TargetPestFamilyView } from '@/lib/insects/family'
 import type { ListingStoryResolved } from '@/lib/listing/types'
-import type { InsectStoryblok, InsectStoryResolved } from '@/types/storyblok'
+import type {
+  InsectFamilyStoryblok,
+  InsectStoryblok,
+  InsectStoryResolved,
+} from '@/types/storyblok'
 
 export type { TargetPestFamilyView }
+
+export type TargetPestsPluginKind = 'insect' | 'family'
 
 export type TargetPestView = {
   uid: string
   title: string
   scientificName?: string
   family: TargetPestFamilyView | null
+  familyOnly?: boolean
 }
 
 function readScientificName(insect: InsectStoryblok): string | undefined {
@@ -19,15 +26,24 @@ function readScientificName(insect: InsectStoryblok): string | undefined {
 
 /** Etichetta tra parentesi in scheda prodotto: nome scientifico, altrimenti titolo. */
 export function targetPestParentheticalLabel(item: TargetPestView): string {
+  if (item.familyOnly) {
+    return item.family?.title?.trim() || item.title
+  }
   return item.scientificName?.trim() || item.title
 }
 
 export type TargetPestsPluginItem = {
+  kind: TargetPestsPluginKind
   uuid: string
 }
 
 export type TargetPestsPluginValue = {
   items: TargetPestsPluginItem[]
+}
+
+function parseKind(value: unknown): TargetPestsPluginKind {
+  if (value === 'family') return 'family'
+  return 'insect'
 }
 
 function getInsectBlok(raw: unknown): InsectStoryblok | null {
@@ -60,9 +76,9 @@ export function parseTargetPestsValue(raw: unknown): TargetPestsPluginItem[] {
     if (!Array.isArray(items)) return []
     return items.flatMap((item) => {
       if (!item || typeof item !== 'object') return []
-      const record = item as { uuid?: unknown }
+      const record = item as { uuid?: unknown; kind?: unknown }
       if (typeof record.uuid !== 'string' || !record.uuid) return []
-      return [{ uuid: record.uuid }]
+      return [{ kind: parseKind(record.kind), uuid: record.uuid }]
     })
   }
 
@@ -73,7 +89,7 @@ export function parseTargetPestsValue(raw: unknown): TargetPestsPluginItem[] {
     const blok = item as { insect?: unknown }
     const uuid = insectUuidFromLegacy(blok.insect)
     if (!uuid) return []
-    return [{ uuid }]
+    return [{ kind: 'insect' as const, uuid }]
   })
 }
 
@@ -83,6 +99,18 @@ function viewFromInsect(uid: string, insect: InsectStoryblok): TargetPestView {
     title: insect.title,
     scientificName: readScientificName(insect),
     family: readInsectFamily(insect.famiglia),
+    familyOnly: false,
+  }
+}
+
+function viewFromFamilyStory(uid: string, story: Story): TargetPestView | null {
+  const family = readInsectFamily(story)
+  if (!family) return null
+  return {
+    uid,
+    title: family.title,
+    family,
+    familyOnly: true,
   }
 }
 
@@ -91,7 +119,17 @@ function viewFromStory(
   story: Story | undefined,
 ): TargetPestView | null {
   if (!story?.content) return null
-  const insect = story.content as InsectStoryblok
+
+  if (item.kind === 'family') {
+    return viewFromFamilyStory(item.uuid, story)
+  }
+
+  const content = story.content as InsectStoryblok | InsectFamilyStoryblok
+  if (content.component === 'insect_family') {
+    return viewFromFamilyStory(item.uuid, story)
+  }
+
+  const insect = content as InsectStoryblok
   if (!insect.title && insect.component !== 'insect') return null
   return viewFromInsect(item.uuid, insect)
 }
@@ -105,6 +143,7 @@ export function mapTargetPests(items: unknown): TargetPestView[] {
         if (!item || typeof item !== 'object') return []
         const record = item as Partial<TargetPestView> & { famiglia?: unknown }
         if (typeof record.uid !== 'string' || typeof record.title !== 'string') return []
+        const familyOnly = record.familyOnly === true
         return [{
           uid: record.uid,
           title: record.title,
@@ -113,6 +152,7 @@ export function mapTargetPests(items: unknown): TargetPestView[] {
               ? record.scientificName.trim() || undefined
               : undefined,
           family: readInsectFamily(record.family ?? record.famiglia),
+          familyOnly,
         }]
       })
     }

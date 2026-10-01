@@ -133,7 +133,7 @@ Story senza pagina, in `{lingua}/data/insect-families/`.
 | **Titolo** | Nome del gruppo in scheda prodotto (traducibile) |
 | **Icona** | Sagoma monocromatica SVG o PNG. In pagina è una maschera colorata come il testo, non un’illustrazione a colori |
 
-Per aggiungere una famiglia: nuova story di tipo **Famiglia infestante**, poi selezionala nel campo Famiglia dell’infestante. Il target pest sul prodotto continua a puntare all’infestante.
+Per aggiungere una famiglia: nuova story di tipo **Famiglia infestante**, poi selezionala nel campo Famiglia dell’infestante. Sul prodotto puoi indicare la **famiglia intera** (target generico) oppure una o più **specie** collegate a quella famiglia.
 
 ---
 
@@ -493,12 +493,15 @@ quelli esatti che trovi nello schema `product`):
 
 ### Il campo `target_pests`
 
-- Apri il campo e **seleziona una o più schede infestanti** già esistenti
-  (es. scarafaggi, formiche, mosche).
-- Puoi aggiungere un testo accanto (es. il nome scientifico).
-- Il sito mostra il nome e l'icona **da soli**: basta il collegamento.
+1. Cerca una **famiglia infestante** (es. Blattidae, Formicidae).
+2. **Aggiungi famiglia** per un target generico (senza specie in latino), oppure apri
+   la famiglia e aggiungi una o più **specie** del catalogo (nome scientifico da scheda infestante).
+3. Puoi ripetere per **più famiglie** sullo stesso prodotto: **Aggiungi famiglia** dalla
+   lista, oppure **Aggiungi un'altra famiglia** / **Cambia famiglia** dopo aver scelto le specie.
 
-> Se l'infestante non esiste, va **creata prima** la scheda dedicata, poi collegata.
+Il sito raggruppa per famiglia (icona + titolo) e, se presenti, elenca le specie tra parentesi.
+
+> Famiglie e infestanti vanno create nel catalogo (`insect_family` / `insect`) prima di collegarle al prodotto.
 
 ### Le tabelle delle specifiche (`spec_table`)
 

@@ -1,11 +1,12 @@
 import { getStory, type Story } from '@/lib/api/storyblok/stories'
 import { getStoryblokVersion } from '@/lib/api/storyblok/config'
 import { getAlgoliaAdminClient, getSearchIndexName } from './client'
+import { parseTargetPestsValue } from '@/lib/products/targetPests'
 import {
   storyToSearchDocument,
   getSearchDocumentType,
   buildProductNameIndex,
-  buildInsectNameIndex,
+  buildTargetPestNameIndex,
   hasManualRelatedProducts,
 } from './document'
 import type { SearchDocumentType } from './types'
@@ -27,17 +28,15 @@ export async function syncStoryToSearchIndex(
     type === 'story' ||
     (type === 'product' && hasManualRelatedProducts(content.related_products))
 
-  const needsInsectIndex =
-    type === 'product' &&
-    Array.isArray(content.target_pests) &&
-    content.target_pests.length > 0
+  const needsTargetPestIndex =
+    type === 'product' && parseTargetPestsValue(content.target_pests).length > 0
 
-  const [productByUuid, insectByUuid] = await Promise.all([
+  const [productByUuid, targetPestNameByUuid] = await Promise.all([
     needsProductIndex
       ? buildProductNameIndex(locale, version)
       : new Map<string, string>(),
-    needsInsectIndex
-      ? buildInsectNameIndex(locale, version)
+    needsTargetPestIndex
+      ? buildTargetPestNameIndex(locale, version)
       : new Map<string, string>(),
   ])
 
@@ -45,7 +44,7 @@ export async function syncStoryToSearchIndex(
   const indexName = getSearchIndexName(version)
   const document = storyToSearchDocument(type, story, locale, {
     productByUuid,
-    insectByUuid,
+    insectByUuid: targetPestNameByUuid,
   })
 
   await client.saveObject({

@@ -1,4 +1,5 @@
 import { getStoriesByComponent, type Story } from '@/lib/api/storyblok/stories'
+import { parseTargetPestsValue } from '@/lib/products/targetPests'
 import { richTextToPlainText } from '@/lib/api/utils/richtext'
 import { getCoverAsset } from '@/lib/downloadable/assets'
 import { parseCarouselVariant } from '@/lib/carousel/parseCarouselVariant'
@@ -163,64 +164,18 @@ function extractBodyText(body: unknown): string {
     .join(' ')
 }
 
-function isResolvedInsect(value: unknown): value is { content?: { title?: string } | null } {
-  return value !== null && typeof value === 'object'
-}
-
-function resolveInsectName(
-  insectRef: unknown,
-  insectByUuid: Map<string, string>,
-): string | null {
-  if (!insectRef) return null
-
-  // Già risolto dal CDN in un oggetto story/insect.
-  if (isResolvedInsect(insectRef)) {
-    const content = insectRef.content
-    if (content && typeof content.title === 'string' && content.title) {
-      return content.title
-    }
-  }
-
-  // UUID da risolvere nella mappa precaricata.
-  if (typeof insectRef === 'string') {
-    return insectByUuid.get(insectRef) || null
-  }
-
-  return null
-}
-
-/** Estrae nomi insetti dal campo target_pests. */
+/** Estrae nomi target (famiglia o specie) dal campo target_pests. */
 export function extractTargetPests(
   targetPests: unknown,
-  insectByUuid: Map<string, string> = new Map(),
+  nameByUuid: Map<string, string> = new Map(),
 ): string[] {
-  if (!targetPests) return []
+  const items = parseTargetPestsValue(targetPests)
+  if (items.length === 0) return []
 
   const results = new Set<string>()
-
-  // Plugin target_pests: { items: [{ uuid }] }
-  if (typeof targetPests === 'object' && !Array.isArray(targetPests)) {
-    const plugin = targetPests as { items?: unknown[] }
-    if (Array.isArray(plugin.items)) {
-      for (const item of plugin.items) {
-        if (item && typeof item === 'object') {
-          const entry = item as { uuid?: unknown }
-          const name = resolveInsectName(entry.uuid, insectByUuid)
-          if (name) results.add(name)
-        }
-      }
-    }
-    return Array.from(results)
-  }
-
-  // Array di blok target_pest_item.
-  if (Array.isArray(targetPests)) {
-    for (const item of targetPests) {
-      if (!item || typeof item !== 'object') continue
-      const entry = item as { insect?: unknown }
-      const name = resolveInsectName(entry.insect, insectByUuid)
-      if (name) results.add(name)
-    }
+  for (const item of items) {
+    const name = nameByUuid.get(item.uuid)
+    if (name) results.add(name)
   }
 
   return Array.from(results)
@@ -261,6 +216,7 @@ type NameIndexKey = `${string}:${'draft' | 'published'}`
 
 const productNameCache = new Map<NameIndexKey, Map<string, string>>()
 const insectNameCache = new Map<NameIndexKey, Map<string, string>>()
+const targetPestNameCache = new Map<NameIndexKey, Map<string, string>>()
 
 function nameIndexKey(locale: string, version: 'draft' | 'published'): NameIndexKey {
   return `${locale}:${version}`
@@ -290,6 +246,18 @@ function setCachedInsectNameIndex(
   insectNameCache.set(nameIndexKey(locale, version), index)
 }
 
+function getCachedTargetPestNameIndex(locale: string, version: 'draft' | 'published') {
+  return targetPestNameCache.get(nameIndexKey(locale, version))
+}
+
+function setCachedTargetPestNameIndex(
+  locale: string,
+  version: 'draft' | 'published',
+  index: Map<string, string>,
+) {
+  targetPestNameCache.set(nameIndexKey(locale, version), index)
+}
+
 /** Invalida le cache degli indici di nome (da chiamare da webhook/cache invalidation). */
 export function invalidateSearchNameCaches(
   locale?: string,
@@ -299,9 +267,11 @@ export function invalidateSearchNameCaches(
     const key = nameIndexKey(locale, version)
     productNameCache.delete(key)
     insectNameCache.delete(key)
+    targetPestNameCache.delete(key)
   } else {
     productNameCache.clear()
     insectNameCache.clear()
+    targetPestNameCache.clear()
   }
 }
 
@@ -335,17 +305,46 @@ export async function buildInsectNameIndex(
 
   try {
     const stories = await getStoriesByComponent('insect', locale, { version })
-    const index = new Map<string, string>()
-    for (const story of stories) {
-      const content = (story.content ?? {}) as Record<string, unknown>
-      const title = typeof content.title === 'string' ? content.title : story.name
-      if (title) index.set(story.uuid, title)
-    }
+    const index = storyTitleIndex(stories)
 
     setCachedInsectNameIndex(locale, version, index)
     return index
   } catch (error) {
     console.warn('[Search] Failed to build insect index:', error)
+    return new Map()
+  }
+}
+
+function storyTitleIndex(stories: Story[]): Map<string, string> {
+  const index = new Map<string, string>()
+  for (const story of stories) {
+    const content = (story.content ?? {}) as Record<string, unknown>
+    const title = typeof content.title === 'string' ? content.title : story.name
+    if (title) index.set(story.uuid, title)
+  }
+  return index
+}
+
+/** uuid → titolo per target_pests (insect + insect_family). */
+export async function buildTargetPestNameIndex(
+  locale: string,
+  version: 'draft' | 'published',
+): Promise<Map<string, string>> {
+  const cached = getCachedTargetPestNameIndex(locale, version)
+  if (cached) return cached
+
+  try {
+    const insectIndex = await buildInsectNameIndex(locale, version)
+    const families = await getStoriesByComponent('insect_family', locale, { version })
+    const index = new Map(insectIndex)
+    for (const [uuid, title] of storyTitleIndex(families)) {
+      index.set(uuid, title)
+    }
+
+    setCachedTargetPestNameIndex(locale, version, index)
+    return index
+  } catch (error) {
+    console.warn('[Search] Failed to build target pest index:', error)
     return new Map()
   }
 }

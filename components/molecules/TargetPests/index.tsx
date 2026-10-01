@@ -31,37 +31,54 @@ export default function TargetPests({ items }: TargetPestsProps) {
 
   return (
     <ul className={cn('list')}>
-      {[...groupedItems.values()].map(({ family, items: familyItems }) => (
-        <li key={family?.uid ?? 'unknown'} className={cn('row')}>
-          {family?.iconUrl ? (
-            <span className={cn('icon')}>
-              <span
-                className={cn('mask')}
-                aria-hidden
-                style={{
-                  WebkitMaskImage: `url("${family.iconUrl}")`,
-                  maskImage: `url("${family.iconUrl}")`,
-                }}
-              />
-            </span>
-          ) : null}
-          <p className={cn('copy')}>
-            {family ? <strong className={cn('title')}>{family.title}</strong> : null}
-            <span className={cn('text')}>
-              {' ('}
-              {familyItems.map((item, index) => (
-                <span key={item.uid}>
-                  {index > 0 ? ', ' : null}
-                  <em className={cn('scientific')}>
-                    {targetPestParentheticalLabel(item)}
-                  </em>
+      {[...groupedItems.values()].map(({ family, items: familyItems }) => {
+        const speciesItems = familyItems.filter((item) => !item.familyOnly)
+        const showParenthetical = speciesItems.length > 0
+
+        return (
+          <li key={family?.uid ?? 'unknown'} className={cn('row')}>
+            {family?.iconUrl ? (
+              <span className={cn('icon')}>
+                <span
+                  className={cn('mask')}
+                  aria-hidden
+                  style={{
+                    WebkitMaskImage: `url("${family.iconUrl}")`,
+                    maskImage: `url("${family.iconUrl}")`,
+                  }}
+                />
+              </span>
+            ) : null}
+            <p className={cn('copy')}>
+              {family ? <strong className={cn('title')}>{family.title}</strong> : null}
+              {showParenthetical ? (
+                <span className={cn('text')}>
+                  {' ('}
+                  {speciesItems.map((item, index) => (
+                    <span key={item.uid}>
+                      {index > 0 ? ', ' : null}
+                      <em className={cn('scientific')}>
+                        {targetPestParentheticalLabel(item)}
+                      </em>
+                    </span>
+                  ))}
+                  {')'}
                 </span>
-              ))}
-              {')'}
-            </span>
-          </p>
-        </li>
-      ))}
+              ) : null}
+              {!family && !showParenthetical
+                ? familyItems.map((item, index) => (
+                    <span key={item.uid} className={cn('text')}>
+                      {index > 0 ? ', ' : null}
+                      <em className={cn('scientific')}>
+                        {targetPestParentheticalLabel(item)}
+                      </em>
+                    </span>
+                  ))
+                : null}
+            </p>
+          </li>
+        )
+      })}
     </ul>
   )
 }
